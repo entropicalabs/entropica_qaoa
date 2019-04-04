@@ -1,0 +1,38 @@
+# IPython Notebooks 
+###################
+*.ipynb
+
+#compiled stuff
+###############
+*.pyc
+
+# orig files
+###########
+*.orig
+
+# latex stuff
+# ##########
+*.log
+*.md5
+*.vrb
+*.dpth
+*.bcf
+*.bbl
+*.blg
+*.fls
+*.auxlock
+*.run.xml
+*.json
+*.fdb_latexmk
+*.nav
+*.xdv
+*.toc
+*.synctex.gz
+*.aux
+*.out
+
+# Some specific files and folders
+#################################
+.ipynb_checkpoints/*
+.ropeproject/*
+node_modules/*
