@@ -1,8 +1,15 @@
-A rough suggestions, how we could structure our QAOA package for Rigetti Forest, such that we can mostly use the code already produced by Ewan and JL while also keeping it all nice and modular.
+A rough suggestions, how we could structure our QAOA package for Rigetti
+Forest, such that we can mostly use the code already produced by Ewan and JL
+while also keeping it all nice and modular.
 
 # VQE Module
-A skeleton of a VQE module. We only provide templates for optimizer and cost functions here that we later use in the QAOA module. The idea is, that if someone wants to and or time permits, this can be extended to a full blown VQE module with swappable optimizers and cost_functions.
-A typical class of cost_functions, preparing a state and then measuring its energy w.r.t some hamiltonian is already implemented, since it is exactly the form we will need for QAOA.
+A skeleton of a VQE module. We only provide templates for optimizer and cost
+functions here that we later use in the QAOA module. The idea is, that if
+someone wants to and or time permits, this can be extended to a full blown VQE
+module with swappable optimizers and cost_functions.
+A typical class of cost_functions, preparing a state and then measuring its
+energy w.r.t some hamiltonian is already implemented, since it is exactly the
+form we will need for QAOA.
 
 
 ## optimizer.py
@@ -16,7 +23,9 @@ TODO: Is it worth the hassle, to write a abstract_optimizer class that provides 
 
 class optimizer(cost_function, params0, epsilon):
     """
-    An optimizer class for VQE. Works with noisy cost_functions that take the number of shots as an argument and report the uncertainty of the function evaluation.
+    An optimizer class for VQE. Works with noisy cost_functions that take the
+    number of shots as an argument and report the uncertainty of the function
+    evaluation.
     """
 	# cost_function(params, nshots) -> (cost, sigma_cost)
 	# some optimizer of noisy functions which take the number of shots as arguments. Optimizes until changes are smaller than epsilon
@@ -26,7 +35,10 @@ class optimizer(cost_function, params0, epsilon):
 ## cost_functions.py
 ```python
 """
-Abstract description of cost_functions that can be passed to vqe.optimizer.optimizer instances and two concrete implementations that run on the QVM resp. QC and measure the energy of a prepared state w.r.t to some hamiltonian.
+Abstract description of cost_functions that can be passed to
+vqe.optimizer.optimizer instances and two concrete implementations that run on
+the QVM resp. QC and measure the energy of a prepared state w.r.t to some
+hamiltonian.
 """
 class abstract_cost_function(qvm=None, return_float=False, log=None):
 	"""Template class for cost_functions that are passed to the optimizer
@@ -163,7 +175,8 @@ class general_qaoa_parameters(abstract_qaoa_parameters):
 def calculate_initial_parameters_general(hamiltonian, reg, p, tau=None):
     """
     Once again the same as is already there.
-    Possibly rethink the inclusion of reg? Make it optional and if None is passed use hamiltonian.get_qubits()?
+    Possibly rethink the inclusion of reg? Make it optional and if None is
+    passed use hamiltonian.get_qubits()?
     """
 
 
@@ -182,10 +195,14 @@ def calculate_initial_parameters_alternating_operators(....):
 ```python
 """
 Some more useful utilities to experiment with QAOA like convenience functions
-to create the hamiltonian corresponding to a given graph or to create graphs of fixed size and/or degree.
+to create the hamiltonian corresponding to a given graph or to create graphs
+of fixed size and/or degree.
 
 TODO:
-What do we use for the graphs? Is there already a good implementation in python we can use? Can it use arbitrary hashable objects as vertices? (convenient, if one wants to use pyquil.quilatom.Qubit or pqyuil.quilatom.QubitPlaceholder as vertices)
+What do we use for the graphs? Is there already a good implementation in
+python we can use? Can it use arbitrary hashable objects as vertices?
+(convenient, if one wants to use pyquil.quilatom.Qubit or
+pqyuil.quilatom.QubitPlaceholder as vertices)
 """
 
 def qaoa_hamiltonian_from_graph(graph) -> PauliSum:
@@ -218,9 +235,12 @@ def random_graph(n_vertices: int,
 def random_hamiltonian(qubits, nterms = None, Type = "free") -> pyquil.paulis.PauliSum:
     """
     Create a random hamiltonian on nqubits qubits.
-    TODO: Decide, what Types make sense to support. Hamiltonians only diagonal in the computational basis? Hamiltonians with at most 2 qubit terms? Normalized hamiltonians?
+    TODO: Decide, what Types make sense to support. Hamiltonians only diagonal
+    in the computational basis? Hamiltonians with at most 2 qubit terms?
+    Normalized hamiltonians?
 
-    :param nqubits: (int or list of qubits) Qubits to have the hamilpyquil.paulis.PauliSumtonian on
+    :param nqubits: (int or list of qubits) Qubits to have the
+    hamiltonian on
     :param nterms:  (int) Number of terms in the hamiltonian
     :param Type:    Type of hamiltonian to create. See TODO
     :rtype:         (pyquil.paulis.PauliSum) The hamiltonian
@@ -234,10 +254,16 @@ def random_hamiltonian(qubits, nterms = None, Type = "free") -> pyquil.paulis.Pa
 Some convenience functions to easily visualize the workings of QAOA
 
 TODO:
-Do we want to write a plot_object() function for each object that can be sensibly plotted or do we want to write object.plot() for each object, that can be sensibly plotted?
-The former is easier to write and discover at first while the latter clutters the namespace less (no need to remember ten different plot_something() functions) and is probably easier to maintain. If changes are made to an object the corresponding plot function is not in a different file.
+Do we want to write a plot_object() function for each object that can be
+sensibly plotted or do we want to write object.plot() for each object, that
+can be sensibly plotted?
+The former is easier to write and discover at first while the latter clutters
+the namespace less (no need to remember ten different plot_something()
+functions) and is probably easier to maintain. If changes are made to an
+object the corresponding plot function is not in a different file.
 
-Or split the difference: Let the objects plot themselves, but put visualizations that aren't tied to a particular object in here?
+Or split the difference: Let the objects plot themselves, but put
+visualizations that aren't tied to a particular object in here?
 """
 
 def plot_qaoa_energy_landscape(hamiltonian, parameters):
