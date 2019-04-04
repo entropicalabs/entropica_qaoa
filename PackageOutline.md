@@ -31,7 +31,8 @@ class optimizer(cost_function, params0, epsilon):
     evaluation.
     """
 	# cost_function(params, nshots) -> (cost, sigma_cost)
-	# some optimizer of noisy functions which take the number of shots as arguments. Optimizes until changes are smaller than epsilon
+	# some optimizer of noisy functions which take the number of shots as
+    # arguments. Optimizes until changes are smaller than epsilon
 ```
 
 
@@ -107,13 +108,16 @@ class prep_and_measure_ham_qc(abstract_cost_function):
 
 # QAOA module
 The actual QAOA module.
-It provides cost_functions for the VQE module that can be passed to the vqe.optimizer instances.
-It also provides our different classes of QAOA parameters that play nicely with qaoa_cost_function_qvm and qaoa_cost_function_qc
+It provides cost_functions for the VQE module that can be passed to the
+vqe.optimizer instances.
+It also provides our different classes of QAOA parameters that play nicely
+with qaoa_cost_function_qvm and qaoa_cost_function_qc
 
 ## cost_functions.py
 ```python
 """
-Concrete implementations of cost_functions that can be passed to vqe.optimizer.optimizer instances and are the cost functions for QAOA.
+Concrete implementations of cost_functions that can be passed to
+vqe.optimizer.optimizer instances and are the cost functions for QAOA.
 
 TODO: Take qaoa out of all the function names, since it all sits in a module
 called qaoa?
