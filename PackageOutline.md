@@ -269,8 +269,10 @@ the namespace less (no need to remember ten different plot_something()
 functions) and is probably easier to maintain. If changes are made to an
 object the corresponding plot function is not in a different file.
 
-Or split the difference: Let the objects plot themselves, but put
+Or: Split the difference: Let the objects plot themselves, but put
 visualizations that aren't tied to a particular object in here?
+
+Or: Put plot_qaoa_parameters function here, that simply calls parameters.plot()
 """
 
 def plot_qaoa_energy_landscape(hamiltonian, parameters):
@@ -290,8 +292,10 @@ def plot_qaoa_parameters(parameters):
     Plot the optimal QAOA parameters found in optimization
 
     :param parameters:   a subtype of qaoa.abstract_qaoa_parameters
-    :rtype:              matpltótlib axes object?
+    :rtype:              matplotlib axes object? None?
     """
+    # implementation suggestion:
+    parameters.plot()
 
 
 def vqe_optimization_stacktrace_plot(ax=None):
