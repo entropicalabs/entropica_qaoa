@@ -46,32 +46,33 @@ hamiltonian.
 """
 class abstract_cost_function(qvm=None, return_float=False, log=None):
 	"""Template class for cost_functions that are passed to the optimizer
-    :param qvm:             A QVM connectio to run the program on. Creates 
+    :param qvm:             A QVM connectio to run the program on. Creates
                             its own, if None is passed
     :param return_float:    return only a float for scipy.optimize.minimize or
                             (E, sigma_E)
     :param log:             log the function values of all calls here, if
                             provided
-	"""
-	__init__()
-		"""Set up all the internals"""
-		raise NotImplementedError()
-	__call__(params, nshots) -> (cost, sigma_cost)
-		# has to have the same signature as cost_function in `optimizer.py`
-		raise NotImplementedError()
+    """
+    def __init__():
+        """Set up all the internals"""
+				raise NotImplementedError()
+
+		def __call__(params, nshots) -> (cost, sigma_cost):
+				# has to have the same signature as cost_function in `optimizer.py`
+				raise NotImplementedError()
 
 
 class prep_and_measure_ham_qvm(abstract_cost_function):
 	"""A cost function that prepares a an ansatz and measures its energy w.r.t
        hamiltonian on the qvm
 	"""
-	__init__(prepare_ansatz, hamiltonian: PauliSum):
+	def __init__(prepare_ansatz, hamiltonian: PauliSum):
 		# prepare_ansatz(params) -> pyquil.quil.Progam
         self.prepare_ansatz = prepare_ansatz
         self.hamiltonian = hamiltonian
-		
 
-	__call__(params, nshots):
+
+	def __call__(params, nshots):
 		wf = qvm.Wavefunction(self.prepare_ansatz(params))
         # might want to add noise to E for more realistic cases. Maybe provide
         # noisy and non-noisy version of this
@@ -84,7 +85,7 @@ class prep_and_measure_ham_qc(abstract_cost_function):
 	"""A cost function that prepares a an ansatz and measures its energy w.r.t
        hamiltonian on the qc
 	"""
-	__init__(self, prepare_ansatz, hamiltonian: PauliSum):
+	def __init__(self, prepare_ansatz, hamiltonian: PauliSum):
         self.hamiltonian = hamiltonian
         self.prepare_ansatz = prepare_ansatz
 		self.hamiltonian_commuting_terms = decompose_commuting(hamiltonian)
@@ -93,8 +94,8 @@ class prep_and_measure_ham_qc(abstract_cost_function):
 			prog = append_base_change_and_measure(self.prepare_ansatz,
                                                    commuting_term)
 			exes.append(qc.compile(progs))
-		
-	__call__(self, params, nshots):
+
+	def __call__(self, params, nshots):
         # make_memory_map creates a memory_map from the parameters that can be
         # passed to qc.run.
 		memory_map = make_memory_map(params)
@@ -127,7 +128,7 @@ class qaoa_cost_function_qvm(prep_and_measure_ham_qvm):
     A cost function that inherits from prep_and_measure_ham_qvm and implements
     the specific prepare_ansatz from QAOA
     """
-    __init__(hamiltonian, p, tau):
+    def __init__(hamiltonian, p, tau):
         self.prepare_ansatz = prepare_qaoa_ansatz_qvm(hamiltoninan, p, tau)
         #...
     # __call__() is inherited
@@ -138,7 +139,7 @@ class qaoa_cost_function_qc(prep_and_measure_ham_qc):
     A cost function that inherits from prep_and_measure_ham_qc and implements
     the specific prepare_ansatz from QAOA
     """
-    __init__(hamiltonian, p, tau):
+    def __init__(hamiltonian, p, tau):
         self.prepare_ansatz = prepare_qaoa_ansatz_qc(hamiltonian, p, tau)
          # because all the terms commute already
         self.hamiltonian_commuting_terms = [hamiltonian]
@@ -156,7 +157,7 @@ def prepare_qaoa_ansatz_qvm(hamiltonian, p, tau):
 
 def prepare_qaoa_ansatz_qc(hamiltonian, p, tau):
     """
-    :return: A function that takes qaoa_params and creates a parametric 
+    :return: A function that takes qaoa_params and creates a parametric
              pyquil.Program
     """
     # implentation the same as in the code already there
@@ -214,7 +215,7 @@ pqyuil.quilatom.QubitPlaceholder as vertices)
 
 def qaoa_hamiltonian_from_graph(graph) -> PauliSum:
     """Takes a graph and returns the corresponding hamiltonian for QAOA
-    
+
     :rtype: pyquil.paulis.PauliSum       # because we want to integrate nicely
     """
     # yup, needs to be implemented
@@ -315,4 +316,3 @@ def plot_graph(graph):
     """
     # implementation details to follow
 ```
-
