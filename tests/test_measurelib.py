@@ -1,6 +1,6 @@
-# import sys, os
-# myPath = os.path.dirname(os.path.abspath(__file__))
-# sys.path.insert(0, myPath + '/../')
+import sys, os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../')
 
 # from vqe.cost_function import prep_and_measure_ham_qvm
 # from qvm_process import qvm_process
