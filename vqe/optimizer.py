@@ -8,12 +8,23 @@ provides a template and one concrete implementation that just wraps
 `scipy.optimize.minimize`?
 """
 
-class optimizer(cost_function, params0, epsilon):
+from scipy.optimize import minimize
+from functools import partial
+from typing import Callable, Tuple, Iterable
+
+def _reduce_noisy_cost_function(fun):
+    def reduced(*args, **kwargs):
+        return fun(nshots=1000, *args, **kwargs)[0]
+    return reduced
+
+def scipy_optimizer(cost_function : Callable[[Iterable], Tuple[float, float]],
+                    params0 : Iterable,
+                    epsilon : float =1e-5,
+                    nshots: int =1000,
+                    method="COBYLA",
+                    **mininize_kwargs):
+    """A scipy.optimize.minimize wrapper for VQE
     """
-    An optimizer class for VQE. Works with noisy cost_functions that take the
-    number of shots as an argument and report the uncertainty of the function
-    evaluation.
-    """
-    # cost_function(params, nshots) -> (cost, sigma_cost)
-    # some optimizer of noisy functions which take the number of shots as
-    # arguments. Optimizes until changes are smaller than epsilon
+    fun = _reduce_noisy_cost_function(cost_function)
+    out = minimize(fun, params0, method=method, tol=epsilon, **mininize_kwargs)
+    return out
