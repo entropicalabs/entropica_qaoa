@@ -2,11 +2,13 @@
 Different cost functions for VQE and one abstract template.
 """
 from typing import Callable, Iterable
+
+from vqe.measurelib import append_measure_register, hamiltonian_expectation_value
+
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import Program
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
-
 
 import numpy as np
 
@@ -16,14 +18,14 @@ class abstract_cost_function():
     Template class for cost_functions that are passed to the optimizer.
     """
 
-    def __init__(return_float: bool = False, log=None):
+    def __init__(return_standard_deviation: bool = False, log=None):
         """Set up the cost function.
 
         Parameters
         ----------
-        return_float : bool
+        return_standard_deviation : bool
             Return the cost as a float for scalar optimizers or as a tuple
-            (cost, sigma_cost) for optimizers of noisy functions.
+            (cost, cost_standard_deviation) for optimizers of noisy functions.
             (the default is False).
         log : list
             A list to write a log of function values to. If None is passed no
@@ -52,6 +54,7 @@ class abstract_cost_function():
         raise NotImplementedError()
 
 
+# TODO support hamiltonians with qubit QubitPlaceholders?
 class prep_and_measure_ham_qvm(abstract_cost_function):
     """A cost function that prepares an ansatz and measures its energy w.r.t
        hamiltonian on the qvm
@@ -61,7 +64,7 @@ class prep_and_measure_ham_qvm(abstract_cost_function):
                  prepare_ansatz: Callable[[Iterable], Program],
                  hamiltonian: PauliSum,
                  sim: WavefunctionSimulator,
-                 return_float=True,
+                 return_standard_deviation=False,
                  noisy=False,
                  log=None):
         """Set up the cost_function.
@@ -76,9 +79,9 @@ class prep_and_measure_ham_qvm(abstract_cost_function):
             The hamiltonian w.r.t which to measure the energy.
         sim : WavefunctionSimulator
             A WavefunctionSimulator instance to get the wavefunction from.
-        return_float : bool
+        return_standard_deviation : bool
             Return the cost as a float for scalar optimizers or as a tuple
-            (cost, sigma_cost) for optimizers of noisy functions.
+            (cost, cost_standard_deviation) for optimizers of noisy functions.
             (the default is False).
         noisy: bool
             Add simulated noise to the energy? (the default is False)
@@ -87,7 +90,7 @@ class prep_and_measure_ham_qvm(abstract_cost_function):
             log is created.
         """
         self.prepare_ansatz = prepare_ansatz
-        self.return_float = return_float
+        self.return_standard_deviation = return_standard_deviation
         self.noisy = noisy
         self.sim = sim  # TODO start own simulator, if None is passed
 
@@ -96,7 +99,7 @@ class prep_and_measure_ham_qvm(abstract_cost_function):
         if isinstance(hamiltonian, PauliSum):
             nqubits = max(hamiltonian.get_qubits()) + 1
             self.ham = hamiltonian.matrix(nqubits=nqubits)
-        elif isinstance(hamiltonian, (numpy.matrix, numpy.ndarray)):
+        elif isinstance(hamiltonian, (np.matrix, np.ndarray)):
             self.ham = hamiltonian
         else:
             raise ValueError(
@@ -140,10 +143,11 @@ class prep_and_measure_ham_qvm(abstract_cost_function):
         except AttributeError:
             pass
 
-        if self.return_float:
+        if  not self.return_standard_deviation:
             return out[0]
+        else:
+            return out
 
-        return out
 
 # TODO fix this
 class prep_and_measure_ham_qc(abstract_cost_function):
@@ -160,7 +164,7 @@ class prep_and_measure_ham_qc(abstract_cost_function):
                  make_memory_map: Callable[[Iterable],dict],
                  hamiltonian: PauliSum,
                  qvm: QuantumComputer,
-                 return_float: bool = True,
+                 return_standard_deviation: bool = False,
                  base_numshots: int = 100,
                  log: list = None):
         """
@@ -174,38 +178,49 @@ class prep_and_measure_ham_qc(abstract_cost_function):
             The hamiltonian
         param qvm : Quantum Computer connection
             Connection the QC to run the program on.
-        param return_float : bool
+        param return_standard_deviation : bool
             return a float or tuple of energy and its standard deviation.
         param base_numshots : int
             numshots to compile into the binary. The argument nshots of __call__
             is then a multplier of this.
         """
         # TODO sanitize input?
-        self.qc = qc
-        self.ham = ham
-        append_measure_register(prepare_ansatz, params.reg, trials=base_numshots)
-        self.exe = qc.compile(prepare_ansatz)
+        self.qvm = qvm
+        self.ham = hamiltonian
+        self.return_standard_deviation = return_standard_deviation
+        self.make_memory_map = make_memory_map
 
         if log is not None:
             self.log = log
 
-    def __call__(self, params, N=1):
+        append_measure_register(prepare_ansatz, qubits=self.ham.get_qubits(), trials=base_numshots)
+        self.exe = qvm.compile(prepare_ansatz)
+
+
+    # TODO move squaring of the hamiltonian from hamiltonian_expectation_value
+    # to here, since the hamiltonian doesn't change between calls?
+    def __call__(self, params, nshots=1):
         """
         Parameters
         ----------
-        :param params:    (1D array)   raw qaoa_parameters
-        :param N:         (int)        Number of times to run exe
+        param params :  1D array
+            the parameters to run the state preparation circuit with
+        param N : int
+            Number of times to run exe
         """
-        self.params.update(params)
-        memory_map = make_memory_map(self.params)
+        memory_map = self.make_memory_map(params)
 
-        bitstrings = self.qc.run(self.exe, memory_map=memory_map)
-        for i in range(N - 1):
-            bitstrings = np.append(bitstrings, self.qc.run(self.exe, memory_map=memory_map), axis=0)
+        bitstrings = self.qvm.run(self.exe, memory_map=memory_map)
+        for i in range(nshots - 1):
+            bitstrings = np.append(bitstrings, self.qvm.run(self.exe, memory_map=memory_map), axis=0)
 
-        res = energy_expecation_value(self.ham, bitstrings)
+        res = hamiltonian_expectation_value(self.ham, bitstrings)
         try:
             self.log.append(res)
         except AttributeError:
             pass
-        return res
+
+        if not self.return_standard_deviation:
+            return res[0]
+        else:
+            return res

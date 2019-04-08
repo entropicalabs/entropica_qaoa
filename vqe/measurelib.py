@@ -33,12 +33,12 @@ def append_measure_register(program, qubits=None, trials=10):
     return program
 
 
-def hamiltonian_expectation_value(ham, bitstrings):
+def hamiltonian_expectation_value(hamiltonian, bitstrings):
     """Calculates the energy expectation value of ``bitstrings`` w.r.t ``ham``.
 
     Parameters
     ----------
-    param ham : PauliSum
+    param hamiltonian : PauliSum
         The hamiltonian
     param bitstrings : 2D arry or list
         the measurement outcomes. Columns are outcomes for one qubit.
@@ -56,7 +56,7 @@ def hamiltonian_expectation_value(ham, bitstrings):
         energies = np.zeros(bitstrings.shape[0])
     else:
         energies = np.array([0])
-    for term in ham:
+    for term in hamiltonian:
         sign = np.zeros_like(energies)
         for factor in term:
             sign += bitstrings[:, factor[0]]
