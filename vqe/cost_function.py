@@ -13,7 +13,7 @@ from pyquil.api._quantum_computer import QuantumComputer
 import numpy as np
 
 
-class abstract_cost_function():
+class AbstractCostFunction():
     """
     Template class for cost_functions that are passed to the optimizer.
     """
@@ -55,7 +55,7 @@ class abstract_cost_function():
 
 
 # TODO support hamiltonians with qubit QubitPlaceholders?
-class prep_and_measure_ham_qvm(abstract_cost_function):
+class PrepareAndMeasureOnWFSim(AbstractCostFunction):
     """A cost function that prepares an ansatz and measures its energy w.r.t
        hamiltonian on the qvm
     """
@@ -150,7 +150,7 @@ class prep_and_measure_ham_qvm(abstract_cost_function):
 
 
 # TODO fix this
-class prep_and_measure_ham_qc(abstract_cost_function):
+class PrepareAndMeasureOnQVM(AbstractCostFunction):
     """A cost function that prepares an ansatz and measures its energy w.r.t
        hamiltonian on a quantum computer (or simulator).
 
