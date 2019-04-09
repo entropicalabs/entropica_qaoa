@@ -36,3 +36,4 @@
 .ipynb_checkpoints/*
 .ropeproject/*
 node_modules/*
+.idea/*
