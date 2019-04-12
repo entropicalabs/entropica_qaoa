@@ -320,6 +320,8 @@ def plot_graph(graph):
 -----------------------------------------------
 Other functionalities to possibly include (Ewan's suggestions)
 
+"""
+
 def PlotBareEnergyLandscape():
 
     """
@@ -350,4 +352,4 @@ def PlotHessianEigenvalues():
     The Hessian of the unknown loss function is determined by automatic differentiation.
     """
     
-"""
+
