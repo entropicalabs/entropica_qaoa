@@ -315,4 +315,38 @@ def plot_graph(graph):
     Creates a nice plot of the graphs used in QAOA
     """
     # implementation details to follow
+    
+-----------------------------------------------
+Other functionalities to possibly include (Ewan's suggestions)
+
+def PlotBareEnergyLandscape():
+
+    """
+    Simply plots the energy of the possible bitstrings, as determined by the Cost Hamiltonian. 
+    (ie this has nothing to do with the continuous parametrisation via betas and gammas, it is merely the discrete set of energy eigenvalues of H_cost)
+    """
+    
+def PlotParametricVariance(parameters2vary,parameter_ranges):
+
+    """
+    Plot the landscape of the variance in the energy for the specified parameters.
+    This can directly compute from the wavefunction, or also by sampling from the output state. 
+    
+    """
+    
+def PlotOptimalTrajectory(parameters,hamiltonian):
+
+    """
+    Plot the path through the landscape of the specified variables that is followed by the optimal trajectory found by QAOA.
+    """
+    
+def PlotHessianEigenvalues():
+
+    """
+    This may or may not be useful, and may be difficult to implement. 
+    The eigenvalues of the Hessian should somehow give an idea of how non-convex the landscape is at given parameter values.
+    The paper "Visualizing the Loss Landscape of Neural Nets" may serve as a guide.
+    The Hessian of the unknown loss function is determined by automatic differentiation.
+    """
+    
 ```
