@@ -315,7 +315,8 @@ def plot_graph(graph):
     Creates a nice plot of the graphs used in QAOA
     """
     # implementation details to follow
-    
+
+"""
 -----------------------------------------------
 Other functionalities to possibly include (Ewan's suggestions)
 
@@ -349,4 +350,4 @@ def PlotHessianEigenvalues():
     The Hessian of the unknown loss function is determined by automatic differentiation.
     """
     
-```
+"""
