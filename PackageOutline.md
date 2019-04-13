@@ -57,6 +57,10 @@ Ewan:
 I'm not sure I fully understand the intended use of the abstract cost function here. Would the qvm and qc ones below be a subclass of this abstract one, 
 so that they are passed to the optimiser through it?
 
+Also, in the methods below, we might want the user to be able to specify an arbitrary intial state (not just the global ground state, or the 
+equal superposition over all bit strings.) In Grove right now, the QAOA method allows for this, with the initial state prepared by specification of a program
+to take you there. In turn, Grove has a CreateArbitraryState method, which returns that program. We could make direct use of this, if the package dependencies are not too messy.
+
 """
 class abstract_cost_function(qvm=None, return_float=False, log=None):
 	"""Template class for cost_functions that are passed to the optimizer
