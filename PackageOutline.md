@@ -22,6 +22,14 @@ manner, that we can later swap it out with more sophisticated optimizers.
 TODO: Is it worth the hassle, to write a abstract_optimizer class that
 provides a template and one concrete implementation that just wraps
 `scipy.optimize.minimize`?
+
+Ewan's comments:
+----------------
+If I understand what you mean, I think we should just keep to scipy for now (rather than 
+trying to include optimisers of our own making that we haven't properly researched yet). 
+That said, we could consider the option of using other optimisers developed by the ML community 
+that are not present in scipy.optimize. Joaquin has looked a bit into this recently, we can ask him.
+
 """
 
 class optimizer(cost_function, params0, epsilon):
@@ -43,6 +51,16 @@ Abstract description of cost_functions that can be passed to
 vqe.optimizer.optimizer instances and two concrete implementations that run on
 the QVM resp. QC and measure the energy of a prepared state w.r.t to some
 hamiltonian.
+
+Ewan:
+-----
+I'm not sure I fully understand the intended use of the abstract cost function here. Would the qvm and qc ones below be a subclass of this abstract one, 
+so that they are passed to the optimiser through it?
+
+Also, in the methods below, we might want the user to be able to specify an arbitrary intial state (not just the global ground state, or the 
+equal superposition over all bit strings.) In Grove right now, the QAOA method allows for this, with the initial state prepared by specification of a program
+to take you there. In turn, Grove has a CreateArbitraryState method, which returns that program. We could make direct use of this, if the package dependencies are not too messy.
+
 """
 class abstract_cost_function(qvm=None, return_float=False, log=None):
 	"""Template class for cost_functions that are passed to the optimizer
@@ -211,6 +229,13 @@ What do we use for the graphs? Is there already a good implementation in
 python we can use? Can it use arbitrary hashable objects as vertices?
 (convenient, if one wants to use pyquil.quilatom.Qubit or
 pqyuil.quilatom.QubitPlaceholder as vertices)
+
+Ewan's comments:
+----------------
+That's a very good point about qubit placeholders! Let's bear it in mind.
+When you ask "what do we use for the graphs", are you referring to visualisation tools?
+For that, there is networkx.
+
 """
 
 def qaoa_hamiltonian_from_graph(graph) -> PauliSum:
@@ -252,7 +277,16 @@ def random_hamiltonian(qubits, nterms = None, Type = "free") -> pyquil.paulis.Pa
     :param nterms:  (int) Number of terms in the hamiltonian
     :param Type:    Type of hamiltonian to create. See TODO
     :rtype:         (pyquil.paulis.PauliSum) The hamiltonian
+    
     """
+"""
+Ewan's comments:
+----------------
+I assume the input to random_hamiltonian comes from random_graph?
+Let's keep things simple at 2 qubit terms for now, and diagonal in the Z basis.
+By normalised Hamiltonians, do you mean that the spectral range is always the same?
+"""
+
 ```
 
 
@@ -274,6 +308,15 @@ Or: Split the difference: Let the objects plot themselves, but put
 visualizations that aren't tied to a particular object in here?
 
 Or: Put plot_qaoa_parameters function here, that simply calls parameters.plot()
+
+Ewan's comments:
+----------------
+
+I don't know if I really understand the two suggestions following the 'Or' above,
+perhaps you can explain them to me on Skype. But what I naively had in mind was more the 
+object.plot() approach. The object would be an instance of QAOA, with specified cost function, 
+p value, and gammas and betas. So this visualisation module will be a subclass of QAOA, I think.
+
 """
 
 def plot_qaoa_energy_landscape(hamiltonian, parameters):
@@ -315,4 +358,47 @@ def plot_graph(graph):
     Creates a nice plot of the graphs used in QAOA
     """
     # implementation details to follow
-```
+
+"""
+-----------------------------------------------
+Other functionalities to possibly include (Ewan's suggestions)
+
+"""
+
+def PlotBareEnergyLandscape():
+
+    """
+    Simply plots the energy of the possible bitstrings, as determined by the Cost Hamiltonian. 
+    (ie this has nothing to do with the continuous parametrisation via betas and gammas, it is merely the discrete set of energy eigenvalues of H_cost)
+    """
+    
+def PlotParametricVariance(parameters2vary,parameter_ranges):
+
+    """
+    Plot the landscape of the variance in the energy for the specified parameters.
+    This can directly compute from the wavefunction, or also by sampling from the output state. 
+    
+    """
+    
+def PlotOptimalTrajectory(parameters,hamiltonian):
+
+    """
+    Plot the path through the landscape of the specified variables that is followed by the optimal trajectory found by QAOA.
+    """
+    
+def PlotHessianEigenvalues():
+
+    """
+    This may or may not be useful, and may be difficult to implement. 
+    The eigenvalues of the Hessian should somehow give an idea of how non-convex the landscape is at given parameter values.
+    The paper "Visualizing the Loss Landscape of Neural Nets" may serve as a guide.
+    The Hessian of the unknown loss function is determined by automatic differentiation, which in itself would need to be implemented (hence needs more work).
+    """
+
+def PlotEquivalentAnnealingPath():
+
+    """
+    For a given QAOA instance and a set of angles (gamma and beta), this will plot the eigenstate populations as a function of time by converting the QAOA pulse sequence into an
+    equivalent annealing path, just as JL has done in his work following the method from the Lukin paper.
+    """
+
