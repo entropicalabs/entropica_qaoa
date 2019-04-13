@@ -274,6 +274,15 @@ Or: Split the difference: Let the objects plot themselves, but put
 visualizations that aren't tied to a particular object in here?
 
 Or: Put plot_qaoa_parameters function here, that simply calls parameters.plot()
+
+Ewan's comments:
+----------------
+
+I don't know if I really understand the two suggestions following the 'Or' above,
+perhaps you can explain them to me on Skype. But what I naively had in mind was more the 
+object.plot() approach. The object would be an instance of QAOA, with specified cost function, 
+p value, and gammas and betas. So this visualisation module will be a subclass of QAOA, I think.
+
 """
 
 def plot_qaoa_energy_landscape(hamiltonian, parameters):
