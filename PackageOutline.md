@@ -305,25 +305,42 @@ def random_hamiltonian(qubits, nterms = None, Type = "free") -> pyquil.paulis.Pa
     :param Type:    Type of hamiltonian to create. See TODO
     :rtype:         (pyquil.paulis.PauliSum) The hamiltonian
 
-    """
-"""
-Ewan's comments:
-----------------
-I assume the input to random_hamiltonian comes from random_graph?
-Let's keep things simple at 2 qubit terms for now, and diagonal in the Z basis.
-By normalised Hamiltonians, do you mean that the spectral range is always the same?
+		Ewan's comments:
+		----------------
+		I assume the input to random_hamiltonian comes from random_graph?
+		Let's keep things simple at 2 qubit terms for now, and diagonal in the Z basis.
+		By normalised Hamiltonians, do you mean that the spectral range is always the same?
 
-JL:
----
-I was actually thinking about more general hamiltonians with more than 2 qubit terms
-and not neccessarily diagonal in the Z-Basis. Of course for QAOA we only need
-diagonal 2 qubit hamiltonians, but I am a fan of having code that isn't more
-specialized than neccesary.
+		Other things we could potentially easily include, hinting towards applications and features that researchers might possibly want to explore:
 
-To get a hamiltonian from a graph I would rather have a function called
-`hamiltonian_from_graph(graph)`, making the distinction clear that there is a
-mapping from graphs to hamiltonians, but not neccesarily the other way around.
-"""
+		1) Methods for generating "clustered" data sets with specific properties
+		(for instance, two Gaussian-distributed clusters with centre points separated by some specified distance)
+		The coupling coefficients in H_cost would then be a function of the Euclidean distance between the points,
+		as in Rigetti's unsupervised learning paper of 2017.
+
+		2) Methods for generating Hamiltonians with desired energy landscape features. This might be useful for studying
+		how QAOA performs in extreme/pathological/specialised problem instances. For instance, one might want to study the case where
+		a specified small number of bitstrings have very low energies, and all others have random but higher energies. The idea here would be to easily
+		generate cases where there are a (small) number of deep and narrow minima, i.e. hard problem instances.
+		We could also allow this to be specified statistically - eg with there being some well-defined average bitstring energy,
+		but with a Gaussian (or other distribution) variance around it.
+
+		3) Methods for generating common types of networks, e.g. Erdos-Renyi, Barbasi, geometric random,...
+		[Although maybe keep this for a future release, when we have investigated these graphs better ourselves]
+
+		JL:
+		---
+		I was actually thinking about more general hamiltonians with more than 2 qubit terms
+		and not neccessarily diagonal in the Z-Basis. Of course for QAOA we only need
+		diagonal 2 qubit hamiltonians, but I am a fan of having code that isn't more
+		specialized than neccesary.
+
+		To get a hamiltonian from a graph I would rather have a function called
+		`hamiltonian_from_graph(graph)`, making the distinction clear that there is a
+		mapping from graphs to hamiltonians, but not neccesarily the other way around.
+
+		I.e. put all of the functionality you suggest into the random_graph function
+		"""
 
 ```
 
