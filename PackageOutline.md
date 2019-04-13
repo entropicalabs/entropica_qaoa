@@ -275,13 +275,13 @@ def random_hamiltonian(qubits, nterms = None, Type = "free") -> pyquil.paulis.Pa
     :rtype:         (pyquil.paulis.PauliSum) The hamiltonian
     
     """
-
+"""
 Ewan's comments:
 ----------------
 I assume the input to random_hamiltonian comes from random_graph?
 Let's keep things simple at 2 qubit terms for now, and diagonal in the Z basis.
 By normalised Hamiltonians, do you mean that the spectral range is always the same?
-
+"""
 
 ```
 
