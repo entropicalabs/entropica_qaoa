@@ -22,6 +22,14 @@ manner, that we can later swap it out with more sophisticated optimizers.
 TODO: Is it worth the hassle, to write a abstract_optimizer class that
 provides a template and one concrete implementation that just wraps
 `scipy.optimize.minimize`?
+
+Ewan's comments:
+----------------
+If I understand what you mean, I think we should just keep to scipy for now (rather than 
+trying to include optimisers of our own making that we haven't properly researched yet). 
+That said, we could consider the option of using other optimisers developed by the ML community 
+that are not present in scipy.optimize. Joaquin has looked a bit into this recently, we can ask him.
+
 """
 
 class optimizer(cost_function, params0, epsilon):
@@ -43,6 +51,12 @@ Abstract description of cost_functions that can be passed to
 vqe.optimizer.optimizer instances and two concrete implementations that run on
 the QVM resp. QC and measure the energy of a prepared state w.r.t to some
 hamiltonian.
+
+Ewan:
+-----
+I'm not sure I fully understand the intended use of the abstract cost function here. Would the qvm and qc ones below be a subclass of this abstract one, 
+so that they are passed to the optimiser through it?
+
 """
 class abstract_cost_function(qvm=None, return_float=False, log=None):
 	"""Template class for cost_functions that are passed to the optimizer
@@ -211,6 +225,13 @@ What do we use for the graphs? Is there already a good implementation in
 python we can use? Can it use arbitrary hashable objects as vertices?
 (convenient, if one wants to use pyquil.quilatom.Qubit or
 pqyuil.quilatom.QubitPlaceholder as vertices)
+
+Ewan's comments:
+----------------
+That's a very good point about qubit placeholders! Let's bear it in mind.
+When you ask "what do we use for the graphs", are you referring to visualisation tools?
+For that, there is networkx.
+
 """
 
 def qaoa_hamiltonian_from_graph(graph) -> PauliSum:
@@ -252,7 +273,16 @@ def random_hamiltonian(qubits, nterms = None, Type = "free") -> pyquil.paulis.Pa
     :param nterms:  (int) Number of terms in the hamiltonian
     :param Type:    Type of hamiltonian to create. See TODO
     :rtype:         (pyquil.paulis.PauliSum) The hamiltonian
+    
     """
+
+Ewan's comments:
+----------------
+I assume the input to random_hamiltonian comes from random_graph?
+Let's keep things simple at 2 qubit terms for now, and diagonal in the Z basis.
+By normalised Hamiltonians, do you mean that the spectral range is always the same?
+
+
 ```
 
 
@@ -358,7 +388,7 @@ def PlotHessianEigenvalues():
     This may or may not be useful, and may be difficult to implement. 
     The eigenvalues of the Hessian should somehow give an idea of how non-convex the landscape is at given parameter values.
     The paper "Visualizing the Loss Landscape of Neural Nets" may serve as a guide.
-    The Hessian of the unknown loss function is determined by automatic differentiation.
+    The Hessian of the unknown loss function is determined by automatic differentiation, which in itself would need to be implemented (hence needs more work).
     """
 
 def PlotEquivalentAnnealingPath():
