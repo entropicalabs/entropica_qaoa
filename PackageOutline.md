@@ -360,5 +360,11 @@ def PlotHessianEigenvalues():
     The paper "Visualizing the Loss Landscape of Neural Nets" may serve as a guide.
     The Hessian of the unknown loss function is determined by automatic differentiation.
     """
-    
+
+def PlotEquivalentAnnealingPath():
+
+    """
+    For a given QAOA instance and a set of angles (gamma and beta), this will plot the eigenstate populations as a function of time by converting the QAOA pulse sequence into an
+    equivalent annealing path, just as JL has done in his work following the method from the Lukin paper.
+    """
 
