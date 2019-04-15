@@ -249,6 +249,8 @@ def calculate_initial_parameters_alternating_operators(....):
 # also fourier and adiabatic_timesteps just as above
 
 """
+Ewan:
+----
 Yep, it would be very cool to include the Fourier parametrisation!
 Another thing I'd like to build into this (perhaps not for this Forest release, but later) is the adiabatically assisted method that Jose Ignacio's team 
 has developed. See here: https://arxiv.org/abs/1806.02287
