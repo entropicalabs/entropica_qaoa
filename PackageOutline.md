@@ -525,9 +525,12 @@ def PlotHessianEigenvalues():
 		EM:
 		---
 		
-	    Honestly, I haven't thought too much about how one would do the automatic differentiation here. But one could just do the very naive thing and
-	    evaluate the cost function at \theta + \epsilon, and \theta - \epsilon, then get the gradient that way. In any case, I think this one might be 
-	    a little ambitious for now, and I am not enitrely sure of the value it brings (in particular vs. the work it would take to implement well).
+	    Honestly, I haven't thought too much about how one would do the automatic differentiation here. But, yes, one could just take the naive
+	    finite difference approach, and evaluate the cost function at \theta + \epsilon, and \theta - \epsilon, then get the gradient that way. 
+	    In any case, I think this one might be a little ambitious for now, and I am not enitrely sure of the value it brings (in particular vs. 
+	    the work it would take to implement well). I'd like to find a clear example where it could lead to some specific insight, and then understand
+	    how that insight could be applied. This is therefore more of a research thing, so we can build it for ourselves at some point, but perhaps not
+	    release it on Forest for now.
 		
     """
 
