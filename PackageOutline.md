@@ -37,6 +37,10 @@ the code in such a way, that we can easily switch out the optimizer later for on
 that controls sample size and / or takes into account estimates for the standard
 deviation. So far I just wrote a wrapper for the scipy optimizer.
 
+EM:
+---
+Cool!
+
 """
 
 class optimizer(cost_function, params0, epsilon):
@@ -84,6 +88,12 @@ Ansatz preparation routine. So in pseudo_code:
     >>>     vqe_circuit(theta)  # parametric circuit.
 Now the `prepare_state()` part could simply be the code `CreateArbitraryState` method
 you mentioned. But good point!
+
+EM:
+--
+Let's discuss the optimiser question more on Skype.
+About the prepare_state() method, that sounds good.
+
 """
 class abstract_cost_function(qvm=None, return_float=False, log=None):
 	"""Template class for cost_functions that are passed to the optimizer
@@ -340,6 +350,11 @@ def random_hamiltonian(qubits, nterms = None, Type = "free") -> pyquil.paulis.Pa
 		mapping from graphs to hamiltonians, but not neccesarily the other way around.
 
 		I.e. put all of the functionality you suggest into the random_graph function
+		
+		EM:
+		---
+		Sounds good :)
+		
 		"""
 
 ```
@@ -432,6 +447,15 @@ def PlotBareEnergyLandscape():
 		JL's comment
 		------------
 		So basically just plot the diagonal of the hamiltonian?
+		
+		EM:
+		---
+		Yep, plain and simple. But we can build on this, and add more interesting functionality. 
+		For example, we could superimpose the probability distribution across the bistrings, so you can see how the peaks in probability correspond to the 
+		troughs in energy (hopefully!). You had something similar in your notebook examples when you were exploring the first examples of random Hamiltonians.
+		We could even make this an animation (video), so you can see how the distribution changes as the QAOA progresses either (a) during its search for the optimal parameters,
+		or (b) when the optimal parameters have already been found, and you simply apply that optimal path through the steps from 1 up to p.
+		
 		"""
 
 def PlotParametricVariance(parameters2vary, parameter_ranges):
@@ -444,6 +468,11 @@ def PlotParametricVariance(parameters2vary, parameter_ranges):
 		So the same interface as `plot_qaoa_energy_landscape` but plotting the
 		variance instead? If yes, one might want think about putting that functionality
 		together.
+		
+		EM:
+		---
+		Exactly.
+		
     """
 
 def PlotOptimalTrajectory(parameters, hamiltonian):
@@ -465,6 +494,18 @@ def PlotOptimalTrajectory(parameters, hamiltonian):
 		 |
 		 .------------------------------->
 		 		 	   ylabel
+		 		 	   
+		 EM:
+		 ---
+		 
+		 Acutally, here what I had in mind was just to superimpose two things:
+		 - First, plot the energy landscape for a chosen pair of parameters of interest.
+		 - Once you have the optimal parameters found by QAOA, trace the trajectory of the QAOA path in the subspace of the chosen pair of parameters, 
+		 by explicitly showing the locations that are visited on the landscape as the intial state is transformed to the final state through the different
+		 QAOA steps from step 1 up to step p.
+		 		 	   
+		 The idea is to plot something like this: https://cdn-images-1.medium.com/max/1600/1*f9a162GhpMbiTVTAua_lLQ.png
+		 		 	   
     """
 
 def PlotHessianEigenvalues():
@@ -480,6 +521,14 @@ def PlotHessianEigenvalues():
 		since we don't have access to the backend of the wavefunction simulator,
 		so we can't really implement automatic differentiation. How about finite
 		differences?
+		
+		EM:
+		---
+		
+	    Honestly, I haven't thought too much about how one would do the automatic differentiation here. But one could just do the very naive thing and
+	    evaluate the cost function at \theta + \epsilon, and \theta - \epsilon, then get the gradient that way. In any case, I think this one might be 
+	    a little ambitious for now, and I am not enitrely sure of the value it brings (in particular vs. the work it would take to implement well).
+		
     """
 
 def PlotEquivalentAnnealingPath():
