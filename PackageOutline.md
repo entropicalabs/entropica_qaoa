@@ -90,7 +90,7 @@ Now the `prepare_state()` part could simply be the code `CreateArbitraryState` m
 you mentioned. But good point!
 
 EM:
---
+---
 Let's discuss the optimiser question more on Skype.
 About the prepare_state() method, that sounds good.
 
@@ -199,14 +199,14 @@ class qaoa_cost_function_qc(prep_and_measure_ham_qc):
     # __call__() is inherited
 
 
-def prepare_qaoa_ansatz_qvm(hamiltonian, p, tau):
+def prepare_qaoa_ansatz_qvm(hamiltonian, p, tau, initial_state = "ground state"):
     """
     :return: A function that takes qaoa_params and creates a pyquil.Program
     """
     # implementation the same as in the code already there
 
 
-def prepare_qaoa_ansatz_qc(hamiltonian, p, tau):
+def prepare_qaoa_ansatz_qc(hamiltonian, p, tau, initial_state = "ground state"):
     """
     :return: A function that takes qaoa_params and creates a parametric
              pyquil.Program
@@ -252,7 +252,7 @@ def calculate_initial_parameters_alternating_operators(....):
 Ewan:
 ----
 Yep, it would be very cool to include the Fourier parametrisation!
-Another thing I'd like to build into this (perhaps not for this Forest release, but later) is the adiabatically assisted method that Jose Ignacio's team 
+Another thing I'd like to build into this (perhaps not for this Forest release, but later) is the adiabatically assisted method that Jose Ignacio's team
 has developed. See here: https://arxiv.org/abs/1806.02287
 """
 
@@ -359,11 +359,11 @@ def random_hamiltonian(qubits, nterms = None, Type = "free") -> pyquil.paulis.Pa
 		mapping from graphs to hamiltonians, but not neccesarily the other way around.
 
 		I.e. put all of the functionality you suggest into the random_graph function
-		
+
 		EM:
 		---
 		Sounds good :)
-		
+
 		"""
 
 ```
@@ -456,15 +456,15 @@ def PlotBareEnergyLandscape():
 		JL's comment
 		------------
 		So basically just plot the diagonal of the hamiltonian?
-		
+
 		EM:
 		---
-		Yep, plain and simple. But we can build on this, and add more interesting functionality. 
-		For example, we could superimpose the probability distribution across the bistrings, so you can see how the peaks in probability correspond to the 
+		Yep, plain and simple. But we can build on this, and add more interesting functionality.
+		For example, we could superimpose the probability distribution across the bistrings, so you can see how the peaks in probability correspond to the
 		troughs in energy (hopefully!). You had something similar in your notebook examples when you were exploring the first examples of random Hamiltonians.
 		We could even make this an animation (video), so you can see how the distribution changes as the QAOA progresses either (a) during its search for the optimal parameters,
 		or (b) when the optimal parameters have already been found, and you simply apply that optimal path through the steps from 1 up to p.
-		
+
 		"""
 
 def PlotParametricVariance(parameters2vary, parameter_ranges):
@@ -477,11 +477,14 @@ def PlotParametricVariance(parameters2vary, parameter_ranges):
 		So the same interface as `plot_qaoa_energy_landscape` but plotting the
 		variance instead? If yes, one might want think about putting that functionality
 		together.
-		
+
 		EM:
 		---
 		Exactly.
-		
+
+		JL:
+		---
+		Or do both in one plot with color and height
     """
 
 def PlotOptimalTrajectory(parameters, hamiltonian):
@@ -503,18 +506,18 @@ def PlotOptimalTrajectory(parameters, hamiltonian):
 		 |
 		 .------------------------------->
 		 		 	   ylabel
-		 		 	   
+
 		 EM:
 		 ---
-		 
+
 		 Acutally, here what I had in mind was just to superimpose two things:
 		 - First, plot the energy landscape for a chosen pair of parameters of interest.
-		 - Once you have the optimal parameters found by QAOA, trace the trajectory of the QAOA path in the subspace of the chosen pair of parameters, 
+		 - Once you have the optimal parameters found by QAOA, trace the trajectory of the QAOA path in the subspace of the chosen pair of parameters,
 		 by explicitly showing the locations that are visited on the landscape as the intial state is transformed to the final state through the different
 		 QAOA steps from step 1 up to step p.
-		 		 	   
+
 		 The idea is to plot something like this: https://cdn-images-1.medium.com/max/1600/1*f9a162GhpMbiTVTAua_lLQ.png
-		 		 	   
+
     """
 
 def PlotHessianEigenvalues():
@@ -530,17 +533,17 @@ def PlotHessianEigenvalues():
 		since we don't have access to the backend of the wavefunction simulator,
 		so we can't really implement automatic differentiation. How about finite
 		differences?
-		
+
 		EM:
 		---
-		
+
 	    Honestly, I haven't thought too much about how one would do the automatic differentiation here. But, yes, one could just take the naive
-	    finite difference approach, and evaluate the cost function at \theta + \epsilon, and \theta - \epsilon, then get the gradient that way. 
-	    In any case, I think this one might be a little ambitious for now, and I am not enitrely sure of the value it brings (in particular vs. 
+	    finite difference approach, and evaluate the cost function at \theta + \epsilon, and \theta - \epsilon, then get the gradient that way.
+	    In any case, I think this one might be a little ambitious for now, and I am not enitrely sure of the value it brings (in particular vs.
 	    the work it would take to implement well). I'd like to find a clear example where it could lead to some specific insight, and then understand
 	    how that insight could be applied. This is therefore more of a research thing, so we can build it for ourselves at some point, but perhaps not
 	    release it on Forest for now.
-		
+
     """
 
 def PlotEquivalentAnnealingPath():
