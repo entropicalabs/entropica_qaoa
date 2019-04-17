@@ -7,4 +7,12 @@ TO DISCUSS:
 
 NOTES and ACTION POINTS:
 
-- Draw a diagram / hierarchy illustration of the package and all its modules and classes to fully understand its structure and explain it to people.
+- Ewan to focus on Visualisation.py and Utils.py, JL to focus on everything else
+- Minimal package is essentially everything in PackageOutline.md, minus a few of Ewan's sillier or more ambitious suggestions.
+- JL will also look at adding the ability to have arbitrary cost functions (not just ZZ terms)
+
+- [EWAN] Draw a diagram / hierarchy illustration of the package and all its modules and classes to fully understand its structure and explain it to people.
+- [EWAN] Harmonise code with JL's Pyquil modified package (download from his Github)
+- [EWAN] Landscape should have height for cost, colour for variance.
+- [EWAN] Think more about the plot.object() or plot(object) question.
+
