@@ -6,3 +6,5 @@ TO DISCUSS:
 - Rough timeline / deadline for the minimal version of the package (& define what that means) to be sent to Rigetti & tested by our team. 
 
 NOTES and ACTION POINTS:
+
+- Draw a diagram / hierarchy illustration of the package and all its modules and classes to fully understand its structure and explain it to people.
