@@ -12,10 +12,14 @@ MAJOR TODOs:
     
     1) Make things object oriented, integrating into the class structure of the whole package
     2) Integrate all the highlighted functions with JL's versions
-    3) Abstract PlotParametricCostFunction, PlotParametricVariance etc into one method. The user can then specify which of a set of pre-defined common functions (cost, variance, etc)
-      they want, or define their own operator whose expectation value they want to compute at each point in the parameter landscape.
-    4) Users may want to work with several different landscape projections at once. Thus we need different instances, each characterised by the parameters being varied with the others
-    fixed. This allows them to then call other abstract functions on each landscape projection - eg the PlotOptimalTrajectory method, etc.
+    3) Abstract PlotParametricCostFunction, PlotParametricVariance etc into one method. 
+       The user can then specify which of a set of pre-defined common functions (cost, variance, etc)
+       they want, or define their own operator whose expectation value they want to compute at each point 
+       in the parameter landscape.
+    4) Users may want to work with several different landscape projections at once. Thus we need 
+       different instances, each characterised by the parameters being varied with the others
+       fixed. This allows them to then call other abstract functions on each landscape projection 
+       - eg the PlotOptimalTrajectory method, etc.
 
 """
 
