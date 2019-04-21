@@ -18,23 +18,26 @@ from vqe.cost_function import PrepareAndMeasureOnWFSim, PrepareAndMeasureOnQVM
 
 
 def test_PrepareAndMeasureOnWFSim():
-    def prepare_ansatz(params):
-        p = Program()
-        p.inst(RX(params[0], 0))
-        p.inst(RX(params[1], 1))
-        return p
+    p = Program()
+    params = p.declare("params", memory_type="REAL", memory_size=2)
+    p.inst(RX(params[0], 0))
+    p.inst(RX(params[1], 1))
+    
+    def make_memory_map(params):
+        return {"params": params}
 
     ham = PauliSum.from_compact_str("1.0*Z0 + 1.0*Z1")
     log = []
     sim = WavefunctionSimulator()
     with local_qvm():
-        cost_fn = PrepareAndMeasureOnWFSim(prepare_ansatz, ham, sim, log=log)
+        cost_fn = PrepareAndMeasureOnWFSim(p, make_memory_map,
+                                           ham, sim, log=log)
         out = cost_fn([np.pi, np.pi / 2], nshots=100)
         assert np.allclose(log, [(-1.0, 0.1)])
         assert np.allclose(out, -1)
 
 
-def PrepareAndMeasureOnQVM():
+def test_PrepareAndMeasureOnQVM():
     prepare_ansatz = Program()
     param_register = prepare_ansatz.declare(
         "params", memory_type="REAL", memory_size=2)

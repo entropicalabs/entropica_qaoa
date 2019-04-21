@@ -1,7 +1,7 @@
 """
 Different cost functions for VQE and one abstract template.
 """
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Union, List
 
 from vqe.measurelib import append_measure_register, hamiltonian_expectation_value
 
@@ -55,14 +55,16 @@ class AbstractCostFunction():
 
 
 # TODO support hamiltonians with qubit QubitPlaceholders?
+# TODO Join code with PrepareAndMeasureOnQVM, since they are _very_ similar now?
 class PrepareAndMeasureOnWFSim(AbstractCostFunction):
     """A cost function that prepares an ansatz and measures its energy w.r.t
        hamiltonian on the qvm
     """
 
     def __init__(self,
-                 prepare_ansatz: Callable[[Iterable], Program],
-                 hamiltonian: PauliSum,
+                 prepare_ansatz: Program,
+                 make_memory_map: Callable[[List, np.array, np.matrix], dict],
+                 hamiltonian: Union[PauliSum, np.array],
                  sim: WavefunctionSimulator,
                  return_standard_deviation=False,
                  noisy=False,
@@ -71,10 +73,10 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         Parameters
         ----------
-        prepare_ansatz : function
-            A function prepare_ansatz(params) -> pyquil.quil.Program
-            that creates a pyquil program to prepare the state with parameters
-            params.
+        param prepare_ansatz: Program
+            A parametric pyquil program for the state preparation
+        param make_memory_map: Function
+            A function that creates a memory map from the array of parameters
         hamiltonian : PauliSum
             The hamiltonian w.r.t which to measure the energy.
         sim : WavefunctionSimulator
@@ -90,6 +92,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             log is created.
         """
         self.prepare_ansatz = prepare_ansatz
+        self.make_memory_map = make_memory_map
         self.return_standard_deviation = return_standard_deviation
         self.noisy = noisy
         self.sim = sim  # TODO start own simulator, if None is passed
@@ -116,7 +119,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         Parameters
         ----------
-        params : Iterable
+        params : Union[list, np.ndarray]
             Parameters of the state preparation circuit.
         nshots : int
             Number of shots to take to estimate the energy (the default is 1000).
@@ -127,7 +130,8 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             Either only the cost or a tuple of the cost and the standard
             deviation estimate based on the samples.
         """
-        wf = self.sim.wavefunction(self.prepare_ansatz(params))
+        memory_map = self.make_memory_map(params)
+        wf = self.sim.wavefunction(self.prepare_ansatz, memory_map=memory_map)
         wf = np.reshape(wf.amplitudes, (-1, 1))
         E = np.conj(wf).T.dot(self.ham.dot(wf)).real
         sigma_E = nshots**(-1 / 2) * (
