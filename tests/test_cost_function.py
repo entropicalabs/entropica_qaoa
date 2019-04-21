@@ -22,7 +22,7 @@ def test_PrepareAndMeasureOnWFSim():
     params = p.declare("params", memory_type="REAL", memory_size=2)
     p.inst(RX(params[0], 0))
     p.inst(RX(params[1], 1))
-    
+
     def make_memory_map(params):
         return {"params": params}
 

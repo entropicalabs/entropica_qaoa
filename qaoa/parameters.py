@@ -10,6 +10,7 @@ ToDo
 ----
     - Better default values for ``time`` if ``None`` is passed
     - Better default parameters for ``fourier`` timesteps
+    - implement AbstractQAOAParameters.from_hamiltonian() and then super() from it
 """
 
 from typing import Iterable, Union, List, Tuple, Any
@@ -364,10 +365,10 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
 
             for term in cost_hamiltonian:
                 if len(term) == 1:
-                    gamma_singles.append(t * term.coefficient * dt / time)
+                    gamma_singles.append(t * term.coefficient.real * dt / time)
 
                 elif len(term) == 2:
-                    gamma_pairs.append(t * term.coefficient * dt / time)
+                    gamma_pairs.append(t * term.coefficient.real * dt / time)
                 elif len(term) == 0:
                     pass  # could give a notice, that multiples of the identity are ignored, since unphysical
 
@@ -442,9 +443,9 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
         self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps, hamiltonian\
             = constant_parameters
         self.single_qubit_coeffs = [
-            term.coefficient for term in hamiltonian if len(term) == 1]
+            term.coefficient.real for term in hamiltonian if len(term) == 1]
         self.pair_qubit_coeffs = [
-            term.coefficient for term in hamiltonian if len(term) == 2]
+            term.coefficient.real for term in hamiltonian if len(term) == 2]
 
         if len(self.single_qubit_coeffs) != len(self.qubits_singles):
             raise ValueError("qubits_singles must have the same length as the"
@@ -542,7 +543,6 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
             (betas, gammas_singles, gammas_pairs))
         return params
 
-
     def plot(self, ax=None):
         if ax is None:
             fig, ax = plt.subplots()
@@ -585,9 +585,9 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps, hamiltonian, self._T\
             = constant_parameters
         self.single_qubit_coeffs = [
-            term.coefficient for term in hamiltonian if len(term) == 1]
+            term.coefficient.real for term in hamiltonian if len(term) == 1]
         self.pair_qubit_coeffs = [
-            term.coefficient for term in hamiltonian if len(term) == 2]
+            term.coefficient.real for term in hamiltonian if len(term) == 2]
         if len(self.single_qubit_coeffs) != len(self.qubits_singles):
             raise ValueError("qubits_singles must have the same length as the "
                              "number of single qubit terms in the hamiltonian")
@@ -708,9 +708,9 @@ class FourierQAOAParameters(AbstractQAOAParameters):
             hamiltonian, self.q = constant_parameters
 
         self.single_qubit_coeffs = [
-            term.coefficient for term in hamiltonian if len(term) == 1]
+            term.coefficient.real for term in hamiltonian if len(term) == 1]
         self.pair_qubit_coeffs = [
-            term.coefficient for term in hamiltonian if len(term) == 2]
+            term.coefficient.real for term in hamiltonian if len(term) == 2]
 
     def update_variable_parameters(self, variable_parameters=None):
         """

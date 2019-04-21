@@ -1,12 +1,12 @@
 """
 Different cost functions for VQE and one abstract template.
 """
-from typing import Callable, Iterable, Union, List
+from typing import Callable, Iterable, Union, List, Dict
 
 from vqe.measurelib import append_measure_register, hamiltonian_expectation_value
 
 from pyquil.paulis import PauliSum, PauliTerm
-from pyquil.quil import Program
+from pyquil.quil import Program, Qubit, QubitPlaceholder
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
@@ -100,7 +100,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # TODO What if prepare_ansatz acts on more qubits than ham?
         # then hamiltonian and wavefunction don't fit together...
         if isinstance(hamiltonian, PauliSum):
-            nqubits = max(hamiltonian.get_qubits()) + 1
+            nqubits = len(prepare_ansatz.get_qubits())
             self.ham = hamiltonian.matrix(nqubits=nqubits)
         elif isinstance(hamiltonian, (np.matrix, np.ndarray)):
             self.ham = hamiltonian
