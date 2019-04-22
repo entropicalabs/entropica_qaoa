@@ -1,12 +1,12 @@
 """
 Different cost functions for VQE and one abstract template.
 """
-from typing import Callable, Iterable, Union, List
+from typing import Callable, Iterable, Union, List, Dict
 
 from vqe.measurelib import append_measure_register, hamiltonian_expectation_value
 
 from pyquil.paulis import PauliSum, PauliTerm
-from pyquil.quil import Program
+from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
@@ -63,12 +63,13 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
     def __init__(self,
                  prepare_ansatz: Program,
-                 make_memory_map: Callable[[List, np.array, np.matrix], dict],
+                 make_memory_map: Callable[[Union[List, np.array, np.matrix]], Dict],
                  hamiltonian: Union[PauliSum, np.array],
                  sim: WavefunctionSimulator,
                  return_standard_deviation=False,
                  noisy=False,
-                 log=None):
+                 log=None,
+                 qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """Set up the cost_function.
 
         Parameters
@@ -87,21 +88,33 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             (the default is False).
         noisy: bool
             Add simulated noise to the energy? (the default is False)
-        log : list
+        log: list
             A list to write a log of function values to. If None is passed no
             log is created.
+        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
+            A mapping to fix all QubitPlaceholders to phyical qubits. E.g.
+            pyquil.quil.get_default_qubit_mapping(program) gives you on.
         """
-        self.prepare_ansatz = prepare_ansatz
         self.make_memory_map = make_memory_map
         self.return_standard_deviation = return_standard_deviation
         self.noisy = noisy
         self.sim = sim  # TODO start own simulator, if None is passed
 
+        # TODO automatically generate Qubit mapping, if None is passed?
+        # TODO ask Rigetti to implement "<" between qubits?
+        if qubit_mapping is not None:
+            int_mapping = dict(zip(qubit_mapping.keys(),
+                                   [q.index for q in qubit_mapping.values()]))
+            self.prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
+        else:
+            int_mapping = None
+            self.prepare_ansatz = prepare_ansatz
+
         # TODO What if prepare_ansatz acts on more qubits than ham?
         # then hamiltonian and wavefunction don't fit together...
         if isinstance(hamiltonian, PauliSum):
-            nqubits = max(hamiltonian.get_qubits()) + 1
-            self.ham = hamiltonian.matrix(nqubits=nqubits)
+            nqubits = len(hamiltonian.get_qubits())
+            self.ham = hamiltonian.matrix(int_mapping or {}, nqubits)
         elif isinstance(hamiltonian, (np.matrix, np.ndarray)):
             self.ham = hamiltonian
         else:
@@ -170,7 +183,8 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                  qvm: QuantumComputer,
                  return_standard_deviation: bool = False,
                  base_numshots: int = 100,
-                 log: list = None):
+                 log: list = None,
+                 qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """
         Parameters
         ----------
@@ -187,12 +201,20 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         param base_numshots : int
             numshots to compile into the binary. The argument nshots of __call__
             is then a multplier of this.
+        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
+            A mapping to fix all QubitPlaceholders to phyical qubits. E.g.
+            pyquil.quil.get_default_qubit_mapping(program) gives you on.
         """
         # TODO sanitize input?
         self.qvm = qvm
-        self.ham = hamiltonian
         self.return_standard_deviation = return_standard_deviation
         self.make_memory_map = make_memory_map
+
+        if qubit_mapping is not None:
+            prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
+            self.ham = address_qubits_hamiltonian(hamiltonian, qubit_mapping)
+        else:
+            self.ham = hamiltonian
 
         if log is not None:
             self.log = log
@@ -200,9 +222,6 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         append_measure_register(prepare_ansatz, qubits=self.ham.get_qubits(), trials=base_numshots)
         self.exe = qvm.compile(prepare_ansatz)
 
-
-    # TODO move squaring of the hamiltonian from hamiltonian_expectation_value
-    # to here, since the hamiltonian doesn't change between calls?
     def __call__(self, params, nshots=1):
         """
         Parameters
@@ -228,3 +247,41 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
             return res[0]
         else:
             return res
+
+
+def address_qubits_hamiltonian(hamiltonian: PauliSum,
+        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]) -> PauliSum:
+    """Map Qubit Placeholders to ints in a PauliSum.
+
+    Parameters
+    ----------
+    hamiltonian : PauliSum
+        The PauliSum.
+    qubit_mapping : Dict[QubitPlaceholder, Union[Qubit, int]]
+        A qubit_mapping. e.g. provided by pyquil.quil.get_default_qubit_mapping.
+
+    Returns
+    -------
+    PauliSum
+        A PauliSum with remapped Qubits.
+
+    Note
+    ----
+    This code relies completely on going all the way down the rabbits hole
+    with for loops. It would be preferable to have this functionality in
+    pyquil.paulis.PauliSum directly
+    """
+    out = PauliTerm("I", 0, 0)
+    # Make sure we map to integers and not to Qubits(), these are not
+    # supported by pyquil.paulis.PauliSum().
+    if set([Qubit]) == set(map(type, qubit_mapping.values())):
+        qubit_mapping = dict(zip(qubit_mapping.keys(),
+                                 [q.index for q in qubit_mapping.values()]))
+    # And change all of them
+    for term in hamiltonian:
+        coeff = term.coefficient
+        ops = []
+        for factor in term:
+            ops.append((factor[1], qubit_mapping[factor[0]]))
+        out += PauliTerm.from_list(ops, coeff)
+    return out
