@@ -6,7 +6,7 @@ from typing import Callable, Iterable, Union, List, Dict
 from vqe.measurelib import append_measure_register, hamiltonian_expectation_value
 
 from pyquil.paulis import PauliSum, PauliTerm
-from pyquil.quil import Program, Qubit, QubitPlaceholder
+from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
@@ -63,12 +63,13 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
     def __init__(self,
                  prepare_ansatz: Program,
-                 make_memory_map: Callable[[List, np.array, np.matrix], dict],
+                 make_memory_map: Callable[[Union[List, np.array, np.matrix]], Dict],
                  hamiltonian: Union[PauliSum, np.array],
                  sim: WavefunctionSimulator,
                  return_standard_deviation=False,
                  noisy=False,
-                 log=None):
+                 log=None,
+                 qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """Set up the cost_function.
 
         Parameters
@@ -100,8 +101,8 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # TODO What if prepare_ansatz acts on more qubits than ham?
         # then hamiltonian and wavefunction don't fit together...
         if isinstance(hamiltonian, PauliSum):
-            nqubits = len(prepare_ansatz.get_qubits())
-            self.ham = hamiltonian.matrix(nqubits=nqubits)
+            nqubits = len(hamiltonian.get_qubits())
+            self.ham = hamiltonian.matrix(int_mapping or {}, nqubits)
         elif isinstance(hamiltonian, (np.matrix, np.ndarray)):
             self.ham = hamiltonian
         else:
@@ -153,7 +154,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             return out
 
 
-# TODO Add support for non-diagonal hamiltonians
+# TODO fix this
 class PrepareAndMeasureOnQVM(AbstractCostFunction):
     """A cost function that prepares an ansatz and measures its energy w.r.t
        hamiltonian on a quantum computer (or simulator).
