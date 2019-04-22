@@ -49,7 +49,7 @@ def hamiltonian_expectation_value(hamiltonian, bitstrings):
 
     Warning
     -------
-    Only handles hamiltonians that are sums of products of Zs!
+    Only handles hamiltonians that are sums of products of  Zs!
     """
     # TODO fix this to handle arbitrary hamiltonians
     if bitstrings.ndim == 2:
