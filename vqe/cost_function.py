@@ -153,7 +153,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             return out
 
 
-# TODO fix this
+# TODO Add support for non-diagonal hamiltonians
 class PrepareAndMeasureOnQVM(AbstractCostFunction):
     """A cost function that prepares an ansatz and measures its energy w.r.t
        hamiltonian on a quantum computer (or simulator).
