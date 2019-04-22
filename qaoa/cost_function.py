@@ -268,7 +268,7 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                          base_numshots = base_numshots,
                          log=log)
 
-    def __call__(self, params, nshots: int=1000):
+    def __call__(self, params, nshots: int=10):
         self.params.update(params)
-        out = super().__call__(self.params, nshots=10)
+        out = super().__call__(self.params, nshots=nshots)
         return out

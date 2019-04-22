@@ -2,15 +2,14 @@
 Different cost functions for VQE and one abstract template.
 """
 from typing import Callable, Iterable, Union, List, Dict
-
-from vqe.measurelib import append_measure_register, hamiltonian_expectation_value
+import numpy as np
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
-import numpy as np
+from vqe.measurelib import append_measure_register, hamiltonian_expectation_value
 
 
 class AbstractCostFunction():
@@ -18,7 +17,7 @@ class AbstractCostFunction():
     Template class for cost_functions that are passed to the optimizer.
     """
 
-    def __init__(return_standard_deviation: bool = False, log=None):
+    def __init__(self, return_standard_deviation: bool = False, log=None):
         """Set up the cost function.
 
         Parameters
@@ -33,7 +32,7 @@ class AbstractCostFunction():
         """
         raise NotImplementedError()
 
-    def __call__(params, nshots: int):
+    def __call__(self, params, nshots: int):
         """Estimate cost_functions(params) with nshots samples
 
         Parameters
@@ -166,7 +165,6 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             return out
 
 
-# TODO fix this
 class PrepareAndMeasureOnQVM(AbstractCostFunction):
     """A cost function that prepares an ansatz and measures its energy w.r.t
        hamiltonian on a quantum computer (or simulator).
@@ -174,6 +172,11 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
        This cost_function makes use of pyquils parametric circuits and thus
        has to be supplied with a parametric circuit and a function to create
        memory maps that can be passed to qvm.run.
+
+       Warning
+       -------
+       For now this works only with hamiltonians diagonal in the computational
+       basis!
     """
 
     def __init__(self,
@@ -209,7 +212,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         self.qvm = qvm
         self.return_standard_deviation = return_standard_deviation
         self.make_memory_map = make_memory_map
-        
+
         if qubit_mapping is not None:
             prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
             self.ham = address_qubits_hamiltonian(hamiltonian, qubit_mapping)
@@ -219,7 +222,8 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         if log is not None:
             self.log = log
 
-        append_measure_register(prepare_ansatz, qubits=self.ham.get_qubits(), trials=base_numshots)
+        append_measure_register(prepare_ansatz, qubits=self.ham.get_qubits(),
+                                trials=base_numshots)
         self.exe = qvm.compile(prepare_ansatz)
 
 

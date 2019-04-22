@@ -12,9 +12,15 @@ from scipy.optimize import minimize
 from functools import partial
 from typing import Callable, Tuple, Iterable
 
-def _reduce_noisy_cost_function(fun):
+# TODO decide, whether we really want to support cost_functions that return
+# floats and ones that return tuples (exp_val, std_dev)
+def _reduce_noisy_cost_function(fun, nshots):
     def reduced(*args, **kwargs):
-        return fun(nshots=1000, *args, **kwargs)[0]
+        out = fun(*args, nshots=nshots, **kwargs)
+        try:
+            return out[0]
+        except (TypeError, IndexError):
+            return out
     return reduced
 
 def scipy_optimizer(cost_function : Callable[[Iterable], Tuple[float, float]],
@@ -25,6 +31,6 @@ def scipy_optimizer(cost_function : Callable[[Iterable], Tuple[float, float]],
                     **mininize_kwargs):
     """A scipy.optimize.minimize wrapper for VQE
     """
-    fun = _reduce_noisy_cost_function(cost_function)
-    out = minimize(fun, params0, method=method, tol=epsilon, **mininize_kwargs)
+    fun = _reduce_noisy_cost_function(cost_function, nshots=nshots)
+    out = minimize(fun, params0, method=method, tol=epsilon, options=mininize_kwargs)
     return out
