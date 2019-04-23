@@ -12,14 +12,10 @@ MAJOR TODOs:
     
     1) Make things object oriented, integrating into the class structure of the whole package
     2) Integrate all the highlighted functions with JL's versions
-    3) Abstract PlotParametricCostFunction, PlotParametricVariance etc into one method. 
-       The user can then specify which of a set of pre-defined common functions (cost, variance, etc)
-       they want, or define their own operator whose expectation value they want to compute at each point 
-       in the parameter landscape.
-    4) Users may want to work with several different landscape projections at once. Thus we need 
-       different instances, each characterised by the parameters being varied with the others
-       fixed. This allows them to then call other abstract functions on each landscape projection 
-       - eg the PlotOptimalTrajectory method, etc.
+    3) Abstract PlotParametricCostFunction, PlotParametricVariance etc into one method. The user can then specify which of a set of pre-defined common functions (cost, variance, etc)
+      they want, or define their own operator whose expectation value they want to compute at each point in the parameter landscape.
+    4) Users may want to work with several different landscape projections at once. Thus we need different instances, each characterised by the parameters being varied with the others
+    fixed. This allows them to then call other abstract functions on each landscape projection - eg the PlotOptimalTrajectory method, etc.
 
 """
 
@@ -54,7 +50,7 @@ def BuildQAOACircuit(n_qubits,QAOA_p,qubits,coefficients,beta_angles,gamma_angle
             elif len(qbits) == 2:
     
                 qb1 = qbits[0]
-                qb2 = qbits[1] 
+                qb2 = qbits[1]
     
                 p += PHASE(term_coeff,qb1)
                 p += PHASE(term_coeff,qb2)
@@ -110,6 +106,17 @@ def EvaluateCostFunction(circuit,hamiltonian):
     
     """
     JL will already have a version of this
+    
+    NOTE:
+    ----
+    This function could be made more efficient when just using the WF simulator.
+    To get the expectation value, the Rigetti method computes the expectation value of all the individual
+    Pauli operators in the PauliSum, multiplies them by the relevant coefficient, then sums the results up.
+    This is naturally how it would need to be done when using the QPU. However, on the WF sim, this could 
+    be more efficiently done by directly taking the expectation value of the 
+    cost function matrix, which is of course diagonal for the usual QAOA.
+    However, this might be cumbersome to implement and integrate with the rest of the Pyquil
+    code?
     """
 
     wf_sim = WavefunctionSimulator()
@@ -181,6 +188,8 @@ def LandscapeParameters(n_qubits,qubits,coefficients,QAOA_p,betas2var,beta_range
     
     params2var = len(beta_var) + len(gamma_var)
     
+    assert all(i <= (n_qubits-1) for i in beta_var), "Cannot vary more beta coefficients than the number of qubits"
+    assert all(i <= (len(coefficients)-1) for i in gamma_var), "Cannot vary more gamma coefficients than the number of Hamiltonian coupling terms"
     assert (params2var >= 1 and params2var <= 2), "Specified number of QAOA parameters to vary is zero or greater than two."
     assert all(i > 0 for i in beta_p + gamma_p), "QAOA step indices must be greater than zero"
     assert (max(list(beta_p) + list(gamma_p)) <= QAOA_p), "QAOA parameter specified to be varied in a step greater than the maximum number of steps."
@@ -188,26 +197,37 @@ def LandscapeParameters(n_qubits,qubits,coefficients,QAOA_p,betas2var,beta_range
     n_betas = int(len(betas)/QAOA_p)
     n_gammas = int(len(gammas)/QAOA_p)
     
+    param_labels = []
+    
     if beta_var:
+        param_labels += ['Beta' + str(beta_var[i]) + '(' + str(beta_p[i]) + ')' for i in range(len(beta_var))]
         beta_p = [beta_p[i] - 1 for i in range(len(beta_p))]
-        beta_var = [beta_var[i] + beta_p[i]*n_betas for i in range(len(beta_var))]      
+        beta_var = [beta_var[i] + beta_p[i]*n_betas for i in range(len(beta_var))]     
     else:
         beta_range2var = []
 
     if gamma_var:
+        param_labels += ['Gamma' + str(gamma_var[i]) + '(' + str(gamma_p[i]) + ')' for i in range(len(gamma_var))]
         gamma_p = [gamma_p[i] - 1 for i in range(len(gamma_p))]
-        gamma_var = [QAOA_p*n_betas + gamma_var[i] + gamma_p[i]*n_gammas for i in range(len(gamma_var))]   
+        gamma_var = [QAOA_p*n_betas + gamma_var[i] + gamma_p[i]*n_gammas for i in range(len(gamma_var))]    
     else:
         gamma_range2var = []
 
     params = np.hstack((betas,gammas))  
-    param1,param2 = beta_var + gamma_var  
-    param1_range, param2_range = list(beta_range2var) + (gamma_range2var)
+
+    if params2var == 1:
+        param1 = beta_var + gamma_var
+        param1_range = (list(beta_range2var) + list(gamma_range2var))[0]
+        param2 = []
+        param2_range = []
+    else:
+        param1,param2 = beta_var + gamma_var  
+        param1_range, param2_range = list(beta_range2var) + list(gamma_range2var)
     
-    return params, param1, param2, param1_range, param2_range
+    return params, param1, param2, param1_range, param2_range, param_labels
     
 #def PlotParametricCostFunction(n_qubits,qubits,coefficients,hamiltonian,QAOA_p,betas2var,beta_range2var,betas,gammas2var,gamma_range2var,gammas):
-def PlotParametricCostFunction(params, param1, param2, param1_range, param2_range,QAOA_p,qubits,coefficients,n_betas,hamiltonian,n_qubits):   
+def PlotParametricCostFunction(params, param1, param2, param1_range, param2_range,param_labels,QAOA_p,qubits,coefficients,n_betas,hamiltonian,n_qubits):   
     
     """
     Plot the energy landscape of the cost Hamiltonian with respect to the parametric circuit parameters.
@@ -219,39 +239,57 @@ def PlotParametricCostFunction(params, param1, param2, param1_range, param2_rang
     """
     n_betas = n_qubits
     
-    cost = np.zeros((len(param1_range),len(param2_range)))
-    for i in range(len(param1_range)):
+    if param2:
+    
+        cost = np.zeros((len(param1_range),len(param2_range)))
+        for i in range(len(param1_range)):
+            
+            params[param1] = param1_range[i]
+            
+            for j in range(len(param2_range)):
+    
+                params[param2] = param2_range[j]
+                
+                betas = params[:QAOA_p*n_betas]
+                gammas = params[QAOA_p*n_betas:]
+    
+                circuit = BuildQAOACircuit(n_qubits,QAOA_p,qubits,coefficients,betas,gammas) # This line is expensive and can be improved - probably eg using parametric functions etc
+                cost[i,j] = EvaluateCostFunction(circuit,hamiltonian)
+    
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
         
-        params[param1] = param1_range[i]
+        param1, param2 = np.meshgrid(param1_range,param2_range,indexing='ij')
         
-        for j in range(len(param2_range)):
-
-            params[param2] = param2_range[j]
+        # Plot the surface.
+        surf = ax.plot_surface(param1,param2,cost,cmap=cm.coolwarm,linewidth=0, antialiased=False)
+        
+        # TODO: automatically generate the names of the parameters, eg Beta4
+        plt.xlabel(param_labels[0])
+        plt.ylabel(param_labels[1])
+        
+        fig.colorbar(surf, shrink=0.5, aspect=5)
+        plt.show()
+        
+    else:
+        
+        cost = np.zeros((len(param1_range),))
+        for i in range(len(param1_range)):
+            
+            params[param1] = param1_range[i]
             
             betas = params[:QAOA_p*n_betas]
             gammas = params[QAOA_p*n_betas:]
-
-            circuit = BuildQAOACircuit(n_qubits,QAOA_p,qubits,coefficients,betas,gammas) # This line is expensive and can be improved - probably eg using parametric functions etc
-            cost[i,j] = EvaluateCostFunction(circuit,hamiltonian)
-
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
     
-    param1, param2 = np.meshgrid(param1_range,param2_range,indexing='ij')
-    
-    # Plot the surface.
-    surf = ax.plot_surface(param1,param2,cost,cmap=cm.coolwarm,linewidth=0, antialiased=False)
-    
-    # TODO: automatically generate the names of the parameters, eg Beta4
-    plt.xlabel('Param1')
-    plt.ylabel('Param2')
-    
-    fig.colorbar(surf, shrink=0.5, aspect=5)
-    plt.show()
+            circuit = BuildQAOACircuit(n_qubits,QAOA_p,qubits,coefficients,betas,gammas) 
+            cost[i] = EvaluateCostFunction(circuit,hamiltonian)
+        
+        plt.plot(param1_range,cost)
+        plt.show()
 
     return cost
 
-def PlotParametricVariance(params, param1, param2, param1_range, param2_range,QAOA_p,qubits,coefficients,n_betas,hamiltonian,n_qubits): 
+def PlotParametricVariance(params, param1, param2, param1_range, param2_range,param_labels,QAOA_p,qubits,coefficients,n_betas,hamiltonian,n_qubits): 
     
     """
     Plot the variance of the energy landscape of the cost Hamiltonian with respect to the parametric circuit parameters
@@ -279,7 +317,9 @@ def PlotParametricVariance(params, param1, param2, param1_range, param2_range,QA
             betas = params[:QAOA_p*n_betas]
             gammas = params[QAOA_p*n_betas:]
 
-            circuit = BuildQAOACircuit(n_qubits,QAOA_p,qubits,coefficients,betas,gammas) # This line is expensive and can be improved - probably eg using parametric functions etc
+            circuit = BuildQAOACircuit(n_qubits,QAOA_p,qubits,coefficients,betas,gammas) 
+            
+            # Note that this line is expensive for the WF simulator: because of how wf_sim.evaluate works
             variance[i,j] = EvaluateCostFunctionVariance(circuit,hamiltonian)
 
     fig = plt.figure()
@@ -291,8 +331,8 @@ def PlotParametricVariance(params, param1, param2, param1_range, param2_range,QA
     surf = ax.plot_surface(param1,param2,variance,cmap=cm.coolwarm,linewidth=0, antialiased=False)
     
     # TODO: automatically generate the names of the parameters, eg Beta4
-    plt.xlabel('Param1')
-    plt.ylabel('Param2')
+    plt.xlabel(param_labels[0])
+    plt.ylabel(param_labels[1])
     
     fig.colorbar(surf, shrink=0.5, aspect=5)
     plt.show()
