@@ -156,6 +156,45 @@ cost_function module
 <em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">AbstractCostFunction</code><span class="sig-paren">(</span><em>return_standard_deviation=False</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.AbstractCostFunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Template class for cost_functions that are passed to the optimizer.</p>
+<dl class="method">
+<dt id="vqe.cost_function.AbstractCostFunction.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>params</em>, <em>nshots</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.AbstractCostFunction.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate cost_functions(params) with nshots samples</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>ndarray, shape (n,)</em>) – Parameters of the state preparation circuit. Array of size <cite>n</cite> where
+<cite>n</cite> is the number of different parameters.</p></li>
+<li><p><strong>nshots</strong> (<em>int</em>) – Number of shots to take to estimate <cite>cost_function(params)</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Either only the cost or a tuple of the cost and the standard
+deviation estimate based on the samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float or tuple (cost, cost_stdev)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vqe.cost_function.AbstractCostFunction.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>return_standard_deviation=False</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.AbstractCostFunction.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the cost function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_standard_deviation</strong> (<em>bool</em>) – Return the cost as a float for scalar optimizers or as a tuple
+(cost, cost_standard_deviation) for optimizers of noisy functions.
+(the default is False).</p></li>
+<li><p><strong>log</strong> (<em>list</em>) – A list to write a log of function values to. If None is passed no
+log is created.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -172,6 +211,39 @@ memory maps that can be passed to qvm.run.</p>
 <p>For now this works only with hamiltonians diagonal in the computational
 basis!</p>
 </div>
+<dl class="method">
+<dt id="vqe.cost_function.PrepareAndMeasureOnQVM.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>params</em>, <em>nshots=1</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param params</strong> (<em>1D array</em>) – the parameters to run the state preparation circuit with</p></li>
+<li><p><strong>param N</strong> (<em>int</em>) – Number of times to run exe</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vqe.cost_function.PrepareAndMeasureOnQVM.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>prepare_ansatz</em>, <em>make_memory_map</em>, <em>hamiltonian</em>, <em>qvm</em>, <em>return_standard_deviation=False</em>, <em>base_numshots=100</em>, <em>qubit_mapping=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prepare_ansatz</strong> (<em>Program</em>) – A parametric pyquil program for the state preparation</p></li>
+<li><p><strong>make_memory_map</strong> (<em>Function</em>) – A function that creates a memory map from the array of parameters</p></li>
+<li><p><strong>hamiltonian</strong> (<em>PauliSum</em>) – The hamiltonian</p></li>
+<li><p><strong>qvm</strong> (<em>Quantum Computer connection</em>) – Connection the QC to run the program on.</p></li>
+<li><p><strong>return_standard_deviation</strong> (<em>bool</em>) – return a float or tuple of energy and its standard deviation.</p></li>
+<li><p><strong>base_numshots</strong> (<em>int</em>) – numshots to compile into the binary. The argument nshots of __call__
+is then a multplier of this.</p></li>
+<li><p><strong>qubit_mapping</strong> (<em>Dict[QubitPlaceholder, Union[Qubit, int]]</em>) – A mapping to fix all QubitPlaceholders to physical qubits. E.g.
+pyquil.quil.get_default_qubit_mapping(program) gives you on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -180,6 +252,52 @@ basis!</p>
 <dd><p>Bases: <a class="reference internal" href="#vqe.cost_function.AbstractCostFunction" title="vqe.cost_function.AbstractCostFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">vqe.cost_function.AbstractCostFunction</span></code></a></p>
 <p>A cost function that prepares an ansatz and measures its energy w.r.t
 hamiltonian on the qvm</p>
+<dl class="method">
+<dt id="vqe.cost_function.PrepareAndMeasureOnWFSim.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>params</em>, <em>nshots=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnWFSim.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cost function that computes &lt;psi|ham|psi&gt; with psi prepared with
+prepare_ansatz(params).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>Union[list, np.ndarray]</em>) – Parameters of the state preparation circuit.</p></li>
+<li><p><strong>nshots</strong> (<em>int</em>) – Number of shots to take to estimate the energy (the default is 1000).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Either only the cost or a tuple of the cost and the standard
+deviation estimate based on the samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float or tuple (cost, cost_stdev)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vqe.cost_function.PrepareAndMeasureOnWFSim.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>prepare_ansatz</em>, <em>make_memory_map</em>, <em>hamiltonian</em>, <em>sim</em>, <em>return_standard_deviation=False</em>, <em>noisy=False</em>, <em>log=None</em>, <em>qubit_mapping=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnWFSim.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the cost_function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param prepare_ansatz</strong> (<em>Program</em>) – A parametric pyquil program for the state preparation</p></li>
+<li><p><strong>param make_memory_map</strong> (<em>Function</em>) – A function that creates a memory map from the array of parameters</p></li>
+<li><p><strong>hamiltonian</strong> (<em>PauliSum</em>) – The hamiltonian w.r.t which to measure the energy.</p></li>
+<li><p><strong>sim</strong> (<em>WavefunctionSimulator</em>) – A WavefunctionSimulator instance to get the wavefunction from.</p></li>
+<li><p><strong>return_standard_deviation</strong> (<em>bool</em>) – Return the cost as a float for scalar optimizers or as a tuple
+(cost, cost_standard_deviation) for optimizers of noisy functions.
+(the default is False).</p></li>
+<li><p><strong>noisy</strong> (<em>bool</em>) – Add simulated noise to the energy? (the default is False)</p></li>
+<li><p><strong>log</strong> (<em>list</em>) – A list to write a log of function values to. If None is passed no
+log is created.</p></li>
+<li><p><strong>qubit_mapping</strong> (<em>Dict[QubitPlaceholder, Union[Qubit, int]]</em>) – A mapping to fix QubitPlaceholders to physical qubits. E.g.
+pyquil.quil.get_default_qubit_mapping(program) gives you on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="function">
@@ -206,11 +324,6 @@ hamiltonian on the qvm</p>
 with for loops. It would be preferable to have this functionality in
 pyquil.paulis.PauliSum directly</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code></p>
-</dd>
-</dl>
 </dd></dl>
 
 

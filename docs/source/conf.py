@@ -33,9 +33,9 @@ author = 'Ewan Munro, Jan Lukas Bosse, Tommaso Demarie'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+        "sphinx.ext.napoleon",
         "sphinx.ext.autodoc",
         "sphinx_autodoc_typehints",
-        "sphinx.ext.napoleon"
 ]
 
 napoleon_google_docstring = False
@@ -62,3 +62,13 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# -- More customizations ----------------------------------------------------
+# Document __init__ and __call__ functions
+def skip(app, what, name, obj, would_skip, options):
+    if name == "__init__" or name == "__call__":
+        return False
+    return would_skip
+
+def setup(app):
+    app.connect("autodoc-skip-member", skip)
