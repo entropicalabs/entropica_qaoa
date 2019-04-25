@@ -34,7 +34,8 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="optimizer module" href="optimizer.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -78,10 +79,12 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul class="simple">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">measurelib module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">optimizer module</a></li>
 </ul>
-</div>
+
             
           
         </div>
@@ -150,14 +153,14 @@ cost_function module
 <span class="target" id="module-vqe.cost_function"></span><p>Different cost functions for VQE and one abstract template.</p>
 <dl class="class">
 <dt id="vqe.cost_function.AbstractCostFunction">
-<em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">AbstractCostFunction</code><span class="sig-paren">(</span><em>return_standard_deviation: bool = False</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.AbstractCostFunction" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">AbstractCostFunction</code><span class="sig-paren">(</span><em>return_standard_deviation=False</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.AbstractCostFunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Template class for cost_functions that are passed to the optimizer.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="vqe.cost_function.PrepareAndMeasureOnQVM">
-<em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">PrepareAndMeasureOnQVM</code><span class="sig-paren">(</span><em>prepare_ansatz: pyquil.quil.Program, make_memory_map: Callable[[Iterable[T_co]], dict], hamiltonian: pyquil.paulis.PauliSum, qvm: pyquil.api._quantum_computer.QuantumComputer, return_standard_deviation: bool = False, base_numshots: int = 100, qubit_mapping: Dict[pyquil.quilatom.QubitPlaceholder, Union[pyquil.quilatom.Qubit, int]] = None, log: list = None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">PrepareAndMeasureOnQVM</code><span class="sig-paren">(</span><em>prepare_ansatz</em>, <em>make_memory_map</em>, <em>hamiltonian</em>, <em>qvm</em>, <em>return_standard_deviation=False</em>, <em>base_numshots=100</em>, <em>qubit_mapping=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#vqe.cost_function.AbstractCostFunction" title="vqe.cost_function.AbstractCostFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">vqe.cost_function.AbstractCostFunction</span></code></a></p>
 <p>A cost function that prepares an ansatz and measures its energy w.r.t
 hamiltonian on a quantum computer (or simulator).</p>
@@ -173,7 +176,7 @@ basis!</p>
 
 <dl class="class">
 <dt id="vqe.cost_function.PrepareAndMeasureOnWFSim">
-<em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">PrepareAndMeasureOnWFSim</code><span class="sig-paren">(</span><em>prepare_ansatz: pyquil.quil.Program, make_memory_map: Callable[[Union[List[T], numpy.array, numpy.matrix]], Dict[KT, VT]], hamiltonian: Union[pyquil.paulis.PauliSum, numpy.array], sim: pyquil.api._wavefunction_simulator.WavefunctionSimulator, return_standard_deviation=False, noisy=False, log=None, qubit_mapping: Dict[pyquil.quilatom.QubitPlaceholder, Union[pyquil.quilatom.Qubit, int]] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnWFSim" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">PrepareAndMeasureOnWFSim</code><span class="sig-paren">(</span><em>prepare_ansatz</em>, <em>make_memory_map</em>, <em>hamiltonian</em>, <em>sim</em>, <em>return_standard_deviation=False</em>, <em>noisy=False</em>, <em>log=None</em>, <em>qubit_mapping=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnWFSim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#vqe.cost_function.AbstractCostFunction" title="vqe.cost_function.AbstractCostFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">vqe.cost_function.AbstractCostFunction</span></code></a></p>
 <p>A cost function that prepares an ansatz and measures its energy w.r.t
 hamiltonian on the qvm</p>
@@ -181,7 +184,7 @@ hamiltonian on the qvm</p>
 
 <dl class="function">
 <dt id="vqe.cost_function.address_qubits_hamiltonian">
-<code class="descclassname">vqe.cost_function.</code><code class="descname">address_qubits_hamiltonian</code><span class="sig-paren">(</span><em>hamiltonian: pyquil.paulis.PauliSum, qubit_mapping: Dict[pyquil.quilatom.QubitPlaceholder, Union[pyquil.quilatom.Qubit, int]]</em><span class="sig-paren">)</span> &#x2192; pyquil.paulis.PauliSum<a class="headerlink" href="#vqe.cost_function.address_qubits_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vqe.cost_function.</code><code class="descname">address_qubits_hamiltonian</code><span class="sig-paren">(</span><em>hamiltonian</em>, <em>qubit_mapping</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.address_qubits_hamiltonian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Map Qubit Placeholders to ints in a PauliSum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -203,6 +206,11 @@ hamiltonian on the qvm</p>
 with for loops. It would be preferable to have this functionality in
 pyquil.paulis.PauliSum directly</p>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 
@@ -211,6 +219,13 @@ pyquil.paulis.PauliSum directly</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="optimizer.html" class="btn btn-neutral float-left" title="optimizer module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

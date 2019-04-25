@@ -6,15 +6,14 @@
 Welcome to Entropica QAOA's documentation!
 ==========================================
 
-   forest-qaoa.rst
-   measurelib.rst
-   optimizer.rst
-   cost_function.rst
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   measurelib
+   optimizer
+   cost_function
 
 
 Indices and tables
