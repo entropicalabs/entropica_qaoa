@@ -1,5 +1,5 @@
-parameters module
-=================
+The `parameters` module for QAOA
+================================
 
 .. automodule:: qaoa.parameters
     :members:

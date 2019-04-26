@@ -33,6 +33,7 @@ author = 'Ewan Munro, Jan Lukas Bosse, Tommaso Demarie'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+        "sphinx.ext.todo",
         "sphinx.ext.napoleon",
         "sphinx.ext.autodoc",
         "sphinx_autodoc_typehints",
@@ -41,6 +42,8 @@ extensions = [
 napoleon_google_docstring = False
 napoleon_use_param = False
 napoleon_use_ivar = True
+
+todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

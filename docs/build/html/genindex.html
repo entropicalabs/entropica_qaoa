@@ -79,10 +79,16 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption"><span class="caption-text">The VQE modules</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="measurelib.html">measurelib module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optimizer.html">optimizer module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">The <cite>optimizer</cite> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">The <cite>cost_function</cite> module for VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">The <cite>measurelib</cite> module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">The QAOA modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">The <cite>cost_function</cite> module for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">The <cite>parameters</cite> module for QAOA</a></li>
 </ul>
 
             
@@ -154,6 +160,7 @@
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
+ | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
@@ -165,24 +172,32 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="cost_function.html#vqe.cost_function.AbstractCostFunction.__call__">__call__() (vqe.cost_function.AbstractCostFunction method)</a>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnQVM.__call__">__call__() (qaoa.cost_function.QAOACostFunctionOnQVM method)</a>
 
       <ul>
-        <li><a href="cost_function.html#vqe.cost_function.PrepareAndMeasureOnQVM.__call__">(vqe.cost_function.PrepareAndMeasureOnQVM method)</a>
+        <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnWFSim.__call__">(qaoa.cost_function.QAOACostFunctionOnWFSim method)</a>
 </li>
-        <li><a href="cost_function.html#vqe.cost_function.PrepareAndMeasureOnWFSim.__call__">(vqe.cost_function.PrepareAndMeasureOnWFSim method)</a>
+        <li><a href="vqe_cost_function.html#vqe.cost_function.AbstractCostFunction.__call__">(vqe.cost_function.AbstractCostFunction method)</a>
+</li>
+        <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnQVM.__call__">(vqe.cost_function.PrepareAndMeasureOnQVM method)</a>
+</li>
+        <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnWFSim.__call__">(vqe.cost_function.PrepareAndMeasureOnWFSim method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="parameters.html#qaoa.parameters.AbstractQAOAParameters.__init__">__init__() (qaoa.parameters.AbstractQAOAParameters method)</a>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnQVM.__init__">__init__() (qaoa.cost_function.QAOACostFunctionOnQVM method)</a>
 
       <ul>
-        <li><a href="cost_function.html#vqe.cost_function.AbstractCostFunction.__init__">(vqe.cost_function.AbstractCostFunction method)</a>
+        <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnWFSim.__init__">(qaoa.cost_function.QAOACostFunctionOnWFSim method)</a>
 </li>
-        <li><a href="cost_function.html#vqe.cost_function.PrepareAndMeasureOnQVM.__init__">(vqe.cost_function.PrepareAndMeasureOnQVM method)</a>
+        <li><a href="parameters.html#qaoa.parameters.AbstractQAOAParameters.__init__">(qaoa.parameters.AbstractQAOAParameters method)</a>
 </li>
-        <li><a href="cost_function.html#vqe.cost_function.PrepareAndMeasureOnWFSim.__init__">(vqe.cost_function.PrepareAndMeasureOnWFSim method)</a>
+        <li><a href="vqe_cost_function.html#vqe.cost_function.AbstractCostFunction.__init__">(vqe.cost_function.AbstractCostFunction method)</a>
+</li>
+        <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnQVM.__init__">(vqe.cost_function.PrepareAndMeasureOnQVM method)</a>
+</li>
+        <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnWFSim.__init__">(vqe.cost_function.PrepareAndMeasureOnWFSim method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -191,11 +206,11 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="cost_function.html#vqe.cost_function.AbstractCostFunction">AbstractCostFunction (class in vqe.cost_function)</a>
+      <li><a href="vqe_cost_function.html#vqe.cost_function.AbstractCostFunction">AbstractCostFunction (class in vqe.cost_function)</a>
 </li>
       <li><a href="parameters.html#qaoa.parameters.AbstractQAOAParameters">AbstractQAOAParameters (class in qaoa.parameters)</a>
 </li>
-      <li><a href="cost_function.html#vqe.cost_function.address_qubits_hamiltonian">address_qubits_hamiltonian() (in module vqe.cost_function)</a>
+      <li><a href="vqe_cost_function.html#vqe.cost_function.address_qubits_hamiltonian">address_qubits_hamiltonian() (in module vqe.cost_function)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -244,6 +259,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.make_qaoa_memory_map">make_qaoa_memory_map() (in module qaoa.cost_function)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -261,9 +284,11 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="cost_function.html#vqe.cost_function.PrepareAndMeasureOnQVM">PrepareAndMeasureOnQVM (class in vqe.cost_function)</a>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.prepare_qaoa_ansatz">prepare_qaoa_ansatz() (in module qaoa.cost_function)</a>
 </li>
-      <li><a href="cost_function.html#vqe.cost_function.PrepareAndMeasureOnWFSim">PrepareAndMeasureOnWFSim (class in vqe.cost_function)</a>
+      <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnQVM">PrepareAndMeasureOnQVM (class in vqe.cost_function)</a>
+</li>
+      <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnWFSim">PrepareAndMeasureOnWFSim (class in vqe.cost_function)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -271,7 +296,15 @@
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qaoa_cost_function.html#module-qaoa.cost_function">qaoa.cost_function (module)</a>
+</li>
       <li><a href="parameters.html#module-qaoa.parameters">qaoa.parameters (module)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnQVM">QAOACostFunctionOnQVM (class in qaoa.cost_function)</a>
+</li>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnWFSim">QAOACostFunctionOnWFSim (class in qaoa.cost_function)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -301,8 +334,6 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="optimizer.html#vqe.optimizer.scipy_optimizer">scipy_optimizer() (in module vqe.optimizer)</a>
-</li>
       <li><a href="parameters.html#qaoa.parameters.AbstractQAOAParameters.set_constant_parameters">set_constant_parameters() (qaoa.parameters.AbstractQAOAParameters method)</a>
 
       <ul>
@@ -353,13 +384,11 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="cost_function.html#module-vqe.cost_function">vqe.cost_function (module)</a>
+      <li><a href="vqe_cost_function.html#module-vqe.cost_function">vqe.cost_function (module)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="measurelib.html#module-vqe.measurelib">vqe.measurelib (module)</a>
-</li>
-      <li><a href="optimizer.html#module-vqe.optimizer">vqe.optimizer (module)</a>
 </li>
   </ul></td>
 </tr></table>

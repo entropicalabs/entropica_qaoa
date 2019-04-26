@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>parameters module &mdash; Entropica QAOA  documentation</title>
+  <title>The parameters module for QAOA &mdash; Entropica QAOA  documentation</title>
   
 
   
@@ -34,7 +34,8 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="The cost_function module for QAOA" href="qaoa_cost_function.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -78,10 +79,16 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption"><span class="caption-text">The VQE modules</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="measurelib.html">measurelib module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optimizer.html">optimizer module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">The <cite>optimizer</cite> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">The <cite>cost_function</cite> module for VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">The <cite>measurelib</cite> module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">The QAOA modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">The <cite>cost_function</cite> module for QAOA</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The <cite>parameters</cite> module for QAOA</a></li>
 </ul>
 
             
@@ -127,7 +134,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>parameters module</li>
+      <li>The <cite>parameters</cite> module for QAOA</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -147,13 +154,19 @@
            <div itemprop="articleBody">
             
   <div class="section" id="module-qaoa.parameters">
-<span id="parameters-module"></span><h1>parameters module<a class="headerlink" href="#module-qaoa.parameters" title="Permalink to this headline">¶</a></h1>
+<span id="the-parameters-module-for-qaoa"></span><h1>The <cite>parameters</cite> module for QAOA<a class="headerlink" href="#module-qaoa.parameters" title="Permalink to this headline">¶</a></h1>
 <p>Different parametrizations of QAOA circuits.</p>
-<div class="section" id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>This module holds an abstract class to
-store QAOA parameters in and (so far) four derived classes that allow for more
-or less degrees of freedom in the QAOA Ansätze</p>
+<p>This module holds an abstract class to store QAOA parameters in and (so far)
+four derived classes that allow for more or less degrees of freedom in the QAOA
+Ansätze</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Better default values for <code class="docutils literal notranslate"><span class="pre">time</span></code> if <code class="docutils literal notranslate"><span class="pre">None</span></code> is passed</p></li>
+<li><p>Better default parameters for <code class="docutils literal notranslate"><span class="pre">fourier</span></code> timesteps</p></li>
+<li><p>implement AbstractQAOAParameters.from_hamiltonian() and then super() from it</p></li>
+</ul>
+</div>
 <dl class="class">
 <dt id="qaoa.parameters.AbstractQAOAParameters">
 <em class="property">class </em><code class="descclassname">qaoa.parameters.</code><code class="descname">AbstractQAOAParameters</code><span class="sig-paren">(</span><em>constant_parameters</em>, <em>variable_parameters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AbstractQAOAParameters" title="Permalink to this definition">¶</a></dt>
@@ -205,7 +218,7 @@ If None is passed, cost_hamiltonian.get_qubits() is used.</p></li>
 <dl class="method">
 <dt id="qaoa.parameters.AbstractQAOAParameters.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AbstractQAOAParameters.plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots itself to the canvas ax, if provided</p>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p>
@@ -216,8 +229,8 @@ If None is passed, cost_hamiltonian.get_qubits() is used.</p></li>
 <dl class="method">
 <dt id="qaoa.parameters.AbstractQAOAParameters.raw">
 <code class="descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AbstractQAOAParameters.raw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the angles in a 1D array. This is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which
-only minimizes w.r.t a 1D array of parameters</p>
+<dd><p>Returns the angles in a 1D array. This is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code>
+which only minimizes w.r.t a 1D array of parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>all the tunable parameters in a 1D array. Has the same output
@@ -249,9 +262,9 @@ and the same for gammas_singles and gammas_pairs</p>
 <dl class="method">
 <dt id="qaoa.parameters.AbstractQAOAParameters.set_constant_parameters">
 <code class="descname">set_constant_parameters</code><span class="sig-paren">(</span><em>constant_parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AbstractQAOAParameters.set_constant_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>sets the constant parameters, like the register for the x-rotations and
-qubit lists for the single and double qubit z-rotation.
-Must initialize
+<dd><p>Sets the constant parameters, like the register for the x-rotations and
+qubit lists for the single and double qubit z-rotation.</p>
+<p>Must initialize
 - <cite>self.reg</cite> the register to apply the x rotations on
 - <cite>self.qubits_singles</cite> the list of qubits to apply the single qubit</p>
 <blockquote>
@@ -309,17 +322,20 @@ w.r.t a 1D array of parameters</p>
 <p>QAOA parameters that implement
 U = exp(-i*(T-t_f)H_0)exp(-i*t_f*H_c) … exp(-i*(T-t_0)H_0)exp(-i*t_0*H_c)
 and only vary the t_i</p>
+<div class="admonition-todo admonition" id="index-1">
+<p class="admonition-title">Todo</p>
+<p>Typeset the equation nicely?</p>
+</div>
 <dl class="classmethod">
 <dt id="qaoa.parameters.AdiabaticTimestepsQAOAParameters.from_hamiltonian">
 <em class="property">classmethod </em><code class="descname">from_hamiltonian</code><span class="sig-paren">(</span><em>cost_hamiltonian</em>, <em>timesteps</em>, <em>time=None</em>, <em>reg=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AdiabaticTimestepsQAOAParameters.from_hamiltonian" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><em>rtype:     AlternatingOperatorsQAOAParameters</em></p></li>
-<li><p>A <cite>AlternatingOperatorsQAOAParameters</cite> object holding all the</p></li>
-<li><p><em>parameters</em></p></li>
-</ul>
-</p>
+<dd class="field-odd"><p>A <cite>AlternatingOperatorsQAOAParameters</cite> object holding all the
+parameters</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#qaoa.parameters.AlternatingOperatorsQAOAParameters" title="qaoa.parameters.AlternatingOperatorsQAOAParameters">AlternatingOperatorsQAOAParameters</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -327,7 +343,7 @@ and only vary the t_i</p>
 <dl class="method">
 <dt id="qaoa.parameters.AdiabaticTimestepsQAOAParameters.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AdiabaticTimestepsQAOAParameters.plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots itself to the canvas ax, if provided</p>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p>
@@ -338,7 +354,14 @@ and only vary the t_i</p>
 <dl class="method">
 <dt id="qaoa.parameters.AdiabaticTimestepsQAOAParameters.raw">
 <code class="descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AdiabaticTimestepsQAOAParameters.raw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clearly in this case the new times</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list or array of the times <cite>t_i</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Union[List[float], np.array]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -395,7 +418,11 @@ w.r.t a 1D array of parameters</p>
 <em class="property">class </em><code class="descclassname">qaoa.parameters.</code><code class="descname">AlternatingOperatorsQAOAParameters</code><span class="sig-paren">(</span><em>constant_parameters</em>, <em>variable_parameters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AlternatingOperatorsQAOAParameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qaoa.parameters.GeneralQAOAParameters" title="qaoa.parameters.GeneralQAOAParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">qaoa.parameters.GeneralQAOAParameters</span></code></a></p>
 <p>QAOA parameters that implement exp(-i*beta_f*H_0)*exp(-i*gamma_f*H_c)*…
-with an arbitrary H_c</p>
+with an arbitrary H_c.</p>
+<div class="admonition-todo admonition" id="index-2">
+<p class="admonition-title">Todo</p>
+<p>Typeset the eqation nicely?</p>
+</div>
 <dl class="classmethod">
 <dt id="qaoa.parameters.AlternatingOperatorsQAOAParameters.from_hamiltonian">
 <em class="property">classmethod </em><code class="descname">from_hamiltonian</code><span class="sig-paren">(</span><em>cost_hamiltonian</em>, <em>timesteps</em>, <em>time=None</em>, <em>reg=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AlternatingOperatorsQAOAParameters.from_hamiltonian" title="Permalink to this definition">¶</a></dt>
@@ -414,7 +441,7 @@ with an arbitrary H_c</p>
 <dl class="method">
 <dt id="qaoa.parameters.AlternatingOperatorsQAOAParameters.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AlternatingOperatorsQAOAParameters.plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots itself to the canvas ax, if provided</p>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p>
@@ -425,8 +452,8 @@ with an arbitrary H_c</p>
 <dl class="method">
 <dt id="qaoa.parameters.AlternatingOperatorsQAOAParameters.raw">
 <code class="descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AlternatingOperatorsQAOAParameters.raw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the angles in a 1D array. This is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which
-only minimizes w.r.t a 1D array of parameters</p>
+<dd><p>Returns the angles in a 1D array. This is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code>
+which only minimizes w.r.t a 1D array of parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>all the tunable parameters in a 1D array. Has the same output
@@ -479,8 +506,12 @@ in their fully extended form.</p>
 <dt id="qaoa.parameters.FourierQAOAParameters">
 <em class="property">class </em><code class="descclassname">qaoa.parameters.</code><code class="descname">FourierQAOAParameters</code><span class="sig-paren">(</span><em>constant_parameters</em>, <em>variable_parameters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierQAOAParameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qaoa.parameters.AbstractQAOAParameters" title="qaoa.parameters.AbstractQAOAParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">qaoa.parameters.AbstractQAOAParameters</span></code></a></p>
-<p>The qaoao parameters as the sine/cosine transform of the original gammas
-and betas. See ()[] for a detailled description</p>
+<p>The QAOA parameters as the sine/cosine transform of the original gammas
+and betas. See ()[] for a detailled description.</p>
+<div class="admonition-todo admonition" id="index-3">
+<p class="admonition-title">Todo</p>
+<p>Actually cite the paper.</p>
+</div>
 <dl class="classmethod">
 <dt id="qaoa.parameters.FourierQAOAParameters.from_hamiltonian">
 <em class="property">classmethod </em><code class="descname">from_hamiltonian</code><span class="sig-paren">(</span><em>cost_hamiltonian</em>, <em>timesteps</em>, <em>q=4</em>, <em>time=None</em>, <em>reg=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierQAOAParameters.from_hamiltonian" title="Permalink to this definition">¶</a></dt>
@@ -499,16 +530,20 @@ and betas. See ()[] for a detailled description</p>
 parameters</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>rtype:     AlternatingOperatorsQAOAParameters</p>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.AlternatingOperatorsQAOAParameters" title="qaoa.parameters.AlternatingOperatorsQAOAParameters">AlternatingOperatorsQAOAParameters</a></p>
 </dd>
 </dl>
-<p>depending on nqubits</p>
+<div class="admonition-todo admonition" id="index-4">
+<p class="admonition-title">Todo</p>
+<p>Make a more informed choice of the default value for q. Probably
+depending on nqubits</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qaoa.parameters.FourierQAOAParameters.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierQAOAParameters.plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots itself to the canvas ax, if provided</p>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p>
@@ -519,8 +554,8 @@ parameters</p>
 <dl class="method">
 <dt id="qaoa.parameters.FourierQAOAParameters.raw">
 <code class="descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierQAOAParameters.raw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the angles in a 1D array. This is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which
-only minimizes w.r.t a 1D array of parameters</p>
+<dd><p>Returns the angles in a 1D array. This is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code>
+which only minimizes w.r.t a 1D array of parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>all the tunable parameters in a 1D array. Has the same output
@@ -537,8 +572,7 @@ format as the expected input of <code class="docutils literal notranslate"><span
 <code class="descname">set_constant_parameters</code><span class="sig-paren">(</span><em>constant_parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierQAOAParameters.set_constant_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p>param      constant_parameters:  (tuple) a tuple containing <code class="docutils literal notranslate"><span class="pre">(reg,</span> <span class="pre">--</span> <span class="pre">qubits_singles,</span> <span class="pre">qubits_pairs,</span>
-<span class="pre">timesteps,</span> <span class="pre">hamiltonian,</span>&#160; <span class="pre">q)</span></code></p>
+<dd class="field-odd"><p><strong>param constant_parameters</strong> (<em>Tuple</em>) – A tuple containing <code class="docutils literal notranslate"><span class="pre">(reg,</span> <span class="pre">qubits_singles,</span> <span class="pre">qubits_pairs,</span> <span class="pre">timesteps,</span> <span class="pre">hamiltonian,</span>&#160; <span class="pre">q)</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -562,7 +596,10 @@ w.r.t a 1D array of parameters</p>
 <code class="descname">update_variable_parameters</code><span class="sig-paren">(</span><em>variable_parameters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierQAOAParameters.update_variable_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p>param      variable_parameters:  (tuple) a tuple containing <code class="docutils literal notranslate"><span class="pre">(v,</span> <span class="pre">--</span> <span class="pre">u_singles,</span> <span class="pre">u_pairs)</span></code></p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param variable_parameters</strong> (<em>Tuple[List[float], List[float], List[float]]</em>)</p></li>
+<li><p><strong>A tuple containing ``(v,  u_singles, u_pairs)``</strong></p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -575,6 +612,11 @@ w.r.t a 1D array of parameters</p>
 <dd><p>Bases: <a class="reference internal" href="#qaoa.parameters.AbstractQAOAParameters" title="qaoa.parameters.AbstractQAOAParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">qaoa.parameters.AbstractQAOAParameters</span></code></a></p>
 <p>QAOA parameters in their most general form with different angles for each
 operator.</p>
+<div class="admonition-todo admonition" id="index-5">
+<p class="admonition-title">Todo</p>
+<p>Put a nice equation like U = exp(-i*gamma_{00}) * exp(…) here to explain
+better what we mean with most general?</p>
+</div>
 <dl class="classmethod">
 <dt id="qaoa.parameters.GeneralQAOAParameters.from_hamiltonian">
 <em class="property">classmethod </em><code class="descname">from_hamiltonian</code><span class="sig-paren">(</span><em>cost_hamiltonian</em>, <em>timesteps</em>, <em>time=None</em>, <em>reg=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.GeneralQAOAParameters.from_hamiltonian" title="Permalink to this definition">¶</a></dt>
@@ -602,7 +644,7 @@ If None is passed, cost_hamiltonian.get_qubits() is used.</p></li>
 <dl class="method">
 <dt id="qaoa.parameters.GeneralQAOAParameters.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.GeneralQAOAParameters.plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots itself to the canvas ax, if provided</p>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p>
@@ -613,8 +655,8 @@ If None is passed, cost_hamiltonian.get_qubits() is used.</p></li>
 <dl class="method">
 <dt id="qaoa.parameters.GeneralQAOAParameters.raw">
 <code class="descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.GeneralQAOAParameters.raw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the angles in a 1D array. This is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which
-only minimizes w.r.t a 1D array of parameters</p>
+<dd><p>Returns the angles in a 1D array. This is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code>
+which only minimizes w.r.t a 1D array of parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>all the tunable parameters in a 1D array. Has the same output
@@ -668,13 +710,19 @@ in their fully extended form.</p>
 </dd></dl>
 
 </div>
-</div>
 
 
            </div>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="qaoa_cost_function.html" class="btn btn-neutral float-left" title="The cost_function module for QAOA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

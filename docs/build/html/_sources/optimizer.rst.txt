@@ -1,5 +1,5 @@
-optimizer module
-================
+The `optimizer` module
+======================
 
 .. automodule:: vqe.optimizer
     :members:

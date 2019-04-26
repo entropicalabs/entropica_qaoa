@@ -9,11 +9,18 @@ Welcome to Entropica QAOA's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: The VQE modules
 
-   measurelib
    optimizer
-   cost_function
+   vqe_cost_function
+   measurelib
+
+.. toctree::
+   :maxdepth: 2
+   :caption: The QAOA modules
+   
+   qaoa_cost_function
+   parameters
 
 
 Indices and tables

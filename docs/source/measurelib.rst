@@ -1,5 +1,5 @@
-measurelib module
-=================
+The `measurelib` module
+=======================
 
 .. automodule:: vqe.measurelib
     :members:

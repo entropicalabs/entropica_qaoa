@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>optimizer module &mdash; Entropica QAOA  documentation</title>
+  <title>The optimizer module &mdash; Entropica QAOA  documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="cost_function.html" />
-    <link rel="prev" title="measurelib module" href="measurelib.html" /> 
+    <link rel="next" title="The cost_function module for VQE" href="vqe_cost_function.html" />
+    <link rel="prev" title="Welcome to Entropica QAOA’s documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -80,10 +80,16 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption"><span class="caption-text">The VQE modules</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="measurelib.html">measurelib module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">optimizer module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The <cite>optimizer</cite> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">The <cite>cost_function</cite> module for VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">The <cite>measurelib</cite> module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">The QAOA modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">The <cite>cost_function</cite> module for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">The <cite>parameters</cite> module for QAOA</a></li>
 </ul>
 
             
@@ -129,7 +135,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>optimizer module</li>
+      <li>The <cite>optimizer</cite> module</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -148,20 +154,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-vqe.optimizer">
-<span id="optimizer-module"></span><h1>optimizer module<a class="headerlink" href="#module-vqe.optimizer" title="Permalink to this headline">¶</a></h1>
-<p>Different implementations of the optimization routines of VQE.
-For now we just wrap <cite>scipy.optimize.minimize</cite>, but design the whole in such a
-manner, that we can later swap it out with more sophisticated optimizers.</p>
-<p>TODO: Is it worth the hassle, to write a abstract_optimizer class that
-provides a template and one concrete implementation that just wraps
-<cite>scipy.optimize.minimize</cite>?</p>
-<dl class="function">
-<dt id="vqe.optimizer.scipy_optimizer">
-<code class="descclassname">vqe.optimizer.</code><code class="descname">scipy_optimizer</code><span class="sig-paren">(</span><em>cost_function</em>, <em>params0</em>, <em>epsilon=1e-05</em>, <em>nshots=1000</em>, <em>method='COBYLA'</em>, <em>**mininize_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.optimizer.scipy_optimizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>A scipy.optimize.minimize wrapper for VQE</p>
-</dd></dl>
-
+  <div class="section" id="the-optimizer-module">
+<h1>The <cite>optimizer</cite> module<a class="headerlink" href="#the-optimizer-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
@@ -172,10 +166,10 @@ provides a template and one concrete implementation that just wraps
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cost_function.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="vqe_cost_function.html" class="btn btn-neutral float-right" title="The cost_function module for VQE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="measurelib.html" class="btn btn-neutral float-left" title="measurelib module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Entropica QAOA’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

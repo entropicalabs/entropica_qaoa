@@ -5,6 +5,7 @@
 #compiled stuff
 ###############
 *.pyc
+*.html
 
 # orig files
 ###########
