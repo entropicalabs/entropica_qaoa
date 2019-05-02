@@ -13,7 +13,7 @@
 
 # everything in the docs, except the files we actually edit
 # #########################################################
-.docs/build/*
+docs/build
 
 # latex stuff
 # ##########
