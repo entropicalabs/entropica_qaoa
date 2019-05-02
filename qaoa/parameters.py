@@ -1,16 +1,14 @@
 """Different parametrizations of QAOA circuits.
 
-Description
------------
-This module holds an abstract class to
-store QAOA parameters in and (so far) four derived classes that allow for more
-or less degrees of freedom in the QAOA Ansätze
+This module holds an abstract class to store QAOA parameters in and (so far)
+four derived classes that allow for more or less degrees of freedom in the QAOA
+Ansätze
 
-ToDo
+Todo
 ----
-    - Better default values for ``time`` if ``None`` is passed
-    - Better default parameters for ``fourier`` timesteps
-    - implement AbstractQAOAParameters.from_hamiltonian() and then super() from it
+ - Better default values for ``time`` if ``None`` is passed
+ - Better default parameters for ``fourier`` timesteps
+ - implement AbstractQAOAParameters.from_hamiltonian() and then super() from it
 """
 
 from typing import Iterable, Union, List, Tuple, Any
@@ -31,8 +29,6 @@ def _is_list_empty(in_list):
 
 class AbstractQAOAParameters():
     """
-    Description
-    -----------
     An abstract class to hold the parameters of a QAOA
     run and compute the angles from them.
 
@@ -52,8 +48,6 @@ class AbstractQAOAParameters():
                  constant_parameters: Tuple[Any, Iterable, Iterable, Iterable],
                  variable_parameters: Tuple = None):
         """
-        Description
-        -----------
         Sets all the constant parameters via
         ``self.set_constant_parameters()`` and variable parameters via
         ``self.update_variable_parameters``
@@ -75,7 +69,7 @@ class AbstractQAOAParameters():
         """
         Returns
         -------
-        int
+        int:
             the length of the data produced by self.raw() and accepted by
             self.update()
         """
@@ -83,10 +77,9 @@ class AbstractQAOAParameters():
 
     def set_constant_parameters(self, constant_parameters):
         """
-        Description
-        -----------
-        sets the constant parameters, like the register for the x-rotations and
+        Sets the constant parameters, like the register for the x-rotations and
         qubit lists for the single and double qubit z-rotation.
+
         Must initialize
         - `self.reg` the register to apply the x rotations on
         - `self.qubits_singles` the list of qubits to apply the single qubit
@@ -99,8 +92,6 @@ class AbstractQAOAParameters():
 
     def update_variable_parameters(self, variable_parameters: Tuple):
         """
-        Description
-        -----------
         Updates the variable parameters (i.e. angle parameters) s.t.
         - ``self.betas`` is a list/array of the x-rotation angles.
             Must have `dim self.timesteps` x ``len(self.reg)``
@@ -113,8 +104,6 @@ class AbstractQAOAParameters():
 
     def update(self, new_values: Union[list, np.array]):
         """
-        Description
-        -----------
         Updates all the angles based on a 1D array whose shape is specified later.
         The input has the same format as the output of ``self.raw()``.
         This is useful for ``scipy.optimize.minimize`` which only minimizes
@@ -130,10 +119,8 @@ class AbstractQAOAParameters():
 
     def raw(self):
         """
-        Description
-        -----------
-        Returns the angles in a 1D array. This is needed by ``scipy.optimize.minimize`` which
-        only minimizes w.r.t a 1D array of parameters
+        Returns the angles in a 1D array. This is needed by ``scipy.optimize.minimize``
+        which only minimizes w.r.t a 1D array of parameters
 
         Returns
         -------
@@ -146,8 +133,6 @@ class AbstractQAOAParameters():
 
     def raw_all(self):
         """
-        Description
-        -----------
         Returns all single rotation angles as needed for the memory map in parametric circuits
 
         Returns
@@ -198,9 +183,7 @@ class AbstractQAOAParameters():
     # TODO pass kwargs forward to plot() in all implementations  of this.
     def plot(self, ax=None):
         """
-        Description
-        -----------
-        Plots itself to the canvas ax, if provided
+        Plots ``self`` in a sensible way to the canvas ``ax``, if provided.
 
         Parameters
         ----------
@@ -213,10 +196,13 @@ class AbstractQAOAParameters():
 
 class GeneralQAOAParameters(AbstractQAOAParameters):
     """
-    Description
-    -----------
     QAOA parameters in their most general form with different angles for each
     operator.
+
+    Todo
+    ----
+    Put a nice equation like U = exp(-i*gamma_{00}) * exp(...) here to explain
+    better what we mean with most general?
     """
 
     def __repr__(self):
@@ -414,10 +400,12 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
 
 class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
     """
-    Description
-    -----------
     QAOA parameters that implement exp(-i*beta_f*H_0)*exp(-i*gamma_f*H_c)*...
-    with an arbitrary H_c
+    with an arbitrary H_c.
+
+    Todo
+    ----
+    Typeset the eqation nicely?
     """
 
     def __repr__(self):
@@ -560,11 +548,13 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
 
 class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
     """
-    Description
-    -----------
     QAOA parameters that implement
     U = exp(-i*(T-t_f)H_0)exp(-i*t_f*H_c) ... exp(-i*(T-t_0)H_0)exp(-i*t_0*H_c)
     and only vary the t_i
+
+    Todo
+    ----
+    Typeset the equation nicely?
     """
 
     def __repr__(self):
@@ -621,9 +611,10 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
 
     def raw(self):
         """
-        Description
-        -----------
-        Clearly in this case the new times
+        Returns
+        -------
+        Union[List[float], np.array]:
+            A list or array of the times `t_i`
         """
         return self._times
 
@@ -636,9 +627,9 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         """
         Returns
         -------
-        :rtype:     AlternatingOperatorsQAOAParameters
-        A `AlternatingOperatorsQAOAParameters` object holding all the
-        parameters
+        AlternatingOperatorsQAOAParameters :
+            A `AlternatingOperatorsQAOAParameters` object holding all the
+            parameters
         """
         if reg is None:
             reg = cost_hamiltonian.get_qubits()
@@ -680,10 +671,12 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
 
 class FourierQAOAParameters(AbstractQAOAParameters):
     """
-    Description
-    -----------
-    The qaoao parameters as the sine/cosine transform of the original gammas
-    and betas. See ()[] for a detailled description
+    The QAOA parameters as the sine/cosine transform of the original gammas
+    and betas. See ()[] for a detailled description.
+
+    Todo
+    ----
+    Actually cite the paper.
     """
 
     def __repr__(self):
@@ -700,9 +693,8 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         """
         Parameters
         ----------
-        :param      constant_parameters:  (tuple) a tuple containing ``(reg,
-                                          qubits_singles, qubits_pairs,
-                                          timesteps, hamiltonian,  q)``
+        param constant_parameters:  Tuple
+            A tuple containing ``(reg, qubits_singles, qubits_pairs, timesteps, hamiltonian,  q)``
         """
         self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps,\
             hamiltonian, self.q = constant_parameters
@@ -716,10 +708,10 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         """
         Parameters
         ----------
-        :param      variable_parameters:  (tuple) a tuple containing ``(v,
-                                          u_singles, u_pairs)``
+        param variable_parameters:  Tuple[List[float], List[float], List[float]]
+        A tuple containing ``(v,  u_singles, u_pairs)``
         """
-        def dst(v, p):
+        def _dst(v, p):
             """Compute the discrete sine transform from frequency to timespace."""
             x = np.zeros(p)
             for i in range(p):
@@ -727,7 +719,7 @@ class FourierQAOAParameters(AbstractQAOAParameters):
                     x[i] += v[k] * np.sin((k + 0.5) * (i + 0.5) * np.pi / p)
             return x
 
-        def dct(u, p):
+        def _dct(u, p):
             """Compute the discrete cosine transform from frequency to timespace."""
             x = np.zeros(p)
             for i in range(p):
@@ -749,9 +741,9 @@ class FourierQAOAParameters(AbstractQAOAParameters):
                 raise ValueError(
                     "Please make all your fourier coeff arrays the same length!")
 
-        self._betas = dct(self._v, self.timesteps)
-        self._gammas_singles = dst(self._u_singles, self.timesteps)
-        self._gammas_pairs = dst(self._u_pairs, self.timesteps)
+        self._betas = _dct(self._v, self.timesteps)
+        self._gammas_singles = _dst(self._u_singles, self.timesteps)
+        self._gammas_pairs = _dst(self._u_pairs, self.timesteps)
 
         self.betas = [[b] * len(self.reg) for b in self._betas]
         self.gammas_singles = [[gamma * coeff for coeff in self.single_qubit_coeffs]
@@ -802,13 +794,13 @@ class FourierQAOAParameters(AbstractQAOAParameters):
 
         Returns
         -------
-        :rtype:     AlternatingOperatorsQAOAParameters
+        AlternatingOperatorsQAOAParameters:
             A `AlternatingOperatorsQAOAParameters` object holding all the
             parameters
 
         ToDo
         ----
-            - Make a more informed choice of the default value for q. Probably
+        Make a more informed choice of the default value for q. Probably
         depending on nqubits
         """
         # fill qubits_singles and qubits_pairs according to the terms in the hamiltonian

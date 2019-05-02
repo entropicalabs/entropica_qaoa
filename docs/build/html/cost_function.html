@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="optimizer module" href="optimizer.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">measurelib module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">optimizer module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/cost_function.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <p>B
+cost_function module
+=====================</p>
+<span class="target" id="module-vqe.cost_function"></span><p>Different cost functions for VQE and one abstract template.</p>
+<dl class="class">
+<dt id="vqe.cost_function.AbstractCostFunction">
+<em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">AbstractCostFunction</code><span class="sig-paren">(</span><em>return_standard_deviation=False</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.AbstractCostFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Template class for cost_functions that are passed to the optimizer.</p>
+<dl class="method">
+<dt id="vqe.cost_function.AbstractCostFunction.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>params</em>, <em>nshots</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.AbstractCostFunction.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate cost_functions(params) with nshots samples</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>ndarray, shape (n,)</em>) – Parameters of the state preparation circuit. Array of size <cite>n</cite> where
+<cite>n</cite> is the number of different parameters.</p></li>
+<li><p><strong>nshots</strong> (<em>int</em>) – Number of shots to take to estimate <cite>cost_function(params)</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Either only the cost or a tuple of the cost and the standard
+deviation estimate based on the samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float or tuple (cost, cost_stdev)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vqe.cost_function.AbstractCostFunction.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>return_standard_deviation=False</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.AbstractCostFunction.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the cost function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_standard_deviation</strong> (<em>bool</em>) – Return the cost as a float for scalar optimizers or as a tuple
+(cost, cost_standard_deviation) for optimizers of noisy functions.
+(the default is False).</p></li>
+<li><p><strong>log</strong> (<em>list</em>) – A list to write a log of function values to. If None is passed no
+log is created.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vqe.cost_function.PrepareAndMeasureOnQVM">
+<em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">PrepareAndMeasureOnQVM</code><span class="sig-paren">(</span><em>prepare_ansatz</em>, <em>make_memory_map</em>, <em>hamiltonian</em>, <em>qvm</em>, <em>return_standard_deviation=False</em>, <em>base_numshots=100</em>, <em>qubit_mapping=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vqe.cost_function.AbstractCostFunction" title="vqe.cost_function.AbstractCostFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">vqe.cost_function.AbstractCostFunction</span></code></a></p>
+<p>A cost function that prepares an ansatz and measures its energy w.r.t
+hamiltonian on a quantum computer (or simulator).</p>
+<p>This cost_function makes use of pyquils parametric circuits and thus
+has to be supplied with a parametric circuit and a function to create
+memory maps that can be passed to qvm.run.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For now this works only with hamiltonians diagonal in the computational
+basis!</p>
+</div>
+<dl class="method">
+<dt id="vqe.cost_function.PrepareAndMeasureOnQVM.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>params</em>, <em>nshots=1</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param params</strong> (<em>1D array</em>) – the parameters to run the state preparation circuit with</p></li>
+<li><p><strong>param N</strong> (<em>int</em>) – Number of times to run exe</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vqe.cost_function.PrepareAndMeasureOnQVM.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>prepare_ansatz</em>, <em>make_memory_map</em>, <em>hamiltonian</em>, <em>qvm</em>, <em>return_standard_deviation=False</em>, <em>base_numshots=100</em>, <em>qubit_mapping=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prepare_ansatz</strong> (<em>Program</em>) – A parametric pyquil program for the state preparation</p></li>
+<li><p><strong>make_memory_map</strong> (<em>Function</em>) – A function that creates a memory map from the array of parameters</p></li>
+<li><p><strong>hamiltonian</strong> (<em>PauliSum</em>) – The hamiltonian</p></li>
+<li><p><strong>qvm</strong> (<em>Quantum Computer connection</em>) – Connection the QC to run the program on.</p></li>
+<li><p><strong>return_standard_deviation</strong> (<em>bool</em>) – return a float or tuple of energy and its standard deviation.</p></li>
+<li><p><strong>base_numshots</strong> (<em>int</em>) – numshots to compile into the binary. The argument nshots of __call__
+is then a multplier of this.</p></li>
+<li><p><strong>qubit_mapping</strong> (<em>Dict[QubitPlaceholder, Union[Qubit, int]]</em>) – A mapping to fix all QubitPlaceholders to physical qubits. E.g.
+pyquil.quil.get_default_qubit_mapping(program) gives you on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vqe.cost_function.PrepareAndMeasureOnWFSim">
+<em class="property">class </em><code class="descclassname">vqe.cost_function.</code><code class="descname">PrepareAndMeasureOnWFSim</code><span class="sig-paren">(</span><em>prepare_ansatz</em>, <em>make_memory_map</em>, <em>hamiltonian</em>, <em>sim</em>, <em>return_standard_deviation=False</em>, <em>noisy=False</em>, <em>log=None</em>, <em>qubit_mapping=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnWFSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vqe.cost_function.AbstractCostFunction" title="vqe.cost_function.AbstractCostFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">vqe.cost_function.AbstractCostFunction</span></code></a></p>
+<p>A cost function that prepares an ansatz and measures its energy w.r.t
+hamiltonian on the qvm</p>
+<dl class="method">
+<dt id="vqe.cost_function.PrepareAndMeasureOnWFSim.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>params</em>, <em>nshots=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnWFSim.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cost function that computes &lt;psi|ham|psi&gt; with psi prepared with
+prepare_ansatz(params).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>Union[list, np.ndarray]</em>) – Parameters of the state preparation circuit.</p></li>
+<li><p><strong>nshots</strong> (<em>int</em>) – Number of shots to take to estimate the energy (the default is 1000).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Either only the cost or a tuple of the cost and the standard
+deviation estimate based on the samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float or tuple (cost, cost_stdev)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vqe.cost_function.PrepareAndMeasureOnWFSim.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>prepare_ansatz</em>, <em>make_memory_map</em>, <em>hamiltonian</em>, <em>sim</em>, <em>return_standard_deviation=False</em>, <em>noisy=False</em>, <em>log=None</em>, <em>qubit_mapping=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnWFSim.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the cost_function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param prepare_ansatz</strong> (<em>Program</em>) – A parametric pyquil program for the state preparation</p></li>
+<li><p><strong>param make_memory_map</strong> (<em>Function</em>) – A function that creates a memory map from the array of parameters</p></li>
+<li><p><strong>hamiltonian</strong> (<em>PauliSum</em>) – The hamiltonian w.r.t which to measure the energy.</p></li>
+<li><p><strong>sim</strong> (<em>WavefunctionSimulator</em>) – A WavefunctionSimulator instance to get the wavefunction from.</p></li>
+<li><p><strong>return_standard_deviation</strong> (<em>bool</em>) – Return the cost as a float for scalar optimizers or as a tuple
+(cost, cost_standard_deviation) for optimizers of noisy functions.
+(the default is False).</p></li>
+<li><p><strong>noisy</strong> (<em>bool</em>) – Add simulated noise to the energy? (the default is False)</p></li>
+<li><p><strong>log</strong> (<em>list</em>) – A list to write a log of function values to. If None is passed no
+log is created.</p></li>
+<li><p><strong>qubit_mapping</strong> (<em>Dict[QubitPlaceholder, Union[Qubit, int]]</em>) – A mapping to fix QubitPlaceholders to physical qubits. E.g.
+pyquil.quil.get_default_qubit_mapping(program) gives you on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vqe.cost_function.address_qubits_hamiltonian">
+<code class="descclassname">vqe.cost_function.</code><code class="descname">address_qubits_hamiltonian</code><span class="sig-paren">(</span><em>hamiltonian</em>, <em>qubit_mapping</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.address_qubits_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map Qubit Placeholders to ints in a PauliSum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<em>PauliSum</em>) – The PauliSum.</p></li>
+<li><p><strong>qubit_mapping</strong> (<em>Dict[QubitPlaceholder, Union[Qubit, int]]</em>) – A qubit_mapping. e.g. provided by pyquil.quil.get_default_qubit_mapping.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A PauliSum with remapped Qubits.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>PauliSum</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This code relies completely on going all the way down the rabbits hole
+with for loops. It would be preferable to have this functionality in
+pyquil.paulis.PauliSum directly</p>
+</div>
+</dd></dl>
+
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="optimizer.html" class="btn btn-neutral float-left" title="optimizer module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ewan Munro, Jan Lukas Bosse, Tommaso Demarie
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
