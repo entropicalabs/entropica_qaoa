@@ -12,7 +12,7 @@ provides a template and one concrete implementation that just wraps
 
 from scipy.optimize import minimize
 from functools import partial
-from typing import Callable, Tuple, Iterable, Union
+from typing import Callable, Tuple, Iterable, Union, List
 import numpy as np
 
 # TODO decide, whether we really want to support cost_functions that return
@@ -26,13 +26,13 @@ def _reduce_noisy_cost_function(fun, nshots):
             return out
     return reduced
 
-def scipy_optimizer(cost_function : Callable[Union[List[float], np.array], Tuple[float, float]],
+def scipy_optimizer(cost_function : Callable[[Union[List[float], np.array]], Tuple[float, float]],
                     params0 : Union[List[float], np.array],
                     epsilon : float =1e-5,
                     nshots: int =1000,
-                    method="COBYLA",
+                    method: str ="COBYLA",
                     **mininize_kwargs):
-    """A ``scipy.optimize.minimize` wrapper for VQE.
+    """A ``scipy.optimize.minimize`` wrapper for VQE.
 
     Parameters
     ----------
