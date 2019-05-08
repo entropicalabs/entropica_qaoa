@@ -13,6 +13,7 @@ Todo
 
 from typing import Iterable, Union, List, Tuple, Any, Type
 import warnings
+from custom_inherit import DocInheritMeta
 
 # from custom_inherit import DocInheritMeta
 import matplotlib.pyplot as plt
@@ -27,7 +28,7 @@ def _is_list_empty(in_list):
     return False    # Not a list
 
 
-class AbstractQAOAParameters():
+class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
     """
     An abstract class to hold the parameters of a QAOA
     run and compute the angles from them.
@@ -141,9 +142,9 @@ class AbstractQAOAParameters():
         -------
         Union[List, np.array] :
             Returns all single rotation angles in the ordering
-            (betas, gamma_singles, gammas_pairs) where
-            betas = (beta_q0_t0, beta_q1_t0, ... , beta_qn_tp)
-            and the same for gammas_singles and gammas_pairs
+            ``(betas, gamma_singles, gammas_pairs)`` where
+            ``betas = (beta_q0_t0, beta_q1_t0, ... , beta_qn_tp)``
+            and the same for ``gammas_singles`` and ``gammas_pairs``
 
         """
         raw_data = []
@@ -228,7 +229,7 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         Parameters
         ----------
         constant_parameters :  Tuple
-            a tuple containing ``(reg, qubits_singles, qubits_pairs, timesteps)``
+            A tuple containing ``(reg, qubits_singles, qubits_pairs, timesteps)``
             of types (List, Union[List, np,array], Union[List, np,array],
             Union[List, np,array])
         """
@@ -412,12 +413,22 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
 
 class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
     """
-    QAOA parameters that implement exp(-i*beta_f*H_0)*exp(-i*gamma_f*H_c)*...
-    with an arbitrary H_c.
+    QAOA parameters that implement a state preparation circuit with
 
-    Todo
-    ----
-    Typeset the eqation nicely?
+    .. math::
+
+        e^{-i \\beta_p H_0}
+        e^{-i \\gamma_{\\textrm{singles}, p} H_{c, \\textrm{singles}}}
+        e^{-i \\gamma_{\\textrm{pairs}, p} H_{c, \\textrm{pairs}}}
+        \\cdots
+        e^{-i \\beta_0 H_0}
+        e^{-i \\gamma_{\\textrm{singles}, 0} H_{c, \\textrm{singles}}}
+        e^{-i \\gamma_{\\textrm{pairs}, 0} H_{c, \\textrm{pairs}}}
+
+    where the cost hamiltonian is split into :math:`H_{c, \\textrm{singles}}`
+    the bias terms, that act on only one qubit, and
+    :math:`H_{c, \\textrm{pairs}}` the coupling terms, that act on two qubits.
+
     """
 
     def __repr__(self):
@@ -456,7 +467,7 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
             raise ValueError("qubits_pairs must have the same length as the"
                              "number of two qubit terms in the hamiltonian")
 
-    def update_variable_parameters(self, variable_parameters : Tuple =None):
+    def update_variable_parameters(self, variable_parameters: Tuple = None):
         """
         Parameters
         ----------
@@ -568,13 +579,13 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
 
 class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
     """
-    QAOA parameters that implement
-    U = exp(-i*(T-t_f)H_0)exp(-i*t_f*H_c) ... exp(-i*(T-t_0)H_0)exp(-i*t_0*H_c)
-    and only vary the t_i
+    QAOA parameters that implement a state preparation circuit of the form
 
-    Todo
-    ----
-    Typeset the equation nicely?
+    .. math::
+
+        U = e^{-i (T-t_p) H_0} e^{-i t_p H_c} \\cdots e^{-i(T-t_p)H_0} e^{-i t_p H_c}
+
+    where the :math:`t_i` are the variable parameters.
     """
 
     def __repr__(self):
@@ -591,7 +602,7 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         ----------
         constant_parameters : Tuple
             A tuple containing ``(reg, qubits_singles, qubits_pairs,
-            ntimesteps, hamiltonian, time)``
+            timesteps, hamiltonian, time)``
         """
         self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps, hamiltonian, self._T\
             = constant_parameters
@@ -615,7 +626,7 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
 
         Remark
         ------
-        Having ``_times`` wrapped in a tuple seems superflous, but is done for
+        Having ``_times`` wrapped in a tuple seems superfluous, but is done for
         consistency
         """
         if variable_parameters is not None:
@@ -896,7 +907,7 @@ class QAOAParameterIterator:
     has at least 2 timesteps.
 
     .. code-block:: python
-        
+
         the_range = np.arange(0, 1, 0.4)
         the_parameter = "_gammas_singles[1]"
         param_iterator = QAOAParameterIterator(qaoa_params, the_parameter, the_range)
