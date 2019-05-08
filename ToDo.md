@@ -7,6 +7,7 @@
  - Fix QubitPlaceholders in QAOACostFunction*. Pass a Qubit mapping? Automatically,
    create one, if the hamiltonian contains placeholders? Check if QVMConnection
    can report possible physical Qubits!
+ - Check all the QAOAParameter docstrings
 
 # Small things to fix
  - Fix QubitPlaceholders() in VQE cost function

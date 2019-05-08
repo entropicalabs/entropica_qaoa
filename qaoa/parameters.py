@@ -93,6 +93,7 @@ class AbstractQAOAParameters():
     def update_variable_parameters(self, variable_parameters: Tuple):
         """
         Updates the variable parameters (i.e. angle parameters) s.t.
+ 
         - ``self.betas`` is a list/array of the x-rotation angles.
             Must have `dim self.timesteps` x ``len(self.reg)``
         - ``self.gammas_singles`` is the list of the single qubit Z-rotation angles.
@@ -587,12 +588,12 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
 
     def update_variable_parameters(self, variable_parameters: Tuple =None):
         if variable_parameters is not None:
-            self._times = variable_parameters
             # check that the datas are good
-            if self.timesteps != len(self._times):
+            if self.timesteps != len(variable_parameters):
                 raise ValueError(
-                    "timesteps should be one less than timesteps!")
-
+                    "variable_parameters has the wrong length")
+            self._times = variable_parameters
+        
         dt = self._T / self.timesteps
         self.betas = [[(1 - t / self._T) * (dt)] * len(self.reg)
                       for i, t in enumerate(self._times)]
