@@ -12,4 +12,8 @@
  - Fix QubitPlaceholders() in VQE cost function
  - Fix QubitPlaceholders() in QAOA cost function
  - Check qaoa.cost_function tests for sanity
+ - add parameter logging to the cost_functions
 
+# Things to implement
+  - utilities.hamiltonian_from_edges
+  - utilities.create_random_hamiltonian_fixed_topology
