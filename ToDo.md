@@ -12,4 +12,4 @@
  - Fix QubitPlaceholders() in VQE cost function
  - Fix QubitPlaceholders() in QAOA cost function
  - Check qaoa.cost_function tests for sanity
-
+ - Check unneccesary enumerate in adiabatic_timesteps.update_variable_params
