@@ -11,7 +11,7 @@ Todo
  - implement AbstractQAOAParameters.from_hamiltonian() and then super() from it
 """
 
-from typing import Iterable, Union, List, Tuple, Any
+from typing import Iterable, Union, List, Tuple, Any, Type
 import warnings
 
 # from custom_inherit import DocInheritMeta
@@ -50,7 +50,7 @@ class AbstractQAOAParameters():
         """
         Sets all the constant parameters via
         ``self.set_constant_parameters()`` and variable parameters via
-        ``self.update_variable_parameters``
+        ``self.update_variable_parameters()``
         """
         # This is just to shut the linter up. They are actually set
         # in self.update_variable_parameters
@@ -81,6 +81,7 @@ class AbstractQAOAParameters():
         qubit lists for the single and double qubit z-rotation.
 
         Must initialize
+
         - `self.reg` the register to apply the x rotations on
         - `self.qubits_singles` the list of qubits to apply the single qubit
            z rotations on
@@ -93,7 +94,7 @@ class AbstractQAOAParameters():
     def update_variable_parameters(self, variable_parameters: Tuple):
         """
         Updates the variable parameters (i.e. angle parameters) s.t.
- 
+
         - ``self.betas`` is a list/array of the x-rotation angles.
             Must have `dim self.timesteps` x ``len(self.reg)``
         - ``self.gammas_singles`` is the list of the single qubit Z-rotation angles.
@@ -175,7 +176,7 @@ class AbstractQAOAParameters():
 
         Returns
         -------
-        AbstractQAOAParameters
+        Type[AbstractQAOAParameters]
             The initial parameters best for `cost_hamiltonian`.
 
         """
@@ -207,12 +208,14 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
     """
 
     def __repr__(self):
-        string = "register: " + str(self.reg) + "\n"
-        string += "betas: " + str(self.betas) + "\n"
-        string += "qubits_singles: " + str(self.qubits_singles) + "\n"
-        string += "gammas_singles: " + str(self.gammas_singles) + "\n"
-        string += "qubits_pairs: " + str(self.qubits_pairs) + "\n"
-        string += "gammas_pairs: " + str(self.gammas_pairs) + "\n"
+        string = "Constant Parameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
+        string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
+        string += "Variable Parameters:\n"
+        string += "\tbetas: " + str(self.betas) + "\n"
+        string += "\tgammas_singles: " + str(self.gammas_singles) + "\n"
+        string += "\tgammas_pairs: " + str(self.gammas_pairs) + "\n"
         return string
 
     def __len__(self):
@@ -227,12 +230,13 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         constant_parameters :  Tuple
             a tuple containing ``(reg, qubits_singles, qubits_pairs, timesteps)``
             of types (List, Union[List, np,array], Union[List, np,array],
-                      Union[List, np,array])
+            Union[List, np,array])
         """
         self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps\
             = constant_parameters
 
-    def update_variable_parameters(self, variable_parameters: Tuple[Union[List, np.array]]):
+    def update_variable_parameters(self,
+                    variable_parameters: Tuple[Union[List, np.array]] = None):
         """
         Parameters
         ----------
@@ -240,6 +244,13 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
             a tuple containing ``(betas, gammas_singles, gammas_pairs)``
             in their fully extended form.
         """
+
+        # sometimes this function gets called without arguments to update
+        # parameters depending on internal ones. This doesn make sense
+        # for this parametrizations.
+        if variable_parameters is None:
+            return
+
         self.betas, self.gammas_singles, self.gammas_pairs = variable_parameters
 
         # and check that the data makes sense...
@@ -308,7 +319,7 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
 
         Returns
         -------
-        AbstractQAOAParameters
+        GeneralQAOAParameters
             The initial parameters best for `cost_hamiltonian`.
 
         """
@@ -410,12 +421,14 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
     """
 
     def __repr__(self):
-        string = "register: " + str(self.reg) + "\n"
-        string += "betas: " + str(self._betas) + "\n"
-        string += "qubits_singles: " + str(self.qubits_singles) + "\n"
-        string += "gammas_singles: " + str(self._gammas_singles) + "\n"
-        string += "qubits_pairs: " + str(self.qubits_pairs) + "\n"
-        string += "gammas_pairs: " + str(self._gammas_pairs) + "\n"
+        string = "Constant Parameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
+        string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
+        string += "Variable Parameters:\n"
+        string += "\t_betas: " + str(self._betas) + "\n"
+        string += "\t_gammas_singles: " + str(self._gammas_singles) + "\n"
+        string += "\t_gammas_pairs: " + str(self._gammas_pairs) + "\n"
         return(string)
 
     def __len__(self):
@@ -426,7 +439,7 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
         Parameters
         ----------
         constant_parameters: Tuple
-            A tuple of the form ``(reg, qubits_singles, qubits_pairs, hamiltonian)``
+            A tuple of the form ``(reg, qubits_singles, qubits_pairs, timesteps, hamiltonian)``
 
         """
         self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps, hamiltonian\
@@ -444,6 +457,12 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
                              "number of two qubit terms in the hamiltonian")
 
     def update_variable_parameters(self, variable_parameters : Tuple =None):
+        """
+        Parameters
+        ----------
+        variable_parameters: Tuple
+            A tuple containing ``(_betas, _gammas_singles, _gammas_pairs)``
+        """
         if variable_parameters is not None:
             self._betas, self._gammas_singles, self._gammas_pairs\
                 = variable_parameters
@@ -494,9 +513,9 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
         """
         Returns
         -------
-        :rtype:     AlternatingOperatorsQAOAParameters
-        A `AlternatingOperatorsQAOAParameters` object holding all the
-        parameters
+        AlternatingOperatorsQAOAParameters
+            An `AlternatingOperatorsQAOAParameters` object holding all the
+            parameters
         """
         if time is None:
             time = float(0.7 * timesteps)
@@ -559,7 +578,8 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
     """
 
     def __repr__(self):
-        string = "times: " + str(self._times)
+        string = "Variable Parameters:\n"
+        string += "\t_times: " + str(self._times)
         return string
 
     def __len__(self):   # needs fixing
@@ -570,8 +590,8 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         Parameters
         ----------
         constant_parameters : Tuple
-            A tuple of the form ``(reg, qubits_singles, qubits_pairs,
-            hamiltonian, self.time)``
+            A tuple containing ``(reg, qubits_singles, qubits_pairs,
+            ntimesteps, hamiltonian, time)``
         """
         self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps, hamiltonian, self._T\
             = constant_parameters
@@ -587,13 +607,24 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
                              "number of two qubit terms in the hamiltonian")
 
     def update_variable_parameters(self, variable_parameters: Tuple =None):
+        """
+        Parameters
+        ----------
+        constant_parameters : Tuple
+            A tuple containing ``(_times)``
+
+        Remark
+        ------
+        Having ``_times`` wrapped in a tuple seems superflous, but is done for
+        consistency
+        """
         if variable_parameters is not None:
             # check that the datas are good
             if self.timesteps != len(variable_parameters):
                 raise ValueError(
                     "variable_parameters has the wrong length")
             self._times = variable_parameters
-        
+
         dt = self._T / self.timesteps
         self.betas = [[(1 - t / self._T) * (dt)] * len(self.reg)
                       for i, t in enumerate(self._times)]
@@ -628,8 +659,8 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         """
         Returns
         -------
-        AlternatingOperatorsQAOAParameters :
-            A `AlternatingOperatorsQAOAParameters` object holding all the
+        AdiabaticTimestepsQAOAParameters :
+            An `AdiabaticTimestepsQAOAParameters` object holding all the
             parameters
         """
         if reg is None:
@@ -681,10 +712,12 @@ class FourierQAOAParameters(AbstractQAOAParameters):
     """
 
     def __repr__(self):
-        string = "register: " + str(self.reg) + "\n"
-        string += "u_singles: " + str(self._u_singles) + "\n"
-        string += "u_pairs: " + str(self._u_pairs) + "\n"
-        string += "v: " + str(self._v) + "\n"
+        string = "Constant Parameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "Variable Parameters:\n"
+        string += "\t_u_singles: " + str(self._u_singles) + "\n"
+        string += "\t_u_pairs: " + str(self._u_pairs) + "\n"
+        string += "\t_v: " + str(self._v) + "\n"
         return(string)
 
     def __len__(self):
@@ -710,7 +743,7 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         Parameters
         ----------
         param variable_parameters:  Tuple[List[float], List[float], List[float]]
-        A tuple containing ``(v,  u_singles, u_pairs)``
+        A tuple containing ``(_v,  _u_singles, _u_pairs)``
         """
         def _dst(v, p):
             """Compute the discrete sine transform from frequency to timespace."""
@@ -838,8 +871,8 @@ class FourierQAOAParameters(AbstractQAOAParameters):
 
     def plot(self, ax=None):
         warnings.warn("Plotting the gammas and betas through DCT and DST. If you are "
-              "interested in v, u_singles and u_pairs you can access them via "
-              "params._v, params._u_singles, params._v_pairs")
+              "interested in _v, _u_singles and _u_pairs you can access them via "
+              "params._v, params._u_singles, params._u_pairs")
         if ax is None:
             fig, ax = plt.subplots()
 
@@ -852,3 +885,75 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         ax.set_xlabel("timestep")
         # ax.grid(linestyle='--')
         ax.legend()
+
+
+class QAOAParameterIterator:
+    """An iterator to sweep one parameter over a range in a QAOAParameter object.
+
+    Example
+    -------
+    Assume qaoa_params is of type ``AlternatingOperatorsQAOAParameters`` and
+    has at least 2 timesteps.
+
+    .. code-block:: python
+        
+        the_range = np.arange(0, 1, 0.4)
+        the_parameter = "_gammas_singles[1]"
+        param_iterator = QAOAParameterIterator(qaoa_params, the_parameter, the_range)
+        for params in param_iterator:
+            # do what ever needs to be done
+    """
+
+    def __init__(self, qaoa_params: Type[AbstractQAOAParameters],
+                 the_parameter: str,
+                 the_range: Iterable):
+        """
+        Parameters
+        ----------
+        qaoa_params : Type[AbstractQAOAParameters]
+            The inital qaoa_parameters, where one of them is swept over
+        the_parameter: String
+            A string specifying, which parameter should be varied. It has to be
+            of the form ``<attr_name>[i]`` where ``<attr_name>`` is the name of the
+            _internal_ list and ``i`` the index, at which it sits. E.g. if
+            ``qaoa_params`` is of type ``AdiabaticTimestepsQAOAParameters`` and
+            we want to vary over the second timestep, it is
+            ``the_parameter = "_times[1]"``.
+        the_range : Iterable -> float
+            The range, that ``the_parameter`` should be varied over
+
+        Todo
+        ----
+        - Add checks, that the number of indices in ``the_parameter`` matches the
+          dimensions of ``the_parameter``
+        - Add checks, that the index is not too large
+        """
+        self.params = qaoa_params
+        self.iterator = iter(the_range)
+        self.the_parameter, *indices = the_parameter.split("[")
+        indices = [i.replace(']', '') for i in indices]
+        if len(indices) == 1:
+            self.index0 = int(indices[0])
+            self.index1 = False
+        elif len(indices) == 2:
+            self.index0 = int(indices[0])
+            self.index1 = int(indices[1])
+        else:
+            raise ValueError("the_parameter has to many indices")
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        # get next value from the_range
+        value = next(self.iterator)
+
+        # 2d list or 1d list?
+        if self.index1 is not False:
+            getattr(self.params, self.the_parameter)[self.index0][self.index1] = value
+        else:
+            getattr(self.params, self.the_parameter)[self.index0] = value
+
+        # update the dependent parameters and return
+        self.params.update_variable_parameters()
+        return self.params
