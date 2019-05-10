@@ -9,7 +9,7 @@ from pyquil.quil import QubitPlaceholder, Qubit
 
 from qaoa.parameters import GeneralQAOAParameters,\
     AlternatingOperatorsQAOAParameters, AdiabaticTimestepsQAOAParameters,\
-    FourierQAOAParameters
+    FourierQAOAParameters, QAOAParameterIterator
 
 # build a hamiltonian to test everything on
 q1 = QubitPlaceholder()
@@ -60,3 +60,15 @@ def test_AlternatingOperatorsQAOAParameters():
     raw = np.random.rand(len(params))
     params.update(raw)
     assert np.allclose(raw, params.raw())
+
+
+def test_QAOAParameterIterator():
+    params = AdiabaticTimestepsQAOAParameters.from_hamiltonian(hamiltonian, 2)
+    iterator = QAOAParameterIterator(params, "_times[0]", np.arange(0,1,0.5))
+    log = []
+    for p in iterator:
+        log.append((p._times).copy())
+    print(log[0])
+    print(log[1])
+    assert np.allclose(log[0], [0, 1.049999999])
+    assert np.allclose(log[1], [0.5, 1.049999999])
