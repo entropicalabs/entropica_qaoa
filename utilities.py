@@ -21,19 +21,19 @@ def create_random_hamiltonian(nqubits, single_terms=True, pair_terms=True):
     """
     coins = np.random.randint(2, size=(nqubits + nqubits**2))
     coeffs = np.random.rand(nqubits + nqubits**2) * 2 - 1
-    hamiltonian = PauliSum("0.0")
+    hamiltonian = []
     if single_terms:
         for i in range(nqubits - 1):
             if coins[i]:
-                hamiltonian += PauliTerm([["Z", i]], coeffs[i])
-    hamiltonian += PauliTerm([["Z", nqubits - 1]], coeffs[nqubits - 1]
-                             )  # make sure maxqubit is the right one
+                hamiltonian.append(PauliTerm("Z", i, coeffs[i]))
+    hamiltonian.append(PauliTerm("Z", nqubits - 1, coeffs[nqubits - 1]))  # make sure maxqubit is the right one
 
     if pair_terms:
         for i in range(nqubits):
             for j in range(i):
-                hamiltonian += PauliTerm([["Z", j], ["Z", i]], coeffs[nqubits * i + j])
-    return hamiltonian
+                hamiltonian.append(PauliTerm("Z", j, 1.0)*PauliTerm("Z", i, coeffs[nqubits * i + j]))
+    
+    return PauliSum(hamiltonian)
 
 """
 INCLUDE JL's other functions, eg create_normalized_random_hamiltonian?
@@ -51,13 +51,16 @@ def distances_dataset(data):
     
     data = np.array(data)
     data_len = len(data)
-    distances = np.zeros()
+    distances = {}
     for i in range(data_len):
         
         for j in range(i,data_len):
-        
-            dist = np.linalg.norm(data[i] - data[j])
-            distances.append(dist)  
+            
+            if i==j:
+                continue
+
+            tmp_dict = {str((i,j)): np.linalg.norm(data[i] - data[j])}
+            distances.update(tmp_dict)
             
     return distances
 
@@ -123,21 +126,22 @@ def create_gaussian_2Dclusters(n_clusters,n_points,means,variances,covs):
     :param      data
     """
     args_in = [len(means),len(variances),len(covs),len(n_points)]
+    #print(args_in)
     assert all(item == n_clusters for item in args_in), "Insufficient data provided for specified number of clusters"
     
-    data = [], cluster_labels = []
+    data = {}
     for i in range(n_clusters):
         
         cluster_mean = means[i]
-        cov_matr = [[variances[i,0], covs[i]],[covs[i],variances[i,1]]]
+        cov_matr = [[variances[i][0], covs[i]],[covs[i],variances[i][1]]]
         
         x,y = np.random.multivariate_normal(cluster_mean,cov_matr,n_points[i]).T
-        data.append([x,y])
-        cluster_labels += i
+        tmp_dict = {str(i): [x,y]}
+        data.update(tmp_dict)
         
-    data = np.array(data)
+    #data = np.array(tmp_dict)
         
-    return data, cluster_labels
+    return data
 
 def create_circular_clusters(n_clusters,n_points,centres,radii):
     

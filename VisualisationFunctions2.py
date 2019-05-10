@@ -1,6 +1,7 @@
-import matplotlib.pyplot as plt
+#1404CGitimport matplotlib.pyplot as plt
 import numpy as np
 import networkx as nx
+from scipy.optimize import minimize
 
 """
 JL's comments
@@ -55,18 +56,63 @@ def vqe_optimization_stacktrace_plot(ax=None):
     Plot the cost_function values of a VQE run (and by extension of a QAOA run),
     vs. the iteration step in the optimization process.
     
-    :TODO (JL):  Decide, whether to create the log in the cost_function or in the
-                 optimizer. Does scipy.optimize.minimize allow logging of function
-                 calls? 
-            
-    :TODO (EM):  I like the idea of plotting information related to function
-                 calls. I wonder if we can keep track of the number of function
-                 evaluations at each step. Also, for the steps where the most function 
-                 evaluations had to be made in order to proceed, what the values of the 
-                 parameters at those locations? 
-                 I can imagine that might be useful somehow.
-            
+    :TODO:  Decide, whether to create the log in the cost_function or in the
+            optimizer. Does scipy.optimize.minimize allow logging of function
+            calls? 
+        
     """
+
+    def fun(x):
+        global current_cost
+        current_cost = # Compute cost function as usual
+    return current_cost
+
+    def logcost(x):
+        cost_log.append(current_cost)
+    
+    cost_log = []
+    minimize(fun, initial_params,callback=logcost)
+    
+    return cost_log
+    
+def vqe_track_nfevals(args):
+
+    """
+    This function records the number of function evaluations as the solver progresses,
+    along with the parameter values and the cost_function values.
+    
+    This might be useful for seeing where the solver is spending a lot of time. 
+    
+    Eventually want to plot this - eg plot how the different parameter values vary with
+    the accumulated number of function evaluations, which should show in which directions
+    the solver is progressing slowly.
+    
+    NOTE: This duplicates some functionality of the vqe_optimization_stacktrace_plot function above. 
+    We can perhaps just keep this one, and then allow the user do what s/he wants with the output.
+    """
+    
+    global calls
+    calls = 0
+
+    global param
+    param = []
+
+    def fun(x):
+        global param
+        global calls
+        global current_cost
+        calls += 1
+        current_cost = # Compute cost function as usual
+        param = x
+    return current_cost
+
+    def logcost(x):
+        cost_log.append([calls,param,current_cost])
+    
+    cost_log = []
+    minimize(fun, initial_params,callback=logcost)
+    
+    return cost_log
 
 def plot_networkx_graph(G):
     
