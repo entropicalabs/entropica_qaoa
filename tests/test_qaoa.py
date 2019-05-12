@@ -19,7 +19,7 @@ from qaoa.parameters import FourierQAOAParameters
 @pytest.mark.slow
 def test_qaoa_on_wfsim():
     hamiltonian = PauliSum.from_compact_str("(-1.0)*Z0*Z1 + 0.8*Z0 + (-0.5)*Z1")
-    params = FourierQAOAParameters.from_hamiltonian(hamiltonian, timesteps=10, q=2)
+    params = FourierQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, timesteps=10, q=2)
     p0 = params.raw()
     sim=WavefunctionSimulator()
     log =[]
@@ -40,7 +40,7 @@ def test_qaoa_on_wfsim():
 @pytest.mark.slow
 def test_qaoa_on_qvm():
     hamiltonian = PauliSum.from_compact_str("(-1.0)*Z0*Z1 + 0.8*Z0 + (-0.5)*Z1")
-    params = FourierQAOAParameters.from_hamiltonian(hamiltonian, timesteps=10, q=2)
+    params = FourierQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, timesteps=10, q=2)
     p0 = params.raw()
     qvm = get_qc("2q-qvm")
     log =[]

@@ -8,7 +8,7 @@ Todo
 ----
  - Better default values for ``time`` if ``None`` is passed
  - Better default parameters for ``fourier`` timesteps
- - implement AbstractQAOAParameters.from_hamiltonian() and then super() from it
+ - implement AbstractQAOAParameters.linear_ramp_from_hamiltonian() and then super() from it
 """
 
 from typing import Iterable, Union, List, Tuple, Any, Type
@@ -35,33 +35,49 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
 
     Parameters
     ----------
-    constant_parameters : Any
-        The constant parameters like the hamiltonian or number of steps.
-        More in set_constant_parameters()
-    variable_parameters : Any
-        The variable parameters like the angles or stepwidths. More details in
-        update_variable_parameters()
-
+    hyperparameters : Tuple
+        The hyperparameters containing the hamiltonian, the number of steps,
+        the total annealing time and possibly more.
+        ``hyperparametesr = (hamiltonian, timesteps, time, ...)``
+    parameters : Tuple
+        The QAOA parameters, that can be optimized. E.g. the gammas and betas or
+        the annealing timesteps.
     """
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self,
-                 constant_parameters: Tuple[Any, Iterable, Iterable, Iterable],
-                 variable_parameters: Tuple = None):
+                 hyperparameters: Tuple,
+                 parameters: Tuple = None):
         """
-        Sets all the constant parameters via
-        ``self.set_constant_parameters()`` and variable parameters via
-        ``self.update_variable_parameters()``
+        Extracts the qubits the reference and mixer hamiltonian act on and
+        sets them.
         """
-        # This is just to shut the linter up. They are actually set
-        # in self.update_variable_parameters
-        self.betas = []
-        self.gammas_singles = []
-        self.gammas_pairs = []
+        # Note
+        # ----
+        # ``AbstractQAOAParameters.__init__`` doesn't do anything with the
+        # argument ``parameters``. In the child classes we have to super from
+        # them and handle them correctly. Additionally we might need to handle
+        # additionaly hyperparameters.
 
-        self.set_constant_parameters(constant_parameters)
-        if variable_parameters is not None:
-            self.update_variable_parameters(variable_parameters)
+        hamiltonian, self.timesteps = hyperparameters[:2]
+
+        # extract the qubit lists from the hamiltonian
+        self.reg = hamiltonian.get_qubits()
+        self.qubits_pairs = []
+        self.qubits_singles = []
+
+        # fill qubits_singles and qubits_pairs according to the terms in the hamiltonian
+        for term in hamiltonian:
+            if len(term) == 1:
+                self.qubits_singles.append(term.get_qubits()[0])
+            elif len(term) == 2:
+                self.qubits_pairs.append(term.get_qubits())
+            elif len(term) == 0:
+                pass  # could give a notice, that multiples of the identity are
+                      # ignored, since unphysical
+            else:
+                raise NotImplementedError(
+                    "As of now we can only handle hamiltonians with at most two-qubit terms")
 
     def __repr__(self):
         raise NotImplementedError()
@@ -72,23 +88,7 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         -------
         int:
             the length of the data produced by self.raw() and accepted by
-            self.update()
-        """
-        raise NotImplementedError()
-
-    def set_constant_parameters(self, constant_parameters):
-        """
-        Sets the constant parameters, like the register for the x-rotations and
-        qubit lists for the single and double qubit z-rotation.
-
-        Must initialize
-
-        - `self.reg` the register to apply the x rotations on
-        - `self.qubits_singles` the list of qubits to apply the single qubit
-           z rotations on
-        - `self.qubits_pairs` the list of qubits to apply the double qubit
-          z rotations on
-        - `self.timesteps` the number of timesteps
+            self.update_from_raw()
         """
         raise NotImplementedError()
 
@@ -96,16 +96,18 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         """
         Updates the variable parameters (i.e. angle parameters) s.t.
 
-        - ``self.betas`` is a list/array of the x-rotation angles.
+        - ``self.x_rotation_angles`` is a list/array of the x-rotation angles.
             Must have `dim self.timesteps` x ``len(self.reg)``
-        - ``self.gammas_singles`` is the list of the single qubit Z-rotation angles.
+        - ``self.z_rotation_angles`` is the list of the single qubit Z-rotation angles.
             Must have dim ``dim self.timesteps`` x ``len(self.qubits_singles)``
-        - ``self.gammas_pairs`` is the list of the two qubit Z-rotation angles.
+        - ``self.zz_rotation_angles`` is the list of the two qubit Z-rotation angles.
             Must have dim ``dim self.timesteps`` x ``len(self.qubits_pairs)``
         """
-        raise NotImplementedError()
+        warnings.warn("self.update_variable_parameters is deprecated."
+                      "You can safely remove any call and replace it with nothing",
+                      DeprecationWarning)
 
-    def update(self, new_values: Union[list, np.array]):
+    def update_from_raw(self, new_values: Union[list, np.array]):
         """
         Updates all the angles based on a 1D array whose shape is specified later.
         The input has the same format as the output of ``self.raw()``.
@@ -129,7 +131,7 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         -------
         np.array :
             all the tunable parameters in a 1D array. Has the same output
-            format as the expected input of ``self.update``
+            format as the expected input of ``self.update_from_raw``
 
         """
         raise NotImplementedError()
@@ -142,34 +144,30 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         -------
         Union[List, np.array] :
             Returns all single rotation angles in the ordering
-            ``(betas, gamma_singles, gammas_pairs)`` where
-            ``betas = (beta_q0_t0, beta_q1_t0, ... , beta_qn_tp)``
-            and the same for ``gammas_singles`` and ``gammas_pairs``
+            ``(x_rotation_angles, gamma_singles, zz_rotation_angles)`` where
+            ``x_rotation_angles = (beta_q0_t0, beta_q1_t0, ... , beta_qn_tp)``
+            and the same for ``z_rotation_angles`` and ``zz_rotation_angles``
 
         """
         raw_data = []
-        raw_data += [beta for betas in self.betas for beta in betas]
-        raw_data += [g for gammas in self.gammas_singles for g in gammas]
-        raw_data += [g for gammas in self.gammas_pairs for g in gammas]
+        raw_data += [beta for betas in self.x_rotation_angles for beta in betas]
+        raw_data += [g for gammas in self.z_rotation_angles for g in gammas]
+        raw_data += [g for gammas in self.zz_rotation_angles for g in gammas]
         return raw_data
 
     @classmethod
-    def from_hamiltonian(cls,
-                         cost_hamiltonian: PauliSum,
-                         timesteps: int,
-                         time: float = None,
-                         reg: List = None):
+    def linear_ramp_from_hamiltonian(cls,
+                                     hamiltonian: PauliSum,
+                                     timesteps: int,
+                                     time: float = None):
         """
         Calculate initial parameters from a hamiltonian corresponding to a
         linear ramp annealing schedule.
 
         Parameters
         ----------
-        cost_hamiltonian : PauliSum
-            `cost_hamiltonian` for which to calcuate the initial QAOA parameters.
-        reg : List
-            (Optional) Register of qubits on which `cost_hamiltonian` acts.
-            If None is passed, cost_hamiltonian.get_qubits() is used.
+        hamiltonian : PauliSum
+            `hamiltonian` for which to calcuate the initial QAOA parameters.
         timesteps : int
             Number of timesteps.
         time : float
@@ -205,15 +203,39 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
     Todo
     ----
     Put a nice equation like U = exp(-i*gamma_{00}) * exp(...) here to explain
-    better what we mean with most general?
+    better what we mean with most general. Update this docstring to reflect
+    better, what ``parameters`` should look like
+
+    Parameters
+    ----------
+    hyperparameters : Tuple
+        The hyperparameters containing the hamiltonian and the number of steps
+        ``hyperparameters = (hamiltonian, timesteps)``
+    parameters : Tuple
+        Tuple containing ``(betas, gammas_singles, gammas_pairs)``
     """
+    def __init__(self,
+                 hyperparameters: Tuple[PauliSum, int],
+                 parameters: Tuple):
+        """
+        Extracts the qubits the reference and mixer hamiltonian act on and
+        sets them.
+
+        Todo
+        ----
+        Add checks, that the parameters and hyperparameters work together (same
+        number of timesteps and single and pair qubit terms)
+        """
+        # setup reg, qubits_singles and qubits_pairs
+        super().__init__(hyperparameters)
+        self.betas, self.gammas_singles, self.gammas_pairs = parameters
 
     def __repr__(self):
-        string = "Constant Parameters:\n"
+        string = "Hyperparameters:\n"
         string += "\tregister: " + str(self.reg) + "\n"
         string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
         string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
-        string += "Variable Parameters:\n"
+        string += "Parameters:\n"
         string += "\tbetas: " + str(self.betas) + "\n"
         string += "\tgammas_singles: " + str(self.gammas_singles) + "\n"
         string += "\tgammas_pairs: " + str(self.gammas_pairs) + "\n"
@@ -223,53 +245,19 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         return self.timesteps * (len(self.reg) + len(self.qubits_pairs)
                                  + len(self.qubits_singles))
 
-    def set_constant_parameters(self,
-                                constant_parameters: Tuple):
-        """
-        Parameters
-        ----------
-        constant_parameters :  Tuple
-            A tuple containing ``(reg, qubits_singles, qubits_pairs, timesteps)``
-            of types (List, Union[List, np,array], Union[List, np,array],
-            Union[List, np,array])
-        """
-        self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps\
-            = constant_parameters
+    @property
+    def x_rotation_angles(self):
+        return self.betas
 
-    def update_variable_parameters(self,
-                    variable_parameters: Tuple[Union[List, np.array]] = None):
-        """
-        Parameters
-        ----------
-        variable_parameters:  Tuple
-            a tuple containing ``(betas, gammas_singles, gammas_pairs)``
-            in their fully extended form.
-        """
+    @property
+    def z_rotation_angles(self):
+        return self.gammas_singles
 
-        # sometimes this function gets called without arguments to update
-        # parameters depending on internal ones. This doesn make sense
-        # for this parametrizations.
-        if variable_parameters is None:
-            return
+    @property
+    def zz_rotation_angles(self):
+        return self.gammas_pairs
 
-        self.betas, self.gammas_singles, self.gammas_pairs = variable_parameters
-
-        # and check that the data makes sense...
-        if (self.timesteps != len(self.betas)
-                or len(self.betas[0]) != len(self.reg)):
-            raise ValueError("Check the dimensions of betas")
-
-        if (not _is_list_empty(self.gammas_singles)
-                and (self.timesteps != len(self.gammas_singles)
-                     or len(self.gammas_singles[0]) != len(self.qubits_singles))):
-            raise ValueError("Check the dimensions of gammas_singles")
-
-        if (not _is_list_empty(self.gammas_pairs)
-                and (self.timesteps != len(self.gammas_pairs)
-                     or len(self.gammas_pairs[0]) != len(self.qubits_pairs))):
-            raise ValueError("Check the dimensions of gammas_pairs")
-
-    def update(self, new_values):
+    def update_from_raw(self, new_values):
         self.betas = [new_values[len(self.reg) * i:len(self.reg) * i + len(self.reg)]
                       for i in range(self.timesteps)]
         new_values = new_values[self.timesteps * len(self.reg):]
@@ -287,7 +275,7 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         # PEP8 complains, but new_values could be np.array and not list!
         if  not len(new_values) == 0:
             raise RuntimeWarning(
-                "list to make new gammas and betas out of didn't have the right length!")
+                "list to make new gammas and x_rotation_angles out of didn't have the right length!")
 
     def raw(self):
         raw_data = []
@@ -296,23 +284,21 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         raw_data += [g for gammas in self.gammas_pairs for g in gammas]
         return raw_data
 
+
+    # TODO: Update this classmethod to work correctly with the new constructor
     @classmethod
-    def from_hamiltonian(cls,
-                         cost_hamiltonian: PauliSum,
-                         timesteps: int,
-                         time: float = None,
-                         reg: List = None):
+    def linear_ramp_from_hamiltonian(cls,
+                                     hamiltonian: PauliSum,
+                                     timesteps: int,
+                                     time: float = None):
         """
         Calculate initial parameters from a hamiltonian corresponding to a
         linear ramp annealing schedule.
 
         Parameters
         ----------
-        cost_hamiltonian : PauliSum
+        hamiltonian : PauliSum
             `cost_hamiltonian` for which to calcuate the initial QAOA parameters.
-        reg : List
-            (Optional) Register of qubits on which `cost_hamiltonian` acts.
-            If None is passed, cost_hamiltonian.get_qubits() is used.
         timesteps : int
             Number of timesteps.
         time : float
@@ -328,41 +314,22 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         if time is None:
             time = float(0.7 * timesteps)
 
-        if reg is None:
-            reg = cost_hamiltonian.get_qubits()
-
         dt = time / timesteps
         times = np.linspace(time * (0.5 / timesteps), time
                             * (1 - 0.5 / timesteps), timesteps)
 
         betas = []
         gammas_pairs = []
-        qubits_pairs = []
         gammas_singles = []
-        qubits_singles = []
 
-        # fill qubits_singles and qubits_pairs according to the terms in the hamiltonian
-        for term in cost_hamiltonian:
-            if len(term) == 1:
-                # needs fixing...
-                qubits_singles.append(term.get_qubits()[0])
-            elif len(term) == 2:
-                qubits_pairs.append(term.get_qubits())
-            elif len(term) == 0:
-                pass  # could give a notice, that multiples of the identity are
-                      # ignored, since unphysical
-            else:
-                raise NotImplementedError(
-                    "As of now we can only handle hamiltonians with at most two-qubit terms")
-
-        # fill gammas_singles and gammas_pairs according to the timesteps and
+        # fill betas and gammas_singles, gammas_pairs according to the timesteps and
         # coefficients of the terms in the hamiltonian
         for t in times:
             gamma_pairs = []
             gamma_singles = []
             beta = []
 
-            for term in cost_hamiltonian:
+            for term in hamiltonian:
                 if len(term) == 1:
                     gamma_singles.append(t * term.coefficient.real * dt / time)
 
@@ -380,7 +347,7 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
             if gamma_pairs:
                 gammas_pairs.append(gamma_pairs)
 
-            for qubit in reg:              # not efficient, but following the
+            for qubit in hamiltonian.get_qubits():              # not efficient, but following the
                 beta.append((1 - t / time) * dt)   # same logic as above
             betas.append(beta)
 
@@ -393,8 +360,8 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
             gammas_pairs = [[]]
 
         # wrap it all nicely in a qaoa_parameters object
-        params = GeneralQAOAParameters((reg, qubits_singles, qubits_pairs, timesteps),
-                                       (betas, gammas_singles, gammas_pairs))
+        params = cls((hamiltonian, timesteps),
+                     (betas, gammas_singles, gammas_pairs))
         return params
 
     def plot(self, ax=None):
@@ -411,7 +378,7 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         ax.legend()
 
 
-class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
+class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
     """
     QAOA parameters that implement a state preparation circuit with
 
@@ -429,98 +396,90 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
     the bias terms, that act on only one qubit, and
     :math:`H_{c, \\textrm{pairs}}` the coupling terms, that act on two qubits.
 
+    Parameters
+    ----------
+    hyperparameters : Tuple
+        The hyperparameters containing the hamiltonian and the number of steps
+        ``hyperparameters = (hamiltonian, timesteps)``
+    parameters : Tuple
+        Tuple containing ``(betas, gammas_singles, gammas_pairs)``
     """
-
-    def __repr__(self):
-        string = "Constant Parameters:\n"
-        string += "\tregister: " + str(self.reg) + "\n"
-        string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
-        string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
-        string += "Variable Parameters:\n"
-        string += "\t_betas: " + str(self._betas) + "\n"
-        string += "\t_gammas_singles: " + str(self._gammas_singles) + "\n"
-        string += "\t_gammas_pairs: " + str(self._gammas_pairs) + "\n"
-        return(string)
-
-    def __len__(self):
-        return self.timesteps * 3
-
-    def set_constant_parameters(self, constant_parameters: Tuple):
+    def __init__(self,
+                 hyperparameters: Tuple[PauliSum, int],
+                 parameters: Tuple):
         """
-        Parameters
-        ----------
-        constant_parameters: Tuple
-            A tuple of the form ``(reg, qubits_singles, qubits_pairs, timesteps, hamiltonian)``
+        Extracts the qubits the reference and mixer hamiltonian act on and
+        sets them.
 
+        Todo
+        ----
+        Add checks, that the parameters and hyperparameters work together (same
+        number of timesteps and single and pair qubit terms)
         """
-        self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps, hamiltonian\
-            = constant_parameters
+        # setup reg, qubits_singles and qubits_pairs
+        super().__init__(hyperparameters, parameters)
+        hamiltonian = hyperparameters[0]
+        self.betas, self.gammas_singles, self.gammas_pairs = parameters
         self.single_qubit_coeffs = [
             term.coefficient.real for term in hamiltonian if len(term) == 1]
         self.pair_qubit_coeffs = [
             term.coefficient.real for term in hamiltonian if len(term) == 2]
 
-        if len(self.single_qubit_coeffs) != len(self.qubits_singles):
-            raise ValueError("qubits_singles must have the same length as the"
-                             "number of single qubit terms in the hamiltonian")
-        if len(self.pair_qubit_coeffs) != len(self.qubits_pairs):
-            raise ValueError("qubits_pairs must have the same length as the"
-                             "number of two qubit terms in the hamiltonian")
 
-    def update_variable_parameters(self, variable_parameters: Tuple = None):
-        """
-        Parameters
-        ----------
-        variable_parameters: Tuple
-            A tuple containing ``(_betas, _gammas_singles, _gammas_pairs)``
-        """
-        if variable_parameters is not None:
-            self._betas, self._gammas_singles, self._gammas_pairs\
-                = variable_parameters
-            # check that the datas are good
-            if self.timesteps != len(self._betas):
-                raise ValueError(
-                    "Please make all your angle arrays the same length!")
-            if self.timesteps != len(self._gammas_singles):
-                raise ValueError(
-                    "Please make all your angle arrays the same length!")
-            if self.timesteps != len(self._gammas_pairs):
-                raise ValueError(
-                    "Please make all your angle arrays the same length!")
+    def __repr__(self):
+        string = "Hyperparameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
+        string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
+        string += "Parameters:\n"
+        string += "\tbetas: " + str(self.betas) + "\n"
+        string += "\tgammas_singles: " + str(self.gammas_singles) + "\n"
+        string += "\tgammas_pairs: " + str(self.gammas_pairs) + "\n"
+        return(string)
 
-        self.betas = [[b] * len(self.reg) for b in self._betas]
-        self.gammas_singles = [[gamma * coeff for coeff in self.single_qubit_coeffs]
-                               for gamma in self._gammas_singles]
-        self.gammas_pairs = [[gamma * coeff for coeff in self.pair_qubit_coeffs]
-                             for gamma in self._gammas_pairs]
+    def __len__(self):
+        return self.timesteps * 3
 
-    def update(self, new_values):
-        # overwrite betas with new ones
-        self._betas = list(new_values[0:self.timesteps])
+    @property
+    def x_rotation_angles(self):
+        return [[b] * len(self.reg) for b in self.betas]
+
+    @property
+    def z_rotation_angles(self):
+       return [[gamma * coeff for coeff in self.single_qubit_coeffs]
+                              for gamma in self.gammas_singles]
+
+    @property
+    def zz_rotation_angles(self):
+        return [[gamma * coeff for coeff in self.pair_qubit_coeffs]
+                               for gamma in self.gammas_pairs]
+
+    def update_from_raw(self, new_values):
+        # overwrite self.betas with new ones
+        self.betas = list(new_values[0:self.timesteps])
         new_values = new_values[self.timesteps:]    # cut betas from new_values
-        self._gammas_singles = list(new_values[0:self.timesteps])
+        self.gammas_singles = list(new_values[0:self.timesteps])
         new_values = new_values[self.timesteps:]
-        self._gammas_pairs = list(new_values[0:self.timesteps])
+        self.gammas_pairs = list(new_values[0:self.timesteps])
         new_values = new_values[self.timesteps:]
 
         if not len(new_values) == 0:
-            raise RuntimeWarning("list to make new gammas and betas out of"
+            raise RuntimeWarning("list to make new gammas and x_rotation_angles out of"
                                  "didn't have the right length!")
-        self.update_variable_parameters()
+        # self.update_variable_parameters()
 
     def raw(self):
         raw_data = []
-        raw_data += self._betas
-        raw_data += self._gammas_singles
-        raw_data += self._gammas_pairs
+        raw_data += self.betas
+        raw_data += self.gammas_singles
+        raw_data += self.gammas_pairs
         return raw_data
 
     @classmethod
-    def from_hamiltonian(cls,
-                         cost_hamiltonian: PauliSum,
-                         timesteps: int,
-                         time: float = None,
-                         reg: List = None):
+    def linear_ramp_from_hamiltonian(cls,
+                                     hamiltonian: PauliSum,
+                                     timesteps: int,
+                                     time: float = None):
         """
         Returns
         -------
@@ -530,26 +489,10 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
         """
         if time is None:
             time = float(0.7 * timesteps)
-        if reg is None:
-            reg = cost_hamiltonian.get_qubits()
         # create evenly spaced timesteps at the centers of #timesteps intervals
         dt = time / timesteps
         times = np.linspace(time * (0.5 / timesteps), time
                          * (1 - 0.5 / timesteps), timesteps)
-
-        # fill qubits_singles and qubits_pairs according to the terms in the hamiltonian
-        qubits_singles = []
-        qubits_pairs = []
-        for term in cost_hamiltonian:
-            if len(term) == 1:
-                qubits_singles.append(term.get_qubits()[0])
-            elif len(term) == 2:
-                qubits_pairs.append(term.get_qubits())
-            elif len(term) == 0:
-                pass  # could give a notice, that multiples of the identity are ignored, since unphysical
-            else:
-                raise NotImplementedError("As of now we can only handle"
-                                    "hamiltonians with at most two-qubit terms")
 
         # fill betas, gammas_singles and gammas_pairs
         betas = [dt * (1 - t / time) for t in times]
@@ -557,21 +500,20 @@ class AlternatingOperatorsQAOAParameters(GeneralQAOAParameters):
         gammas_pairs = [dt * t / time for t in times]
 
         # wrap it all nicely in a qaoa_parameters object
-        params = AlternatingOperatorsQAOAParameters(
-            (reg, qubits_singles, qubits_pairs, timesteps, cost_hamiltonian),
-            (betas, gammas_singles, gammas_pairs))
+        params = cls((hamiltonian, timesteps),
+                     (betas, gammas_singles, gammas_pairs))
         return params
 
     def plot(self, ax=None):
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self._betas, label="betas", marker="s", ls="")
-        if not _is_list_empty(self._gammas_singles):
-            ax.plot(self._gammas_singles,
+        ax.plot(self.betas, label="betas", marker="s", ls="")
+        if not _is_list_empty(self.gammas_singles):
+            ax.plot(self.gammas_singles,
                     label="gammas_singles", marker="^", ls="")
-        if not _is_list_empty(self._gammas_pairs):
-            ax.plot(self._gammas_pairs, label="gammas_pairs", marker="v", ls="")
+        if not _is_list_empty(self.gammas_pairs):
+            ax.plot(self.gammas_pairs, label="gammas_pairs", marker="v", ls="")
         ax.set_xlabel("timestep")
         # ax.grid(linestyle='--')
         ax.legend()
@@ -586,71 +528,68 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         U = e^{-i (T-t_p) H_0} e^{-i t_p H_c} \\cdots e^{-i(T-t_p)H_0} e^{-i t_p H_c}
 
     where the :math:`t_i` are the variable parameters.
+
+    Parameters
+    ----------
+    hyperparameters : Tuple
+        The hyperparameters containing the hamiltonian, the number of steps
+        and the total annealing time ``hyperparameters = (hamiltonian, timesteps, time)``
+    parameters : Tuple
+        Tuple containing ``(times)``
     """
+    def __init__(self,
+                 hyperparameters: Tuple[PauliSum, int, float],
+                 parameters: List):
+        """
+        Extracts the qubits the reference and mixer hamiltonian act on and
+        sets them.
+
+        Todo
+        ----
+        Add checks, that the parameters and hyperparameters work together (same
+        number of timesteps and single and pair qubit terms)
+        """
+        # setup reg, qubits_singles and qubits_pairs
+        super().__init__(hyperparameters)
+        hamiltonian, self._T = hyperparameters[0], hyperparameters[2]
+        self.single_qubit_coeffs = [
+            term.coefficient.real for term in hamiltonian if len(term) == 1]
+        self.pair_qubit_coeffs = [
+            term.coefficient.real for term in hamiltonian if len(term) == 2]
+        self.times = parameters
+
 
     def __repr__(self):
-        string = "Variable Parameters:\n"
-        string += "\t_times: " + str(self._times)
+        # Todo: Show the hyperparameters as well!
+        string = "Parameters:\n"
+        string += "\ttimes: " + str(self.times)
         return string
 
     def __len__(self):   # needs fixing
         return self.timesteps
 
-    def set_constant_parameters(self, constant_parameters: Tuple):
-        """
-        Parameters
-        ----------
-        constant_parameters : Tuple
-            A tuple containing ``(reg, qubits_singles, qubits_pairs,
-            timesteps, hamiltonian, time)``
-        """
-        self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps, hamiltonian, self._T\
-            = constant_parameters
-        self.single_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 1]
-        self.pair_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 2]
-        if len(self.single_qubit_coeffs) != len(self.qubits_singles):
-            raise ValueError("qubits_singles must have the same length as the "
-                             "number of single qubit terms in the hamiltonian")
-        if len(self.pair_qubit_coeffs) != len(self.qubits_pairs):
-            raise ValueError("qubits_pairs must have the same length as the "
-                             "number of two qubit terms in the hamiltonian")
-
-    def update_variable_parameters(self, variable_parameters: Tuple =None):
-        """
-        Parameters
-        ----------
-        constant_parameters : Tuple
-            A tuple containing ``(_times)``
-
-        Remark
-        ------
-        Having ``_times`` wrapped in a tuple seems superfluous, but is done for
-        consistency
-        """
-        if variable_parameters is not None:
-            # check that the datas are good
-            if self.timesteps != len(variable_parameters):
-                raise ValueError(
-                    "variable_parameters has the wrong length")
-            self._times = variable_parameters
-
+    @property
+    def x_rotation_angles(self):
         dt = self._T / self.timesteps
-        self.betas = [[(1 - t / self._T) * (dt)] * len(self.reg)
-                      for i, t in enumerate(self._times)]
-        self.gammas_singles = [[t * dt * coeff / self._T for coeff in self.single_qubit_coeffs]
-                               for i, t in enumerate(self._times)]
-        self.gammas_pairs = [[t * dt * coeff / self._T for coeff in self.pair_qubit_coeffs]
-                             for i, t in enumerate(self._times)]
+        return [[(1 - t / self._T) * (dt)] * len(self.reg) for t in self.times]
 
-    def update(self, new_values):
+    @property
+    def z_rotation_angles(self):
+        dt = self._T / self.timesteps
+        return  [[t * dt * coeff / self._T for coeff in self.single_qubit_coeffs]
+                 for t in self.times]
+
+    @property
+    def zz_rotation_angles(self):
+        dt = self._T / self.timesteps
+        return [[t * dt * coeff / self._T for coeff in self.pair_qubit_coeffs]
+                for t in self.times]
+
+    def update_from_raw(self, new_values):
         if len(new_values) != self.timesteps:
             raise RuntimeWarning(
                 "the new times should have length timesteps+1")
-        self._times = new_values
-
-        self.update_variable_parameters()
+        self.times = new_values
 
     def raw(self):
         """
@@ -659,14 +598,13 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         Union[List[float], np.array]:
             A list or array of the times `t_i`
         """
-        return self._times
+        return self.times
 
     @classmethod
-    def from_hamiltonian(cls,
-                         cost_hamiltonian: PauliSum,
-                         timesteps: int,
-                         time: float = None,
-                         reg: List = None):
+    def linear_ramp_from_hamiltonian(cls,
+                                     hamiltonian: PauliSum,
+                                     timesteps: int,
+                                     time: float = None):
         """
         Returns
         -------
@@ -674,40 +612,21 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
             An `AdiabaticTimestepsQAOAParameters` object holding all the
             parameters
         """
-        if reg is None:
-            reg = cost_hamiltonian.get_qubits()
         if time is None:
             time = 0.7 * timesteps
 
         times = list(np.linspace(time * (0.5 / timesteps),
                                  time * (1 - 0.5 / timesteps), timesteps))
 
-        # fill qubits_singles and qubits_pairs according to the terms in the hamiltonian
-        qubits_singles = []
-        qubits_pairs = []
-        for term in cost_hamiltonian:
-            if len(term) == 1:
-                # needs fixing...
-                qubits_singles.append(term.get_qubits()[0])
-            elif len(term) == 2:
-                qubits_pairs.append(term.get_qubits())
-            elif len(term) == 0:
-                pass  # could give a notice, that multiples of the identity are ignored, since unphysical
-            else:
-                raise NotImplementedError("As of now we can only handle "
-                                    "hamiltonians with at most two-qubit terms")
-
         # wrap it all nicely in a qaoa_parameters object
-        params = AdiabaticTimestepsQAOAParameters(
-            (reg, qubits_singles, qubits_pairs, timesteps, cost_hamiltonian, time),
-            (times))
+        params = cls((hamiltonian, timesteps, time), (times))
         return params
 
     def plot(self, ax=None):
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self._times, label="times", marker="s", ls="")
+        ax.plot(self.times, label="times", marker="s", ls="")
         ax.set_xlabel("timestep number")
         ax.legend()
 
@@ -715,114 +634,114 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
 class FourierQAOAParameters(AbstractQAOAParameters):
     """
     The QAOA parameters as the sine/cosine transform of the original gammas
-    and betas. See ()[] for a detailled description.
+    and x_rotation_angles. See ()[] for a detailled description.
 
     Todo
     ----
     Actually cite the paper.
+
+    Parameters
+    ----------
+    hyperparameters : Tuple
+        The hyperparameters containing the hamiltonian, the number of steps
+        and the total annealing time ``hyperparameters = (hamiltonian, timesteps, q)``
+    parameters : Tuple
+        Tuple containing ``(v, u_singles, u_pairs)``
     """
-
-    def __repr__(self):
-        string = "Constant Parameters:\n"
-        string += "\tregister: " + str(self.reg) + "\n"
-        string += "Variable Parameters:\n"
-        string += "\t_u_singles: " + str(self._u_singles) + "\n"
-        string += "\t_u_pairs: " + str(self._u_pairs) + "\n"
-        string += "\t_v: " + str(self._v) + "\n"
-        return(string)
-
-    def __len__(self):
-        return 3 * self.q
-
-    def set_constant_parameters(self, constant_parameters):
+    def __init__(self,
+                 hyperparameters: Tuple[PauliSum, int, float],
+                 parameters: Tuple):
         """
-        Parameters
-        ----------
-        param constant_parameters:  Tuple
-            A tuple containing ``(reg, qubits_singles, qubits_pairs, timesteps, hamiltonian,  q)``
-        """
-        self.reg, self.qubits_singles, self.qubits_pairs, self.timesteps,\
-            hamiltonian, self.q = constant_parameters
+        Extracts the qubits the reference and mixer hamiltonian act on and
+        sets them.
 
+        Todo
+        ----
+        Add checks, that the parameters and hyperparameters work together (same
+        number of timesteps and single and pair qubit terms)
+        """
+        # setup reg, qubits_singles and qubits_pairs
+        super().__init__(hyperparameters)
+        hamiltonian, self.q = hyperparameters[0], hyperparameters[2]
+        self.v, self.u_singles, self.u_pairs = parameters
         self.single_qubit_coeffs = [
             term.coefficient.real for term in hamiltonian if len(term) == 1]
         self.pair_qubit_coeffs = [
             term.coefficient.real for term in hamiltonian if len(term) == 2]
 
-    def update_variable_parameters(self, variable_parameters=None):
-        """
-        Parameters
-        ----------
-        param variable_parameters:  Tuple[List[float], List[float], List[float]]
-        A tuple containing ``(_v,  _u_singles, _u_pairs)``
-        """
-        def _dst(v, p):
-            """Compute the discrete sine transform from frequency to timespace."""
-            x = np.zeros(p)
-            for i in range(p):
-                for k in range(len(v)):
-                    x[i] += v[k] * np.sin((k + 0.5) * (i + 0.5) * np.pi / p)
-            return x
+    def __repr__(self):
+        string = "Hyperparameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "Parameters:\n"
+        string += "\tu_singles: " + str(self.u_singles) + "\n"
+        string += "\tu_pairs: " + str(self.u_pairs) + "\n"
+        string += "\tv: " + str(self.v) + "\n"
+        return(string)
 
-        def _dct(u, p):
-            """Compute the discrete cosine transform from frequency to timespace."""
-            x = np.zeros(p)
-            for i in range(p):
-                for k in range(len(u)):
-                    x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
-            return x
+    def __len__(self):
+        return 3 * self.q
 
-        if variable_parameters is not None:
-            self._v, self._u_singles, self._u_pairs = variable_parameters
+    @staticmethod
+    def _dst(v, p):
+        """Compute the discrete sine transform from frequency to timespace."""
+        x = np.zeros(p)
+        for i in range(p):
+            for k in range(len(v)):
+                x[i] += v[k] * np.sin((k + 0.5) * (i + 0.5) * np.pi / p)
+        return x
 
-            # check that the datas are good
-            if self.q != len(self._v):
-                raise ValueError(
-                    "Please make all your fourier coeff arrays the same length!")
-            if self.q != len(self._u_singles):
-                raise ValueError(
-                    "Please make all your fourier coeff arrays the same length!")
-            if self.q != len(self._u_pairs):
-                raise ValueError(
-                    "Please make all your fourier coeff arrays the same length!")
+    @staticmethod
+    def _dct(u, p):
+        """Compute the discrete cosine transform from frequency to timespace."""
+        x = np.zeros(p)
+        for i in range(p):
+            for k in range(len(u)):
+                x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
+        return x
 
-        self._betas = _dct(self._v, self.timesteps)
-        self._gammas_singles = _dst(self._u_singles, self.timesteps)
-        self._gammas_pairs = _dst(self._u_pairs, self.timesteps)
 
-        self.betas = [[b] * len(self.reg) for b in self._betas]
-        self.gammas_singles = [[gamma * coeff for coeff in self.single_qubit_coeffs]
-                               for gamma in self._gammas_singles]
-        self.gammas_pairs = [[gamma * coeff for coeff in self.pair_qubit_coeffs]
-                             for gamma in self._gammas_pairs]
+    @property
+    def x_rotation_angles(self):
+        betas = self._dct(self.v, self.timesteps)
+        return [[b] * len(self.reg) for b in betas]
 
-    def update(self, new_values):
-        self._v = list(new_values[0:self.q])   # overwrite betas with new ones
-        new_values = new_values[self.q:]    # cut betas from new_values
-        self._u_singles = list(new_values[0:self.q])
+    @property
+    def z_rotation_angles(self):
+        gammas_singles = self._dst(self.u_singles, self.timesteps)
+        return [[gamma * coeff for coeff in self.single_qubit_coeffs]
+                               for gamma in gammas_singles]
+
+    @property
+    def zz_rotation_angles(self):
+        gammas_pairs = self._dst(self.u_pairs, self.timesteps)
+        return [[gamma * coeff for coeff in self.pair_qubit_coeffs]
+                               for gamma in gammas_pairs]
+
+    def update_from_raw(self, new_values):
+        self.v = list(new_values[0:self.q])   # overwrite x_rotation_angles with new ones
+        new_values = new_values[self.q:]    # cut x_rotation_angles from new_values
+        self.u_singles = list(new_values[0:self.q])
         new_values = new_values[self.q:]
-        self._u_pairs = list(new_values[0:self.q])
+        self.u_pairs = list(new_values[0:self.q])
         new_values = new_values[self.q:]
 
         if not len(new_values) == 0:
             raise RuntimeWarning("list to make new u's and v's out of\
             didn't have the right length!")
-        self.update_variable_parameters()
 
     def raw(self):
         raw_data = []
-        raw_data += self._v
-        raw_data += self._u_singles
-        raw_data += self._u_pairs
+        raw_data += self.v
+        raw_data += self.u_singles
+        raw_data += self.u_pairs
         return raw_data
 
     @classmethod
-    def from_hamiltonian(cls,
-                         cost_hamiltonian: PauliSum,
-                         timesteps: int,
-                         q: int = 4,
-                         time: float = None,
-                         reg: List = None):
+    def linear_ramp_from_hamiltonian(cls,
+                                     hamiltonian: PauliSum,
+                                     timesteps: int,
+                                     q: int = 4,
+                                     time: float = None):
         """
         Parameters
         ----------
@@ -848,42 +767,22 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         Make a more informed choice of the default value for q. Probably
         depending on nqubits
         """
-        # fill qubits_singles and qubits_pairs according to the terms in the hamiltonian
-
-        if reg is None:
-            reg = cost_hamiltonian.get_qubits()
-
-        qubits_singles = []
-        qubits_pairs = []
-        for term in cost_hamiltonian:
-            if len(term) == 1:
-                qubits_singles.append(term.get_qubits()[0])
-            elif len(term) == 2:
-                qubits_pairs.append(term.get_qubits())
-            elif len(term) == 0:
-                pass  # could give a notice, that multiples of the identity are ignored, since unphysical
-            else:
-                raise NotImplementedError("As of now we can only handle "
-                                "hamiltonians with at most two-qubit terms")
-
         if time is None:
             time = 0.7 * timesteps
 
-        # fill betas, gammas_singles and gammas_pairs
+        # fill x_rotation_angles, z_rotation_angles and zz_rotation_angles
         v = [time / timesteps, *[0] * (q - 1)]
         u_singles = [time / timesteps, *[0] * (q - 1)]
         u_pairs = [time / timesteps, *[0] * (q - 1)]
 
         # wrap it all nicely in a qaoa_parameters object
-        params = FourierQAOAParameters(
-            (reg, qubits_singles, qubits_pairs, timesteps, cost_hamiltonian, q),
-            (v, u_singles, u_pairs))
+        params = cls((hamiltonian, timesteps, q), (v, u_singles, u_pairs))
         return params
 
     def plot(self, ax=None):
-        warnings.warn("Plotting the gammas and betas through DCT and DST. If you are "
-              "interested in _v, _u_singles and _u_pairs you can access them via "
-              "params._v, params._u_singles, params._u_pairs")
+        warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
+              "interested in v, u_singles and u_pairs you can access them via "
+              "params.v, params.u_singles, params.u_pairs")
         if ax is None:
             fig, ax = plt.subplots()
 
@@ -909,7 +808,7 @@ class QAOAParameterIterator:
     .. code-block:: python
 
         the_range = np.arange(0, 1, 0.4)
-        the_parameter = "_gammas_singles[1]"
+        the_parameter = "gammas_singles[1]"
         param_iterator = QAOAParameterIterator(qaoa_params, the_parameter, the_range)
         for params in param_iterator:
             # do what ever needs to be done
@@ -929,7 +828,7 @@ class QAOAParameterIterator:
             _internal_ list and ``i`` the index, at which it sits. E.g. if
             ``qaoa_params`` is of type ``AdiabaticTimestepsQAOAParameters`` and
             we want to vary over the second timestep, it is
-            ``the_parameter = "_times[1]"``.
+            ``the_parameter = "times[1]"``.
         the_range : Iterable -> float
             The range, that ``the_parameter`` should be varied over
 
@@ -965,6 +864,4 @@ class QAOAParameterIterator:
         else:
             getattr(self.params, self.the_parameter)[self.index0] = value
 
-        # update the dependent parameters and return
-        self.params.update_variable_parameters()
         return self.params

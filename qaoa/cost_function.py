@@ -27,7 +27,7 @@ def _qaoa_mixing_ham_rotation(betas: MemoryReference,
     Parameters
     ----------
     betas : MemoryReference
-        Classic register to read the betas from.
+        Classic register to read the x_rotation_angles from.
     reg : Union[List, Range]
         The register to apply the X-rotations on.
 
@@ -38,7 +38,7 @@ def _qaoa_mixing_ham_rotation(betas: MemoryReference,
 
     """
     if len(reg) != betas.declared_size:
-        raise ValueError("betas must have the same length as reg")
+        raise ValueError("x_rotation_angles must have the same length as reg")
 
     p = Program()
     for i, qubit in enumerate(reg):
@@ -55,11 +55,11 @@ def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
     Parameters
     ----------
     gammas_pairs : MemoryReference
-        Classic register to read the gammas_pairs from.
+        Classic register to read the zz_rotation_angles from.
     qubit_pairs : List
         List of the Qubit pairs to apply rotations on.
     gammas_singles : MemoryReference
-        Classic register to read the gammas_singles from.
+        Classic register to read the z_rotation_angles from.
     qubit_singles : List
         List of the single qubits to apply rotations on.
 
@@ -72,7 +72,7 @@ def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
     p = Program()
 
     if len(qubit_pairs) != gammas_pairs.declared_size:
-        raise ValueError("gammas_pairs must have the same length as qubits_pairs")
+        raise ValueError("zz_rotation_angles must have the same length as qubits_pairs")
 
     for i, qubit_pair in enumerate(qubit_pairs):
         p.inst(RZ(2 * gammas_pairs[i], qubit_pair[0]))
@@ -80,7 +80,7 @@ def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
         p.inst(CPHASE(-4 * gammas_pairs[i], qubit_pair[0], qubit_pair[1]))
 
     if gammas_singles.declared_size != len(qubit_singles):
-        raise ValueError("gammas_singles must have the same length as qubit_singles")
+        raise ValueError("z_rotation_angles must have the same length as qubit_singles")
 
     for i, qubit in enumerate(qubit_singles):
         p.inst(RZ(2 * gammas_singles[i], qubit))
@@ -114,13 +114,13 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
     gammas_singles = []
     gammas_pairs = []
     for i in range(timesteps):
-        beta = p.declare('betas{}'.format(i),
+        beta = p.declare('x_rotation_angles{}'.format(i),
                          memory_type='REAL',
                          memory_size=len(reg))
-        gamma_singles = p.declare('gammas_singles{}'.format(i),
+        gamma_singles = p.declare('z_rotation_angles{}'.format(i),
                                   memory_type='REAL',
                                   memory_size=len(qubits_singles))
-        gamma_pairs = p.declare('gammas_pairs{}'.format(i),
+        gamma_pairs = p.declare('zz_rotation_angles{}'.format(i),
                                 memory_type='REAL',
                                 memory_size=len(qubits_pairs))
         betas.append(beta)
@@ -178,9 +178,9 @@ def make_qaoa_memory_map(qaoa_params: Type[AbstractQAOAParameters]) -> dict:
     """
     memory_map = {}
     for i in range(qaoa_params.timesteps):
-        memory_map['betas{}'.format(i)] = qaoa_params.betas[i]
-        memory_map['gammas_singles{}'.format(i)] = qaoa_params.gammas_singles[i]
-        memory_map['gammas_pairs{}'.format(i)] = qaoa_params.gammas_pairs[i]
+        memory_map['x_rotation_angles{}'.format(i)] = qaoa_params.x_rotation_angles[i]
+        memory_map['z_rotation_angles{}'.format(i)] = qaoa_params.z_rotation_angles[i]
+        memory_map['zz_rotation_angles{}'.format(i)] = qaoa_params.zz_rotation_angles[i]
     return memory_map
 
 
@@ -224,7 +224,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          log=log)
 
     def __call__(self, params, nshots: int=1000):
-        self.params.update(params)
+        self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
         return out
 
@@ -265,10 +265,10 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                          hamiltonian=hamiltonian,
                          qvm=qvm,
                          return_standard_deviation=return_standard_deviation,
-                         base_numshots = base_numshots,
+                         base_numshots=base_numshots,
                          log=log)
 
     def __call__(self, params, nshots: int=10):
-        self.params.update(params)
+        self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
         return out
