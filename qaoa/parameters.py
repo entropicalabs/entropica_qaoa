@@ -286,8 +286,6 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         raw_data += [g for gammas in self.gammas_pairs for g in gammas]
         return raw_data
 
-
-    # TODO: Update this classmethod to work correctly with the new constructor
     @classmethod
     def linear_ramp_from_hamiltonian(cls,
                                      hamiltonian: PauliSum,
@@ -469,7 +467,6 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         if not len(new_values) == 0:
             raise RuntimeWarning("list to make new gammas and x_rotation_angles out of"
                                  "didn't have the right length!")
-        # self.update_variable_parameters()
 
     def raw(self):
         raw_data = []
