@@ -57,7 +57,7 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         # ``AbstractQAOAParameters.__init__`` doesn't do anything with the
         # argument ``parameters``. In the child classes we have to super from
         # them and handle them correctly. Additionally we might need to handle
-        # additionaly hyperparameters.
+        # extra hyperparameters.
 
         hamiltonian, self.timesteps = hyperparameters[:2]
 
@@ -66,7 +66,7 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         self.qubits_pairs = []
         self.qubits_singles = []
 
-        # fill qubits_singles and qubits_pairs according to the terms in the hamiltonian
+        # and fill qubits_singles and qubits_pairs according to the terms in the hamiltonian
         for term in hamiltonian:
             if len(term) == 1:
                 self.qubits_singles.append(term.get_qubits()[0])
@@ -94,14 +94,7 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
 
     def update_variable_parameters(self, variable_parameters: Tuple):
         """
-        Updates the variable parameters (i.e. angle parameters) s.t.
-
-        - ``self.x_rotation_angles`` is a list/array of the x-rotation angles.
-            Must have `dim self.timesteps` x ``len(self.reg)``
-        - ``self.z_rotation_angles`` is the list of the single qubit Z-rotation angles.
-            Must have dim ``dim self.timesteps`` x ``len(self.qubits_singles)``
-        - ``self.zz_rotation_angles`` is the list of the two qubit Z-rotation angles.
-            Must have dim ``dim self.timesteps`` x ``len(self.qubits_pairs)``
+        Deprecated. You can safely remove any call without replacement.
         """
         warnings.warn("self.update_variable_parameters is deprecated."
                       "You can safely remove any call and replace it with nothing",
@@ -136,7 +129,7 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         """
         raise NotImplementedError()
 
-    def raw_all(self):
+    def raw_rotation_angles(self):
         """
         Returns all single rotation angles as needed for the memory map in parametric circuits
 
@@ -167,11 +160,11 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         Parameters
         ----------
         hamiltonian : PauliSum
-            `hamiltonian` for which to calcuate the initial QAOA parameters.
+            `hamiltonian` for which to calculate the initial QAOA parameters.
         timesteps : int
             Number of timesteps.
         time : float
-            Total annealing time. If none is passed, 0,7 * timesteps is used.
+            Total annealing time. Defaults to ``0.7*timesteps``.
 
         Returns
         -------
@@ -200,11 +193,19 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
     QAOA parameters in their most general form with different angles for each
     operator.
 
-    Todo
-    ----
-    Put a nice equation like U = exp(-i*gamma_{00}) * exp(...) here to explain
-    better what we mean with most general. Update this docstring to reflect
-    better, what ``parameters`` should look like
+    This means, that at the i-th timestep the evolution hamiltonian is given by
+
+    .. math::
+
+        H(t_i) = \sum_{\textrm{qubits } j} \beta_{ij} X_j
+               + \sum_{\textrm{qubits } j} \gamma_{\textrm{single } ij} Z_j
+               + \sum_{\textrm{qubit pairs} (jk)} \gamma_{\textrm{pair }, i(jk)} Z_j Z_k
+
+    and the complete circuit is then
+
+    .. math::
+
+        U = e^{-i H(t_p)} \cdots e^{-iH(t_1)}.
 
     Parameters
     ----------
@@ -212,7 +213,8 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         The hyperparameters containing the hamiltonian and the number of steps
         ``hyperparameters = (hamiltonian, timesteps)``
     parameters : Tuple
-        Tuple containing ``(betas, gammas_singles, gammas_pairs)``
+        Tuple containing ``(betas, gammas_singles, gammas_pairs)`` with dimensions
+        ``((timesteps x nqubits), (timesteps x nsingle_terms), (timesteps x npair_terms))``
     """
     def __init__(self,
                  hyperparameters: Tuple[PauliSum, int],
@@ -402,7 +404,8 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         The hyperparameters containing the hamiltonian and the number of steps
         ``hyperparameters = (hamiltonian, timesteps)``
     parameters : Tuple
-        Tuple containing ``(betas, gammas_singles, gammas_pairs)``
+        Tuple containing ``(betas, gammas_singles, gammas_pairs)`` with dimensions
+        ``(p, p, p)``
     """
     def __init__(self,
                  hyperparameters: Tuple[PauliSum, int],
@@ -535,7 +538,7 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         The hyperparameters containing the hamiltonian, the number of steps
         and the total annealing time ``hyperparameters = (hamiltonian, timesteps, time)``
     parameters : Tuple
-        Tuple containing ``(times)``
+        Tuple containing ``(times)`` of length ``timesteps``
     """
     def __init__(self,
                  hyperparameters: Tuple[PauliSum, int, float],
@@ -558,9 +561,11 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
             term.coefficient.real for term in hamiltonian if len(term) == 2]
         self.times = parameters
 
-
     def __repr__(self):
-        # Todo: Show the hyperparameters as well!
+        string = "Hyperparameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
+        string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
         string = "Parameters:\n"
         string += "\ttimes: " + str(self.times)
         return string
@@ -634,19 +639,21 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
 class FourierQAOAParameters(AbstractQAOAParameters):
     """
     The QAOA parameters as the sine/cosine transform of the original gammas
-    and x_rotation_angles. See ()[] for a detailled description.
-
-    Todo
-    ----
-    Actually cite the paper.
+    and x_rotation_angles. See (Quantum Approximate Optimization Algorithm:
+    Performance, Mechanism, and Implementation on Near-Term Devices)
+    [https://arxiv.org/abs/1812.01041] for a detailed description.
 
     Parameters
     ----------
     hyperparameters : Tuple
         The hyperparameters containing the hamiltonian, the number of steps
         and the total annealing time ``hyperparameters = (hamiltonian, timesteps, q)``
+        ``q`` is the number of fourier coefficients. For ``q == timesteps`` we have
+        the full expresivity of ``AlternatingOperatorsQAOAParameters``. More
+        are redundant.
     parameters : Tuple
-        Tuple containing ``(v, u_singles, u_pairs)``
+        Tuple containing ``(v, u_singles, u_pairs)`` with dimensions
+        ``(q, q, q)``
     """
     def __init__(self,
                  hyperparameters: Tuple[PauliSum, int, float],
@@ -753,8 +760,6 @@ class FourierQAOAParameters(AbstractQAOAParameters):
             total time. Set to 0.7*timesteps if None is passed.
         fourier: q
             Number of Fourier coeffs. Defaults to 4
-        reg : List
-            The qubits to apply X-Rotations on
 
         Returns
         -------
@@ -786,12 +791,12 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self._betas, label="betas", marker="s", ls="")
-        if not _is_list_empty(self._gammas_singles):
-            ax.plot(self._gammas_singles,
+        ax.plot(self.betas, label="betas", marker="s", ls="")
+        if not _is_list_empty(self.gammas_singles):
+            ax.plot(self.gammas_singles,
                     label="gammas_singles", marker="^", ls="")
-        if not _is_list_empty(self._gammas_pairs):
-            ax.plot(self._gammas_pairs, label="gammas_pairs", marker="v", ls="")
+        if not _is_list_empty(self.gammas_pairs):
+            ax.plot(self.gammas_pairs, label="gammas_pairs", marker="v", ls="")
         ax.set_xlabel("timestep")
         # ax.grid(linestyle='--')
         ax.legend()
