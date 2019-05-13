@@ -197,9 +197,9 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
 
     .. math::
 
-        H(t_i) = \sum_{\textrm{qubits } j} \beta_{ij} X_j
-               + \sum_{\textrm{qubits } j} \gamma_{\textrm{single } ij} Z_j
-               + \sum_{\textrm{qubit pairs} (jk)} \gamma_{\textrm{pair }, i(jk)} Z_j Z_k
+        H(t_i) = \sum_{\\textrm{qubits } j} \\beta_{ij} X_j
+               + \sum_{\\textrm{qubits } j} \gamma_{\\textrm{single } ij} Z_j
+               + \sum_{\\textrm{qubit pairs} (jk)} \gamma_{\\textrm{pair }, i(jk)} Z_j Z_k
 
     and the complete circuit is then
 
