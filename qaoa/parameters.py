@@ -11,6 +11,7 @@ Todo
  - implement AbstractQAOAParameters.linear_ramp_from_hamiltonian() and then super() from it
 """
 
+import copy
 from typing import Iterable, Union, List, Tuple, Any, Type
 import warnings
 from custom_inherit import DocInheritMeta
@@ -79,8 +80,21 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
                 raise NotImplementedError(
                     "As of now we can only handle hamiltonians with at most two-qubit terms")
 
+        # extract the cofficients of the terms from the hamiltonian
+        # if creating `GeneralQAOAParameters` form this, we can delete this attributes
+        # again
+        self.single_qubit_coeffs = [
+            term.coefficient.real for term in hamiltonian if len(term) == 1]
+        self.pair_qubit_coeffs = [
+            term.coefficient.real for term in hamiltonian if len(term) == 2]
+
+
     def __repr__(self):
-        raise NotImplementedError()
+        string = "Hyperparameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
+        string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
+        return string
 
     def __len__(self):
         """
@@ -174,6 +188,30 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         """
         raise NotImplementedError()
 
+    @classmethod
+    def from_AbstractParameters(cls,
+                                abstract_params):
+        """Create a ConcreteQAOAParameters instance from an AbstractQAOAParameters
+        instance with hyperparameters from ``abstract_params`` and normal
+        parameters from ``parameters``
+
+
+        Parameters
+        ----------
+        abstract_params: AbstractQAOAParameters
+            An AbstractQAOAParameters instance to which to add the parameters
+
+        Returns
+        -------
+        cls
+            A ``cls`` object with the hyperparameters taken from
+            ``abstract_params``.
+        """
+        params = copy.deepcopy(abstract_params)
+        params.__class__ = cls
+
+        return params
+
     # TODO pass kwargs forward to plot() in all implementations  of this.
     def plot(self, ax=None):
         """
@@ -230,6 +268,13 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         """
         # setup reg, qubits_singles and qubits_pairs
         super().__init__(hyperparameters)
+
+        # delete the coefficients again, because this parametrization
+        # doesn't need them
+        del self.pair_qubit_coeffs
+        del self.single_qubit_coeffs
+
+        # and add the parameters
         self.betas, self.gammas_singles, self.gammas_pairs = parameters
 
     def __repr__(self):
@@ -364,6 +409,36 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
                      (betas, gammas_singles, gammas_pairs))
         return params
 
+    @classmethod
+    def from_AbstractParameters(cls,
+                                abstract_params: AbstractQAOAParameters,
+                                parameters: Tuple) -> AbstractQAOAParameters:
+        """Create a GeneralQAOAParameters instance from an AbstractQAOAParameters
+        instance with hyperparameters from ``abstract_params`` and normal
+        parameters from ``parameters``
+
+
+        Parameters
+        ----------
+        abstract_params: AbstractQAOAParameters
+            An AbstractQAOAParameters instance to which to add the parameters
+        parameters: Tuple
+            Same as ``parameters`` in ``.__init__()``
+
+        Returns
+        -------
+        GeneralQAOAParameters
+            A ``GeneralQAOAParameters`` object with the hyperparameters taken from
+            ``abstract_params`` and the normal parameters from ``parameters``
+        """
+        out = super().from_AbstractParameters(abstract_params)
+        out.betas, out.gammas_singles, out.gammas_pairs\
+            = parameters
+        del out.pair_qubit_coeffs
+        del out.single_qubit_coeffs
+        return out
+
+
     def plot(self, ax=None):
         if ax is None:
             fig, ax = plt.subplots()
@@ -421,11 +496,6 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         super().__init__(hyperparameters, parameters)
         hamiltonian = hyperparameters[0]
         self.betas, self.gammas_singles, self.gammas_pairs = parameters
-        self.single_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 1]
-        self.pair_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 2]
-
 
     def __repr__(self):
         string = "Hyperparameters:\n"
@@ -504,6 +574,31 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
                      (betas, gammas_singles, gammas_pairs))
         return params
 
+    @classmethod
+    def from_AbstractParameters(cls,
+                                abstract_params: AbstractQAOAParameters,
+                                parameters: Tuple):
+        """Create a GeneralQAOAParameters instance from an AbstractQAOAParameters
+        instance with hyperparameters from ``abstract_params`` and normal
+        parameters from ``parameters``
+
+        Parameters
+        ----------
+        abstract_params: AbstractQAOAParameters
+            An AbstractQAOAParameters instance to which to add the parameters
+        parameters: Tuple
+            Same as ``parameters`` in ``.__init__()``
+
+        Returns
+        -------
+        Type[AbstractQAOAParameters]
+            A ``cls`` object with the hyperparameters taken from
+            ``abstract_params`` and the normal parameters from ``parameters``
+        """
+        out = super().from_AbstractParameters(abstract_params)
+        out.betas, out.gammas_singles, out.gammas_pairs = parameters
+        return out
+
     def plot(self, ax=None):
         if ax is None:
             fig, ax = plt.subplots()
@@ -552,10 +647,6 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         # setup reg, qubits_singles and qubits_pairs
         super().__init__(hyperparameters)
         hamiltonian, self._T = hyperparameters[0], hyperparameters[2]
-        self.single_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 1]
-        self.pair_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 2]
         self.times = parameters
 
     def __repr__(self):
@@ -624,6 +715,39 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         params = cls((hamiltonian, timesteps, time), (times))
         return params
 
+    @classmethod
+    def from_AbstractParameters(cls,
+                                abstract_params: AbstractQAOAParameters,
+                                parameters: Tuple,
+                                time: float = None):
+        """Create a AdiabaticTimestepsQAOAParameters instance from an AbstractQAOAParameters
+        instance with hyperparameters from ``abstract_params`` and normal
+        parameters from ``parameters``
+
+
+        Parameters
+        ----------
+        abstract_params: AbstractQAOAParameters
+            An AbstractQAOAParameters instance to which to add the parameters
+        parameters: Tuple
+            Same as ``parameters`` in ``.__init__()``
+        time: float
+            The total annealing time. Defaults to ``0.7*abstract_params.timesteps``
+
+        Returns
+        -------
+        AdiabaticTimestepsQAOAParameters
+            A ``AdiabaticTimestepsQAOAParameters`` object with the
+            hyperparameters taken from ``abstract_params`` and the normal
+            parameters from ``parameters``
+        """
+        out = super().from_AbstractParameters(abstract_params)
+        if time is None:
+            time = 0.7*out.timesteps
+        out._T = time
+        out.times = parameters
+        return out
+
     def plot(self, ax=None):
         if ax is None:
             fig, ax = plt.subplots()
@@ -668,10 +792,6 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         super().__init__(hyperparameters)
         hamiltonian, self.q = hyperparameters[0], hyperparameters[2]
         self.v, self.u_singles, self.u_pairs = parameters
-        self.single_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 1]
-        self.pair_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 2]
 
     def __repr__(self):
         string = "Hyperparameters:\n"
@@ -780,6 +900,39 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         # wrap it all nicely in a qaoa_parameters object
         params = cls((hamiltonian, timesteps, q), (v, u_singles, u_pairs))
         return params
+
+    @classmethod
+    def from_AbstractParameters(cls,
+                                abstract_params: AbstractQAOAParameters,
+                                parameters: Tuple,
+                                q: int = 4):
+        """Create a AdiabaticTimestepsQAOAParameters instance from an AbstractQAOAParameters
+        instance with hyperparameters from ``abstract_params`` and normal
+        parameters from ``parameters``
+
+
+        Parameters
+        ----------
+        abstract_params: AbstractQAOAParameters
+            An AbstractQAOAParameters instance to which to add the parameters
+        parameters: Tuple
+            Same as ``parameters`` in ``.__init__()``
+        q: int
+            Number of fourier coefficients. Defaults to 4
+
+        Returns
+        -------
+        FourierQAOAParameters
+            A ``FourierQAOAParameters`` object with the hyperparameters taken
+            from ``abstract_params`` and the normal parameters from
+            ``parameters``
+        """
+        out = super().from_AbstractParameters(abstract_params)
+        if q is None:
+            q = 4
+        out.q = q
+        out.v, out.u_singles, out.u_pairs = parameters
+        return out
 
     def plot(self, ax=None):
         warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
