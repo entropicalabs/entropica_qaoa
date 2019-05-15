@@ -82,11 +82,18 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
 
         # extract the cofficients of the terms from the hamiltonian
         # if creating `GeneralQAOAParameters` form this, we can delete this attributes
-        # again
+        # again. Check if there are complex coefficients and issue a warning.
         self.single_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 1]
+            term.coefficient for term in hamiltonian if len(term) == 1]
+        if np.any(np.iscomplex(self.single_qubit_coeffs)):
+            warnings.warn("hamiltonian contained complex coefficients. Ignoring imaginary parts")
+        self.single_qubit_coeffs = [coeff.real for coeff in self.single_qubit_coeffs]
+        # and the same for the pair qubit coefficients
         self.pair_qubit_coeffs = [
-            term.coefficient.real for term in hamiltonian if len(term) == 2]
+            term.coefficient for term in hamiltonian if len(term) == 2]
+        if np.any(np.iscomplex(self.pair_qubit_coeffs)):
+            warnings.warn("hamiltonian contained complex coefficients. Ignoring imaginary parts")
+        self.pair_qubit_coeffs = [coeff.real for coeff in self.pair_qubit_coeffs]
 
 
     def __repr__(self):
@@ -268,12 +275,6 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         """
         # setup reg, qubits_singles and qubits_pairs
         super().__init__(hyperparameters)
-
-        # delete the coefficients again, because this parametrization
-        # doesn't need them
-        del self.pair_qubit_coeffs
-        del self.single_qubit_coeffs
-
         # and add the parameters
         self.betas, self.gammas_singles, self.gammas_pairs = parameters
 
@@ -298,11 +299,16 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
 
     @property
     def z_rotation_angles(self):
-        return self.gammas_singles
+        # if we change to numpy, this becomes simple array multiplication
+        # Automatic broadcasting should take care of the dimensions
+        return [[coeff*gamma for coeff, gamma in zip(self.single_qubit_coeffs, gammas)]
+                for gammas in self.gammas_singles]
 
     @property
     def zz_rotation_angles(self):
-        return self.gammas_pairs
+        # if we change to numpy, this becomes simple array multiplication
+        return [[coeff*gamma for coeff, gamma in zip(self.pair_qubit_coeffs, gammas)]
+                for gammas in self.gammas_pairs]
 
     def update_from_raw(self, new_values):
         self.betas = [new_values[len(self.reg) * i:len(self.reg) * i + len(self.reg)]
@@ -434,8 +440,6 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         out = super().from_AbstractParameters(abstract_params)
         out.betas, out.gammas_singles, out.gammas_pairs\
             = parameters
-        del out.pair_qubit_coeffs
-        del out.single_qubit_coeffs
         return out
 
 
