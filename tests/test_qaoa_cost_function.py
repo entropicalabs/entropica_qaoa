@@ -23,7 +23,7 @@ hamiltonian += next_term
 def test_QAOACostFunctionOnWFSim():
     sim = WavefunctionSimulator()
     log = []
-    params = AdiabaticTimestepsQAOAParameters.from_hamiltonian(hamiltonian, timesteps=4)
+    params = AdiabaticTimestepsQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, timesteps=4)
 
     with local_qvm():
         cost_function = QAOACostFunctionOnWFSim(hamiltonian,
@@ -38,7 +38,7 @@ def test_QAOACostFunctionOnWFSim():
 def test_QAOACostFunctionOnQVM():
     qvm = get_qc("2q-qvm")
     log = []
-    params = AdiabaticTimestepsQAOAParameters.from_hamiltonian(hamiltonian, timesteps=4)
+    params = AdiabaticTimestepsQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, timesteps=4)
 
     with local_qvm():
         cost_function = QAOACostFunctionOnQVM(hamiltonian,

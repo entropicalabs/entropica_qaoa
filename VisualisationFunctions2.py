@@ -1,4 +1,4 @@
-#1404CGitimport matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 import networkx as nx
 from scipy.optimize import minimize
@@ -27,10 +27,10 @@ EM: Done.
 
 QAOA parametrizations
 ~~~~~~~~~~~~~~~~~~~~~
-You have only gammas and betas, where all my QAOA parameter classes have
+You have only gammas and x_rotation_angles, where all my QAOA parameter classes have
 different gammas for the one qubit terms / bias terms and the two qubit terms /
-coupling terms. (I call them gammas_singles and gammas_pairs). Do you want me
-to implement a QAOAParameter class, that has only gammas and betas like you use them?
+coupling terms. (I call them z_rotation_angles and zz_rotation_angles). Do you want me
+to implement a QAOAParameter class, that has only gammas and x_rotation_angles like you use them?
 (Wouldn't take too long, since I just have to inherit from AbstractQAOAParameters and
 copy paste the code from AlternatingOperatorsQAOAParameters with minor modifications)
 
