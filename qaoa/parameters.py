@@ -83,17 +83,17 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         # extract the cofficients of the terms from the hamiltonian
         # if creating `GeneralQAOAParameters` form this, we can delete this attributes
         # again. Check if there are complex coefficients and issue a warning.
-        self.single_qubit_coeffs = [
-            term.coefficient for term in hamiltonian if len(term) == 1]
+        self.single_qubit_coeffs = np.array([
+            term.coefficient for term in hamiltonian if len(term) == 1])
         if np.any(np.iscomplex(self.single_qubit_coeffs)):
             warnings.warn("hamiltonian contained complex coefficients. Ignoring imaginary parts")
-        self.single_qubit_coeffs = [coeff.real for coeff in self.single_qubit_coeffs]
+        self.single_qubit_coeffs = self.single_qubit_coeffs.real
         # and the same for the pair qubit coefficients
-        self.pair_qubit_coeffs = [
-            term.coefficient for term in hamiltonian if len(term) == 2]
+        self.pair_qubit_coeffs = np.array([
+            term.coefficient for term in hamiltonian if len(term) == 2])
         if np.any(np.iscomplex(self.pair_qubit_coeffs)):
             warnings.warn("hamiltonian contained complex coefficients. Ignoring imaginary parts")
-        self.pair_qubit_coeffs = [coeff.real for coeff in self.pair_qubit_coeffs]
+        self.pair_qubit_coeffs = self.pair_qubit_coeffs.real
 
 
     def __repr__(self):
@@ -156,17 +156,17 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
 
         Returns
         -------
-        Union[List, np.array] :
+        np.array :
             Returns all single rotation angles in the ordering
             ``(x_rotation_angles, gamma_singles, zz_rotation_angles)`` where
             ``x_rotation_angles = (beta_q0_t0, beta_q1_t0, ... , beta_qn_tp)``
             and the same for ``z_rotation_angles`` and ``zz_rotation_angles``
 
         """
-        raw_data = []
-        raw_data += [beta for betas in self.x_rotation_angles for beta in betas]
-        raw_data += [g for gammas in self.z_rotation_angles for g in gammas]
-        raw_data += [g for gammas in self.zz_rotation_angles for g in gammas]
+        # Todo: Think about correct flattening before concatenation!
+        raw_data = np.concatenate((self.x_rotation_angles.flatten(),
+                                   self.z_rotation_angles.flatten(),
+                                   self.zz_rotation_angles.flatten()))
         return raw_data
 
     @classmethod
@@ -276,7 +276,8 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         # setup reg, qubits_singles and qubits_pairs
         super().__init__(hyperparameters)
         # and add the parameters
-        self.betas, self.gammas_singles, self.gammas_pairs = parameters
+        self.betas, self.gammas_singles, self.gammas_pairs\
+            = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
 
     def __repr__(self):
         string = "Hyperparameters:\n"
@@ -299,42 +300,35 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
 
     @property
     def z_rotation_angles(self):
-        # if we change to numpy, this becomes simple array multiplication
-        # Automatic broadcasting should take care of the dimensions
-        return [[coeff*gamma for coeff, gamma in zip(self.single_qubit_coeffs, gammas)]
-                for gammas in self.gammas_singles]
+        # TODO: Check, that broadcasting works also in the square case
+        return self.single_qubit_coeffs * self.gammas_singles
 
     @property
     def zz_rotation_angles(self):
-        # if we change to numpy, this becomes simple array multiplication
-        return [[coeff*gamma for coeff, gamma in zip(self.pair_qubit_coeffs, gammas)]
-                for gammas in self.gammas_pairs]
+        return self.pair_qubit_coeffs * self.gammas_pairs
 
     def update_from_raw(self, new_values):
-        self.betas = [new_values[len(self.reg) * i:len(self.reg) * i + len(self.reg)]
-                      for i in range(self.timesteps)]
+        self.betas = np.array(new_values[:len(self.reg)*self.timesteps])
+        self.betas = self.betas.reshape((self.timesteps, len(self.reg)))
         new_values = new_values[self.timesteps * len(self.reg):]
 
-        self.gammas_singles =\
-            [new_values[len(self.qubits_singles) * i:len(self.qubits_singles) * i
-                        + len(self.qubits_singles)] for i in range(self.timesteps)]
+        self.gammas_singles = np.array(new_values[:len(self.qubits_singles)*self.timesteps])
+        self.gammas_singles = self.gammas_singles.reshape((self.timesteps, len(self.qubits_singles)))
         new_values = new_values[self.timesteps * len(self.qubits_singles):]
 
-        self.gammas_pairs =\
-            [new_values[len(self.qubits_pairs) * i:len(self.qubits_pairs) * i
-                        + len(self.qubits_pairs)] for i in range(self.timesteps)]
+        self.gammas_pairs = np.array(new_values[:len(self.qubits_pairs)*self.timesteps])
+        self.gammas_pairs = self.gammas_pairs.reshape((self.timesteps, len(self.qubits_pairs)))
         new_values = new_values[self.timesteps * len(self.qubits_pairs):]
 
         # PEP8 complains, but new_values could be np.array and not list!
-        if  not len(new_values) == 0:
+        if not len(new_values) == 0:
             raise RuntimeWarning(
                 "list to make new gammas and x_rotation_angles out of didn't have the right length!")
 
     def raw(self):
-        raw_data = []
-        raw_data += [beta for betas in self.betas for beta in betas]
-        raw_data += [g for gammas in self.gammas_singles for g in gammas]
-        raw_data += [g for gammas in self.gammas_pairs for g in gammas]
+        raw_data = np.concatenate((self.betas.flatten(),
+                                   self.gammas_singles.flatten(),
+                                   self.gammas_pairs.flatten()))
         return raw_data
 
     @classmethod
@@ -360,6 +354,9 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         GeneralQAOAParameters
             The initial parameters best for `cost_hamiltonian`.
 
+        Todo
+        ----
+        Refactor, s.t. it supers from __init__ and uses np.arrays instead of lists
         """
         # create evenly spaced timesteps at the centers of #timesteps intervals
         if time is None:
@@ -439,7 +436,7 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         """
         out = super().from_AbstractParameters(abstract_params)
         out.betas, out.gammas_singles, out.gammas_pairs\
-            = parameters
+            = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
 
@@ -482,7 +479,7 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         ``hyperparameters = (hamiltonian, timesteps)``
     parameters : Tuple
         Tuple containing ``(betas, gammas_singles, gammas_pairs)`` with dimensions
-        ``(p, p, p)``
+        ``(timesteps, timesteps, timesteps)``
     """
     def __init__(self,
                  hyperparameters: Tuple[PauliSum, int],
@@ -498,8 +495,8 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         """
         # setup reg, qubits_singles and qubits_pairs
         super().__init__(hyperparameters, parameters)
-        hamiltonian = hyperparameters[0]
-        self.betas, self.gammas_singles, self.gammas_pairs = parameters
+        self.betas, self.gammas_singles, self.gammas_pairs\
+            = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
 
     def __repr__(self):
         string = "Hyperparameters:\n"
@@ -517,25 +514,23 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
 
     @property
     def x_rotation_angles(self):
-        return [[b] * len(self.reg) for b in self.betas]
+        return np.outer(self.betas, np.ones(len(self.reg)))
 
     @property
     def z_rotation_angles(self):
-       return [[gamma * coeff for coeff in self.single_qubit_coeffs]
-                              for gamma in self.gammas_singles]
+        return np.outer(self.gammas_singles, self.single_qubit_coeffs)
 
     @property
     def zz_rotation_angles(self):
-        return [[gamma * coeff for coeff in self.pair_qubit_coeffs]
-                               for gamma in self.gammas_pairs]
+        return np.outer(self.gammas_pairs, self.pair_qubit_coeffs)
 
     def update_from_raw(self, new_values):
         # overwrite self.betas with new ones
-        self.betas = list(new_values[0:self.timesteps])
+        self.betas = np.array(new_values[0:self.timesteps])
         new_values = new_values[self.timesteps:]    # cut betas from new_values
-        self.gammas_singles = list(new_values[0:self.timesteps])
+        self.gammas_singles = np.array(new_values[0:self.timesteps])
         new_values = new_values[self.timesteps:]
-        self.gammas_pairs = list(new_values[0:self.timesteps])
+        self.gammas_pairs = np.array(new_values[0:self.timesteps])
         new_values = new_values[self.timesteps:]
 
         if not len(new_values) == 0:
@@ -543,10 +538,9 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
                                  "didn't have the right length!")
 
     def raw(self):
-        raw_data = []
-        raw_data += self.betas
-        raw_data += self.gammas_singles
-        raw_data += self.gammas_pairs
+        raw_data = np.concatenate((self.betas,
+                                   self.gammas_singles,
+                                   self.gammas_pairs))
         return raw_data
 
     @classmethod
@@ -569,9 +563,10 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
                          * (1 - 0.5 / timesteps), timesteps)
 
         # fill betas, gammas_singles and gammas_pairs
-        betas = [dt * (1 - t / time) for t in times]
-        gammas_singles = [dt * t / time for t in times]
-        gammas_pairs = [dt * t / time for t in times]
+        # Todo (optional): replace by np.linspace for tiny performance gains
+        betas = np.array([dt * (1 - t / time) for t in times])
+        gammas_singles = np.array([dt * t / time for t in times])
+        gammas_pairs = np.array([dt * t / time for t in times])
 
         # wrap it all nicely in a qaoa_parameters object
         params = cls((hamiltonian, timesteps),
@@ -600,7 +595,8 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
             ``abstract_params`` and the normal parameters from ``parameters``
         """
         out = super().from_AbstractParameters(abstract_params)
-        out.betas, out.gammas_singles, out.gammas_pairs = parameters
+        out.betas, out.gammas_singles, out.gammas_pairs\
+            = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
     def plot(self, ax=None):
@@ -650,8 +646,8 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         """
         # setup reg, qubits_singles and qubits_pairs
         super().__init__(hyperparameters)
-        hamiltonian, self._T = hyperparameters[0], hyperparameters[2]
-        self.times = parameters
+        self._T = hyperparameters[2]
+        self.times = np.array(parameters)
 
     def __repr__(self):
         string = "Hyperparameters:\n"
@@ -668,25 +664,26 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
     @property
     def x_rotation_angles(self):
         dt = self._T / self.timesteps
-        return [[(1 - t / self._T) * (dt)] * len(self.reg) for t in self.times]
+        tmp = (1 - self.times/self._T) * dt
+        return np.outer(tmp, np.ones(len(self.reg)))
 
     @property
     def z_rotation_angles(self):
         dt = self._T / self.timesteps
-        return  [[t * dt * coeff / self._T for coeff in self.single_qubit_coeffs]
-                 for t in self.times]
+        tmp = self.times * dt / self._T
+        return np.outer(tmp, self.single_qubit_coeffs)
 
     @property
     def zz_rotation_angles(self):
         dt = self._T / self.timesteps
-        return [[t * dt * coeff / self._T for coeff in self.pair_qubit_coeffs]
-                for t in self.times]
+        tmp = self.times * dt / self._T
+        return np.outer(tmp, self.pair_qubit_coeffs)
 
     def update_from_raw(self, new_values):
         if len(new_values) != self.timesteps:
             raise RuntimeWarning(
                 "the new times should have length timesteps+1")
-        self.times = new_values
+        self.times = np.array(new_values)
 
     def raw(self):
         """
@@ -712,8 +709,8 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         if time is None:
             time = 0.7 * timesteps
 
-        times = list(np.linspace(time * (0.5 / timesteps),
-                                 time * (1 - 0.5 / timesteps), timesteps))
+        times = np.array(np.linspace(time * (0.5 / timesteps),
+                                     time * (1 - 0.5 / timesteps), timesteps))
 
         # wrap it all nicely in a qaoa_parameters object
         params = cls((hamiltonian, timesteps, time), (times))
@@ -749,7 +746,7 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         if time is None:
             time = 0.7*out.timesteps
         out._T = time
-        out.times = parameters
+        out.times = np.array(parameters)
         return out
 
     def plot(self, ax=None):
@@ -794,7 +791,7 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         """
         # setup reg, qubits_singles and qubits_pairs
         super().__init__(hyperparameters)
-        hamiltonian, self.q = hyperparameters[0], hyperparameters[2]
+        self.q = hyperparameters[2]
         self.v, self.u_singles, self.u_pairs = parameters
 
     def __repr__(self):
@@ -809,6 +806,8 @@ class FourierQAOAParameters(AbstractQAOAParameters):
     def __len__(self):
         return 3 * self.q
 
+    # Todo: properly vectorize this or search for already implemented
+    # DST and DCT
     @staticmethod
     def _dst(v, p):
         """Compute the discrete sine transform from frequency to timespace."""
@@ -831,26 +830,24 @@ class FourierQAOAParameters(AbstractQAOAParameters):
     @property
     def x_rotation_angles(self):
         betas = self._dct(self.v, self.timesteps)
-        return [[b] * len(self.reg) for b in betas]
+        return np.outer(betas, np.ones(len(self.reg)))
 
     @property
     def z_rotation_angles(self):
         gammas_singles = self._dst(self.u_singles, self.timesteps)
-        return [[gamma * coeff for coeff in self.single_qubit_coeffs]
-                               for gamma in gammas_singles]
+        return np.outer(gammas_singles, self.single_qubit_coeffs)
 
     @property
     def zz_rotation_angles(self):
         gammas_pairs = self._dst(self.u_pairs, self.timesteps)
-        return [[gamma * coeff for coeff in self.pair_qubit_coeffs]
-                               for gamma in gammas_pairs]
+        return np.outer(gammas_pairs, self.pair_qubit_coeffs)
 
     def update_from_raw(self, new_values):
-        self.v = list(new_values[0:self.q])   # overwrite x_rotation_angles with new ones
+        self.v = np.array(new_values[0:self.q])   # overwrite x_rotation_angles with new ones
         new_values = new_values[self.q:]    # cut x_rotation_angles from new_values
-        self.u_singles = list(new_values[0:self.q])
+        self.u_singles = np.array(new_values[0:self.q])
         new_values = new_values[self.q:]
-        self.u_pairs = list(new_values[0:self.q])
+        self.u_pairs = np.array(new_values[0:self.q])
         new_values = new_values[self.q:]
 
         if not len(new_values) == 0:
@@ -858,10 +855,9 @@ class FourierQAOAParameters(AbstractQAOAParameters):
             didn't have the right length!")
 
     def raw(self):
-        raw_data = []
-        raw_data += self.v
-        raw_data += self.u_singles
-        raw_data += self.u_pairs
+        raw_data = np.concatenate((self.v,
+                                   self.u_singles,
+                                   self.u_pairs))
         return raw_data
 
     @classmethod
@@ -897,9 +893,10 @@ class FourierQAOAParameters(AbstractQAOAParameters):
             time = 0.7 * timesteps
 
         # fill x_rotation_angles, z_rotation_angles and zz_rotation_angles
-        v = [time / timesteps, *[0] * (q - 1)]
-        u_singles = [time / timesteps, *[0] * (q - 1)]
-        u_pairs = [time / timesteps, *[0] * (q - 1)]
+        # Todo make this an easier expresssion
+        v = np.array([time / timesteps, *[0] * (q - 1)])
+        u_singles = np.array([time / timesteps, *[0] * (q - 1)])
+        u_pairs = np.array([time / timesteps, *[0] * (q - 1)])
 
         # wrap it all nicely in a qaoa_parameters object
         params = cls((hamiltonian, timesteps, q), (v, u_singles, u_pairs))
@@ -935,7 +932,8 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         if q is None:
             q = 4
         out.q = q
-        out.v, out.u_singles, out.u_pairs = parameters
+        out.v, out.u_singles, out.u_pairs =\
+            np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
     def plot(self, ax=None):
