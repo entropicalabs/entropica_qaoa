@@ -102,8 +102,11 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # TODO automatically generate Qubit mapping, if None is passed?
         # TODO ask Rigetti to implement "<" between qubits?
         if qubit_mapping is not None:
-            int_mapping = dict(zip(qubit_mapping.keys(),
-                                   [q.index for q in qubit_mapping.values()]))
+            if isinstance(next(iter(qubit_mapping.values())), Qubit):
+                int_mapping = dict(zip(qubit_mapping.keys(),
+                                       [q.index for q in qubit_mapping.values()]))
+            else:
+                int_mapping = qubit_mapping
             self.prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
         else:
             int_mapping = None

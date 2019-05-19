@@ -8,10 +8,10 @@ Change type of `reg` to Iterable or create custom type for it.
 """
 
 
-from typing import Union, List, Type
+from typing import Union, List, Type, Dict
 
 from pyquil import Program
-from pyquil.quil import MemoryReference
+from pyquil.quil import MemoryReference, QubitPlaceholder, Qubit
 from pyquil.gates import RX, RZ, CPHASE, H
 from pyquil.paulis import PauliSum
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
@@ -196,7 +196,8 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                  sim: WavefunctionSimulator,
                  return_standard_deviation=False,
                  noisy=False,
-                 log=None):
+                 log=None,
+                 qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """Create a cost-function for QAOA.
 
         Parameters
@@ -213,6 +214,10 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
             Add simulated samplign noise?
         log : list
             List to keep log of function calls
+        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
+            A mapping to fix QubitPlaceholders to physical qubits. E.g.
+            pyquil.quil.get_default_qubit_mapping(program) gives you on.
+
         """
         self.params = params
         super().__init__(prepare_qaoa_ansatz(params),
@@ -221,7 +226,8 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          sim=sim,
                          return_standard_deviation=return_standard_deviation,
                          noisy=noisy,
-                         log=log)
+                         log=log,
+                         qubit_mapping=qubit_mapping)
 
     def __call__(self, params, nshots: int=1000):
         self.params.update_from_raw(params)
@@ -240,7 +246,8 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                  qvm: QuantumComputer,
                  return_standard_deviation=False,
                  base_numshots: int = 100,
-                 log=None):
+                 log=None,
+                 qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """Create a cost-function for QAOA.
 
         Parameters
@@ -258,6 +265,11 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
             is then a multplier of this.
         log : list
             List to keep log of function calls
+        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
+            A mapping to fix QubitPlaceholders to physical qubits. E.g.
+            pyquil.quil.get_default_qubit_mapping(program) gives you on.
+
+
         """
         self.params = params
         super().__init__(prepare_qaoa_ansatz(params),
@@ -266,7 +278,8 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                          qvm=qvm,
                          return_standard_deviation=return_standard_deviation,
                          base_numshots=base_numshots,
-                         log=log)
+                         log=log,
+                         qubit_mapping=qubit_mapping)
 
     def __call__(self, params, nshots: int=10):
         self.params.update_from_raw(params)

@@ -20,6 +20,8 @@ next_term *= PauliTerm("Z", 1)
 hamiltonian += next_term
 
 # TODO verfiy, that the results actually make sense
+
+
 def test_QAOACostFunctionOnWFSim():
     sim = WavefunctionSimulator()
     log = []
@@ -34,6 +36,7 @@ def test_QAOACostFunctionOnWFSim():
                                                 log=log)
         out = cost_function(params.raw())
         print("output of QAOACostFunctionOnWFSim: ", out)
+
 
 def test_QAOACostFunctionOnQVM():
     qvm = get_qc("2q-qvm")

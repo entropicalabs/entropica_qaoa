@@ -33,7 +33,7 @@ def test_qaoa_on_wfsim():
                               memory_map=cost_fun.make_memory_map(params))
     assert np.allclose(out["fun"], -1.3, rtol=1.1)
     assert out["success"]
-    assert np.allclose(np.abs(wf.amplitudes**2), [0, 0, 0, 1], rtol=1.5, atol=0.05)
+    assert np.allclose(wf.probabilities(), [0, 0, 0, 1], rtol=1.5, atol=0.05)
     print(out)
 
 
