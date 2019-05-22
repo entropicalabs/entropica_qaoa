@@ -35,6 +35,6 @@
  - [?] rename `self._T` to `self.annealing_time` in `AdiabaticTimestepsQAOAParameters`? 
  - [ ] check the documentation and input for validity
  - [ ] print coefficients and number of timesteps in `__repr__`
- - [ ] convert all the parameter lists to numpy arrays
+ - [x] convert all the parameter lists to numpy arrays
 
 
