@@ -4,7 +4,7 @@
    - [ ] Implement `make_commutation_graph`
    - [ ] Get graph coloring algorithm
    - [ ] ...
- - [ ] Fix QubitPlaceholders in QAOACostFunction * . Pass a Qubit mapping? Automatically,
+ - [x] Fix QubitPlaceholders in QAOACostFunction * . Pass a Qubit mapping? Automatically,
    create one, if the hamiltonian contains placeholders? Check if QVMConnection
    can report possible physical Qubits!
  - [ ] Check all the QAOAParameter docstrings

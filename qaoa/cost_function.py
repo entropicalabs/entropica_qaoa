@@ -20,6 +20,7 @@ from pyquil.api._quantum_computer import QuantumComputer
 from vqe.cost_function import PrepareAndMeasureOnQVM, PrepareAndMeasureOnWFSim
 from qaoa.parameters import AbstractQAOAParameters, GeneralQAOAParameters
 
+
 def _qaoa_mixing_ham_rotation(betas: MemoryReference,
                               reg: Union[List, range]) -> Program:
     """Produce parametric Quil-Code for the mixing hamiltonian rotation.
@@ -234,6 +235,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
         out = super().__call__(self.params, nshots=nshots)
         return out
 
+
 class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
     """
     A cost function that inherits from PrepareAndMeasureOnQVM and implements
@@ -281,7 +283,7 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                          log=log,
                          qubit_mapping=qubit_mapping)
 
-    def __call__(self, params, nshots: int=10):
+    def __call__(self, params, nshots: int = 10):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
         return out
