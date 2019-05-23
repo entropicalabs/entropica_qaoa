@@ -10,8 +10,8 @@
  - [ ] Check all the QAOAParameter docstrings
 
 # Small things to fix
- - [ ] Fix QubitPlaceholders() in VQE cost function
- - [ ] Fix QubitPlaceholders() in QAOA cost function
+ - [x] Fix QubitPlaceholders() in VQE cost function
+ - [x] Fix QubitPlaceholders() in QAOA cost function
  - [ ] Check qaoa.cost_function tests for sanity
  - [ ] add parameter logging to the cost_functions
 
@@ -34,7 +34,7 @@
  - [?] rename `self.timesteps` everywhere to `self.p` or `self.ntimesteps`?
  - [?] rename `self._T` to `self.annealing_time` in `AdiabaticTimestepsQAOAParameters`? 
  - [ ] check the documentation and input for validity
- - [ ] print coefficients and number of timesteps in `__repr__`
+ - [x] print coefficients and number of timesteps in `__repr__`
  - [x] convert all the parameter lists to numpy arrays
 
 
