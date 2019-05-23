@@ -1,7 +1,14 @@
 import numpy as np
 import networkx as nx
 
+import matplotlib.pyplot as plt
+
 from pyquil.paulis import PauliSum, PauliTerm 
+from qaoa.parameters import QAOAParameterIterator
+
+
+
+## METHODS FOR CREATING RANDOM HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ##
 
 def create_random_hamiltonian(nqubits, single_terms=True, pair_terms=True):
     """
@@ -18,26 +25,135 @@ def create_random_hamiltonian(nqubits, single_terms=True, pair_terms=True):
     Returns
     -------
     :returns:   (PauliSum) a random diagonal hamiltonian on nqubits qubits
+    
+    TODO: Since only Hamiltonians with couplings are interesting, the pair_terms argument is a little 
+    unnecessary. Should we make this function a little more interesting by, eg:
+        
+        - allowing the user to specify the sparsity of the couplings they may want, rather than
+        us just randomly choosing for them?
+        - allowing a mean and standard deviation of the number of couplings to be passed in, then generate
+        an instance obeying those statistics? Could be useful for studying averages over many random graphs with certain
+        distributions.
+        - adding in the ability to specify some maximum node degree (or again some statistical measure)?
+    
+    
     """
-    coins = np.random.randint(2, size=(nqubits + nqubits**2))
-    coeffs = np.random.rand(nqubits + nqubits**2) * 2 - 1
     hamiltonian = []
     if single_terms:
-        for i in range(nqubits - 1):
-            if coins[i]:
-                hamiltonian.append(PauliTerm("Z", i, coeffs[i]))
-    hamiltonian.append(PauliTerm("Z", nqubits - 1, coeffs[nqubits - 1]))  # make sure maxqubit is the right one
+        numb_biases = np.random.randint(nqubits)
+        bias_qubits = np.random.choice(nqubits,numb_biases,replace=False)
+        bias_coeffs = np.random.rand(numb_biases)
+        for i in range(numb_biases):
+            hamiltonian.append(PauliTerm("Z", bias_qubits[i], bias_coeffs[i]))
 
     if pair_terms:
         for i in range(nqubits):
-            for j in range(i):
-                hamiltonian.append(PauliTerm("Z", j, 1.0)*PauliTerm("Z", i, coeffs[nqubits * i + j]))
+            for j in range(i+1,nqubits):
+                are_coupled = np.random.randint(2)
+                if are_coupled:
+                    couple_coeff = np.random.rand()    
+                    hamiltonian.append(PauliTerm("Z", i, couple_coeff)*PauliTerm("Z", j, 1.0))
+
+    return PauliSum(hamiltonian)
+
+def create_networkx_graph(vertices,edge_weights):
+    
+    """
+    Creates a networkx graph on specified number of vertices, with the specified edge_weights
+    """
+    
+    G = nx.Graph()
+    G.add_nodes_from(range(vertices))
+    i_pointer = 0
+    for i in range(vertices):  
+
+        for j in range(i,vertices):
+        
+            weight = edge_weights[i_pointer] + j
+            G.add_edge(i,j,weight=weight)
+        
+        i_pointer += vertices - i
+        
+    return G
+
+def networkx_from_hamiltonian(vertex_pairs,edge_weights):
+    
+    """
+    Creates a networkx graph on specified number of vertices, with the specified edge_weights
+    """
+    
+    G = nx.Graph()
+    
+    for i in range(len(vertex_pairs)):
+        G.add_edge(vertex_pairs[i][0],vertex_pairs[i][1],weight=edge_weights[i])
+        
+    return G
+
+def plot_networkx_graph(G):
+    
+    """
+    Takes in a networkx graph and plots it
+    
+    TODO: can we also take in the list of nodes with a bias, and somehow show this on the plot too?
+    """
+    
+    weights = [*nx.get_edge_attributes(G,'weight').values()]
+    pos = nx.shell_layout(G)
+    
+    nx.draw(G,pos,node_color='#A0CBE2',with_labels=True,edge_color=weights,
+                 width=4, edge_cmap=plt.cm.Blues)
+    plt.show()
+
+def hamiltonian_from_networkx(G):
+    
+    """
+    Builds a Hamiltonian from a networkx graph
+    """
+    
+    hamiltonian = []
+    edges = list(G.edges)
+    weights = [*nx.get_edge_attributes(G,'weight').values()]
+    hamiltonian = []
+    for i in range(len(edges)):
+        hamiltonian.append(PauliTerm("Z", edges[i][0], weights[i])*PauliTerm("Z", edges[i][1], 1.0))
+
     
     return PauliSum(hamiltonian)
 
+
+def hamiltonian_from_edges(vertices,edge_weights):
+    
+    """
+    Builds a Hamiltonian from a list of graph edge weights
+    Input list should be of form: [edge weights from node1 to remaining (n-1) nodes, 
+                                   edge weights from node2 to all remaining (n-2) nodes,
+                                   etc...]
+    """
+    
+    hamiltonian = []
+    i_pointer = 0
+    for i in range(vertices):      
+        for j in range(i,vertices):  
+            weight = edge_weights[i_pointer] + j
+            hamiltonian.append(PauliTerm("Z",i,weight)*PauliTerm("Z",j, 1.0))    
+        i_pointer += vertices - i
+    
+    return PauliSum(hamiltonian)
+
+
 """
+
 INCLUDE JL's other functions, eg create_normalized_random_hamiltonian?
+
+Other possibilities:
+    
+    - Make the create_random_hamiltonian method more general by allowing the user to specify the sparsity of the graph (via some measure),
+    or the ability to have full connectivity.
+    
 """
+
+
+## Methods for creating simple toy data sets
 
 def distances_dataset(data):
     
@@ -63,48 +179,6 @@ def distances_dataset(data):
             distances.update(tmp_dict)
             
     return distances
-
-def create_networkx_graph(vertices,edge_weights):
-    
-    """
-    Creates a networkx graph on specified number of vertices, with the specified edge_weights
-    """
-    
-    G = nx.Graph()
-    G.add_nodes_from(range(vertices))
-    i_pointer = 0
-    for i in range(vertices):  
-
-        for j in range(i,vertices):
-        
-            weight = edge_weights[i_pointer] + j
-            G.add_edge(i,j,weight)
-        
-        i_pointer += vertices - i
-        
-    return G
-
-def hamiltonian_from_edges(vertices,edge_weights):
-    
-    """
-    Builds a Hamiltonian from a list of graph edge weights
-    Input list should be of form: [edge weights from node1 to remaining (n-1) nodes, 
-                                   edge weights from node2 to all remaining (n-2) nodes,
-                                   etc...]
-    """
-    
-    hamiltonian = PauliSum("0.0")
-    i_pointer = 0
-    for i in range(vertices):  
-        
-        for j in range(i,vertices):
-            
-            weight = edge_weights[i_pointer] + j
-            hamiltonian += PauliTerm([["Z", i], ["Z", j]], weight)
-            
-        i_pointer += vertices - i
-        
-    return hamiltonian
 
 def create_gaussian_2Dclusters(n_clusters,n_points,means,variances,covs):
     
@@ -185,6 +259,8 @@ def create_circular_clusters(n_clusters,n_points,centres,radii):
         
     return data, cluster_labels
     
+
+## Methods for QAOA parameter landscape sweeps
 
 def prepare_sweep_parameters(param1_2var,param1_range,param2_2var,param2_range,betas,gammas_singles,gammas_pairs):
 
