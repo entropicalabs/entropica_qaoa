@@ -75,7 +75,7 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
                 self.qubits_pairs.append(term.get_qubits())
             elif len(term) == 0:
                 pass  # could give a notice, that multiples of the identity are
-                      # ignored, since unphysical
+                # ignored, since unphysical
             else:
                 raise NotImplementedError(
                     "As of now we can only handle hamiltonians with at most two-qubit terms")
@@ -94,7 +94,6 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         if np.any(np.iscomplex(self.pair_qubit_coeffs)):
             warnings.warn("hamiltonian contained complex coefficients. Ignoring imaginary parts")
         self.pair_qubit_coeffs = self.pair_qubit_coeffs.real
-
 
     def __repr__(self):
         string = "Hyperparameters:\n"
@@ -201,9 +200,9 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
     @classmethod
     def from_AbstractParameters(cls,
                                 abstract_params):
-        """Create a ConcreteQAOAParameters instance from an AbstractQAOAParameters
-        instance with hyperparameters from ``abstract_params`` and normal
-        parameters from ``parameters``
+        """Create a ConcreteQAOAParameters instance from an
+        AbstractQAOAParameters instance with hyperparameters from
+        ``abstract_params`` and normal parameters from ``parameters``
 
 
         Parameters
@@ -264,6 +263,7 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         Tuple containing ``(betas, gammas_singles, gammas_pairs)`` with dimensions
         ``((timesteps x nqubits), (timesteps x nsingle_terms), (timesteps x npair_terms))``
     """
+
     def __init__(self,
                  hyperparameters: Tuple[PauliSum, int],
                  parameters: Tuple):
@@ -288,9 +288,11 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
         string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
         string += "Parameters:\n"
-        string += "\tbetas: " + str(self.betas) + "\n"
-        string += "\tgammas_singles: " + str(self.gammas_singles) + "\n"
-        string += "\tgammas_pairs: " + str(self.gammas_pairs) + "\n"
+        string += "\tbetas: " + str(self.betas).replace("\n", ",") + "\n"
+        string += "\tgammas_singles: " + str(self.gammas_singles)\
+            .replace("\n", ",") + "\n"
+        string += "\tgammas_pairs: " + str(self.gammas_pairs)\
+            .replace("\n", ",") + "\n"
         return string
 
     def __len__(self):
@@ -311,15 +313,16 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         return self.pair_qubit_coeffs * self.gammas_pairs
 
     def update_from_raw(self, new_values):
-        self.betas = np.array(new_values[:len(self.reg)*self.timesteps])
+        self.betas = np.array(new_values[:len(self.reg) * self.timesteps])
         self.betas = self.betas.reshape((self.timesteps, len(self.reg)))
         new_values = new_values[self.timesteps * len(self.reg):]
 
-        self.gammas_singles = np.array(new_values[:len(self.qubits_singles)*self.timesteps])
-        self.gammas_singles = self.gammas_singles.reshape((self.timesteps, len(self.qubits_singles)))
+        self.gammas_singles = np.array(new_values[:len(self.qubits_singles) * self.timesteps])
+        self.gammas_singles = self.gammas_singles.reshape(
+            (self.timesteps, len(self.qubits_singles)))
         new_values = new_values[self.timesteps * len(self.qubits_singles):]
 
-        self.gammas_pairs = np.array(new_values[:len(self.qubits_pairs)*self.timesteps])
+        self.gammas_pairs = np.array(new_values[:len(self.qubits_pairs) * self.timesteps])
         self.gammas_pairs = self.gammas_pairs.reshape((self.timesteps, len(self.qubits_pairs)))
         new_values = new_values[self.timesteps * len(self.qubits_pairs):]
 
@@ -442,7 +445,6 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
             = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
-
     def plot(self, ax=None):
         if ax is None:
             fig, ax = plt.subplots()
@@ -484,6 +486,7 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         Tuple containing ``(betas, gammas_singles, gammas_pairs)`` with dimensions
         ``(timesteps, timesteps, timesteps)``
     """
+
     def __init__(self,
                  hyperparameters: Tuple[PauliSum, int],
                  parameters: Tuple):
@@ -563,7 +566,7 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         # create evenly spaced timesteps at the centers of #timesteps intervals
         dt = time / timesteps
         times = np.linspace(time * (0.5 / timesteps), time
-                         * (1 - 0.5 / timesteps), timesteps)
+                            * (1 - 0.5 / timesteps), timesteps)
 
         # fill betas, gammas_singles and gammas_pairs
         # Todo (optional): replace by np.linspace for tiny performance gains
@@ -635,6 +638,7 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
     parameters : Tuple
         Tuple containing ``(times)`` of length ``timesteps``
     """
+
     def __init__(self,
                  hyperparameters: Tuple[PauliSum, int, float],
                  parameters: List):
@@ -667,7 +671,7 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
     @property
     def x_rotation_angles(self):
         dt = self._T / self.timesteps
-        tmp = (1 - self.times/self._T) * dt
+        tmp = (1 - self.times / self._T) * dt
         return np.outer(tmp, np.ones(len(self.reg)))
 
     @property
@@ -747,7 +751,7 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         """
         out = super().from_AbstractParameters(abstract_params)
         if time is None:
-            time = 0.7*out.timesteps
+            time = 0.7 * out.timesteps
         out._T = time
         out.times = np.array(parameters)
         return out
@@ -780,6 +784,7 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         Tuple containing ``(v, u_singles, u_pairs)`` with dimensions
         ``(q, q, q)``
     """
+
     def __init__(self,
                  hyperparameters: Tuple[PauliSum, int, float],
                  parameters: Tuple):
@@ -828,7 +833,6 @@ class FourierQAOAParameters(AbstractQAOAParameters):
             for k in range(len(u)):
                 x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
         return x
-
 
     @property
     def x_rotation_angles(self):
@@ -941,8 +945,8 @@ class FourierQAOAParameters(AbstractQAOAParameters):
 
     def plot(self, ax=None):
         warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
-              "interested in v, u_singles and u_pairs you can access them via "
-              "params.v, params.u_singles, params.u_pairs")
+                      "interested in v, u_singles and u_pairs you can access them via "
+                      "params.v, params.u_singles, params.u_pairs")
         if ax is None:
             fig, ax = plt.subplots()
 
