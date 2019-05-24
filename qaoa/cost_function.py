@@ -239,10 +239,27 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          log=log,
                          qubit_mapping=qubit_mapping)
 
-    def __call__(self, params, nshots: int=1000):
+    def __call__(self, params, nshots: int = 1000):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
         return out
+
+    def get_wavefunction(self, params):
+        """Same as __call__ but returns the wavefunction instead of cost
+
+        Parameters
+        ----------
+        params: Union[list, np.ndarray]
+            Raw(!) QAOA parameters for the state preparation. Can be obtained
+            from Type[AbstractQAOAParameters] objects via ``.raw()``
+
+        Returns
+        -------
+        Wavefunction
+            The wavefunction prepared with raw QAOA parameters ``params``
+        """
+        self.params.update_from_raw(params)
+        return super().get_wavefunction(self.params)
 
 
 class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):

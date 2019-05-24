@@ -6,6 +6,7 @@ import numpy as np
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
+from pyquil.wavefunction import Wavefunction
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
@@ -166,6 +167,23 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             return out[0]
         else:
             return out
+
+    def get_wavefunction(self, params) -> Wavefunction:
+        """Same as __call__ but returns the wavefunction instead of cost
+
+        Parameters
+        ----------
+        params: Union[list, np.ndarray]
+            Parameters of the state preparation circuit
+
+        Returns
+        -------
+        Wavefunction
+            The wavefunction prepared with parameters ``params``
+        """
+        memory_map = self.make_memory_map(params)
+        wf = self.sim.wavefunction(self.prepare_ansatz, memory_map=memory_map)
+        return wf
 
 
 class PrepareAndMeasureOnQVM(AbstractCostFunction):
