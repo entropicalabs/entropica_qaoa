@@ -154,7 +154,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         # add simulated noise, if wanted
         if self.noisy:
-            E += np.random.randn()*sigma_E
+            E += np.random.randn() * sigma_E
         out = (float(E), float(sigma_E))
 
         try:
@@ -162,7 +162,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         except AttributeError:
             pass
 
-        if  not self.return_standard_deviation:
+        if not self.return_standard_deviation:
             return out[0]
         else:
             return out
@@ -184,7 +184,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
 
     def __init__(self,
                  prepare_ansatz: Program,
-                 make_memory_map: Callable[[Iterable],dict],
+                 make_memory_map: Callable[[Iterable], dict],
                  hamiltonian: PauliSum,
                  qvm: QuantumComputer,
                  return_standard_deviation: bool = False,
@@ -229,7 +229,6 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                                 trials=base_numshots)
         self.exe = qvm.compile(prepare_ansatz)
 
-
     def __call__(self, params, nshots=1):
         """
         Parameters
@@ -243,7 +242,8 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
 
         bitstrings = self.qvm.run(self.exe, memory_map=memory_map)
         for i in range(nshots - 1):
-            bitstrings = np.append(bitstrings, self.qvm.run(self.exe, memory_map=memory_map), axis=0)
+            bitstrings = np.append(bitstrings, self.qvm.run(
+                self.exe, memory_map=memory_map), axis=0)
 
         res = hamiltonian_expectation_value(self.ham, bitstrings)
         try:
@@ -258,7 +258,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
 
 
 def address_qubits_hamiltonian(hamiltonian: PauliSum,
-        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]) -> PauliSum:
+                               qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]) -> PauliSum:
     """Map Qubit Placeholders to ints in a PauliSum.
 
     Parameters
