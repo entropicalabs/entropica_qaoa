@@ -6,6 +6,7 @@ import numpy as np
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
+from pyquil.wavefunction import Wavefunction
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
@@ -154,7 +155,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         # add simulated noise, if wanted
         if self.noisy:
-            E += np.random.randn()*sigma_E
+            E += np.random.randn() * sigma_E
         out = (float(E), float(sigma_E))
 
         try:
@@ -162,10 +163,27 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         except AttributeError:
             pass
 
-        if  not self.return_standard_deviation:
+        if not self.return_standard_deviation:
             return out[0]
         else:
             return out
+
+    def get_wavefunction(self, params) -> Wavefunction:
+        """Same as __call__ but returns the wavefunction instead of cost
+
+        Parameters
+        ----------
+        params: Union[list, np.ndarray]
+            Parameters of the state preparation circuit
+
+        Returns
+        -------
+        Wavefunction
+            The wavefunction prepared with parameters ``params``
+        """
+        memory_map = self.make_memory_map(params)
+        wf = self.sim.wavefunction(self.prepare_ansatz, memory_map=memory_map)
+        return wf
 
 
 class PrepareAndMeasureOnQVM(AbstractCostFunction):
@@ -184,7 +202,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
 
     def __init__(self,
                  prepare_ansatz: Program,
-                 make_memory_map: Callable[[Iterable],dict],
+                 make_memory_map: Callable[[Iterable], dict],
                  hamiltonian: PauliSum,
                  qvm: QuantumComputer,
                  return_standard_deviation: bool = False,
@@ -229,7 +247,6 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                                 trials=base_numshots)
         self.exe = qvm.compile(prepare_ansatz)
 
-
     def __call__(self, params, nshots=1):
         """
         Parameters
@@ -243,7 +260,8 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
 
         bitstrings = self.qvm.run(self.exe, memory_map=memory_map)
         for i in range(nshots - 1):
-            bitstrings = np.append(bitstrings, self.qvm.run(self.exe, memory_map=memory_map), axis=0)
+            bitstrings = np.append(bitstrings, self.qvm.run(
+                self.exe, memory_map=memory_map), axis=0)
 
         res = hamiltonian_expectation_value(self.ham, bitstrings)
         try:
@@ -258,7 +276,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
 
 
 def address_qubits_hamiltonian(hamiltonian: PauliSum,
-        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]) -> PauliSum:
+                               qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]) -> PauliSum:
     """Map Qubit Placeholders to ints in a PauliSum.
 
     Parameters

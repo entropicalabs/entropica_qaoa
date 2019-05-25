@@ -20,6 +20,7 @@ from pyquil.api._quantum_computer import QuantumComputer
 from vqe.cost_function import PrepareAndMeasureOnQVM, PrepareAndMeasureOnWFSim
 from qaoa.parameters import AbstractQAOAParameters, GeneralQAOAParameters
 
+
 def _qaoa_mixing_ham_rotation(betas: MemoryReference,
                               reg: Union[List, range]) -> Program:
     """Produce parametric Quil-Code for the mixing hamiltonian rotation.
@@ -41,8 +42,8 @@ def _qaoa_mixing_ham_rotation(betas: MemoryReference,
         raise ValueError("x_rotation_angles must have the same length as reg")
 
     p = Program()
-    for i, qubit in enumerate(reg):
-        p.inst(RX(-2 * betas[i], qubit))
+    for beta, qubit in zip(betas, reg):
+        p.inst(RX(-2 * beta, qubit))
     return p
 
 
@@ -74,16 +75,16 @@ def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
     if len(qubit_pairs) != gammas_pairs.declared_size:
         raise ValueError("zz_rotation_angles must have the same length as qubits_pairs")
 
-    for i, qubit_pair in enumerate(qubit_pairs):
-        p.inst(RZ(2 * gammas_pairs[i], qubit_pair[0]))
-        p.inst(RZ(2 * gammas_pairs[i], qubit_pair[1]))
-        p.inst(CPHASE(-4 * gammas_pairs[i], qubit_pair[0], qubit_pair[1]))
+    for gamma_pair, qubit_pair in zip(gammas_pairs, qubit_pairs):
+        p.inst(RZ(2 * gamma_pair, qubit_pair[0]))
+        p.inst(RZ(2 * gamma_pair, qubit_pair[1]))
+        p.inst(CPHASE(-4 * gamma_pair, qubit_pair[0], qubit_pair[1]))
 
     if gammas_singles.declared_size != len(qubit_singles):
         raise ValueError("z_rotation_angles must have the same length as qubit_singles")
 
-    for i, qubit in enumerate(qubit_singles):
-        p.inst(RZ(2 * gammas_singles[i], qubit))
+    for gamma_single, qubit in zip(gammas_singles, qubit_singles):
+        p.inst(RZ(2 * gamma_single, qubit))
 
     return p
 
@@ -109,7 +110,8 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
 
     p = Program()
     # create list of memory references to store angles in.
-    # Has to be so nasty, because aliased memories are not supported yet...
+    # Has to be so nasty, because aliased memories are not supported yet.
+    # Also length 0 memory references crash the QVM
     betas = []
     gammas_singles = []
     gammas_pairs = []
@@ -117,15 +119,23 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
         beta = p.declare('x_rotation_angles{}'.format(i),
                          memory_type='REAL',
                          memory_size=len(reg))
+        betas.append(beta)
+        if not reg:  # remove length 0 references again
+            p.pop()
+
         gamma_singles = p.declare('z_rotation_angles{}'.format(i),
                                   memory_type='REAL',
                                   memory_size=len(qubits_singles))
+        gammas_singles.append(gamma_singles)
+        if not qubits_singles:   # remove length 0 references again
+            p.pop()
+
         gamma_pairs = p.declare('zz_rotation_angles{}'.format(i),
                                 memory_type='REAL',
                                 memory_size=len(qubits_pairs))
-        betas.append(beta)
-        gammas_singles.append(gamma_singles)
         gammas_pairs.append(gamma_pairs)
+        if not qubits_pairs:  # remove length 0 references again
+            p.pop()
 
     # apply cost and mixing hamiltonian alternating
     for i in range(timesteps):
@@ -154,7 +164,7 @@ def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters]) -> Program:
     Returns
     -------
     Program
-        Parametetric Quil Program with the whole circuit.
+        Parametric Quil Program with the whole circuit.
 
     """
     p = _prepare_all_plus_state(qaoa_params.reg)
@@ -229,10 +239,28 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          log=log,
                          qubit_mapping=qubit_mapping)
 
-    def __call__(self, params, nshots: int=1000):
+    def __call__(self, params, nshots: int = 1000):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
         return out
+
+    def get_wavefunction(self, params):
+        """Same as __call__ but returns the wavefunction instead of cost
+
+        Parameters
+        ----------
+        params: Union[list, np.ndarray]
+            Raw(!) QAOA parameters for the state preparation. Can be obtained
+            from Type[AbstractQAOAParameters] objects via ``.raw()``
+
+        Returns
+        -------
+        Wavefunction
+            The wavefunction prepared with raw QAOA parameters ``params``
+        """
+        self.params.update_from_raw(params)
+        return super().get_wavefunction(self.params)
+
 
 class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
     """
@@ -281,7 +309,7 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                          log=log,
                          qubit_mapping=qubit_mapping)
 
-    def __call__(self, params, nshots: int=10):
+    def __call__(self, params, nshots: int = 10):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
         return out
