@@ -1,0 +1,5 @@
+- Rename some of the longer classes / methods? 
+- Benchmark "noisy" and illustrate its use. Also show use of "log".
+- Print out of parameters for the General, Alternating classes etc.
+- Showcase the other parameter classes (adiabatic, Fourier)
+- How would a user easily/cleanly modify the number of timesteps to use without having to re-instantiate the whole claass again?
