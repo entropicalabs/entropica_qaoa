@@ -3,4 +3,4 @@
 - Print out of parameters for the General, Alternating classes etc.
 - Showcase the other parameter classes (adiabatic, Fourier)
 - How would a user easily/cleanly modify the number of timesteps to use without having to re-instantiate the whole claass again?
-- Clean up existing notebooks: add URLs and referenes, improve explanations, clearer/better naming of variables, keeping imports to a minimum, etc.
+- Clean up existing notebooks: add URLs and references, improve explanations, clearer/better naming of variables, keeping imports to a minimum, etc.
