@@ -12,7 +12,7 @@ from typing import Union, List, Type, Dict
 
 from pyquil import Program
 from pyquil.quil import MemoryReference, QubitPlaceholder, Qubit
-from pyquil.gates import RX, RZ, CPHASE, H
+from pyquil.gates import RX, RZ, CPHASE, H, X, I
 from pyquil.paulis import PauliSum
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
@@ -152,8 +152,22 @@ def _prepare_all_plus_state(reg) -> Program:
         p.inst(H(qubit))
     return p
 
+def _prepare_custom_classical_state(reg, state) -> Program:
+    """Prepare a custom classical state for all qubits in reg."""
+    
+    if len(reg) != len(state):
+        raise ValueError("qubit state must be the same length as reg")
+    
+    p = Program()
+    for i, s in enumerate(state):
+        if int(s) == 0:
+            p.inst(I(i))
+        if int(s) == 1:
+            p.inst(X(i))
+    return p
 
-def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters]) -> Program:
+
+def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters], init_state=None) -> Program:
     """Create parametric quil code for QAOA circuit.
 
     Parameters
@@ -167,7 +181,10 @@ def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters]) -> Program:
         Parametric Quil Program with the whole circuit.
 
     """
-    p = _prepare_all_plus_state(qaoa_params.reg)
+    if not init_state:
+        p = _prepare_all_plus_state(qaoa_params.reg)
+    else: 
+        p = _prepare_custom_classical_state(qaoa_params.reg, init_state)
     p += _qaoa_annealing_program(qaoa_params)
     return p
 
@@ -207,6 +224,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                  return_standard_deviation=False,
                  noisy=False,
                  log=None,
+                 init_state=None,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """Create a cost-function for QAOA.
 
@@ -230,7 +248,9 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
 
         """
         self.params = params
-        super().__init__(prepare_qaoa_ansatz(params),
+        self.init_state = init_state
+        
+        super().__init__(prepare_qaoa_ansatz(params,init_state=init_state),
                          make_memory_map=make_qaoa_memory_map,
                          hamiltonian=hamiltonian,
                          sim=sim,
@@ -238,6 +258,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          noisy=noisy,
                          log=log,
                          qubit_mapping=qubit_mapping)
+
 
     def __call__(self, params, nshots: int = 1000):
         self.params.update_from_raw(params)
