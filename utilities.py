@@ -116,30 +116,29 @@ def hamiltonian_from_networkx(G):
     hamiltonian = []
     for i in range(len(edges)):
         hamiltonian.append(PauliTerm("Z", edges[i][0], weights[i])*PauliTerm("Z", edges[i][1], 1.0))
-
     
     return PauliSum(hamiltonian)
 
 
-def hamiltonian_from_edges(vertices,edge_weights):
+def hamiltonian_from_dict(data_dict):
     
     """
-    Builds a Hamiltonian from a list of graph edge weights
-    Input list should be of form: [edge weights from node1 to remaining (n-1) nodes, 
-                                   edge weights from node2 to all remaining (n-2) nodes,
-                                   etc...]
+    Builds a Hamiltonian from a dict with keys indicating the pairs of connected vertices, 
+    and values equal to the weights on the corresponding edges.
     """
+    
+    vertex_pairs = [*data_dict.keys()]
+    edge_weights = [*data_dict.values()]
     
     hamiltonian = []
-    i_pointer = 0
-    for i in range(vertices):      
-        for j in range(i,vertices):  
-            weight = edge_weights[i_pointer] + j
-            hamiltonian.append(PauliTerm("Z",i,weight)*PauliTerm("Z",j, 1.0))    
-        i_pointer += vertices - i
-    
-    return PauliSum(hamiltonian)
 
+    for i in range(len(vertex_pairs)):
+        
+        qubit_a = int(vertex_pairs[i][0])
+        qubit_b = int(vertex_pairs[i][1])
+        hamiltonian.append(PauliTerm("Z",qubit_a,edge_weights[i])*PauliTerm("Z",qubit_b, 1.0))
+
+    return PauliSum(hamiltonian)
 
 """
 
@@ -151,7 +150,6 @@ Other possibilities:
     or the ability to have full connectivity.
     
 """
-
 
 ## Methods for creating simple toy data sets
 
@@ -165,6 +163,9 @@ def distances_dataset(data):
     (eg with exponential decay).
     """
     
+    if type(data) == dict:
+        data = np.concatenate(list(data.values()))
+    
     data = np.array(data)
     data_len = len(data)
     distances = {}
@@ -175,7 +176,7 @@ def distances_dataset(data):
             if i==j:
                 continue
 
-            tmp_dict = {str((i,j)): np.linalg.norm(data[i] - data[j])}
+            tmp_dict = {f"{i}{j}": np.linalg.norm(data[i] - data[j])}
             distances.update(tmp_dict)
             
     return distances
@@ -192,15 +193,14 @@ def create_gaussian_2Dclusters(n_clusters,n_points,means,variances,covs):
     :param      n_clusters:      The number of clusters
     :param      n_points:        A list of the number of points in each cluster
     :param      means:           A list of the means [x,y] coordinates of each cluster in the plane (i.e. their centre)
-    :param      variances:       A list of the standard deviations in the [x,y] coordinates of each cluster
+    :param      variances:       A list of the variances in the [x,y] coordinates of each cluster
     :param      covs:            A list of the covariances in the x and y coordinates of each cluster
 
     Returns
     -------
-    :param      data
+    :param      data             A dict whose keys are the cluster labels, and values are a matrix of the with the x and y coordinates as its rows.
     """
     args_in = [len(means),len(variances),len(covs),len(n_points)]
-    #print(args_in)
     assert all(item == n_clusters for item in args_in), "Insufficient data provided for specified number of clusters"
     
     data = {}
@@ -210,12 +210,17 @@ def create_gaussian_2Dclusters(n_clusters,n_points,means,variances,covs):
         cov_matr = [[variances[i][0], covs[i]],[covs[i],variances[i][1]]]
         
         x,y = np.random.multivariate_normal(cluster_mean,cov_matr,n_points[i]).T
-        tmp_dict = {str(i): [x,y]}
+        coords = np.array([x,y])
+        tmp_dict = {str(i): coords.T}
         data.update(tmp_dict)
         
-    #data = np.array(tmp_dict)
-        
     return data
+
+def plot_cluster_data(data):
+    
+    data_matr = np.concatenate(list(data.values()))
+    plt.scatter(data_matr[:,0],data_matr[:,1])
+    plt.show()
 
 def create_circular_clusters(n_clusters,n_points,centres,radii):
     

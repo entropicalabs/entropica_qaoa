@@ -3,13 +3,16 @@ import os
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
+import numpy as np
+
 from pyquil.api import local_qvm, WavefunctionSimulator
 from pyquil import get_qc, Program
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder
 
 from qaoa.cost_function import QAOACostFunctionOnQVM, QAOACostFunctionOnWFSim
-from qaoa.parameters import AdiabaticTimestepsQAOAParameters
+from qaoa.parameters import AdiabaticTimestepsQAOAParameters,\
+    AlternatingOperatorsQAOAParameters
 
 # Create a mixed and somehwat more complicated hamiltonian
 # TODO fix the whole Qubit Placeholder Business
@@ -36,6 +39,24 @@ def test_QAOACostFunctionOnWFSim():
                                                 log=log)
         out = cost_function(params.raw())
         print("output of QAOACostFunctionOnWFSim: ", out)
+
+
+def test_QAOACostFunctionOnWFSim_get_wavefunction():
+    sim = WavefunctionSimulator()
+    ham = PauliSum.from_compact_str("0.7*Z0*Z1 + 1.2*Z0*Z2")
+    timesteps = 2
+    params = AlternatingOperatorsQAOAParameters\
+        .linear_ramp_from_hamiltonian(ham, timesteps)
+    with local_qvm():
+        cost_function = QAOACostFunctionOnWFSim(ham,
+                                                params=params,
+                                                sim=sim)
+        wf = cost_function.get_wavefunction(params.raw())
+        print(wf.probabilities())
+        assert np.allclose(wf.probabilities(),
+                           np.array([0.01, 0.308, 0.053, 0.13,
+                            0.13, 0.053, 0.308, 0.01]),
+                           rtol=1e-2, atol=0.005)
 
 
 def test_QAOACostFunctionOnQVM():
