@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from pyquil.paulis import PauliSum, PauliTerm 
 from qaoa.parameters import QAOAParameterIterator
-
+from scipy.spatial import distance
 
 
 ## METHODS FOR CREATING RANDOM HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ##
@@ -44,7 +44,7 @@ def create_random_hamiltonian(nqubits, single_terms=True, pair_terms=True):
         bias_qubits = np.random.choice(nqubits,numb_biases,replace=False)
         bias_coeffs = np.random.rand(numb_biases)
         for i in range(numb_biases):
-            hamiltonian.append(PauliTerm("Z", bias_qubits[i], bias_coeffs[i]))
+            hamiltonian.append(PauliTerm("Z", int(bias_qubits[i]), bias_coeffs[i]))
 
     if pair_terms:
         for i in range(nqubits):
@@ -56,7 +56,7 @@ def create_random_hamiltonian(nqubits, single_terms=True, pair_terms=True):
 
     return PauliSum(hamiltonian)
 
-def create_networkx_graph(vertices,edge_weights):
+def create_graph(vertices,edge_weights):
     
     """
     Creates a networkx graph on specified number of vertices, with the specified edge_weights
@@ -76,20 +76,33 @@ def create_networkx_graph(vertices,edge_weights):
         
     return G
 
-def networkx_from_hamiltonian(vertex_pairs,edge_weights):
-    
-    """
-    Creates a networkx graph on specified number of vertices, with the specified edge_weights
-    """
+#def graph_from_hamiltonian(vertex_pairs,edge_weights):
+#    
+#    """
+#    Creates a networkx graph on specified number of vertices, with the specified edge_weights
+#    """
+#    
+#    G = nx.Graph()
+#    
+#    for i in range(len(vertex_pairs)):
+#        G.add_edge(vertex_pairs[i][0],vertex_pairs[i][1],weight=edge_weights[i])
+#        
+#    return G
+
+def graph_from_hamiltonian(hamiltonian):
     
     G = nx.Graph()
-    
-    for i in range(len(vertex_pairs)):
-        G.add_edge(vertex_pairs[i][0],vertex_pairs[i][1],weight=edge_weights[i])
+    dim = len(hamiltonian)
+    for i in range(dim):
+        qubits = hamiltonian.terms[i].get_qubits()
+        if len(qubits) == 1:
+            continue
+        else:
+            G.add_edge(qubits[0],qubits[1],weight=hamiltonian.terms[i].coefficient)
         
     return G
 
-def plot_networkx_graph(G):
+def plot_graph(G):
     
     """
     Takes in a networkx graph and plots it
@@ -97,14 +110,14 @@ def plot_networkx_graph(G):
     TODO: can we also take in the list of nodes with a bias, and somehow show this on the plot too?
     """
     
-    weights = [*nx.get_edge_attributes(G,'weight').values()]
+    weights = np.real([*nx.get_edge_attributes(G,'weight').values()])
     pos = nx.shell_layout(G)
     
     nx.draw(G,pos,node_color='#A0CBE2',with_labels=True,edge_color=weights,
                  width=4, edge_cmap=plt.cm.Blues)
     plt.show()
 
-def hamiltonian_from_networkx(G):
+def hamiltonian_from_graph(G):
     
     """
     Builds a Hamiltonian from a networkx graph
@@ -119,13 +132,15 @@ def hamiltonian_from_networkx(G):
     
     return PauliSum(hamiltonian)
 
-
-def hamiltonian_from_dict(data_dict):
+"""
+def hamiltonian_from_weight(data_dict):
     
-    """
-    Builds a Hamiltonian from a dict with keys indicating the pairs of connected vertices, 
-    and values equal to the weights on the corresponding edges.
-    """
+    Deprecated function
+    
+   
+    #Builds a Hamiltonian from a dict with keys indicating the pairs of connected vertices, 
+    # and values equal to the weights on the corresponding edges.
+
     
     vertex_pairs = [*data_dict.keys()]
     edge_weights = [*data_dict.values()]
@@ -142,6 +157,17 @@ def hamiltonian_from_dict(data_dict):
 
 """
 
+def hamiltonian_from_distance_matrix(matr):
+    
+    hamiltonian = []
+    dim = len(matr)
+    for i in range(dim):
+        for j in range(i+1,dim):
+            hamiltonian.append(PauliTerm("Z",i,matr[i][j])*PauliTerm("Z",j, 1.0))
+      
+    return PauliSum(hamiltonian)
+
+"""
 INCLUDE JL's other functions, eg create_normalized_random_hamiltonian?
 
 Other possibilities:
@@ -160,26 +186,13 @@ def distances_dataset(data):
     The idea here is to take any dataset and get the weights to be used in (eg) a simple
     QAOA Maxcut.
     Could expand to include an arbitrary function of the Euclidean distance
-    (eg with exponential decay).
+    (eg with exponential decay) - would just require passing in the desired distance metric for cdist.
     """
     
     if type(data) == dict:
         data = np.concatenate(list(data.values()))
-    
-    data = np.array(data)
-    data_len = len(data)
-    distances = {}
-    for i in range(data_len):
-        
-        for j in range(i,data_len):
-            
-            if i==j:
-                continue
 
-            tmp_dict = {f"{i}{j}": np.linalg.norm(data[i] - data[j])}
-            distances.update(tmp_dict)
-            
-    return distances
+    return distance.cdist(data, data, 'euclidean')
 
 def create_gaussian_2Dclusters(n_clusters,n_points,means,variances,covs):
     
