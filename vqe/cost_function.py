@@ -59,7 +59,6 @@ class AbstractCostFunction():
 
 
 # TODO support hamiltonians with qubit QubitPlaceholders?
-# TODO Join code with PrepareAndMeasureOnQVM, since they are _very_ similar now?
 class PrepareAndMeasureOnWFSim(AbstractCostFunction):
     """A cost function that prepares an ansatz and measures its energy w.r.t
        hamiltonian on the qvm
@@ -233,7 +232,6 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
             A mapping to fix all QubitPlaceholders to physical qubits. E.g.
             pyquil.quil.get_default_qubit_mapping(program) gives you on.
         """
-        # TODO sanitize input?
         self.qvm = qvm
         self.return_standard_deviation = return_standard_deviation
         self.make_memory_map = make_memory_map

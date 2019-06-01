@@ -165,7 +165,6 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
             and the same for ``z_rotation_angles`` and ``zz_rotation_angles``
 
         """
-        # Todo: Think about correct flattening before concatenation!
         raw_data = np.concatenate((self.x_rotation_angles.flatten(),
                                    self.z_rotation_angles.flatten(),
                                    self.zz_rotation_angles.flatten()))
@@ -221,8 +220,7 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
 
         return params
 
-    # TODO pass kwargs forward to plot() in all implementations  of this.
-    def plot(self, ax=None):
+    def plot(self, ax=None, **kwargs):
         """
         Plots ``self`` in a sensible way to the canvas ``ax``, if provided.
 
@@ -230,6 +228,9 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         ----------
         ax : matplotlib.axes._subplots.AxesSubplot
             The canvas to plot itself on
+        kwargs : dict
+            All remaining keyword arguments are passed forward to the plot
+            function
 
         """
         raise NotImplementedError()
@@ -445,16 +446,17 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
             = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
-    def plot(self, ax=None):
+    def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self.betas, label="betas", marker="s", ls="")
+        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
         if not _is_list_empty(self.gammas_singles):
             ax.plot(self.gammas_singles,
-                    label="gammas_singles", marker="^", ls="")
+                    label="gammas_singles", marker="^", ls="", **kwargs)
         if not _is_list_empty(self.gammas_pairs):
-            ax.plot(self.gammas_pairs, label="gammas_pairs", marker="v", ls="")
+            ax.plot(self.gammas_pairs,
+                    label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
         ax.legend()
 
@@ -605,16 +607,17 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
             = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
-    def plot(self, ax=None):
+    def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self.betas, label="betas", marker="s", ls="")
+        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
         if not _is_list_empty(self.gammas_singles):
             ax.plot(self.gammas_singles,
-                    label="gammas_singles", marker="^", ls="")
+                    label="gammas_singles", marker="^", ls="", **kwargs)
         if not _is_list_empty(self.gammas_pairs):
-            ax.plot(self.gammas_pairs, label="gammas_pairs", marker="v", ls="")
+            ax.plot(self.gammas_pairs,
+                    label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
         # ax.grid(linestyle='--')
         ax.legend()
@@ -756,11 +759,11 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         out.times = np.array(parameters)
         return out
 
-    def plot(self, ax=None):
+    def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self.times, label="times", marker="s", ls="")
+        ax.plot(self.times, label="times", marker="s", ls="", **kwargs)
         ax.set_xlabel("timestep number")
         ax.legend()
 
@@ -943,19 +946,20 @@ class FourierQAOAParameters(AbstractQAOAParameters):
             np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
-    def plot(self, ax=None):
+    def plot(self, ax=None, **kwargs):
         warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
                       "interested in v, u_singles and u_pairs you can access them via "
                       "params.v, params.u_singles, params.u_pairs")
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self.betas, label="betas", marker="s", ls="")
+        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
         if not _is_list_empty(self.gammas_singles):
             ax.plot(self.gammas_singles,
-                    label="gammas_singles", marker="^", ls="")
+                    label="gammas_singles", marker="^", ls="", **kwargs)
         if not _is_list_empty(self.gammas_pairs):
-            ax.plot(self.gammas_pairs, label="gammas_pairs", marker="v", ls="")
+            ax.plot(self.gammas_pairs,
+                    label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
         # ax.grid(linestyle='--')
         ax.legend()
