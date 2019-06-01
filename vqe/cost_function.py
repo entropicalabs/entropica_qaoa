@@ -10,7 +10,11 @@ from pyquil.wavefunction import Wavefunction
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
-from vqe.measurelib import append_measure_register, hamiltonian_expectation_value
+from vqe.measurelib import (append_measure_register,
+                            hamiltonian_expectation_value,
+                            commuting_decomposition,
+                            hamiltonian_list_expectation_value,
+                            measurement_base_change)
 
 
 class AbstractCostFunction():
@@ -151,7 +155,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         wf = np.reshape(wf.amplitudes, (-1, 1))
         E = np.conj(wf).T.dot(self.ham.dot(wf)).real
         sigma_E = nshots**(-1 / 2) * (
-            np.conj(wf).T.dot(self.ham_squared.dot(wf)).real - E**2)
+                    np.conj(wf).T.dot(self.ham_squared.dot(wf)).real - E**2)
 
         # add simulated noise, if wanted
         if self.noisy:
@@ -234,18 +238,25 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         self.return_standard_deviation = return_standard_deviation
         self.make_memory_map = make_memory_map
 
-        if qubit_mapping is not None:
-            prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
-            self.ham = address_qubits_hamiltonian(hamiltonian, qubit_mapping)
-        else:
-            self.ham = hamiltonian
-
         if log is not None:
             self.log = log
 
-        append_measure_register(prepare_ansatz, qubits=self.ham.get_qubits(),
-                                trials=base_numshots)
-        self.exe = qvm.compile(prepare_ansatz)
+        if qubit_mapping is not None:
+            prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
+            ham = address_qubits_hamiltonian(hamiltonian, qubit_mapping)
+        else:
+            ham = hamiltonian
+
+        self.hams = commuting_decomposition(ham)
+        self.exes = []
+        for ham in self.hams:
+            # need a different program for each of the self commuting hams
+            p = prepare_ansatz.copy()
+            p += measurement_base_change(ham)
+            append_measure_register(p,
+                                    qubits=ham.get_qubits(),
+                                    trials=base_numshots)
+            self.exes.append(qvm.compile(p))
 
     def __call__(self, params, nshots=1):
         """
@@ -258,12 +269,15 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         """
         memory_map = self.make_memory_map(params)
 
-        bitstrings = self.qvm.run(self.exe, memory_map=memory_map)
-        for i in range(nshots - 1):
-            bitstrings = np.append(bitstrings, self.qvm.run(
-                self.exe, memory_map=memory_map), axis=0)
+        bitstrings = []
+        for exe in self.exes:
+            bitstring = self.qvm.run(exe, memory_map=memory_map)
+            for i in range(nshots - 1):
+                new_bits = self.qvm.run(exe, memory_map=memory_map)
+                bitstring = np.append(bitstring, new_bits, axis=0)
+            bitstrings.append(bitstring)
 
-        res = hamiltonian_expectation_value(self.ham, bitstrings)
+        res = hamiltonian_list_expectation_value(self.hams, bitstrings)
         try:
             self.log.append(res)
         except AttributeError:
