@@ -101,7 +101,7 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
     Returns
     -------
     Program
-        Parametetric Quil Program with the annealing circuit.
+        Parametric Quil Program with the annealing circuit.
 
     """
     (reg, qubits_singles, qubits_pairs, timesteps) =\
@@ -153,17 +153,26 @@ def _prepare_all_plus_state(reg) -> Program:
     return p
 
 def _prepare_custom_classical_state(reg, state) -> Program:
-    """Prepare a custom classical state for all qubits in reg."""
+    """Prepare a custom classical state for all qubits in reg.
+     Parameters
+    ----------
+    state : Type[list]
+        A list of 0s and 1s which represent the starting state of the register, bit-wise.
+
+    Returns
+    -------
+    Program
+        Parametric Quil Program with a circuit in an initial classical state.    
+    """
     
     if len(reg) != len(state):
         raise ValueError("qubit state must be the same length as reg")
     
     p = Program()
-    for i, s in enumerate(state):
-        if int(s) == 0:
-            p.inst(I(i))
+    for qubit, s in zip(reg, state):
+    # if int(s) == 0 we don't need to add any gates, since the qubit is in state 0 by default
         if int(s) == 1:
-            p.inst(X(i))
+            p.inst(X(qubit))
     return p
 
 
@@ -174,6 +183,8 @@ def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters], init_state=No
     ----------
     qaoa_params : Type[AbstractQAOAParameters]
         The parameters of the QAOA circuit.
+    init_state : Type[list<int>]
+        A list of 0s and 1s which represent the starting state of the QAOA circuit, bit-wise.
 
     Returns
     -------
