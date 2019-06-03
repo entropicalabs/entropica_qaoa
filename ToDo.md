@@ -1,19 +1,29 @@
 # Major ToDo
  - [x] Fix non-diagonal hamiltonians in PrepareAndMeasureOnQVM
-   - [x] Implement `_hamiltonionians_commute_trivially()`
-   - [x] Implement `make_commutation_graph`
-   - [x] Get graph coloring algorithm
-   - [x] ...
- - [x] Fix QubitPlaceholders in QAOACostFunction * . Pass a Qubit mapping? Automatically,
-   create one, if the hamiltonian contains placeholders? Check if QVMConnection
-   can report possible physical Qubits!
- - [ ] Check all the QAOAParameter docstrings
+   + [x] Implement `_hamiltonionians_commute_trivially()`
+   + [x] Implement `make_commutation_graph`
+   + [x] Get graph coloring algorithm
+   + [ ] Make `measurement_base_change()` part of `append_measure_register()` and add `base=..` or `ham=...` option to `append_measure_register()`
+- [x] Fix QubitPlaceholders in QAOACostFunction * . Pass a Qubit mapping?
+  + [ ] Automatically, create one, if the hamiltonian contains placeholders?
+  + [ ] Check if QVMConnection can report possible physical Qubits!
+- [ ] Change `AlternatingParameters` to `FarhiQAOA` or `ClassicalQAOA`
+- [ ] Check, that everything runs on the QPU
+- [ ] Profile the whole QAOA part and optimize
+  + [ ] Ask Asad or Cooper for production code for realistic profiling
+  + [ ] Get to know `cProfile`
+- [ ] Rename long functions / classes
+  + [ ] Start Discussion Thread on Slack
+- [ ] Add `state_prep_program` to `qaoa.cost_function`
+  + [ ] Add `prep_classical_state(bitstring)` to `utilities.py`
+- [ ] Check all the QAOAParameter docstrings
+  + [ ] Make `__repr__` uniform over all QAOAParameterClasses
 
 # Small things to fix
  - [x] Fix QubitPlaceholders() in VQE cost function
  - [x] Fix QubitPlaceholders() in QAOA cost function
  - [ ] Check qaoa.cost_function tests for sanity
- - [ ] add parameter logging to the cost_functions
+ - [?] add parameter logging to the cost_functions
 
 # Things to implement
   - [ ] utilities.hamiltonian_from_edges

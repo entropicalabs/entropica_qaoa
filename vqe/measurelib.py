@@ -82,8 +82,6 @@ def hamiltonian_list_expectation_value(hamiltonians: List[PauliSum],
                                        bitstrings: List[np.array]) -> Tuple:
     """Mapped wrapper around ``hamiltonian_expectation_value``.
 
-
-
     A function that computes expectation values of a list of hamiltonians
     w.r.t a list of bitstrings. Assumes, that each pair in
     ``zip(hamiltonians, bitstrings)`` is as needed by
