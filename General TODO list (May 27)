@@ -1,8 +1,12 @@
+- Does everything run seamlessly on the QPU?
+- Systematically profile the runtime and memory use?
+- Comment out Rigetti's debugging lines that Joaquin found
 - Rename some of the longer classes / methods? 
-- Benchmark "noisy" and illustrate its use. Also show use of "log".
-- Print out of parameters for the General, Alternating classes etc.
+- Benchmark "noisy" and illustrate its use. Also show use of "log". [At least we need to check that these work as expected, even if we don't explicitly demo them in notebooks].
+- Print out of parameters for the General, Alternating classes etc. Check that it all makes sense, and is consistent across the classes.
 - Showcase the other parameter classes (adiabatic, Fourier)
 - How would a user easily/cleanly modify the number of timesteps to use without having to re-instantiate the whole claass again?
 - Clean up existing notebooks: add URLs and references, improve explanations, clearer/better naming of variables, keeping imports to a minimum, etc.
 - Option to start at a state other than the all |+> 
-- rename _qaoa_annealing_program in QAOA cost function file?
+- Rename _qaoa_annealing_program in QAOA cost function file?
+- Showcase the use of non-diagonal (or more general) cost functions? Or just leave as documented, without explicit example. 
