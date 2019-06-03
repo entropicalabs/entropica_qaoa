@@ -1,0 +1,7 @@
+- Docstrings!
+- Qubit placeholders in Networkx
+- Implement landscapes function
+- Different graph types (use Networkx generators)
+- Analytic results: have the formulae in the code so user can check consistency
+
+- Looking ahead: where would we need to modify code to make it run in ProjectQ?
