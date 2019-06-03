@@ -10,10 +10,11 @@ sys.path.insert(0, myPath + '/../')
 
 import numpy as np
 
-from pyquil.quil import QubitPlaceholder, address_qubits, get_default_qubit_mapping
+from pyquil.quil import (QubitPlaceholder, address_qubits,
+                         get_default_qubit_mapping)
 from pyquil.api import local_qvm, WavefunctionSimulator
 from pyquil import get_qc, Program
-from pyquil.gates import RX, CNOT
+from pyquil.gates import RX, CNOT, RY
 from pyquil.paulis import PauliSum, PauliTerm
 from vqe.cost_function import PrepareAndMeasureOnWFSim, PrepareAndMeasureOnQVM
 
@@ -34,6 +35,7 @@ def test_PrepareAndMeasureOnWFSim():
         cost_fn = PrepareAndMeasureOnWFSim(p, make_memory_map,
                                            ham, sim, log=log)
         out = cost_fn([np.pi, np.pi / 2], nshots=100)
+        print(log)
         assert np.allclose(log, [(-1.0, 0.1)])
         assert np.allclose(out, -1)
 
@@ -101,7 +103,8 @@ def test_PrepareAndMeasureOnQVM_QubitPlaceholders():
     qvm = get_qc("2q-qvm")
     with local_qvm():
         #        qvm = proc.qvm
-        cost_fn = PrepareAndMeasureOnQVM(prepare_ansatz, make_memory_map, qvm=qvm,
+        cost_fn = PrepareAndMeasureOnQVM(prepare_ansatz, make_memory_map,
+                                         qvm=qvm,
                                          hamiltonian=ham, log=log,
                                          return_standard_deviation=True,
                                          base_numshots=10,
@@ -109,3 +112,34 @@ def test_PrepareAndMeasureOnQVM_QubitPlaceholders():
         out = cost_fn([np.pi, np.pi / 2], nshots=10)
         assert np.allclose(log, [(-1.0, 0.1)], rtol=1.1)
         assert np.allclose(out, -1, rtol=1.1)
+
+
+def test_PrepareAndMeasureOnQVM_QubitPlaceholders_nondiag_hamiltonian():
+    q1, q2, q3 = QubitPlaceholder(), QubitPlaceholder(), QubitPlaceholder()
+    ham = PauliTerm("Y", q1)*PauliTerm("Z",q3)
+    ham += PauliTerm("Y", q1)*PauliTerm("Z",q2,-0.3)
+    ham += PauliTerm("Y", q1)*PauliTerm("X",q3, 2.0)
+    params = [3.0,0.4,4.5]
+
+    prepare_ansatz = Program()
+    param_register = prepare_ansatz.declare(
+        "params", memory_type="REAL", memory_size=3)
+    prepare_ansatz.inst(RX(param_register[0], q1))
+    prepare_ansatz.inst(RY(param_register[1], q2))
+    prepare_ansatz.inst(RY(param_register[2], q3))
+
+    def make_memory_map(params):
+        return {"params": params}
+
+    qubit_mapping = get_default_qubit_mapping(prepare_ansatz)
+    qvm = get_qc("3q-qvm")
+    with local_qvm():
+        cost_fn = PrepareAndMeasureOnQVM(prepare_ansatz, make_memory_map,
+                                         qvm=qvm,
+                                         hamiltonian=ham,
+                                         return_standard_deviation=True,
+                                         base_numshots=100,
+                                         qubit_mapping=qubit_mapping)
+        out = cost_fn(params, nshots=10)
+        assert np.allclose(out, (0.346, 0.07), rtol=1.1)
+

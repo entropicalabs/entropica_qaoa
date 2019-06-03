@@ -1,10 +1,6 @@
 """
 Implementation of the QAOA cost_functions. We inherit from vqe/cost_functions
 and change only the QAOA specific details.
-
-TODO
-----
-Change type of `reg` to Iterable or create custom type for it.
 """
 
 
@@ -22,14 +18,14 @@ from qaoa.parameters import AbstractQAOAParameters, GeneralQAOAParameters
 
 
 def _qaoa_mixing_ham_rotation(betas: MemoryReference,
-                              reg: Union[List, range]) -> Program:
+                              reg: Iterable) -> Program:
     """Produce parametric Quil-Code for the mixing hamiltonian rotation.
 
     Parameters
     ----------
     betas : MemoryReference
         Classic register to read the x_rotation_angles from.
-    reg : Union[List, Range]
+    reg : Iterable[Union[int, Qubit, QubitPlaceholder]]
         The register to apply the X-rotations on.
 
     Returns
@@ -89,7 +85,6 @@ def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
     return p
 
 
-# TODO check, whether aliased angles are supported yet
 def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Program:
     """Create parametric quil code for QAOA annealing circuit.
 
@@ -145,7 +140,7 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
     return p
 
 
-def _prepare_all_plus_state(reg) -> Program:
+def _prepare_all_plus_state(reg: Iterable) -> Program:
     """Prepare the |+>...|+> state on all qubits in reg."""
     p = Program()
     for qubit in reg:

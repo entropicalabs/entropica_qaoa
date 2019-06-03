@@ -1,0 +1,8 @@
+- Rename some of the longer classes / methods? 
+- Benchmark "noisy" and illustrate its use. Also show use of "log".
+- Print out of parameters for the General, Alternating classes etc.
+- Showcase the other parameter classes (adiabatic, Fourier)
+- How would a user easily/cleanly modify the number of timesteps to use without having to re-instantiate the whole claass again?
+- Clean up existing notebooks: add URLs and references, improve explanations, clearer/better naming of variables, keeping imports to a minimum, etc.
+- Option to start at a state other than the all |+> 
+- rename _qaoa_annealing_program in QAOA cost function file?
