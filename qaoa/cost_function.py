@@ -4,7 +4,7 @@ and change only the QAOA specific details.
 """
 
 
-from typing import Union, List, Type, Dict
+from typing import Union, List, Type, Dict, Iterable
 
 from pyquil import Program
 from pyquil.quil import MemoryReference, QubitPlaceholder, Qubit
