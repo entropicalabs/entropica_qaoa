@@ -2,6 +2,9 @@
  - QAOAParameter classes:
    [JL] Currently we do e.g.
     `from qaoa.parameters import AlternatingOperatorsQAOAParameters` which sounds very redundant if your read it out loud. Also the names are very long... Also some of the names (`General` and `AlternatingOperators` e.g.) are not very descriptive. Any suggestions for better names, for these? Drop the `*QAOAParameterers` in the names altogether? Shorten `*QAOAParameters` to `*Params`?
+ 
+ - `qaoa.cost_functions`:
+   [JL] exactly the same goes for the cost_function classes. Additionally PEP8 suggests to name classes that have a `.__call__` method in snake_case, because they behave like functions.
 
  - `hamiltonian_list_expectation_value`:
    [JL] -> `measurement_expectation` is shorter and (arguably) a bit more concise
