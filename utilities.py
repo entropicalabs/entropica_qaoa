@@ -155,9 +155,8 @@ def ring_of_disagrees(n):
     
     hamiltonian = []
     for i in range(n-1):
-        hamiltonian.append(PauliTerm("Z",i,1.0)*PauliTerm("Z",i+1, 1.0))
-        
-    hamiltonian.append(PauliTerm("Z",n-1,1.0)*PauliTerm("Z", 0, 1.0))
+        hamiltonian.append(PauliTerm("Z",i,0.5)*PauliTerm("Z",i+1))  
+    hamiltonian.append(PauliTerm("Z",n-1,0.5)*PauliTerm("Z", 0))
         
     return PauliSum(hamiltonian)   
 
