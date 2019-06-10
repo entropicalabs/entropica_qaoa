@@ -10,7 +10,7 @@
 - [ ] Change `AlternatingParameters` to `FarhiQAOA` or `ClassicalQAOA`
 - [ ] Check, that everything runs on the QPU
 - [ ] Profile the whole QAOA part and optimize
-  + [ ] Ask Asad or Cooper for production code for realistic profiling
+  + [x] Ask Asad or Cooper for production code for realistic profiling
   + [ ] Get to know `cProfile`
 - [ ] Rename long functions / classes
   + [ ] Start Discussion Thread on Slack
@@ -42,6 +42,9 @@
        user has to pass `hamiltonian` _and_ `qubits_singles`
        How? Make him pass `hamiltonian` regardless of the parametrization.
  - [ ] check the documentation and input for validity
+ - [ ] make `self.betas`, `self.gammas_singles` etc @property instead of attributes
+       for automatic input checking (related to above). Check if numpy supports automatic
+       broadcasting from i.e. `(6, ) -> (3,2)`
  - [x] print coefficients and number of timesteps in `__repr__`
  - [x] convert all the parameter lists to numpy arrays
  - [?] rename `self.timesteps` everywhere to `self.p` or `self.ntimesteps`?
