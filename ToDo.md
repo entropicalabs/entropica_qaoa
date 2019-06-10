@@ -18,6 +18,7 @@
   + [ ] Add `prep_classical_state(bitstring)` to `utilities.py`
 - [ ] Check all the QAOAParameter docstrings
   + [ ] Make `__repr__` uniform over all QAOAParameterClasses
+- [ ] Add plain old Farhi as a parameter class
 
 # Small things to fix
  - [x] Fix QubitPlaceholders() in VQE cost function
