@@ -3,6 +3,7 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
 import numpy as np
+from pytest import raises
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder, Qubit
@@ -142,3 +143,13 @@ def test_QAOAParameterIterator():
     print(log[1])
     assert np.allclose(log[0], [0, 1.049999999])
     assert np.allclose(log[1], [0.5, 1.049999999])
+
+
+def test_inputChecking():
+    ham = PauliSum.from_compact_str("0.7*Z0*Z1")
+    betas = [1, 2, 3, 4]
+    gammas_singles = []
+    gammas_pairs = [1, 2, 3]
+    with raises(ValueError):
+        params = GeneralQAOAParameters((ham, 3),
+                                       (betas, gammas_singles, gammas_pairs))

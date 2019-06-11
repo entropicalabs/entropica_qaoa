@@ -39,16 +39,25 @@ class shapedArray(object):
     """
 
     def __init__(self, shape: Callable[[Any], Tuple]):
+        """The constructor.
+
+        Parameter
+        ---------
+        shape: Callable[[Any], Tuple]:
+            Returns the shape for self.values
+        """
         self.name = shape.__name__
         self.shape = shape
 
     def __set__(self, obj, values):
+        """The setter with input checking."""
         try:
             self.values = np.reshape(values, self.shape(obj))
         except ValueError:
             raise ValueError(f"{self.name} must have shape {self.shape(obj)}")
 
     def __get__(self, obj, objtype):
+        """The getter."""
         return self.values
 
 
