@@ -223,9 +223,9 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
             Add simulated samplign noise?
         log : list
             List to keep log of function calls
-        initial_state: Callable[[List], Program]
-            Returns a program to run for state preparation. Defaults to
-            applying a Hadamard on each qubit (all plust state).
+        initial_state: Program
+            Program to prepare the initial state. Defaults to
+            applying a Hadamard on each qubit (all plus state).
         qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
             A mapping to fix QubitPlaceholders to physical qubits. E.g.
             pyquil.quil.get_default_qubit_mapping(program) gives you on.
@@ -299,6 +299,9 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
             is then a multplier of this.
         log : list
             List to keep log of function calls
+        initial_state : Program
+            Program to prepare the initial state. Defaults to
+            applying a Hadamard on each qubit (all plus state).
         qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
             A mapping to fix QubitPlaceholders to physical qubits. E.g.
             pyquil.quil.get_default_qubit_mapping(program) gives you on.
