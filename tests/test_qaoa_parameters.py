@@ -8,9 +8,10 @@ from pytest import raises
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder, Qubit
 
-from qaoa.parameters import GeneralQAOAParameters,\
-    AlternatingOperatorsQAOAParameters, AdiabaticTimestepsQAOAParameters,\
-    FourierQAOAParameters, QAOAParameterIterator, AbstractQAOAParameters
+from qaoa.parameters import (GeneralQAOAParameters,
+    AlternatingOperatorsQAOAParameters, AdiabaticTimestepsQAOAParameters,
+    FourierQAOAParameters, QAOAParameterIterator, AbstractQAOAParameters,
+    ClassicalFarhiQAOAParameters)
 
 # build a hamiltonian to test everything on
 q1 = QubitPlaceholder()
@@ -108,6 +109,19 @@ def test_AdiabaticTimestepsQAOAParameters():
 
 def test_AlternatingOperatorsQAOAParameters():
     params = AlternatingOperatorsQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
+    assert set(params.reg) == {0, 1, q1}
+    assert np.allclose(params.x_rotation_angles, [[0.75] * 3, [0.25] * 3])
+    assert np.allclose(params.z_rotation_angles, [[0.125], [0.375]])
+    assert np.allclose(params.zz_rotation_angles, [[0.25, -0.5], [0.75, -1.5]])
+    assert [params.qubits_singles] == [term.get_qubits() for term in hamiltonian
+                                       if len(term) == 1]
+    # Test updating and raw output
+    raw = np.random.rand(len(params))
+    params.update_from_raw(raw)
+    assert np.allclose(raw, params.raw())
+
+def test_ClassicalFarhiQAOAParameters():
+    params = ClassicalFarhiQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
     assert np.allclose(params.x_rotation_angles, [[0.75] * 3, [0.25] * 3])
     assert np.allclose(params.z_rotation_angles, [[0.125], [0.375]])

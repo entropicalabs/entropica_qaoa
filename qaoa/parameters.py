@@ -679,6 +679,161 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         ax.legend()
 
 
+class ClassicalFarhiQAOAParameters(AbstractQAOAParameters):
+    """
+    QAOA parameters that implement a state preparation circuit with
+
+    .. math::
+
+        e^{-i \\beta_p H_0}
+        e^{-i \\gamma_p H_c}
+        \\cdots
+        e^{-i \\beta_0 H_0}
+        e^{-i \\gamma_0 H_c}
+
+    This corresponds to the paramtrization used by Farhi in his original paper
+
+    Parameters
+    ----------
+    hyperparameters : Tuple
+        The hyperparameters containing the hamiltonian and the number of steps
+        ``hyperparameters = (hamiltonian, timesteps)``
+    parameters : Tuple
+        Tuple containing ``(betas, gammas)`` with dimensions
+        ``(timesteps, timesteps)``
+    """
+
+    def __init__(self,
+                 hyperparameters: Tuple[PauliSum, int],
+                 parameters: Tuple):
+        """
+        Extracts the qubits the reference and mixer hamiltonian act on and
+        sets them.
+
+        Todo
+        ----
+        Add checks, that the parameters and hyperparameters work together (same
+        number of timesteps and single and pair qubit terms)
+        """
+        # setup reg, qubits_singles and qubits_pairs
+        super().__init__(hyperparameters, parameters)
+        self.betas, self.gammas\
+            = np.array(parameters[0]), np.array(parameters[1])
+
+    def __repr__(self):
+        string = "Hyperparameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
+        string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
+        string += "Parameters:\n"
+        string += "\tbetas: " + str(self.betas) + "\n"
+        string += "\tgammas: " + str(self.gammas) + "\n"
+        return(string)
+
+    def __len__(self):
+        return self.timesteps * 2
+
+    @shapedArray
+    def betas(self):
+        return self.timesteps
+
+    @shapedArray
+    def gammas(self):
+        return self.timesteps
+
+    @property
+    def x_rotation_angles(self):
+        return np.outer(self.betas, np.ones(len(self.reg)))
+
+    @property
+    def z_rotation_angles(self):
+        return np.outer(self.gammas, self.single_qubit_coeffs)
+
+    @property
+    def zz_rotation_angles(self):
+        return np.outer(self.gammas, self.pair_qubit_coeffs)
+
+    def update_from_raw(self, new_values):
+        # overwrite self.betas with new ones
+        self.betas = np.array(new_values[0:self.timesteps])
+        new_values = new_values[self.timesteps:]    # cut betas from new_values
+        self.gammas = np.array(new_values[0:self.timesteps])
+        new_values = new_values[self.timesteps:]
+
+        if not len(new_values) == 0:
+            raise RuntimeWarning("list to make new gammas and x_rotation_angles out of"
+                                 "didn't have the right length!")
+
+    def raw(self):
+        raw_data = np.concatenate((self.betas, self.gammas))
+        return raw_data
+
+    @classmethod
+    def linear_ramp_from_hamiltonian(cls,
+                                     hamiltonian: PauliSum,
+                                     timesteps: int,
+                                     time: float = None):
+        """
+        Returns
+        -------
+        AlternatingOperatorsQAOAParameters
+            An `AlternatingOperatorsQAOAParameters` object holding all the
+            parameters
+        """
+        if time is None:
+            time = float(0.7 * timesteps)
+        # create evenly spaced timesteps at the centers of #timesteps intervals
+        dt = time / timesteps
+        times = np.linspace(time * (0.5 / timesteps), time
+                            * (1 - 0.5 / timesteps), timesteps)
+
+        # fill betas, gammas_singles and gammas_pairs
+        # Todo (optional): replace by np.linspace for tiny performance gains
+        betas = np.array([dt * (1 - t / time) for t in times])
+        gammas = np.array([dt * t / time for t in times])
+
+        # wrap it all nicely in a qaoa_parameters object
+        params = cls((hamiltonian, timesteps),
+                     (betas, gammas))
+        return params
+
+    @classmethod
+    def from_AbstractParameters(cls,
+                                abstract_params: AbstractQAOAParameters,
+                                parameters: Tuple):
+        """Create a GeneralQAOAParameters instance from an AbstractQAOAParameters
+        instance with hyperparameters from ``abstract_params`` and normal
+        parameters from ``parameters``
+
+        Parameters
+        ----------
+        abstract_params: AbstractQAOAParameters
+            An AbstractQAOAParameters instance to which to add the parameters
+        parameters: Tuple
+            Same as ``parameters`` in ``.__init__()``
+
+        Returns
+        -------
+        Type[AbstractQAOAParameters]
+            A ``cls`` object with the hyperparameters taken from
+            ``abstract_params`` and the normal parameters from ``parameters``
+        """
+        out = super().from_AbstractParameters(abstract_params)
+        out.betas, out.gammas\
+            = np.array(parameters[0]), np.array(parameters[1])
+        return out
+
+    def plot(self, ax=None, **kwargs):
+        if ax is None:
+            fig, ax = plt.subplots()
+
+        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
+        ax.plot(self.gammas, label="gammas", marker="^", ls="", **kwargs)
+        ax.set_xlabel("timestep")
+        # ax.grid(linestyle='--')
+        ax.legend()
+
+
 class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
     """
     QAOA parameters that implement a state preparation circuit of the form

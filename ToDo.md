@@ -14,11 +14,11 @@
   + [ ] Get to know `cProfile`
 - [ ] Rename long functions / classes
   + [x] Start Discussion Thread on Slack
-- [ ] Add `state_prep_program` to `qaoa.cost_function`
-  + [ ] Add `prep_classical_state(bitstring)` to `utilities.py`
+- [x] Add `state_prep_program` to `qaoa.cost_function`
+  + [x] Add `prep_classical_state(bitstring)` to `utilities.py`
 - [ ] Check all the QAOAParameter docstrings
   + [ ] Make `__repr__` uniform over all QAOAParameterClasses
-- [ ] Add plain old Farhi as a parameter class
+- [x] Add plain old Farhi as a parameter class
 
 # Small things to fix
  - [x] Fix QubitPlaceholders() in VQE cost function
