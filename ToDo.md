@@ -19,6 +19,8 @@
 - [ ] Check all the QAOAParameter docstrings
   + [ ] Make `__repr__` uniform over all QAOAParameterClasses
 - [x] Add plain old Farhi as a parameter class
+- [ ] Add setup.py script
+  + [ ] Look at Coopers suggestion for such a script 
 
 # Small things to fix
  - [x] Fix QubitPlaceholders() in VQE cost function
@@ -42,8 +44,8 @@
  - [x] clean up the redundancies in the `QAOAParamters.__init__`, that the
        user has to pass `hamiltonian` _and_ `qubits_singles`
        How? Make him pass `hamiltonian` regardless of the parametrization.
- - [ ] check the documentation and input for validity
- - [ ] make `self.betas`, `self.gammas_singles` etc @property instead of attributes
+ - [x] check the documentation and input for validity
+ - [x] make `self.betas`, `self.gammas_singles` etc @property instead of attributes
        for automatic input checking (related to above). Check if numpy supports automatic
        broadcasting from i.e. `(6, ) -> (3,2)`
  - [x] print coefficients and number of timesteps in `__repr__`

@@ -69,18 +69,18 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
     Parameters
     ----------
     hyperparameters : Tuple
-        The hyperparameters containing the hamiltonian, the number of steps,
-        the total annealing time and possibly more.
-        ``hyperparametesr = (hamiltonian, timesteps, time, ...)``
+        The hyperparameters containing the hamiltonian, the number of steps
+        and possibly more (e.g. the total annealing time).
+        ``hyperparametesr = (hamiltonian, timesteps, ...)``
     parameters : Tuple
-        The QAOA parameters, that can be optimized. E.g. the gammas and betas or
-        the annealing timesteps.
+        The QAOA parameters, that can be optimized. E.g. the gammas and betas
+        or the annealing timesteps. AbstractQAOAParameters doesn't implement
+        this, but all child classes do.
     """
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self,
-                 hyperparameters: Tuple,
-                 parameters: Tuple = None):
+                 hyperparameters: Tuple):
         """
         Extracts the qubits the reference and mixer hamiltonian act on and
         sets them.
@@ -529,8 +529,8 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         The hyperparameters containing the hamiltonian and the number of steps
         ``hyperparameters = (hamiltonian, timesteps)``
     parameters : Tuple
-        Tuple containing ``(betas, gammas_singles, gammas_pairs)`` with dimensions
-        ``(timesteps, timesteps, timesteps)``
+        Tuple containing ``(betas, gammas_singles, gammas_pairs)`` with
+        dimensions ``(timesteps, timesteps, timesteps)``
     """
 
     def __init__(self,
@@ -539,14 +539,9 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         """
         Extracts the qubits the reference and mixer hamiltonian act on and
         sets them.
-
-        Todo
-        ----
-        Add checks, that the parameters and hyperparameters work together (same
-        number of timesteps and single and pair qubit terms)
         """
         # setup reg, qubits_singles and qubits_pairs
-        super().__init__(hyperparameters, parameters)
+        super().__init__(hyperparameters)
         self.betas, self.gammas_singles, self.gammas_pairs\
             = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
 
@@ -691,7 +686,7 @@ class ClassicalFarhiQAOAParameters(AbstractQAOAParameters):
         e^{-i \\beta_0 H_0}
         e^{-i \\gamma_0 H_c}
 
-    This corresponds to the paramtrization used by Farhi in his original paper
+    This corresponds to the parametrization used by Farhi in his original paper
 
     Parameters
     ----------
@@ -716,7 +711,7 @@ class ClassicalFarhiQAOAParameters(AbstractQAOAParameters):
         number of timesteps and single and pair qubit terms)
         """
         # setup reg, qubits_singles and qubits_pairs
-        super().__init__(hyperparameters, parameters)
+        super().__init__(hyperparameters)
         self.betas, self.gammas\
             = np.array(parameters[0]), np.array(parameters[1])
 
@@ -776,8 +771,8 @@ class ClassicalFarhiQAOAParameters(AbstractQAOAParameters):
         """
         Returns
         -------
-        AlternatingOperatorsQAOAParameters
-            An `AlternatingOperatorsQAOAParameters` object holding all the
+        ClassicalFarhiQAOAParameters
+            An `ClassicalFarhiQAOAParameters` object holding all the
             parameters
         """
         if time is None:
@@ -996,7 +991,7 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         The hyperparameters containing the hamiltonian, the number of steps
         and the total annealing time ``hyperparameters = (hamiltonian, timesteps, q)``
         ``q`` is the number of fourier coefficients. For ``q == timesteps`` we have
-        the full expresivity of ``AlternatingOperatorsQAOAParameters``. More
+        the full expressivity of ``AlternatingOperatorsQAOAParameters``. More
         are redundant.
     parameters : Tuple
         Tuple containing ``(v, u_singles, u_pairs)`` with dimensions
