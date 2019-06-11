@@ -1064,18 +1064,18 @@ class QAOAParameterIterator:
             The inital qaoa_parameters, where one of them is swept over
         the_parameter: String
             A string specifying, which parameter should be varied. It has to be
-            of the form ``<attr_name>[i]`` where ``<attr_name>`` is the name of the
-            _internal_ list and ``i`` the index, at which it sits. E.g. if
-            ``qaoa_params`` is of type ``AdiabaticTimestepsQAOAParameters`` and
-            we want to vary over the second timestep, it is
+            of the form ``<attr_name>[i]`` where ``<attr_name>`` is the name
+            of the _internal_ list and ``i`` the index, at which it sits. E.g.
+            if ``qaoa_params`` is of type ``AdiabaticTimestepsQAOAParameters``
+            and  we want to vary over the second timestep, it is
             ``the_parameter = "times[1]"``.
         the_range : Iterable -> float
             The range, that ``the_parameter`` should be varied over
 
         Todo
         ----
-        - Add checks, that the number of indices in ``the_parameter`` matches the
-          dimensions of ``the_parameter``
+        - Add checks, that the number of indices in ``the_parameter`` matches
+          the dimensions of ``the_parameter``
         - Add checks, that the index is not too large
         """
         self.params = qaoa_params

@@ -13,7 +13,7 @@
   + [x] Ask Asad or Cooper for production code for realistic profiling
   + [ ] Get to know `cProfile`
 - [ ] Rename long functions / classes
-  + [ ] Start Discussion Thread on Slack
+  + [x] Start Discussion Thread on Slack
 - [ ] Add `state_prep_program` to `qaoa.cost_function`
   + [ ] Add `prep_classical_state(bitstring)` to `utilities.py`
 - [ ] Check all the QAOAParameter docstrings
