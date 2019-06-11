@@ -13,8 +13,7 @@ from pyquil.api._quantum_computer import QuantumComputer
 from vqe.measurelib import (append_measure_register,
                             hamiltonian_expectation_value,
                             commuting_decomposition,
-                            hamiltonian_list_expectation_value,
-                            measurement_base_change)
+                            hamiltonian_list_expectation_value)
 
 
 class AbstractCostFunction():
@@ -250,10 +249,10 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         for ham in self.hams:
             # need a different program for each of the self commuting hams
             p = prepare_ansatz.copy()
-            p += measurement_base_change(ham)
             append_measure_register(p,
                                     qubits=ham.get_qubits(),
-                                    trials=base_numshots)
+                                    trials=base_numshots,
+                                    ham=ham)
             self.exes.append(qvm.compile(p))
 
     def __call__(self, params, nshots=1):

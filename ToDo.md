@@ -3,7 +3,7 @@
    + [x] Implement `_hamiltonionians_commute_trivially()`
    + [x] Implement `make_commutation_graph`
    + [x] Get graph coloring algorithm
-   + [ ] Make `measurement_base_change()` part of `append_measure_register()` and add `base=..` or `ham=...` option to `append_measure_register()`
+   + [x] Make `measurement_base_change()` part of `append_measure_register()` and add `base=..` or `ham=...` option to `append_measure_register()`
 - [x] Fix QubitPlaceholders in QAOACostFunction * . Pass a Qubit mapping?
   + [ ] Automatically, create one, if the hamiltonian contains placeholders?
   + [ ] Check if QVMConnection can report possible physical Qubits!
