@@ -30,7 +30,7 @@ def _is_list_empty(in_list):
 
 
 class shapedArray(object):
-    """Descriptor for arrays that have a fixed shape
+    """Decorator-Descriptor for arrays that have a fixed shape.
 
     This is used to facilitate automatic input checking for all the different
     internal parameters. Each instance of this class can be removed without
@@ -38,11 +38,8 @@ class shapedArray(object):
     only correct angles to below parameter classes
     """
 
-    def __init__(self, shape: Callable[[Any], Tuple], name: str =None):
-        if name is None:
-            self.name = "shapedArray"
-        else:
-            self.name = name
+    def __init__(self, shape: Callable[[Any], Tuple]):
+        self.name = shape.__name__
         self.shape = shape
 
     def __set__(self, obj, values):
@@ -326,15 +323,18 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         return self.timesteps * (len(self.reg) + len(self.qubits_pairs)
                                  + len(self.qubits_singles))
 
-    betas = shapedArray(lambda obj: (obj.timesteps, len(obj.reg)), "betas")
-    gammas_singles = shapedArray(
-        lambda obj: (obj.timesteps, len(obj.qubits_singles)),
-        name="gammas_singles")
-    gammas_pairs = shapedArray(
-        lambda obj: (obj.timesteps, len(obj.qubits_pairs)),
-        name="gammas_pairs")
+    @shapedArray
+    def betas(self):
+        return (self.timesteps, len(self.reg))
 
-    # getter for the rotation angles for the state prepration
+    @shapedArray
+    def gammas_singles(self):
+        return (self.timesteps, len(self.qubits_singles))
+
+    @shapedArray
+    def gammas_pairs(self):
+        return (self.timesteps, len(self.qubits_pairs))
+
     @property
     def x_rotation_angles(self):
         return self.betas
@@ -555,9 +555,17 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
     def __len__(self):
         return self.timesteps * 3
 
-    betas = shapedArray(lambda obj: obj.timesteps, name="betas")
-    gammas_singles = shapedArray(lambda obj: obj.timesteps, "gammas_singles")
-    gammas_pairs = shapedArray(lambda obj: obj.timesteps, "gammas_pairs")
+    @shapedArray
+    def betas(self):
+        return self.timesteps
+
+    @shapedArray
+    def gammas_singles(self):
+        return self.timesteps
+
+    @shapedArray
+    def gammas_pairs(self):
+        return self.timesteps
 
     @property
     def x_rotation_angles(self):
@@ -710,7 +718,9 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
     def __len__(self):   # needs fixing
         return self.timesteps
 
-    times = shapedArray(lambda obj: obj.timesteps, "times")
+    @shapedArray
+    def times(self):
+        return self.timesteps
 
     @property
     def x_rotation_angles(self):
@@ -878,9 +888,17 @@ class FourierQAOAParameters(AbstractQAOAParameters):
                 x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
         return x
 
-    v = shapedArray(lambda obj: obj.q, "v")
-    u_singles = shapedArray(lambda obj: obj.q, "u_singles")
-    u_pairs = shapedArray(lambda obj: obj.q, "u_pairs")
+    @shapedArray
+    def v(self):
+        return self.q
+
+    @shapedArray
+    def u_singles(self):
+        return self.q
+
+    @shapedArray
+    def u_pairs(self):
+        return self.q
 
     @property
     def x_rotation_angles(self):
