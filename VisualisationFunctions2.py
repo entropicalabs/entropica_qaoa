@@ -14,30 +14,6 @@ because sphinx (the tool I plan to use for automatic documentation) works
 well with this docstring style.
 
 EM: OK, will do this more or less at the end.
-
-For function, variable and class names I (mostly) adhere to the PEP8 style.
-(https://www.python.org/dev/peps/pep-0008/), just so that it looks like any
-other good python code out there. (ThisIsAClass, this_is_a_function, this_is_variable).
-Would you mind renaming your classes and functions accordingly for consistency
-across the code base (I know pycharm can do project wide renames. Only in the
-notebooks we will have to do it manually :/)
-
-EM: Done.
-
-
-QAOA parametrizations
-~~~~~~~~~~~~~~~~~~~~~
-You have only gammas and x_rotation_angles, where all my QAOA parameter classes have
-different gammas for the one qubit terms / bias terms and the two qubit terms /
-coupling terms. (I call them z_rotation_angles and zz_rotation_angles). Do you want me
-to implement a QAOAParameter class, that has only gammas and x_rotation_angles like you use them?
-(Wouldn't take too long, since I just have to inherit from AbstractQAOAParameters and
-copy paste the code from AlternatingOperatorsQAOAParameters with minor modifications)
-
-EM: I think we need to make a decision wrt how the user inputs parameters, and how they are 
-returned from the optimiser. That will guide how the parameters for the sweeps
-are passed in.
-    
 """
 
 def plot_qaoa_parameters(parameters):
