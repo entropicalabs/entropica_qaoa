@@ -14,17 +14,20 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import H, I, RX
 
 
-def append_measure_register(program, qubits=None, trials=10, ham=None):
+def append_measure_register(program: Program,
+                            qubits: List =None,
+                            trials: int =10,
+                            ham: PauliSum =None) -> Program:
     """Creates readout register, MEASURE instructions for register and wraps
     in trials trials.
 
     Parameters
     ----------
-    param qubits : list
+    qubits : list
         List of Qubits to measure. If None, program.get_qubits() is used
-    param trials : int
+    trials : int
         The number of trials to run.
-    param ham : PauliSum
+    ham : PauliSum
         Hamiltonian to whose basis we need to switch. All terms in it must
         trivially commute!
 
@@ -85,7 +88,8 @@ def hamiltonian_expectation_value(hamiltonian: PauliSum,
 
     Returns
     -------
-    tuple (expectation_value, standard_deviation)
+    Tuple:
+         A tuple containing ``(expectation_value, standard_deviation)``
     """
 
     # this dictionary maps from qubit indices to indices of the bitstrings
@@ -116,16 +120,17 @@ def hamiltonian_list_expectation_value(hamiltonians: List[PauliSum],
 
     Parameters
     ----------
-    hamiltonians : List[PauliSum]
+    hamiltonians :
         List of PauliSums. Each PauliSum must only consist of mutually
         commuting terms
-    bitstrings : List[np.array]
+    bitstrings :
         List of the measured bitstrings. Each bitstring must have dimensions
         corresponding to the coresponding PauliSum
 
     Returns
     -------
-    tuple (expectation_value, standard_deviation)
+    Tuple:
+        A tuple containing ``(expectation_value, standard_deviation)``
     """
     energies = 0
     var = 0

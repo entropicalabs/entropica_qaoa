@@ -1,14 +1,14 @@
 """Different parametrizations of QAOA circuits.
 
 This module holds an abstract class to store QAOA parameters in and (so far)
-four derived classes that allow for more or less degrees of freedom in the QAOA
+five derived classes that allow for more or less degrees of freedom in the QAOA
 Ansätze
 
 Todo
 ----
  - Better default values for ``time`` if ``None`` is passed
  - Better default parameters for ``fourier`` timesteps
- - implement AbstractQAOAParameters.linear_ramp_from_hamiltonian() and then super() from it
+ - implement ``AbstractQAOAParameters.linear_ramp_from_hamiltonian()`` and then super() from it
 """
 
 import copy
@@ -61,7 +61,7 @@ class shapedArray(object):
                                     f"{self.shape}")
 
 
-    and
+    can be simplified to
 
     .. code-block:: python
 
@@ -132,22 +132,6 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
 
     def __init__(self,
                  hyperparameters: Tuple):
-        """
-        Extracts the qubits the reference and mixer hamiltonian act on and
-        sets them.
-
-        Parameters
-        ----------
-        hyperparameters : Tuple
-            Tuple containing `(hamiltonian, timesteps, ...)`, where "..." are
-            possible additional hyperparameters
-
-        Raises
-        ------
-        NotImplementedError
-            This is a Abstract Base class, but can be used to create instances
-            of its child classes via `ChildClasss.from_AbstractParameters()`
-        """
         # Note
         # ----
         # ``AbstractQAOAParameters.__init__`` doesn't do anything with the
@@ -217,19 +201,46 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         """
         raise NotImplementedError()
 
+    @property
+    def x_rotation_angles(self):
+        """2D array with the X-rotation angles.
+
+        1st index goes over timesteps and the 2nd index over the qubits to
+        apply X-rotations on. These are needed by ``qaoa.cost_function.make_qaoa_memory_map``
+        """
+        raise NotImplementedError
+
+    @property
+    def z_rotation_angles(self):
+        """2D array with the ZZ-rotation angles.
+
+        1st index goes over the timesteps and the 2nd index over the qubit
+        pairs, to apply ZZ-rotations on. These are needed by ``qaoa.cost_function.make_qaoa_memory_map``
+        """
+        raise NotImplementedError
+
+    @property
+    def zz_rotation_angles(self):
+        """2D array with Z-rotation angles.
+
+        1st index goes over the timesteps and the 2nd index over the qubit
+        pairs, to apply Z-rotations on. These are needed by ``qaoa.cost_function.make_qaoa_memory_map``
+        """
+        raise NotImplementedError
+
     def update_from_raw(self, new_values: Union[list, np.array]):
         """
         Update all the parameters from a 1D array.
 
         The input has the same format as the output of ``self.raw()``.
-        This is useful for ``scipy.optimize.minimize`` which only minimizes
-        w.r.t a 1D array of parameters
+        This is useful for ``scipy.optimize.minimize`` which expects
+        the parameters that need to be optimized to be a 1D array.
 
         Parameters
         ----------
         new_values : Union[list, np.array]
             A 1D array with the new parameters. Must have length  ``len(self)``
-            and the ordering of the flattend `parameters` in `__init__()`.
+            and the ordering of the flattend ``parameters`` in ``__init__()``.
 
         """
         raise NotImplementedError()
@@ -238,8 +249,8 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
         """
         Return the parameters in a 1D array.
 
-        This 1D array is needed by ``scipy.optimize.minimize`` which only
-        minimizes w.r.t a 1D array of parameters
+        This 1D array is needed by ``scipy.optimize.minimize`` which expects
+        the parameters that need to be optimized to be a 1D array.
 
         Returns
         -------
@@ -317,9 +328,9 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
 
         Returns
         -------
-        cls
-            A ``cls`` object with the hyperparameters taken from
-            ``abstract_params``.
+        AbstractQAOAParameters
+            A copy of itself. This function makes only sense for the child
+            classes of ``AbstractQAOAParameters``
         """
         params = copy.deepcopy(abstract_params)
         params.__class__ = cls
@@ -343,7 +354,7 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
 
 
 class GeneralQAOAParameters(AbstractQAOAParameters):
-    """
+    r"""
     QAOA parameters in their most general form with different angles for each
     operator.
 
@@ -376,7 +387,7 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         2D array with the X-rotation angles. 1st index goes over timesteps and
         the 2nd index over the qubits to apply X-rotations on.
     gammas_pairs : np.array
-        2D array with the Z-rotation angles. 1st index goes over the timesteps
+        2D array with the ZZ-rotation angles. 1st index goes over the timesteps
         and the 2nd index over the qubit pairs, to apply ZZ-rotations on.
     gammas_singles : np.array
         2D array with Z-rotation angles. 1st index goes over the timesteps
@@ -440,15 +451,15 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         new_values = new_values[self.timesteps * len(self.reg):]
 
         self.gammas_singles = np.array(new_values[:len(self.qubits_singles)
-                                       * self.timesteps])
+                                                  * self.timesteps])
         self.gammas_singles = self.gammas_singles.reshape(
             (self.timesteps, len(self.qubits_singles)))
         new_values = new_values[self.timesteps * len(self.qubits_singles):]
 
         self.gammas_pairs = np.array(new_values[:len(self.qubits_pairs)
-                                     * self.timesteps])
+                                                * self.timesteps])
         self.gammas_pairs = self.gammas_pairs.reshape(
-                                (self.timesteps, len(self.qubits_pairs)))
+            (self.timesteps, len(self.qubits_pairs)))
         new_values = new_values[self.timesteps * len(self.qubits_pairs):]
 
         # PEP8 complains, but new_values could be np.array and not list!
@@ -567,7 +578,7 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
 
 
 class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
-    """
+    r"""
     QAOA parameters that implement a state preparation circuit with
 
     .. math::
@@ -706,8 +717,8 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
 
         Returns
         -------
-        Type[AbstractQAOAParameters]
-            A ``AlteratatingOperatorsQAOAParameters`` object with the
+        AlternatingOperatorsQAOAParameters
+            An ``AlternatatingOperatorsQAOAParameters`` object with the
             hyperparameters taken from ``abstract_params`` and the normal
             parameters from ``parameters``
         """
@@ -733,7 +744,7 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
 
 
 class ClassicalFarhiQAOAParameters(AbstractQAOAParameters):
-    """
+    r"""
     QAOA parameters that implement a state preparation circuit with
 
     .. math::
@@ -745,7 +756,7 @@ class ClassicalFarhiQAOAParameters(AbstractQAOAParameters):
         e^{-i \gamma_0 H_c}
 
     This corresponds to the parametrization used by Farhi in his
-    (original paper)[https://arxiv.org/abs/1411.4028]
+    original paper [https://arxiv.org/abs/1411.4028]
 
     Parameters
     ----------
@@ -829,8 +840,8 @@ class ClassicalFarhiQAOAParameters(AbstractQAOAParameters):
         Returns
         -------
         ClassicalFarhiQAOAParameters
-            An `ClassicalFarhiQAOAParameters` object holding all the
-            parameters
+            A `ClassicalFarhiQAOAParameters` object with parameters according
+            to a linear ramp schedule for ``hamiltonian``
         """
         if time is None:
             time = float(0.7 * timesteps)
@@ -879,7 +890,7 @@ class ClassicalFarhiQAOAParameters(AbstractQAOAParameters):
 
 
 class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
-    """
+    r"""
     QAOA parameters that implement a state preparation circuit of the form
 
     .. math::
@@ -963,7 +974,7 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         Returns
         -------
         AdiabaticTimestepsQAOAParameters :
-            An `AdiabaticTimestepsQAOAParameters` object corresponding to
+            An ``AdiabaticTimestepsQAOAParameters`` object corresponding to
             a linear ramp schedule.
         """
         if time is None:
@@ -1009,34 +1020,35 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
 class FourierQAOAParameters(AbstractQAOAParameters):
     """
     The QAOA parameters as the sine/cosine transform of the original gammas
-    and x_rotation_angles. See (Quantum Approximate Optimization Algorithm:
-    Performance, Mechanism, and Implementation on Near-Term Devices)
+    and x_rotation_angles. See "Quantum Approximate Optimization Algorithm:
+    Performance, Mechanism, and Implementation on Near-Term Devices"
     [https://arxiv.org/abs/1812.01041] for a detailed description.
 
     Parameters
     ----------
     hyperparameters : Tuple
         The hyperparameters containing the hamiltonian, the number of steps
-        and the total annealing time ``hyperparameters = (hamiltonian, timesteps, q)``
-        ``q`` is the number of fourier coefficients. For ``q == timesteps`` we have
-        the full expressivity of ``AlternatingOperatorsQAOAParameters``. More
-        are redundant.
+        and the total annealing time
+        ``hyperparameters = (hamiltonian, timesteps, q)``.
+        ``q`` is the number of fourier coefficients. For ``q == timesteps`` we
+        have the full expressivity of ``AlternatingOperatorsQAOAParameters``.
+        More are redundant.
     parameters : Tuple
         Tuple containing ``(v, u_singles, u_pairs)`` with dimensions
         ``(q, q, q)``
 
     Attributes
     ----------
-    q : TYPE
+    q : int
         The number of coefficients for the discrete sine and cosine transforms
         below
-    u_pairs : TYPE
+    u_pairs : np.array
         The discrete sine transform of the ``gammas_pairs`` in
         ``AlternatingOperatorsQAOAParameters``
-    u_singles : TYPE
+    u_singles : np.array
         The discrete sine transform of the ``gammas_singles`` in
         ``AlternatingOperatorsQAOAParameters``
-    v : TYPE
+    v : np.array
         The discrete cosine transform of the betas in
         ``AlternatingOperatorsQAOAParameters``
     """
@@ -1154,8 +1166,8 @@ class FourierQAOAParameters(AbstractQAOAParameters):
 
         ToDo
         ----
-        Make a more informed choice of the default value for q. Probably
-        depending on n_qubits
+        Make a more informed choice of the default value for ``q``. Probably
+        depending on ``n_qubits``
         """
         if time is None:
             time = 0.7 * timesteps
@@ -1223,10 +1235,31 @@ class FourierQAOAParameters(AbstractQAOAParameters):
 class QAOAParameterIterator:
     """An iterator to sweep one parameter over a range in a QAOAParameter object.
 
+    Parameters
+    ----------
+    qaoa_params : Type[AbstractQAOAParameters]
+        The initial QAOA parameters, where one of them is swept over
+    the_parameter: String
+        A string specifying, which parameter should be varied. It has to be
+        of the form ``<attr_name>[i]`` where ``<attr_name>`` is the name
+        of the _internal_ list and ``i`` the index, at which it sits. E.g.
+        if ``qaoa_params`` is of type ``AdiabaticTimestepsQAOAParameters``
+        and  we want to vary over the second timestep, it is
+        ``the_parameter = "times[1]"``.
+    the_range : Iterable -> float
+        The range, that ``the_parameter`` should be varied over
+
+    Todo
+    ----
+    - Add checks, that the number of indices in ``the_parameter`` matches
+      the dimensions of ``the_parameter``
+    - Add checks, that the index is not too large
+
     Example
     -------
     Assume qaoa_params is of type ``AlternatingOperatorsQAOAParameters`` and
-    has at least 2 timesteps.
+    has at least 2 timesteps. Then the following code produces a loop that
+    sweeps ``gammas_singles[1]`` over the range ``(0, 1)`` in 4 steps:
 
     .. code-block:: python
 
@@ -1240,27 +1273,7 @@ class QAOAParameterIterator:
     def __init__(self, qaoa_params: Type[AbstractQAOAParameters],
                  the_parameter: str,
                  the_range: Iterable):
-        """
-        Parameters
-        ----------
-        qaoa_params : Type[AbstractQAOAParameters]
-            The initial QAOA parameters, where one of them is swept over
-        the_parameter: String
-            A string specifying, which parameter should be varied. It has to be
-            of the form ``<attr_name>[i]`` where ``<attr_name>`` is the name
-            of the _internal_ list and ``i`` the index, at which it sits. E.g.
-            if ``qaoa_params`` is of type ``AdiabaticTimestepsQAOAParameters``
-            and  we want to vary over the second timestep, it is
-            ``the_parameter = "times[1]"``.
-        the_range : Iterable -> float
-            The range, that ``the_parameter`` should be varied over
-
-        Todo
-        ----
-        - Add checks, that the number of indices in ``the_parameter`` matches
-          the dimensions of ``the_parameter``
-        - Add checks, that the index is not too large
-        """
+        """See class documentation for details"""
         self.params = qaoa_params
         self.iterator = iter(the_range)
         self.the_parameter, *indices = the_parameter.split("[")
