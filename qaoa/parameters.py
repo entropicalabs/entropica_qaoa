@@ -12,7 +12,7 @@ Todo
 """
 
 import copy
-from typing import Iterable, Union, List, Tuple, Any, Type
+from typing import Iterable, Union, List, Tuple, Any, Type, Callable
 import warnings
 from custom_inherit import DocInheritMeta
 
@@ -29,6 +29,38 @@ def _is_list_empty(in_list):
     return False    # Not a list
 
 
+class shapedArray(object):
+    """Decorator-Descriptor for arrays that have a fixed shape.
+
+    This is used to facilitate automatic input checking for all the different
+    internal parameters. Each instance of this class can be removed without
+    replacement and the code should still work, provided the user provides
+    only correct angles to below parameter classes
+    """
+
+    def __init__(self, shape: Callable[[Any], Tuple]):
+        """The constructor.
+
+        Parameter
+        ---------
+        shape: Callable[[Any], Tuple]:
+            Returns the shape for self.values
+        """
+        self.name = shape.__name__
+        self.shape = shape
+
+    def __set__(self, obj, values):
+        """The setter with input checking."""
+        try:
+            self.values = np.reshape(values, self.shape(obj))
+        except ValueError:
+            raise ValueError(f"{self.name} must have shape {self.shape(obj)}")
+
+    def __get__(self, obj, objtype):
+        """The getter."""
+        return self.values
+
+
 class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
     """
     An abstract class to hold the parameters of a QAOA
@@ -37,18 +69,18 @@ class AbstractQAOAParameters(metaclass=DocInheritMeta(style="numpy")):
     Parameters
     ----------
     hyperparameters : Tuple
-        The hyperparameters containing the hamiltonian, the number of steps,
-        the total annealing time and possibly more.
-        ``hyperparametesr = (hamiltonian, timesteps, time, ...)``
+        The hyperparameters containing the hamiltonian, the number of steps
+        and possibly more (e.g. the total annealing time).
+        ``hyperparametesr = (hamiltonian, timesteps, ...)``
     parameters : Tuple
-        The QAOA parameters, that can be optimized. E.g. the gammas and betas or
-        the annealing timesteps.
+        The QAOA parameters, that can be optimized. E.g. the gammas and betas
+        or the annealing timesteps. AbstractQAOAParameters doesn't implement
+        this, but all child classes do.
     """
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self,
-                 hyperparameters: Tuple,
-                 parameters: Tuple = None):
+                 hyperparameters: Tuple):
         """
         Extracts the qubits the reference and mixer hamiltonian act on and
         sets them.
@@ -300,6 +332,18 @@ class GeneralQAOAParameters(AbstractQAOAParameters):
         return self.timesteps * (len(self.reg) + len(self.qubits_pairs)
                                  + len(self.qubits_singles))
 
+    @shapedArray
+    def betas(self):
+        return (self.timesteps, len(self.reg))
+
+    @shapedArray
+    def gammas_singles(self):
+        return (self.timesteps, len(self.qubits_singles))
+
+    @shapedArray
+    def gammas_pairs(self):
+        return (self.timesteps, len(self.qubits_pairs))
+
     @property
     def x_rotation_angles(self):
         return self.betas
@@ -485,8 +529,8 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         The hyperparameters containing the hamiltonian and the number of steps
         ``hyperparameters = (hamiltonian, timesteps)``
     parameters : Tuple
-        Tuple containing ``(betas, gammas_singles, gammas_pairs)`` with dimensions
-        ``(timesteps, timesteps, timesteps)``
+        Tuple containing ``(betas, gammas_singles, gammas_pairs)`` with
+        dimensions ``(timesteps, timesteps, timesteps)``
     """
 
     def __init__(self,
@@ -495,14 +539,9 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         """
         Extracts the qubits the reference and mixer hamiltonian act on and
         sets them.
-
-        Todo
-        ----
-        Add checks, that the parameters and hyperparameters work together (same
-        number of timesteps and single and pair qubit terms)
         """
         # setup reg, qubits_singles and qubits_pairs
-        super().__init__(hyperparameters, parameters)
+        super().__init__(hyperparameters)
         self.betas, self.gammas_singles, self.gammas_pairs\
             = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
 
@@ -519,6 +558,18 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
 
     def __len__(self):
         return self.timesteps * 3
+
+    @shapedArray
+    def betas(self):
+        return self.timesteps
+
+    @shapedArray
+    def gammas_singles(self):
+        return self.timesteps
+
+    @shapedArray
+    def gammas_pairs(self):
+        return self.timesteps
 
     @property
     def x_rotation_angles(self):
@@ -623,6 +674,161 @@ class AlternatingOperatorsQAOAParameters(AbstractQAOAParameters):
         ax.legend()
 
 
+class ClassicalFarhiQAOAParameters(AbstractQAOAParameters):
+    """
+    QAOA parameters that implement a state preparation circuit with
+
+    .. math::
+
+        e^{-i \\beta_p H_0}
+        e^{-i \\gamma_p H_c}
+        \\cdots
+        e^{-i \\beta_0 H_0}
+        e^{-i \\gamma_0 H_c}
+
+    This corresponds to the parametrization used by Farhi in his original paper
+
+    Parameters
+    ----------
+    hyperparameters : Tuple
+        The hyperparameters containing the hamiltonian and the number of steps
+        ``hyperparameters = (hamiltonian, timesteps)``
+    parameters : Tuple
+        Tuple containing ``(betas, gammas)`` with dimensions
+        ``(timesteps, timesteps)``
+    """
+
+    def __init__(self,
+                 hyperparameters: Tuple[PauliSum, int],
+                 parameters: Tuple):
+        """
+        Extracts the qubits the reference and mixer hamiltonian act on and
+        sets them.
+
+        Todo
+        ----
+        Add checks, that the parameters and hyperparameters work together (same
+        number of timesteps and single and pair qubit terms)
+        """
+        # setup reg, qubits_singles and qubits_pairs
+        super().__init__(hyperparameters)
+        self.betas, self.gammas\
+            = np.array(parameters[0]), np.array(parameters[1])
+
+    def __repr__(self):
+        string = "Hyperparameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
+        string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
+        string += "Parameters:\n"
+        string += "\tbetas: " + str(self.betas) + "\n"
+        string += "\tgammas: " + str(self.gammas) + "\n"
+        return(string)
+
+    def __len__(self):
+        return self.timesteps * 2
+
+    @shapedArray
+    def betas(self):
+        return self.timesteps
+
+    @shapedArray
+    def gammas(self):
+        return self.timesteps
+
+    @property
+    def x_rotation_angles(self):
+        return np.outer(self.betas, np.ones(len(self.reg)))
+
+    @property
+    def z_rotation_angles(self):
+        return np.outer(self.gammas, self.single_qubit_coeffs)
+
+    @property
+    def zz_rotation_angles(self):
+        return np.outer(self.gammas, self.pair_qubit_coeffs)
+
+    def update_from_raw(self, new_values):
+        # overwrite self.betas with new ones
+        self.betas = np.array(new_values[0:self.timesteps])
+        new_values = new_values[self.timesteps:]    # cut betas from new_values
+        self.gammas = np.array(new_values[0:self.timesteps])
+        new_values = new_values[self.timesteps:]
+
+        if not len(new_values) == 0:
+            raise RuntimeWarning("list to make new gammas and x_rotation_angles out of"
+                                 "didn't have the right length!")
+
+    def raw(self):
+        raw_data = np.concatenate((self.betas, self.gammas))
+        return raw_data
+
+    @classmethod
+    def linear_ramp_from_hamiltonian(cls,
+                                     hamiltonian: PauliSum,
+                                     timesteps: int,
+                                     time: float = None):
+        """
+        Returns
+        -------
+        ClassicalFarhiQAOAParameters
+            An `ClassicalFarhiQAOAParameters` object holding all the
+            parameters
+        """
+        if time is None:
+            time = float(0.7 * timesteps)
+        # create evenly spaced timesteps at the centers of #timesteps intervals
+        dt = time / timesteps
+        times = np.linspace(time * (0.5 / timesteps), time
+                            * (1 - 0.5 / timesteps), timesteps)
+
+        # fill betas, gammas_singles and gammas_pairs
+        # Todo (optional): replace by np.linspace for tiny performance gains
+        betas = np.array([dt * (1 - t / time) for t in times])
+        gammas = np.array([dt * t / time for t in times])
+
+        # wrap it all nicely in a qaoa_parameters object
+        params = cls((hamiltonian, timesteps),
+                     (betas, gammas))
+        return params
+
+    @classmethod
+    def from_AbstractParameters(cls,
+                                abstract_params: AbstractQAOAParameters,
+                                parameters: Tuple):
+        """Create a GeneralQAOAParameters instance from an AbstractQAOAParameters
+        instance with hyperparameters from ``abstract_params`` and normal
+        parameters from ``parameters``
+
+        Parameters
+        ----------
+        abstract_params: AbstractQAOAParameters
+            An AbstractQAOAParameters instance to which to add the parameters
+        parameters: Tuple
+            Same as ``parameters`` in ``.__init__()``
+
+        Returns
+        -------
+        Type[AbstractQAOAParameters]
+            A ``cls`` object with the hyperparameters taken from
+            ``abstract_params`` and the normal parameters from ``parameters``
+        """
+        out = super().from_AbstractParameters(abstract_params)
+        out.betas, out.gammas\
+            = np.array(parameters[0]), np.array(parameters[1])
+        return out
+
+    def plot(self, ax=None, **kwargs):
+        if ax is None:
+            fig, ax = plt.subplots()
+
+        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
+        ax.plot(self.gammas, label="gammas", marker="^", ls="", **kwargs)
+        ax.set_xlabel("timestep")
+        # ax.grid(linestyle='--')
+        ax.legend()
+
+
 class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
     """
     QAOA parameters that implement a state preparation circuit of the form
@@ -669,6 +875,10 @@ class AdiabaticTimestepsQAOAParameters(AbstractQAOAParameters):
         return string
 
     def __len__(self):   # needs fixing
+        return self.timesteps
+
+    @shapedArray
+    def times(self):
         return self.timesteps
 
     @property
@@ -781,7 +991,7 @@ class FourierQAOAParameters(AbstractQAOAParameters):
         The hyperparameters containing the hamiltonian, the number of steps
         and the total annealing time ``hyperparameters = (hamiltonian, timesteps, q)``
         ``q`` is the number of fourier coefficients. For ``q == timesteps`` we have
-        the full expresivity of ``AlternatingOperatorsQAOAParameters``. More
+        the full expressivity of ``AlternatingOperatorsQAOAParameters``. More
         are redundant.
     parameters : Tuple
         Tuple containing ``(v, u_singles, u_pairs)`` with dimensions
@@ -836,6 +1046,18 @@ class FourierQAOAParameters(AbstractQAOAParameters):
             for k in range(len(u)):
                 x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
         return x
+
+    @shapedArray
+    def v(self):
+        return self.q
+
+    @shapedArray
+    def u_singles(self):
+        return self.q
+
+    @shapedArray
+    def u_pairs(self):
+        return self.q
 
     @property
     def x_rotation_angles(self):
@@ -992,18 +1214,18 @@ class QAOAParameterIterator:
             The inital qaoa_parameters, where one of them is swept over
         the_parameter: String
             A string specifying, which parameter should be varied. It has to be
-            of the form ``<attr_name>[i]`` where ``<attr_name>`` is the name of the
-            _internal_ list and ``i`` the index, at which it sits. E.g. if
-            ``qaoa_params`` is of type ``AdiabaticTimestepsQAOAParameters`` and
-            we want to vary over the second timestep, it is
+            of the form ``<attr_name>[i]`` where ``<attr_name>`` is the name
+            of the _internal_ list and ``i`` the index, at which it sits. E.g.
+            if ``qaoa_params`` is of type ``AdiabaticTimestepsQAOAParameters``
+            and  we want to vary over the second timestep, it is
             ``the_parameter = "times[1]"``.
         the_range : Iterable -> float
             The range, that ``the_parameter`` should be varied over
 
         Todo
         ----
-        - Add checks, that the number of indices in ``the_parameter`` matches the
-          dimensions of ``the_parameter``
+        - Add checks, that the number of indices in ``the_parameter`` matches
+          the dimensions of ``the_parameter``
         - Add checks, that the index is not too large
         """
         self.params = qaoa_params

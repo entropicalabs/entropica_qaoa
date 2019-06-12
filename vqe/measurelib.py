@@ -14,7 +14,7 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import H, I, RX
 
 
-def append_measure_register(program, qubits=None, trials=10):
+def append_measure_register(program, qubits=None, trials=10, ham=None):
     """Creates readout register, MEASURE instructions for register and wraps
     in trials trials.
 
@@ -24,16 +24,43 @@ def append_measure_register(program, qubits=None, trials=10):
         List of Qubits to measure. If None, program.get_qubits() is used
     param trials : int
         The number of trials to run.
+    param ham : PauliSum
+        Hamiltonian to whose basis we need to switch. All terms in it must
+        trivially commute!
 
     Returns
     -------
     Program :
-        program with the measure instructions appended
+        program with the gate change and measure instructions appended
     """
+    base_change_gates = {'X': lambda qubit: H(qubit),
+                         'Y': lambda qubit: RX(np.pi / 2, qubit),
+                         'Z': lambda qubit: I(qubit)}
+
     if qubits is None:
         qubits = program.get_qubits()
 
+
+    def _get_correct_gate(qubit: Union[int, QubitPlaceholder]) -> Program():
+        """Correct base change gate on the qubit `qubit` given `ham`"""
+        # this is an extra function, because `return` allows us to
+        # easily break out of loops
+        for term in ham:
+            if term[qubit] != 'I':
+                return base_change_gates[term[qubit]](qubit)
+
+        raise ValueError(f"PauliSum {ham} doesn't act on qubit {qubit}")
+
+    # append to correct base change gates if ham is specified. Otherwise
+    # assume diagonal basis
+    if ham is not None:
+        for qubit in ham.get_qubits():
+            program += Program(_get_correct_gate(qubit))
+
+    # create a read out register
     ro = program.declare('ro', memory_type='BIT', memory_size=len(qubits))
+
+    # add measure instructions to the specified qubits
     for i, qubit in enumerate(qubits):
         program += MEASURE(qubit, ro[i])
     program.wrap_in_numshots_loop(trials)
@@ -147,30 +174,3 @@ def commuting_decomposition(ham: PauliSum) -> List[PauliSum]:
             pauli_sum_list[color_map[term]] += term
 
     return pauli_sum_list
-
-
-def measurement_base_change(ham: PauliSum) -> Program:
-    """Get the base change program to measure ham.
-
-    All terms of ham must mutually commute.
-    """
-
-    base_change_gates = {'X': lambda qubit: H(qubit),
-                         'Y': lambda qubit: RX(np.pi / 2, qubit),
-                         'Z': lambda qubit: I(qubit)}
-
-    def _get_correct_gate(qubit: Union[int, QubitPlaceholder]) -> Program():
-        """Correct base change gate on the qubit `qubit` given `ham`"""
-        # this is an extra function, because `return` allows us to
-        # easily break out of loops
-        for term in ham:
-            if term[qubit] != 'I':
-                return base_change_gates[term[qubit]](qubit)
-
-        raise ValueError(f"PauliSum {ham} doesn't act on qubit {qubit}")
-
-    p = Program()
-    for qubit in ham.get_qubits():
-        p += Program(_get_correct_gate(qubit))
-
-    return p

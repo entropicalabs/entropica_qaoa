@@ -3,21 +3,24 @@
    + [x] Implement `_hamiltonionians_commute_trivially()`
    + [x] Implement `make_commutation_graph`
    + [x] Get graph coloring algorithm
-   + [ ] Make `measurement_base_change()` part of `append_measure_register()` and add `base=..` or `ham=...` option to `append_measure_register()`
+   + [x] Make `measurement_base_change()` part of `append_measure_register()` and add `base=..` or `ham=...` option to `append_measure_register()`
 - [x] Fix QubitPlaceholders in QAOACostFunction * . Pass a Qubit mapping?
   + [ ] Automatically, create one, if the hamiltonian contains placeholders?
   + [ ] Check if QVMConnection can report possible physical Qubits!
 - [ ] Change `AlternatingParameters` to `FarhiQAOA` or `ClassicalQAOA`
 - [ ] Check, that everything runs on the QPU
 - [ ] Profile the whole QAOA part and optimize
-  + [ ] Ask Asad or Cooper for production code for realistic profiling
+  + [x] Ask Asad or Cooper for production code for realistic profiling
   + [ ] Get to know `cProfile`
 - [ ] Rename long functions / classes
-  + [ ] Start Discussion Thread on Slack
-- [ ] Add `state_prep_program` to `qaoa.cost_function`
-  + [ ] Add `prep_classical_state(bitstring)` to `utilities.py`
+  + [x] Start Discussion Thread on Slack
+- [x] Add `state_prep_program` to `qaoa.cost_function`
+  + [x] Add `prep_classical_state(bitstring)` to `utilities.py`
 - [ ] Check all the QAOAParameter docstrings
   + [ ] Make `__repr__` uniform over all QAOAParameterClasses
+- [x] Add plain old Farhi as a parameter class
+- [ ] Add setup.py script
+  + [ ] Look at Coopers suggestion for such a script 
 
 # Small things to fix
  - [x] Fix QubitPlaceholders() in VQE cost function
@@ -41,7 +44,10 @@
  - [x] clean up the redundancies in the `QAOAParamters.__init__`, that the
        user has to pass `hamiltonian` _and_ `qubits_singles`
        How? Make him pass `hamiltonian` regardless of the parametrization.
- - [ ] check the documentation and input for validity
+ - [x] check the documentation and input for validity
+ - [x] make `self.betas`, `self.gammas_singles` etc @property instead of attributes
+       for automatic input checking (related to above). Check if numpy supports automatic
+       broadcasting from i.e. `(6, ) -> (3,2)`
  - [x] print coefficients and number of timesteps in `__repr__`
  - [x] convert all the parameter lists to numpy arrays
  - [?] rename `self.timesteps` everywhere to `self.p` or `self.ntimesteps`?

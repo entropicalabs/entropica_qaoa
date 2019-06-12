@@ -4,7 +4,7 @@ and change only the QAOA specific details.
 """
 
 
-from typing import Union, List, Type, Dict, Iterable
+from typing import Union, List, Type, Dict, Iterable, Callable
 
 from pyquil import Program
 from pyquil.quil import MemoryReference, QubitPlaceholder, Qubit
@@ -96,7 +96,7 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
     Returns
     -------
     Program
-        Parametetric Quil Program with the annealing circuit.
+        Parametric Quil Program with the annealing circuit.
 
     """
     (reg, qubits_singles, qubits_pairs, timesteps) =\
@@ -140,7 +140,7 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
     return p
 
 
-def _prepare_all_plus_state(reg: Iterable) -> Program:
+def _all_plus_state(reg: Iterable) -> Program:
     """Prepare the |+>...|+> state on all qubits in reg."""
     p = Program()
     for qubit in reg:
@@ -148,11 +148,14 @@ def _prepare_all_plus_state(reg: Iterable) -> Program:
     return p
 
 
-def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters]) -> Program:
+def prepare_qaoa_ansatz(initial_state: Program,
+                        qaoa_params: Type[AbstractQAOAParameters]) -> Program:
     """Create parametric quil code for QAOA circuit.
 
     Parameters
     ----------
+    state_prep_program : Callable[[None], Program]
+        Returns a program for preparation of the initial state
     qaoa_params : Type[AbstractQAOAParameters]
         The parameters of the QAOA circuit.
 
@@ -162,7 +165,7 @@ def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters]) -> Program:
         Parametric Quil Program with the whole circuit.
 
     """
-    p = _prepare_all_plus_state(qaoa_params.reg)
+    p = initial_state
     p += _qaoa_annealing_program(qaoa_params)
     return p
 
@@ -202,6 +205,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                  return_standard_deviation=False,
                  noisy=False,
                  log=None,
+                 initial_state: Program = None,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """Create a cost-function for QAOA.
 
@@ -219,13 +223,19 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
             Add simulated samplign noise?
         log : list
             List to keep log of function calls
+        initial_state: Program
+            Program to prepare the initial state. Defaults to
+            applying a Hadamard on each qubit (all plus state).
         qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
             A mapping to fix QubitPlaceholders to physical qubits. E.g.
             pyquil.quil.get_default_qubit_mapping(program) gives you on.
 
         """
+        if initial_state is None:
+            initial_state = _all_plus_state(params.reg)
+
         self.params = params
-        super().__init__(prepare_qaoa_ansatz(params),
+        super().__init__(prepare_qaoa_ansatz(initial_state, params),
                          make_memory_map=make_qaoa_memory_map,
                          hamiltonian=hamiltonian,
                          sim=sim,
@@ -270,6 +280,7 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                  return_standard_deviation=False,
                  base_numshots: int = 100,
                  log=None,
+                 initial_state: Program = None,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """Create a cost-function for QAOA.
 
@@ -288,14 +299,20 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
             is then a multplier of this.
         log : list
             List to keep log of function calls
+        initial_state : Program
+            Program to prepare the initial state. Defaults to
+            applying a Hadamard on each qubit (all plus state).
         qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
             A mapping to fix QubitPlaceholders to physical qubits. E.g.
             pyquil.quil.get_default_qubit_mapping(program) gives you on.
 
 
         """
+        if initial_state is None:
+            initial_state = _all_plus_state(params.reg)
+
         self.params = params
-        super().__init__(prepare_qaoa_ansatz(params),
+        super().__init__(prepare_qaoa_ansatz(initial_state, params),
                          make_memory_map=make_qaoa_memory_map,
                          hamiltonian=hamiltonian,
                          qvm=qvm,
