@@ -3,6 +3,7 @@ import networkx as nx
 
 import matplotlib.pyplot as plt
 
+from pyquil import Program
 from pyquil.paulis import PauliSum, PauliTerm 
 from qaoa.parameters import QAOAParameterIterator
 from scipy.spatial import distance
