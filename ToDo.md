@@ -20,7 +20,9 @@
   + [ ] Make `__repr__` uniform over all QAOAParameterClasses
 - [x] Add plain old Farhi as a parameter class
 - [ ] Add setup.py script
-  + [ ] Look at Coopers suggestion for such a script 
+  + [ ] Look at Coopers suggestion for such a script
+- [ ] Add `callback` function to cost_functions for parameter and value logging
+  + [ ] Make it a class itself, s.t. it generates its own logs?
 
 # Small things to fix
  - [x] Fix QubitPlaceholders() in VQE cost function
