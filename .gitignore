@@ -35,7 +35,6 @@ docs/build
 *.synctex.gz
 *.aux
 *.out
-*.md
 
 # Some specific files and folders
 #################################
