@@ -2,6 +2,8 @@ import numpy as np
 import networkx as nx
 
 from pyquil.paulis import PauliSum, PauliTerm 
+from math import log
+from sklearn.metrics import accuracy_score
 
 def create_random_hamiltonian(nqubits, single_terms=True, pair_terms=True):
     """
@@ -231,3 +233,86 @@ def prepare_sweep_parameters(param1_2var,param1_range,param2_2var,param2_range,b
         param1_range, param2_range = list(beta_range2var) + list(gamma_range2var)
 
     return params, param1, param2, param1_range, param2_range, param_labels
+
+def return_lowest_state(probs):
+    '''
+    Description
+    -----------
+    Returns the lowest energy state of a QAOA run from the list of probabilities
+    returned by pyQuil's Wavefunction.probabilities()method.
+
+    Parameters
+    ----------
+    :param      probs:      A numpy array of length 2^n, returned by Wavefunction.probabilities() 
+
+    Returns
+    -------
+    :param      lowest:     A little endian list of binary integers indicating the lowest energy state of the wavefunction.
+    '''
+    index_max = max(range(len(probs)), key=probs.__getitem__)
+    string = '{0:0'+str(int(log(len(probs),2)))+'b}'
+    string = string.format(index_max)
+    return [int(item) for item in string]
+
+def evaluate_lowest_state(lowest, true):
+    '''
+    Description
+    -----------
+    Prints informative statements comparing QAOA's returned bit string to the true
+    cluster values.
+
+    Parameters
+    ----------
+    :param      lowest:      A littleiendian list of binary integers representing the lowest energy state of the wavefunction
+    :param     true:        A little-endian list of binary integers representing the true solution to the MAXCUT clustering problem.
+
+    Returns
+    -------
+    Nothing
+    '''
+    print('True Labels of samples:',true_clusters)
+    print('Lowest QAOA State:',lowest)
+    acc = accuracy_score(lowest,true_clusters)
+    print('Accuracy of Original State:',acc*100,'%')
+    final_c = [0 if item == 1 else 1 for item in lowest]
+    acc_c = accuracy_score(final_c,true_clusters)
+    print('Accuracy of Complement State:',acc_c*100,'%')
+
+def generate_hamiltonian_from_dist(dist,biases=None):
+    '''
+    Description
+    -----------
+    Generates a hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
+    of in biases is applied to the i'th qubit. 
+
+    Parameters
+    ----------
+    :param      dist:      A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
+    :param     biases:     A numpy array of length(dist), with non-zero entries indicating single-qubit bias terms.
+
+    Returns
+    -------
+    :param     hamiltonian: A PauliSum object modelling the hamiltonian of the system  
+    '''
+    if not biases:
+        if not isinstance(biases,type(list())) or isinstance(biases,np.ndarray):
+           raise ValueError("biases must be of type list()")
+        if not len(biases)==len(dist):
+            raise ValueError("biases must be the same length as dist (one number for each qubit)")
+
+    pauli_list = list()
+    m,n = dist.shape
+
+    #pairwise interactions
+    for i in range(m):
+        for j in range(n):
+            if i < j:
+                term = PauliTerm("Z",i,dist.values[i][j])*PauliTerm("Z",j, 1.0)
+                pauli_list.append(term)
+            
+    #single qubit interactions
+    for i, num in enumerate(biases):
+        term = PauliTerm("Z",i,num)
+        pauli_list.append(term)
+    
+    return PauliSum(pauli_list)
