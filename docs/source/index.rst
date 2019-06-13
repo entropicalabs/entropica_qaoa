@@ -8,7 +8,7 @@ Welcome to Entropica QAOA's documentation!
 
 To compile this documentation you first must install Sphinx and some of its
 extensions.
-Sphinx and the neccesary extensions can be installed with 
+Sphinx and the neccesary extensions can be installed with
 
 .. code-block:: bash
 
@@ -16,7 +16,7 @@ Sphinx and the neccesary extensions can be installed with
 
 (I hope this list is complete. Otherwise you will get errors during compilation
 that hopefully tell you, what is missing)
-Then the documentation can be compiled with 
+Then the documentation can be compiled with
 
 .. code-block:: bash
 
@@ -44,7 +44,7 @@ API reference
 .. toctree::
    :maxdepth: 2
    :caption: The QAOA modules
-   
+
    qaoa_cost_function
    parameters
 

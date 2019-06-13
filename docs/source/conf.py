@@ -16,14 +16,14 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../../'))
 
-
+from qaoa.parameters import shapedArray
 
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'Entropica QAOA'
-copyright = '2019, Ewan Munro, Jan Lukas Bosse, Tommaso Demarie'
+copyright = '2019, EntropicaLabs'
 author = 'Ewan Munro, Jan Lukas Bosse, Tommaso Demarie'
 
 
@@ -41,7 +41,7 @@ extensions = [
 ]
 
 napoleon_google_docstring = False
-napoleon_use_param = False
+napoleon_use_param = True
 napoleon_use_ivar = True
 
 todo_include_todos = True
@@ -71,8 +71,12 @@ html_static_path = []
 # -- More customizations ----------------------------------------------------
 # Document __init__ and __call__ functions
 def skip(app, what, name, obj, would_skip, options):
-    if name == "__init__" or name == "__call__":
+    if name == "__call__":
+        print("Documenting Call")
         return False
+
+    if type(obj) == shapedArray:
+        return True
     return would_skip
 
 def setup(app):
