@@ -17,8 +17,8 @@ from pyquil.paulis import PauliSum
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
-from vqe.cost_function import PrepareAndMeasureOnQVM, PrepareAndMeasureOnWFSim
-from qaoa.parameters import AbstractQAOAParameters, GeneralQAOAParameters
+from forest_qaoa.vqe.cost_function import PrepareAndMeasureOnQVM, PrepareAndMeasureOnWFSim
+from forest_qaoa.qaoa.parameters import AbstractQAOAParameters, GeneralQAOAParameters
 
 
 def _qaoa_mixing_ham_rotation(betas: MemoryReference,
