@@ -23,7 +23,7 @@
 
  - `hamiltonian_expectation_value`:
    [JL] -> `measurement_expectation_z_base` should have the same name as above, with sth indicating, that this function is limited to diagonal hamiltonians
-   [EM] Why not just `expectation value` for this one?  
+   [EM] Why not just `expectation_value` for this one?  
 
  - `create_random_hamiltonian`, `create_...`:
    [JL] Drop the `create` part in most of those? It is kind of obvious, that these functions will return you e.g. a random hamiltonian. I guess this applies to all function names that start with a somewhat redundant verb like `create` or `get`, where the rest of the name already tells you what will be returned.
