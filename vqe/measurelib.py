@@ -1,6 +1,16 @@
 """
 Various convenience functions for measurements on a quantum computer or
 wavefunction simulator
+
+Note
+----
+In this module we introduce the notion of `trivially commuting PauliTerms`.
+This means, that two PauliTerms (products of Pauli matrices) not only commute,
+but that they also act with the same Pauli matrix on each qubit `or` only one
+of them acts on a qubit. This implies that both PauliTerms can be measured
+simultaneously `without` needing multiqubit gates. E.g. :math:`X_0 Z_2` and
+:math:`X_0 X_1` commute trivially, while :math:`Z_0 Z_1` and :math:`X_0 X_1`
+commute, but `not` trivially. To measure the latter two simultaneously, one would need to do e.g. `CCNOT(0,1,2)` and then measure qubit 2.
 """
 
 from typing import List, Union, Tuple
@@ -23,17 +33,17 @@ def append_measure_register(program: Program,
 
     Parameters
     ----------
-    qubits : list
+    qubits:
         List of Qubits to measure. If None, program.get_qubits() is used
-    trials : int
+    trials:
         The number of trials to run.
-    ham : PauliSum
+    ham:
         Hamiltonian to whose basis we need to switch. All terms in it must
         trivially commute!
 
     Returns
     -------
-    Program :
+    Program:
         program with the gate change and measure instructions appended
     """
     base_change_gates = {'X': lambda qubit: H(qubit),
@@ -45,7 +55,7 @@ def append_measure_register(program: Program,
 
 
     def _get_correct_gate(qubit: Union[int, QubitPlaceholder]) -> Program():
-        """Correct base change gate on the qubit `qubit` given `ham`"""
+        """Correct base change gate on the qubit ``qubit`` given ``ham``"""
         # this is an extra function, because `return` allows us to
         # easily break out of loops
         for term in ham:
@@ -76,19 +86,20 @@ def hamiltonian_expectation_value(hamiltonian: PauliSum,
 
     Warning
     -------
-    This function assumes, that all terms in ``hamiltonian`` commute with each
-    other _and_ that the ``bitstrings`` were measured in the correct basis
+    This function assumes, that all terms in ``hamiltonian`` commute trivially
+    with each other `and` that the ``bitstrings`` were measured in the correct
+    basis
 
     Parameters
     ----------
-    param hamiltonian : PauliSum
+    param hamiltonian:
         The hamiltonian
-    param bitstrings : 2D arry or list
+    param bitstrings:
         the measurement outcomes. Columns are outcomes for one qubit.
 
     Returns
     -------
-    Tuple:
+    Tuple[float, float]:
          A tuple containing ``(expectation_value, standard_deviation)``
     """
 
@@ -120,10 +131,10 @@ def hamiltonian_list_expectation_value(hamiltonians: List[PauliSum],
 
     Parameters
     ----------
-    hamiltonians :
-        List of PauliSums. Each PauliSum must only consist of mutually
+    hamiltonians:
+        List of PauliSums. Each PauliSum must only consist of trivially
         commuting terms
-    bitstrings :
+    bitstrings:
         List of the measured bitstrings. Each bitstring must have dimensions
         corresponding to the coresponding PauliSum
 
