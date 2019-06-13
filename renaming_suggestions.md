@@ -2,6 +2,9 @@
  - QAOAParameter classes:
    [JL] Currently we do e.g.
     `from qaoa.parameters import AlternatingOperatorsQAOAParameters` which sounds very redundant if your read it out loud. Also the names are very long... Also some of the names (`General` and `AlternatingOperators` e.g.) are not very descriptive. Any suggestions for better names, for these? Drop the `*QAOAParameterers` in the names altogether? Shorten `*QAOAParameters` to `*Params`?
+   [EM] We were thinking `standard`, `placeholder` and `extended` for `Farhi`, `Farhi++` and `General`, respectively. For `placeholder` we still need a proper word that conveys something between the two extremes. 
+        We have an idea for a nice graphic to try to convey the meanings, but essentially we have to balance the naming to be informative but not too technical. As Cooper suggested, a good way is to offload part of the challenge to the notebooks and documentation, and establish whatever
+        the convention is there. 
 
  - `qaoa_params.timesteps`:
    [JL] In all QAOAParamter classes the number of timesteps is currently called `timesteps`. Should we rename it to either simply `p` (QAOA convention) or `n_timesteps` (it is just a number, not a list of timesteps)?
