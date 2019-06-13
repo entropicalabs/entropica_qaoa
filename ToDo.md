@@ -23,6 +23,7 @@
   + [ ] Look at Coopers suggestion for such a script
 - [ ] Add `callback` function to cost_functions for parameter and value logging
   + [ ] Make it a class itself, s.t. it generates its own logs?
+- [ ] Make _reduce_noisy_cost_function a decorator
 
 # Small things to fix
  - [x] Fix QubitPlaceholders() in VQE cost function
