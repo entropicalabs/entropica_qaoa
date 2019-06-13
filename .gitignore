@@ -1,5 +1,6 @@
 # IPython Notebooks 
 ###################
+*.ipynb_checkpoints
 
 #compiled stuff
 ###############
