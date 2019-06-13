@@ -5,10 +5,12 @@
 
  - `qaoa_params.timesteps`:
    [JL] In all QAOAParamter classes the number of timesteps is currently called `timesteps`. Should we rename it to either simply `p` (QAOA convention) or `n_timesteps` (it is just a number, not a list of timesteps)?
- 
+   [EM] I think `steps` would be a reasonable convention. It's descriptive and short, and it's also what Rigetti use in Grove now. (Alternatively, `n_steps`?)
+
  - `adiabatic_timesteps_params._t`
    [JL] Currently we call the total annealing time in `AdiabaticTimestepsQAOAParams` simply `._T`. Is maybe `._annealing_time` a more self-explanatory name?
- 
+   [EM] Sure, `annealing_time` seems fine. Perhaps it could be shortened to `anneal_time`.
+
  - `qaoa.cost_functions`:
    [JL] exactly the same goes for the cost_function classes. Additionally PEP8 suggests to name classes that have a `.__call__` method in snake_case, because they behave like functions.
 
@@ -20,6 +22,7 @@
 
  - `create_random_hamiltonian`, `create_...`:
    [JL] Drop the `create` part in most of those? It is kind of obvious, that these functions will return you e.g. a random hamiltonian. I guess this applies to all function names that start with a somewhat redundant verb like `create` or `get`, where the rest of the name already tells you what will be returned.
+   [EM] Generally agreed about dropping create, get. Other less obvious verbs such as 'plot' should stay, though.
 
 # All top level names
 Here a list of all the top-level(!) names in our packages sorted by length.
