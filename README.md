@@ -1,11 +1,31 @@
 # QAOA
-A module for Rigettis Forest ecosystem that implements a QAOA and VQE that is more modular than the one already packaged in Grove. An outline of what can hopefully be found here in a couple of weeks is in `PackageOutline.md`
+A module for Rigettis Forest ecosystem that implements a QAOA and VQE that is more modular than the one already packaged in Grove.
+
+An outline of what can hopefully be found here in a couple of weeks is in `PackageOutline.md`
 
 ## Documentation
 Good question, read the code for now.
 
 ## Installation
-Gonna need to figure out, how to turn this into a installable python package. For now just clone the repo and figure it our yourself.
+Installation of this package can be performed in a few simple steps.
+1. Open terminal and enter the site-packages folder of your preferred Python environment.
+
+For those with Anaconda installed, the command looks like:
+```
+cd /anaconda3/envs/<my-env>/lib/pythonX.Y/site-packages/
+```
+For those unsure of the location of their site-packages folder, you can simply run 'pip show <package name>' and your terminal will display the directory location of your python packages.
+
+2. Clone the forest_qaoa repository into your site-packages folder.
+```
+git clone <put http here>
+```
+3. Enter the forest_qaoa folder and run the following command
+ 
+```
+python setup.py install
+```
+You can now import this package as you would any conda- or pip-installed library!
 
 ## Testing
  - `pytest` runs the default tests and skips longer tests that need heavy simulations
