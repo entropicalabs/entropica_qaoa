@@ -11,7 +11,24 @@ import numpy as np
 
 # TODO decide, whether we really want to support cost_functions that return
 # floats and ones that return tuples (exp_val, std_dev)
-def _reduce_noisy_cost_function(fun, nshots):
+def scalar_cost_function(fun: Callable[[np.array, int], Tuple[float, float]],
+                         nshots: int) -> Callable[[np.array], float]:
+    """Decorator to make our cost_functions work with scalar minimizers.
+
+    Parameters
+    ----------
+    fun:
+        A cost_function that takes a parameter array ``params`` and number of
+        shots ``nshots`` and returns a Tuple ``(expectation, standard_dev)``
+    nshots:
+        ``nshots`` argument of ``fun``
+
+    Returns
+    -------
+    Callable[[np.array], float]:
+        A cost_function that takes only the parameter array and returns only
+        the expectation_value
+    """
     def reduced(*args, **kwargs):
         out = fun(*args, nshots=nshots, **kwargs)
         try:
@@ -20,11 +37,12 @@ def _reduce_noisy_cost_function(fun, nshots):
             return out
     return reduced
 
-def scipy_optimizer(cost_function : Callable[[Union[List[float], np.array]], Tuple[float, float]],
-                    params0 : Union[List[float], np.array],
-                    epsilon : float =1e-5,
-                    nshots: int =1000,
-                    method: str ="COBYLA",
+
+def scipy_optimizer(cost_function: Callable[[Union[List[float], np.array]], Tuple[float, float]],
+                    params0: Union[List[float], np.array],
+                    epsilon: float = 1e-5,
+                    nshots: int = 1000,
+                    method: str = "COBYLA",
                     **mininize_kwargs) -> Dict:
     """A ``scipy.optimize.minimize`` wrapper for VQE.
 
@@ -51,6 +69,6 @@ def scipy_optimizer(cost_function : Callable[[Union[List[float], np.array]], Tup
     Dict :
         The output of ``scipy.optimize.minimize`` after minimization
     """
-    fun = _reduce_noisy_cost_function(cost_function, nshots=nshots)
+    fun = scalar_cost_function(cost_function, nshots=nshots)
     out = minimize(fun, params0, method=method, tol=epsilon, options=mininize_kwargs)
     return out

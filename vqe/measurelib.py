@@ -25,9 +25,9 @@ from pyquil.gates import H, I, RX
 
 
 def append_measure_register(program: Program,
-                            qubits: List =None,
-                            trials: int =10,
-                            ham: PauliSum =None) -> Program:
+                            qubits: List = None,
+                            trials: int = 10,
+                            ham: PauliSum = None) -> Program:
     """Creates readout register, MEASURE instructions for register and wraps
     in trials trials.
 
