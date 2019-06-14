@@ -6,7 +6,7 @@ manner, that we can later swap it out with more sophisticated optimizers.
 
 from scipy.optimize import minimize
 from functools import partial
-from typing import Callable, Tuple, Iterable, Union, List
+from typing import Callable, Tuple, Iterable, Union, List, Dict
 import numpy as np
 
 # TODO decide, whether we really want to support cost_functions that return
@@ -25,24 +25,24 @@ def scipy_optimizer(cost_function : Callable[[Union[List[float], np.array]], Tup
                     epsilon : float =1e-5,
                     nshots: int =1000,
                     method: str ="COBYLA",
-                    **mininize_kwargs):
+                    **mininize_kwargs) -> Dict:
     """A ``scipy.optimize.minimize`` wrapper for VQE.
 
     Parameters
     ----------
-    param cost_function: Callable[Union[List[float], np.array], Tuple[float, float]]
+    cost_function:
         The cost function to minimize. It takes a list of floats or numpy array
         as parameters and returns a tuple ``(expectation_value, standard_deviation)``
-    param params0: Union[List[float], np.array]
+    params0:
         The initial parameters for the optimization
-    param epsilon: float
+    epsilon:
         The desired accuracy for the function value after optimization
-    nshots: int
+    nshots:
         The number of shots to take for each function evaluation of the cost_function
-    param method : string
+    method:
         The optimizer to use. Can be any of the optimizer included in
         ``scipy.optimize.minimize``. Default is `Cobyla`.
-    param minimize_kwargs:
+    minimize_kwargs:
         The keyword arguments passed forward to ``scipy.optimize.minimize``.
         See its documentation for the options.
 
