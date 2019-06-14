@@ -5,17 +5,21 @@ import matplotlib.pyplot as plt
 
 from pyquil import Program
 from pyquil.paulis import PauliSum, PauliTerm 
-from qaoa.parameters import QAOAParameterIterator
+from pyquil.gates import X
 from scipy.spatial import distance
+
 
 
 ### METHODS FOR CREATING RANDOM HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ###
 
 """
-General TODOs / considerations:
+TODOs / considerations:
     
 - Include JL's other functions, eg create_normalized_random_hamiltonian?
 - Implement certain types of graphs (eg Erdos-Renyi, scale-free, etc)
+- Improve distances_dataset so it can do more than just compute Euclidean distances.
+- Keep create_circular_clusters method? If so, it likely needs some attention.
+- Qubit placeholder use in Networkx graphs
 
 """
 
