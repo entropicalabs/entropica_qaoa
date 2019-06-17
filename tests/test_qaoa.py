@@ -7,11 +7,12 @@ sys.path.insert(0, myPath + '/../')
 
 import pytest
 import numpy as np
+from scipy.optimize import minimize
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 
-from vqe.optimizer import scipy_optimizer
+from vqe.optimizer import scalar_cost_function
 from qaoa.cost_function import QAOACostFunctionOnWFSim, QAOACostFunctionOnQVM
 from qaoa.parameters import FourierQAOAParameters
 
@@ -26,9 +27,10 @@ def test_qaoa_on_wfsim():
     cost_fun = QAOACostFunctionOnWFSim(hamiltonian, params, sim,
                                        noisy=True,
                                        log=log)
+    fun = scalar_cost_function()(cost_fun)
     with local_qvm():
-        out = scipy_optimizer(cost_fun, params0=p0, epsilon=1e-3,
-                              maxiter=500)
+        out = minimize(fun, x0=p0, method="COBYLA", tol=1e-3,
+                       options={"maxiter": 500})
         wf = sim.wavefunction(cost_fun.prepare_ansatz,
                               memory_map=cost_fun.make_memory_map(params))
     assert np.allclose(out["fun"], -1.3, rtol=1.1)
@@ -46,8 +48,9 @@ def test_qaoa_on_qvm():
     log =[]
     with local_qvm():
         cost_fun = QAOACostFunctionOnQVM(hamiltonian, params, qvm, base_numshots=50)
-        out = scipy_optimizer(cost_fun, params0=p0, nshots=4, epsilon=2e-1,
-                              maxiter=100)
+        fun = scalar_cost_function(nshots=4)(cost_fun)
+        out = minimize(fun, x0=p0, method="COBYLA", tol=2e-1,
+                       options={"maxiter": 100})
     assert np.allclose(out["fun"], -1.3, rtol=1.1)
     assert out["success"]
     print(out)

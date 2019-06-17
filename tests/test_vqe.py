@@ -7,6 +7,7 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
 import numpy as np
+from scipy.optimize import minimize
 import pytest
 
 from pyquil.paulis import PauliSum, PauliTerm
@@ -14,7 +15,7 @@ from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 from pyquil.quil import Program
 from pyquil.gates import RX, CNOT
 
-from vqe.optimizer import scipy_optimizer
+from vqe.optimizer import scalar_cost_function
 from vqe.cost_function import PrepareAndMeasureOnWFSim, PrepareAndMeasureOnQVM
 
 
@@ -42,11 +43,12 @@ def test_vqe_on_WFSim():
                                         return_standard_deviation=True,
                                         noisy=False,
                                         log=log)
+    fun = scalar_cost_function()(cost_fun)
 
     with local_qvm():
-        out = scipy_optimizer(cost_fun, p0, epsilon=1e-3)
+        out = minimize(fun, p0, tol=1e-3, method="COBYLA")
         print(out)
-        wf = sim.wavefunction(prepare_ansatz, {"params": out['x']})
+        wf = cost_fun.get_wavefunction(out['x'])
     assert np.allclose(wf.probabilities(), [0, 0, 0, 1], rtol=1.5, atol=0.01)
     assert np.allclose(out['fun'], -1.3)
     assert out['success']
@@ -65,7 +67,8 @@ def test_vqe_on_QVM():
                                           return_standard_deviation=True,
                                           base_numshots=50,
                                           log=log)
-        out = scipy_optimizer(cost_fun, p0, epsilon=1e-2, nshots=4)
+        fun = scalar_cost_function(nshots=4)(cost_fun)
+        out = minimize(fun, p0, tol=1e-2, method="COBYLA")
         print(out)
     assert np.allclose(out['fun'], -1.3, rtol=1.1)
     assert out['success']
