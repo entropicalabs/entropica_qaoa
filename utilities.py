@@ -294,14 +294,20 @@ def generate_hamiltonian_from_dist(dist,biases=None):
     -------
     :param     hamiltonian: A PauliSum object modelling the hamiltonian of the system  
     '''
-    if not biases:
+    pauli_list = list()
+    m,n = dist.shape
+
+    #only if a list is passed in for biases
+    if biases:
         if not isinstance(biases,type(list())) or isinstance(biases,np.ndarray):
            raise ValueError("biases must be of type list()")
         if not len(biases)==len(dist):
             raise ValueError("biases must be the same length as dist (one number for each qubit)")
 
-    pauli_list = list()
-    m,n = dist.shape
+        #single qubit interactions
+        for i, num in enumerate(biases):
+            term = PauliTerm("Z",i,num)
+            pauli_list.append(term)
 
     #pairwise interactions
     for i in range(m):
@@ -310,9 +316,6 @@ def generate_hamiltonian_from_dist(dist,biases=None):
                 term = PauliTerm("Z",i,dist.values[i][j])*PauliTerm("Z",j, 1.0)
                 pauli_list.append(term)
             
-    #single qubit interactions
-    for i, num in enumerate(biases):
-        term = PauliTerm("Z",i,num)
-        pauli_list.append(term)
+    
     
     return PauliSum(pauli_list)
