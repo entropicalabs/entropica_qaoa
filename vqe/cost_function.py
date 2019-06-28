@@ -23,17 +23,23 @@ class AbstractCostFunction():
 
     Parameters
     ----------
-    return_standard_deviation:
-        Return the cost as a float for scalar optimizers or as a tuple
-        ``(cost, cost_standard_deviation)`` for optimizers of noisy functions.
-        (the default is False).
+    scalar_cost_function:
+        If ``False``: self.__call__ has  signature
+        ``(x, nshots) -> (exp_val, std_val)``
+        If ``True``: ``self.__call__()`` has  signature ``(x) -> (exp_val)``,
+        but the ``nshots`` argument in ``__init__`` has to be given.
+    nshots:
+        Optional.  Has to be given, if ``scalar_cost_function``
+        is ``True``
+        Number of shots to take for cost function evaluation.
     log:
         A list to write a log of function values to. If None is passed no
-        log is created..
+        log is created.
     """
 
     def __init__(self,
-                 return_standard_deviation: bool = False,
+                 scalar_cost_function: bool = True,
+                 nshots: int = None,
                  log: list =None):
         raise NotImplementedError()
 
@@ -48,7 +54,9 @@ class AbstractCostFunction():
             Parameters of the state preparation circuit. Array of size `n` where
             `n` is the number of different parameters.
         nshots:
-            Number of shots to take to estimate `cost_function(params)`
+            Number of shots to take to estimate ``cost_function(params)``
+            Has no effect, if ``__init__()`` was called with
+            ``scalar_cost_function=True``
 
         Returns
         -------
@@ -94,10 +102,18 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
                  make_memory_map: Callable[[np.array], Dict],
                  hamiltonian: Union[PauliSum, np.array],
                  sim: WavefunctionSimulator,
-                 return_standard_deviation: bool =False,
+                 scalar_cost_function: bool =True,
+                 nshots: int =None,
                  noisy: bool =False,
                  log: List =None,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
+
+        self.scalar = scalar_cost_function
+        self.nshots = nshots
+        if not self.scalar and self.nshots is None:
+            raise ValueError("If scalar_cost_function is set, nshots has to "
+                             "be specified")
+
         self.make_memory_map = make_memory_map
         self.return_standard_deviation = return_standard_deviation
         self.noisy = noisy
@@ -134,7 +150,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
     def __call__(self,
                  params: Union[list, np.ndarray],
-                 nshots: int = 1000) -> Union[float, Tuple]:
+                 nshots: int = None) -> Union[float, Tuple]:
         """Cost function that computes <psi|ham|psi> with psi prepared with
         prepare_ansatz(params).
 
@@ -151,6 +167,12 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             Either only the cost or a tuple of the cost and the standard
             deviation estimate based on the samples.
         """
+        if nshots is None:
+            if self.scalar:
+                nshots = self.nshots
+            else:
+                raise ValueError("nshots cannot be None")
+
         memory_map = self.make_memory_map(params)
         wf = self.sim.wavefunction(self.prepare_ansatz, memory_map=memory_map)
         wf = np.reshape(wf.amplitudes, (-1, 1))
@@ -161,14 +183,15 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # add simulated noise, if wanted
         if self.noisy:
             E += np.random.randn() * sigma_E
-        out = (float(E), float(sigma_E))
+        out = (float(E), float(sigma_E)) # Todo: Why the float casting?
 
         try:
             self.log.append(out)
         except AttributeError:
             pass
 
-        if not self.return_standard_deviation:
+        # and return the expectation value or (exp_val, std_dev)
+        if self.scalar:
             return out[0]
         else:
             return out
