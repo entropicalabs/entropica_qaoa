@@ -4,7 +4,6 @@ For now we just wrap ``scipy.optimize.minimize``, but design the whole in such a
 manner, that we can later swap it out with more sophisticated optimizers.
 """
 
-import warnings
 from scipy.optimize import minimize
 from functools import partial
 from typing import Callable, Tuple, Iterable, Union, List, Dict
@@ -12,64 +11,31 @@ import numpy as np
 
 # TODO decide, whether we really want to support cost_functions that return
 # floats and ones that return tuples (exp_val, std_dev)
-class scalar_cost_function():
+def scalar_cost_function(fun: Callable[[np.array, int], Tuple[float, float]],
+                         nshots: int) -> Callable[[np.array], float]:
     """Decorator to make our cost_functions work with scalar minimizers.
 
     Parameters
     ----------
+    fun:
+        A cost_function that takes a parameter array ``params`` and number of
+        shots ``nshots`` and returns a Tuple ``(expectation, standard_dev)``
     nshots:
         ``nshots`` argument of ``fun``
 
-    Example
+    Returns
     -------
-    Here goes the example code...
+    Callable[[np.array], float]:
+        A cost_function that takes only the parameter array and returns only
+        the expectation_value
     """
-    def __init__(self, nshots: int = 1000):
-        self.nshots = nshots
-
-    def _scalar_fun_decorator(self, fun):
-        def reduced(*args, **kwargs):
-            out = fun(*args, nshots=self.nshots, **kwargs)
-            try:
-                return out[0]
-            except (TypeError, IndexError):
-                return out
-        return reduced
-
-    def _scalar_class_decorator(self, obj):
-        def reduced(*args, **kwargs):
-            out = obj.__call__(*args, nshots=self.nshots, **kwargs)
-            try:
-                return out[0]
-            except (TypeError, IndexError):
-                return out
-        obj.__call__ = reduced
-        return obj
-
-    def __call__(self,
-                 fun: Callable[[np.array, int], Tuple[float, float]])\
-            -> Callable[[np.array], float]:
-        """Create the reduced scalar cost function.
-
-        Parameters
-        ----------
-        fun : Callable[[np.array, int, Any], Tuple[float, float]]
-            The original cost function with an ``nshots`` argument and
-            ``(exp_val, std_dev)`` output.
-
-        Returns
-        -------
-        Callable[[np.array], float]
-            The reduced cost function without ``nshots`` argument and only
-            ``exp_val`` output.
-        """
-        def reduced(*args, **kwargs):
-            out = fun(*args, nshots=self.nshots, **kwargs)
-            try:
-                return out[0]
-            except (TypeError, IndexError):
-                return out
-        return reduced
+    def reduced(*args, **kwargs):
+        out = fun(*args, nshots=nshots, **kwargs)
+        try:
+            return out[0]
+        except (TypeError, IndexError):
+            return out
+    return reduced
 
 
 def scipy_optimizer(cost_function: Callable[[Union[List[float], np.array]], Tuple[float, float]],
@@ -103,17 +69,6 @@ def scipy_optimizer(cost_function: Callable[[Union[List[float], np.array]], Tupl
     Dict :
         The output of ``scipy.optimize.minimize`` after minimization
     """
-    warnings.warn("scipy_optimizer is deprecated in favour of the "
-                  "scalar_cost_function decorator. See its documentation for "
-                  "details.",
-                  DeprecationWarning)
-    # strip the cost_function of the nshots argument and standard_deviation
-    # @scalar_cost_function(nshots=nshots)
-    # cost_function
-
-    fun = scalar_cost_function(nshots=nshots)(cost_function)
-
-    # and run the minimizer.
-    out = minimize(fun, params0,
-                   method=method, tol=epsilon, options=mininize_kwargs)
+    fun = scalar_cost_function(cost_function, nshots=nshots)
+    out = minimize(fun, params0, method=method, tol=epsilon, options=mininize_kwargs)
     return out
