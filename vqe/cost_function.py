@@ -55,9 +55,9 @@ class AbstractCostFunction():
 
         Parameters
         ----------
-        params : ndarray, shape (n,)
-            Parameters of the state preparation circuit. Array of size `n` where
-            `n` is the number of different parameters.
+        params :
+            Parameters of the state preparation circuit. Array of size `n`
+            where `n` is the number of different parameters.
         nshots:
             Number of shots to take to estimate ``cost_function(params)``
             Has no effect, if ``__init__()`` was called with
@@ -137,7 +137,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
     def __init__(self,
                  prepare_ansatz: Program,
-                 make_memory_map: Callable[[Union[List, np.array, np.matrix]], Dict],
+                 make_memory_map: Callable[[np.array], Dict],
                  hamiltonian: Union[PauliSum, np.array],
                  sim: WavefunctionSimulator,
                  return_standard_deviation: bool = None,
@@ -207,9 +207,9 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         Parameters
         ----------
-        params : Union[list, np.ndarray]
+        params:
             Parameters of the state preparation circuit.
-        nshots : int
+        nshots:
             Number of shots to take to estimate the energy (the default is 1000).
 
         Returns
@@ -218,6 +218,12 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             Either only the cost or a tuple of the cost and the standard
             deviation estimate based on the samples.
         """
+        if nshots is None:
+            if self.scalar:
+                nshots = self.nshots
+            else:
+                raise ValueError("nshots cannot be None")
+
         memory_map = self.make_memory_map(params)
         wf = self.sim.wavefunction(self.prepare_ansatz, memory_map=memory_map)
         wf = np.reshape(wf.amplitudes, (-1, 1))
@@ -228,29 +234,31 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # add simulated noise, if wanted
         if self.noisy:
             E += np.random.randn() * sigma_E
-        out = (float(E), float(sigma_E))
+        out = (float(E), float(sigma_E))  # Todo:Why the float casting?
 
         try:
             self.log.append(out)
         except AttributeError:
             pass
 
-        if not self.return_standard_deviation:
+        # and return the expectation value or (exp_val, std_dev)
+        if self.scalar:
             return out[0]
         else:
             return out
 
-    def get_wavefunction(self, params) -> Wavefunction:
+    def get_wavefunction(self,
+                         params: Union[List, np.ndarray]) -> Wavefunction:
         """Same as __call__ but returns the wavefunction instead of cost
 
         Parameters
         ----------
-        params: Union[list, np.ndarray]
+        params:
             Parameters of the state preparation circuit
 
         Returns
         -------
-        Wavefunction
+        Wavefunction:
             The wavefunction prepared with parameters ``params``
         """
         memory_map = self.make_memory_map(params)
@@ -260,11 +268,11 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
 class PrepareAndMeasureOnQVM(AbstractCostFunction):
     """A cost function that prepares an ansatz and measures its energy w.r.t
-       hamiltonian on a quantum computer (or simulator).
+    hamiltonian on a quantum computer (or simulator).
 
-       This cost_function makes use of pyquils parametric circuits and thus
-       has to be supplied with a parametric circuit and a function to create
-       memory maps that can be passed to qvm.run.
+    This cost_function makes use of pyquils parametric circuits and thus
+    has to be supplied with a parametric circuit and a function to create
+    memory maps that can be passed to qvm.run.
 
     Parameters
     ----------
@@ -355,11 +363,23 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         """
         Parameters
         ----------
-        param params :  1D array
+        param params:
             the parameters to run the state preparation circuit with
-        param N : int
+        param N:
             Number of times to run exe
+
+        Returns
+        -------
+        float or tuple (cost, cost_stdev)
+            Either only the cost or a tuple of the cost and the standard
+            deviation estimate based on the samples.
         """
+        if nshots is None:
+            if self.scalar:
+                nshots = self.nshots
+            else:
+                raise ValueError("nshots cannot be None")
+
         memory_map = self.make_memory_map(params)
 
         bitstrings = []
@@ -370,16 +390,16 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                 bitstring = np.append(bitstring, new_bits, axis=0)
             bitstrings.append(bitstring)
 
-        res = hamiltonian_list_expectation_value(self.hams, bitstrings)
+        out = hamiltonian_list_expectation_value(self.hams, bitstrings)
         try:
-            self.log.append(res)
+            self.log.append(out)
         except AttributeError:
             pass
 
-        if not self.return_standard_deviation:
-            return res[0]
+        if self.scalar:
+            return out[0]
         else:
-            return res
+            return out
 
 
 def address_qubits_hamiltonian(hamiltonian: PauliSum,
@@ -388,9 +408,9 @@ def address_qubits_hamiltonian(hamiltonian: PauliSum,
 
     Parameters
     ----------
-    hamiltonian : PauliSum
+    hamiltonian:
         The PauliSum.
-    qubit_mapping : Dict[QubitPlaceholder, Union[Qubit, int]]
+    qubit_mapping:
         A qubit_mapping. e.g. provided by pyquil.quil.get_default_qubit_mapping.
 
     Returns
