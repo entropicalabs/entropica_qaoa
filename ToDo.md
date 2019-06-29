@@ -21,7 +21,8 @@
 - [x] Add plain old Farhi as a parameter class
 - [x] Add setup.py script
   + [x] Look at Coopers suggestion for such a script
-- [x] Add `callback` function to cost_functions for parameter and value logging
+- [ ] Add `callback` function to cost_functions for parameter and value logging
+  + [ ] Make it a class itself, s.t. it generates its own logs?
 - [x] Make _reduce_noisy_cost_function a decorator
 
 # Small things to fix
