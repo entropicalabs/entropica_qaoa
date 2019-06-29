@@ -182,7 +182,7 @@ def make_qaoa_memory_map(qaoa_params: Type[AbstractQAOAParameters]) -> dict:
 
     Returns
     -------
-    dict:
+    Dict:
         A memory_map as expected by QVM.run().
 
     """
@@ -233,7 +233,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                  scalar_cost_function: bool = True,
                  nshots: int = None,
                  noisy: bool = False,
-                 log: List = None,
+                 enable_logging: bool = False,
                  initial_state: Program = None,
                  qubit_mapping: Dict[QubitPlaceholder,
                                      Union[Qubit, int]] = None):
@@ -250,7 +250,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          scalar_cost_function=scalar_cost_function,
                          nshots=nshots,
                          noisy=noisy,
-                         log=log,
+                         enable_logging=enable_logging,
                          qubit_mapping=qubit_mapping)
 
     def __call__(self, params, nshots: int = None):
@@ -258,7 +258,8 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
         out = super().__call__(self.params, nshots=nshots)
         return out
 
-    def get_wavefunction(self, params: Union[list, np.ndarray]) -> Wavefunction:
+    def get_wavefunction(self,
+                         params: Union[list, np.ndarray]) -> Wavefunction:
         """Same as __call__ but returns the wavefunction instead of cost
 
         Parameters
@@ -310,10 +311,11 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                  scalar_cost_function: bool = True,
                  nshots: int = None,
                  base_numshots: int = 100,
-                 log: list = None,
+                 enable_logging: bool = False,
                  initial_state: Program = None,
-                 qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
-        """The constructor. See class documentation for details"""
+                 qubit_mapping: Dict[QubitPlaceholder,
+                                     Union[Qubit, int]] = None):
+        """The constructor. See class documentation for details."""
         if initial_state is None:
             initial_state = _all_plus_state(params.reg)
 
@@ -326,7 +328,7 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                          scalar_cost_function=scalar_cost_function,
                          nshots=nshots,
                          base_numshots=base_numshots,
-                         log=log,
+                         enable_logging=enable_logging,
                          qubit_mapping=qubit_mapping)
 
     def __call__(self, params, nshots: int = None):

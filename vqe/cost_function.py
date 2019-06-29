@@ -4,6 +4,8 @@ Different cost functions for VQE and one abstract template.
 from typing import Callable, Iterable, Union, List, Dict, Tuple
 import warnings
 import numpy as np
+from collections import namedtuple
+from copy import deepcopy
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
@@ -15,6 +17,9 @@ from vqe.measurelib import (append_measure_register,
                             hamiltonian_expectation_value,
                             commuting_decomposition,
                             hamiltonian_list_expectation_value)
+
+
+LogEntry = namedtuple("LogEntry", ['x', 'fun'])
 
 
 class AbstractCostFunction():
@@ -31,9 +36,10 @@ class AbstractCostFunction():
         Optional.  Has to be given, if ``scalar_cost_function``
         is ``True``
         Number of shots to take for cost function evaluation.
-    log:
-        A list to write a log of function values to. If None is passed no
-        log is created.
+    enable_logging:
+        If true, a log is created which contains the parameter and function
+        values at each function call. It is a list of namedtuples of the form
+        ("x", "fun")
 
     Todo
     ----
@@ -44,7 +50,7 @@ class AbstractCostFunction():
                  return_standard_deviation: bool = False,
                  scalar_cost_function: bool = True,
                  nshots: int = None,
-                 log: list = None):
+                 enable_logging: bool = False):
         """The constructor. See class docstring"""
         raise NotImplementedError()
 
@@ -100,9 +106,10 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         specified here.
     noisy:
         Add simulated noise to the energy? (the default is False)
-    log:
-        A list to write a log of function values to. If None is passed no
-        log is created.
+    enable_logging:
+        If true, a log is created which contains the parameter and function
+        values at each function call. It is a list of namedtuples of the form
+        ("x", "fun")
     qubit_mapping:
         A mapping to fix QubitPlaceholders to physical qubits. E.g.
         pyquil.quil.get_default_qubit_mapping(program) gives you on.
@@ -144,8 +151,9 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
                  scalar_cost_function: bool = True,
                  nshots: int = None,
                  noisy: bool = False,
-                 log: List = None,
-                 qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
+                 enable_logging: bool = False,
+                 qubit_mapping: Dict[QubitPlaceholder,
+                                     Union[Qubit, int]] = None):
 
         self.scalar = scalar_cost_function
         self.nshots = nshots
@@ -196,8 +204,8 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         self.ham_squared = self.ham**2
 
-        if log is not None:
-            self.log = log
+        if enable_logging:
+            self.log = []
 
     def __call__(self,
                  params: Union[list, np.ndarray],
@@ -236,8 +244,11 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             E += np.random.randn() * sigma_E
         out = (float(E), float(sigma_E))  # Todo:Why the float casting?
 
+        # Append function value and params to the log.
+        # deepcopy is needed, because x may be a mutable type.
         try:
-            self.log.append(out)
+            self.log.append(LogEntry(x=deepcopy(params),
+                                     fun=out))
         except AttributeError:
             pass
 
@@ -300,6 +311,10 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
     qubit_mapping:
         A mapping to fix all QubitPlaceholders to physical qubits. E.g.
         pyquil.quil.get_default_qubit_mapping(program) gives you on.
+    enable_logging:
+        If true, a log is created which contains the parameter and function
+        values at each function call. It is a list of namedtuples of the form
+        ("x", "fun")
     """
 
     def __init__(self,
@@ -312,7 +327,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                  nshots: int = None,
                  base_numshots: int = 100,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None,
-                 log: list = None):
+                 enable_logging: bool = False):
 
 
         self.scalar = scalar_cost_function
@@ -337,9 +352,6 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         self.return_standard_deviation = return_standard_deviation
         self.make_memory_map = make_memory_map
 
-        if log is not None:
-            self.log = log
-
         if qubit_mapping is not None:
             prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
             ham = address_qubits_hamiltonian(hamiltonian, qubit_mapping)
@@ -356,6 +368,9 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                                     trials=base_numshots,
                                     ham=ham)
             self.exes.append(qvm.compile(p))
+
+        if enable_logging:
+            self.log = []
 
     def __call__(self,
                  params: np.array,
@@ -391,8 +406,12 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
             bitstrings.append(bitstring)
 
         out = hamiltonian_list_expectation_value(self.hams, bitstrings)
+
+        # Append function value and params to the log.
+        # deepcopy is needed, because x may be a mutable type.
         try:
-            self.log.append(out)
+            self.log.append(LogEntry(x=deepcopy(params),
+                                     fun=out))
         except AttributeError:
             pass
 

@@ -34,7 +34,6 @@ p0 = [0, 0, 0, 0]
 
 @pytest.mark.slow
 def test_vqe_on_WFSim():
-    log = []
     sim = WavefunctionSimulator()
     cost_fun = PrepareAndMeasureOnWFSim(prepare_ansatz=prepare_ansatz,
                                         make_memory_map=lambda p: {"params": p},
@@ -42,8 +41,7 @@ def test_vqe_on_WFSim():
                                         sim=sim,
                                         scalar_cost_function=True,
                                         nshots=100,
-                                        noisy=False,
-                                        log=log)
+                                        noisy=False)
 
     with local_qvm():
         out = minimize(cost_fun, p0, tol=1e-3, method="COBYLA")
@@ -56,7 +54,6 @@ def test_vqe_on_WFSim():
 @pytest.mark.slow
 def test_vqe_on_QVM():
     p0 = [3.1, -1.5, 0, 0] # make it easier when sampling
-    log = []
     qvm = get_qc("2q-qvm")
     with local_qvm():
         cost_fun = PrepareAndMeasureOnQVM(prepare_ansatz=prepare_ansatz,
@@ -65,10 +62,8 @@ def test_vqe_on_QVM():
                                           qvm=qvm,
                                           scalar_cost_function=True,
                                           nshots=4,
-                                          base_numshots=50,
-                                          log=log)
+                                          base_numshots=50)
         out = minimize(cost_fun, p0, tol=1e-2, method="Cobyla")
         print(out)
     assert np.allclose(out['fun'], -1.3, rtol=1.1)
     assert out['success']
-    print(out)
