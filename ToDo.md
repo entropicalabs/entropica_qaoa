@@ -16,24 +16,20 @@
   + [x] Start Discussion Thread on Slack
 - [x] Add `state_prep_program` to `qaoa.cost_function`
   + [x] Add `prep_classical_state(bitstring)` to `utilities.py`
-- [ ] Check all the QAOAParameter docstrings
-  + [ ] Make `__repr__` uniform over all QAOAParameterClasses
+- [?] Check all the QAOAParameter docstrings
+  + [?] Make `__repr__` uniform over all QAOAParameterClasses
 - [x] Add plain old Farhi as a parameter class
-- [ ] Add setup.py script
-  + [ ] Look at Coopers suggestion for such a script
+- [x] Add setup.py script
+  + [x] Look at Coopers suggestion for such a script
 - [ ] Add `callback` function to cost_functions for parameter and value logging
   + [ ] Make it a class itself, s.t. it generates its own logs?
-- [ ] Make _reduce_noisy_cost_function a decorator
+- [x] Make _reduce_noisy_cost_function a decorator
 
 # Small things to fix
  - [x] Fix QubitPlaceholders() in VQE cost function
  - [x] Fix QubitPlaceholders() in QAOA cost function
  - [ ] Check qaoa.cost_function tests for sanity
  - [?] add parameter logging to the cost_functions
-
-# Things to implement
-  - [ ] utilities.hamiltonian_from_edges
-  - [ ] utilities.create_random_hamiltonian_fixed_topology
 
 # qaoa.parameters refactoring
  - [x] rename `constant_parameters` to `hyperparameters` (in the arguments to `__init__` and the `__repr__`)

@@ -47,6 +47,7 @@ class AbstractCostFunction():
                  scalar_cost_function: bool = True,
                  nshots: int = None,
                  log: list = None):
+        """The constructor. See class docstring"""
         raise NotImplementedError()
 
     def __call__(self,
