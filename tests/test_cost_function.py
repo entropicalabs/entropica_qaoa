@@ -32,12 +32,16 @@ def test_PrepareAndMeasureOnWFSim():
     log = []
     sim = WavefunctionSimulator()
     with local_qvm():
-        cost_fn = PrepareAndMeasureOnWFSim(p, make_memory_map,
-                                           ham, sim, log=log)
+        cost_fn = PrepareAndMeasureOnWFSim(p,
+                                           make_memory_map,
+                                           ham,
+                                           sim,
+                                           scalar_cost_function=False,
+                                           log=log)
         out = cost_fn([np.pi, np.pi / 2], nshots=100)
         print(log)
         assert np.allclose(log, [(-1.0, 0.1)])
-        assert np.allclose(out, -1)
+        assert np.allclose(out, (-1,0.1))
 
 
 def test_PrepareAndMeasureOnWFSim_QubitPlaceholders():
@@ -56,10 +60,13 @@ def test_PrepareAndMeasureOnWFSim_QubitPlaceholders():
     sim = WavefunctionSimulator()
     with local_qvm():
         cost_fn = PrepareAndMeasureOnWFSim(p, make_memory_map, ham, sim,
-                                           log=log, qubit_mapping=qubit_mapping)
+                                           log=log,
+                                           qubit_mapping=qubit_mapping,
+                                           scalar_cost_function=False,
+                                           )
         out = cost_fn([np.pi, np.pi / 2], nshots=100)
         assert np.allclose(log, [(-1.0, 0.1)])
-        assert np.allclose(out, -1)
+        assert np.allclose(out, (-1, 0.1))
 
 
 def test_PrepareAndMeasureOnQVM():
@@ -79,9 +86,10 @@ def test_PrepareAndMeasureOnQVM():
         #        qvm = proc.qvm
         cost_fn = PrepareAndMeasureOnQVM(prepare_ansatz, make_memory_map, qvm=qvm,
                                          hamiltonian=ham, log=log,
-                                         return_standard_deviation=True,
-                                         base_numshots=10)
-        out = cost_fn([np.pi, np.pi / 2], nshots=10)
+                                         scalar_cost_function=True,
+                                         base_numshots=10,
+                                         nshots=10)
+        out = cost_fn([np.pi, np.pi / 2])
         assert np.allclose(log, [(-1.0, 0.1)], rtol=1.1)
         assert np.allclose(out, -1, rtol=1.1)
 
@@ -106,12 +114,12 @@ def test_PrepareAndMeasureOnQVM_QubitPlaceholders():
         cost_fn = PrepareAndMeasureOnQVM(prepare_ansatz, make_memory_map,
                                          qvm=qvm,
                                          hamiltonian=ham, log=log,
-                                         return_standard_deviation=True,
+                                         scalar_cost_function=False,
                                          base_numshots=10,
                                          qubit_mapping=qubit_mapping)
         out = cost_fn([np.pi, np.pi / 2], nshots=10)
         assert np.allclose(log, [(-1.0, 0.1)], rtol=1.1)
-        assert np.allclose(out, -1, rtol=1.1)
+        assert np.allclose(out, (-1, 0.1), rtol=1.1)
 
 
 def test_PrepareAndMeasureOnQVM_QubitPlaceholders_nondiag_hamiltonian():
@@ -137,7 +145,7 @@ def test_PrepareAndMeasureOnQVM_QubitPlaceholders_nondiag_hamiltonian():
         cost_fn = PrepareAndMeasureOnQVM(prepare_ansatz, make_memory_map,
                                          qvm=qvm,
                                          hamiltonian=ham,
-                                         return_standard_deviation=True,
+                                         scalar_cost_function=False,
                                          base_numshots=100,
                                          qubit_mapping=qubit_mapping)
         out = cost_fn(params, nshots=10)

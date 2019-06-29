@@ -4,7 +4,7 @@ Implementation of the QAOA cost functions. We inherit from
 """
 
 
-from typing import Union, List, Type, Dict, Iterable, Callable
+from typing import Union, List, Type, Dict, Iterable
 import numpy as np
 
 from pyquil import Program
@@ -16,7 +16,7 @@ from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
 from vqe.cost_function import PrepareAndMeasureOnQVM, PrepareAndMeasureOnWFSim
-from qaoa.parameters import AbstractQAOAParameters, GeneralQAOAParameters
+from qaoa.parameters import AbstractQAOAParameters
 
 
 def _qaoa_mixing_ham_rotation(betas: MemoryReference,
@@ -219,15 +219,21 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
     qubit_mapping:
         A mapping to fix QubitPlaceholders to physical qubits. E.g.
         pyquil.quil.get_default_qubit_mapping(program) gives you on.
+
+    Todo
+    ----
+    Remove ``return_standard_deviation`` argument in next versions
     """
 
     def __init__(self,
                  hamiltonian: PauliSum,
                  params: Type[AbstractQAOAParameters],
                  sim: WavefunctionSimulator,
-                 return_standard_deviation: bool =False,
-                 noisy: bool =False,
-                 log: List =None,
+                 return_standard_deviation: bool = None,
+                 scalar_cost_function: bool = True,
+                 nshots: int = None,
+                 noisy: bool = False,
+                 log: List = None,
                  initial_state: Program = None,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """The constructor. See class documentation."""
@@ -240,11 +246,13 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          hamiltonian=hamiltonian,
                          sim=sim,
                          return_standard_deviation=return_standard_deviation,
+                         scalar_cost_function=scalar_cost_function,
+                         nshots=nshots,
                          noisy=noisy,
                          log=log,
                          qubit_mapping=qubit_mapping)
 
-    def __call__(self, params, nshots: int = 1000):
+    def __call__(self, params, nshots: int = None):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
         return out
@@ -296,9 +304,11 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                  hamiltonian: PauliSum,
                  params: Type[AbstractQAOAParameters],
                  qvm: QuantumComputer,
-                 return_standard_deviation: bool =False,
+                 return_standard_deviation: bool = None,
+                 scalar_cost_function: bool = True,
+                 nshots: int = None,
                  base_numshots: int = 100,
-                 log: list =None,
+                 log: list = None,
                  initial_state: Program = None,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
         """The constructor. See class documentation for details"""
@@ -311,11 +321,13 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                          hamiltonian=hamiltonian,
                          qvm=qvm,
                          return_standard_deviation=return_standard_deviation,
+                         scalar_cost_function=scalar_cost_function,
+                         nshots=nshots,
                          base_numshots=base_numshots,
                          log=log,
                          qubit_mapping=qubit_mapping)
 
-    def __call__(self, params, nshots: int = 10):
+    def __call__(self, params, nshots: int = None):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
         return out

@@ -1,13 +1,22 @@
 """
 Different implementations of the optimization routines of VQE.
-For now we just wrap ``scipy.optimize.minimize``, but design the whole in such a
-manner, that we can later swap it out with more sophisticated optimizers.
+For now we just wrap ``scipy.optimize.minimize``, but design the whole in such
+a manner, that we can later swap it out with more sophisticated optimizers.
+
+
+Warning
+-------
+This module is Deprecated in favour of calling your favourite optimizer
+directly. To make our cost functions play nicely along with the standard
+optimizers like ``scipy.optimizer.minimize`` or NLopt we added the kwarg
+``scalar_cost_function`` to all our cost functions.
 """
 
+import warnings
 from scipy.optimize import minimize
-from functools import partial
-from typing import Callable, Tuple, Iterable, Union, List, Dict
+from typing import Callable, Tuple, Union, List, Dict
 import numpy as np
+
 
 # TODO decide, whether we really want to support cost_functions that return
 # floats and ones that return tuples (exp_val, std_dev)
@@ -38,7 +47,8 @@ def scalar_cost_function(fun: Callable[[np.array, int], Tuple[float, float]],
     return reduced
 
 
-def scipy_optimizer(cost_function: Callable[[Union[List[float], np.array]], Tuple[float, float]],
+def scipy_optimizer(cost_function: Callable[[Union[List[float], np.array]],
+                                            Tuple[float, float]],
                     params0: Union[List[float], np.array],
                     epsilon: float = 1e-5,
                     nshots: int = 1000,
@@ -68,7 +78,34 @@ def scipy_optimizer(cost_function: Callable[[Union[List[float], np.array]], Tupl
     -------
     Dict :
         The output of ``scipy.optimize.minimize`` after minimization
+
+    Notes
+    -----
+    How to use ``scipy.optimize.minimize`` with our cost functions directly.
+
+    To ``scipy.optimize.minimize`` (or NLopt or any other optimizer for scalar
+    functions) directly, you first need to make sure, that the cost functions
+    only return a scalar (and not a tuple ``(std_dev, exp_val)``) and only
+    take an array of parameters (and no additional argument like ``nshots``).
+    So you need to set the flag ``scalar_cost_function`` in the constructor of
+    your cost function, like so:
+
+    >>> cost_fun = PrepareAndMeasureOnWFSim(..., scalar_cost_function=True,
+                                                 nshots=<nshots>, ...)
+
+    and the optimizer call then turns from
+
+    >>> scipy_optimizer(cost_fun, x0, epsilon=1e-3, maxiter=100)
+
+    into
+
+    >>> scipy.optimize.minimize(cost_fun, x0, method="Cobyla", tol=1e-3,
+                                options={"maxiter": 1000})
     """
+    warnings.warn("scipy_optimize is deprecated in favor of using "
+                  "scipy.optimize.minimize (or any other optimizer) directly. "
+                  "See the documentation of scipy_optimize, on how to update "
+                  "your code", DeprecationWarning)
     fun = scalar_cost_function(cost_function, nshots=nshots)
     out = minimize(fun, params0, method=method, tol=epsilon, options=mininize_kwargs)
     return out

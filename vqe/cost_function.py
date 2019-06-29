@@ -4,6 +4,7 @@ The template is designed, such that it works as a cost function for the
 optimizer in ``vqe.optimizer.scipy_optimizer.``
 """
 from typing import Callable, Iterable, Union, List, Dict, Tuple
+import warnings
 import numpy as np
 
 from pyquil.paulis import PauliSum, PauliTerm
@@ -35,17 +36,22 @@ class AbstractCostFunction():
     log:
         A list to write a log of function values to. If None is passed no
         log is created.
+
+    Todo
+    ----
+    Remove return_standard_deviation argument and deprecation warnings.
     """
 
     def __init__(self,
+                 return_standard_deviation: bool = False,
                  scalar_cost_function: bool = True,
                  nshots: int = None,
-                 log: list =None):
+                 log: list = None):
         raise NotImplementedError()
 
     def __call__(self,
                  params: np.array,
-                 nshots: int) -> Union[float, tuple]:
+                 nshots: int = None) -> Union[float, tuple]:
         """Estimate cost_functions(params) with nshots samples
 
         Parameters
@@ -83,10 +89,16 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         The hamiltonian with respect to which to measure the energy.
     sim:
         A WavefunctionSimulator instance to get the wavefunction from.
-    return_standard_deviation:
-        Return the cost as a float for scalar optimizers or as a tuple
-        (cost, cost_standard_deviation) for optimizers of noisy functions.
-        (the default is False).
+    scalar_cost_function:
+        If True: __call__ has signature
+        ``(x: array, nshots: int) -> (exp_val: float, std_dev: float)``
+        If False: __call__ has signature ``(x: array) -> (exp_val: float)``
+        i.e. it takes no argument ``nshots`` and only returns the expectation
+        value
+        Defaults to True.
+    nshots:
+        If ``scalar_cost_function=True`` is passed ``nshots`` has to be
+        specified here.
     noisy:
         Add simulated noise to the energy? (the default is False)
     log:
@@ -95,6 +107,33 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
     qubit_mapping:
         A mapping to fix QubitPlaceholders to physical qubits. E.g.
         pyquil.quil.get_default_qubit_mapping(program) gives you on.
+
+    Notes
+    -----
+    How to use the argument ``scalar_cost_function``:
+    The constructor call to `PrepareAndMeasureOnWFSim` (or analogously
+    `PrepareAndMeasureOnQVM`, `QAOACostFunctionOnWFSim`,
+    `QAOACostFunctionOnQVM`)  turns from
+
+    >>> cost_fun = PrepareAndMeasureOnWFSim(...,
+                            return_standard_deviation=False,...)
+
+    into
+
+    >>> cost_fun = PrepareAndMeasureOnWFSim(..., scalar_cost_function=True,
+                                                 nshots=<nshots>, ...)
+
+    or if you want to return the standard deviation and vary `nshots` during
+    the VQE run you have
+
+    >>> cost_fun = PrepareAndMeasureOnWFSim(...,
+                        return_standard_deviation=True,...)
+
+    into
+
+    >>> cost_fun = PrepareAndMeasureOnWFSim(...,
+                        scalar_cost_function=False, ...)
+
     """
 
     def __init__(self,
@@ -102,15 +141,28 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
                  make_memory_map: Callable[[np.array], Dict],
                  hamiltonian: Union[PauliSum, np.array],
                  sim: WavefunctionSimulator,
-                 scalar_cost_function: bool =True,
-                 nshots: int =None,
-                 noisy: bool =False,
-                 log: List =None,
+                 return_standard_deviation: bool = None,
+                 scalar_cost_function: bool = True,
+                 nshots: int = None,
+                 noisy: bool = False,
+                 log: List = None,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
 
         self.scalar = scalar_cost_function
         self.nshots = nshots
-        if not self.scalar and self.nshots is None:
+        if return_standard_deviation is not None:
+            warnings.warn("The argument `return_standard_deviation` "
+                          "is deprecated in favor of scalar_cost_function.\n"
+                          "See the documentation for details of "
+                          "vqe.cost_function.PrepareAndMeasureOnWFSim for "
+                          "details, on how to update your code.\n"
+                          " Proceeding now with scalar_cost_function = "
+                          f"{True} and nshots = 1000.",
+                          DeprecationWarning)
+            self.scalar = True
+            self.nshots = 1000
+
+        if self.scalar and self.nshots is None:
             raise ValueError("If scalar_cost_function is set, nshots has to "
                              "be specified")
 
@@ -183,7 +235,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # add simulated noise, if wanted
         if self.noisy:
             E += np.random.randn() * sigma_E
-        out = (float(E), float(sigma_E)) # Todo: Why the float casting?
+        out = (float(E), float(sigma_E))  # Todo: Why the float casting?
 
         try:
             self.log.append(out)
@@ -233,11 +285,19 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         The hamiltonian
     qvm:
         Connection the QC to run the program on.
-    return_standard_deviation:
-        return a float or tuple of energy and its standard deviation.
+    scalar_cost_function:
+        If True: __call__ has signature
+        ``(x: array, nshots: int) -> (exp_val: float, std_dev: float)``
+        If False: __call__ has signature ``(x: array) -> (exp_val: float)``
+        i.e. it takes no argument ``nshots`` and only returns the expectation
+        value
+        Defaults to True.
+    nshots:
+        If ``scalar_cost_function=True`` is passed ``nshots`` has to be
+        specified here.
     base_numshots:
-        numshots to compile into the binary. The argument nshots of __call__
-        is then a multplier of this.
+        numshots multiplier to compile into the binary. The argument nshots of
+         __call__ is then a multplier of this.
     qubit_mapping:
         A mapping to fix all QubitPlaceholders to physical qubits. E.g.
         pyquil.quil.get_default_qubit_mapping(program) gives you on.
@@ -248,10 +308,32 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                  make_memory_map: Callable[[Iterable], dict],
                  hamiltonian: PauliSum,
                  qvm: QuantumComputer,
-                 return_standard_deviation: bool = False,
+                 return_standard_deviation: bool = None,
+                 scalar_cost_function: bool = True,
+                 nshots: int = None,
                  base_numshots: int = 100,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None,
                  log: list = None):
+
+
+        self.scalar = scalar_cost_function
+        self.nshots = nshots
+        if self.scalar and self.nshots is None:
+            raise ValueError("If scalar_cost_function is set, nshots has to "
+                             "be specified")
+
+        if return_standard_deviation is not None:
+            warnings.warn("The argument `return_standard_deviation` "
+                          "is deprecated in favor of scalar_cost_function.\n"
+                          "See the documentation for details of "
+                          "vqe.cost_function.PrepareAndMeasureOnWFSim for "
+                          "details, on how to update your code.\n"
+                          " Proceeding now with scalar_cost_function = "
+                          f"{True} and nshots = 1000.",
+                          DeprecationWarning)
+            self.scalar = True
+            self.nshots = 1000
+
         self.qvm = qvm
         self.return_standard_deviation = return_standard_deviation
         self.make_memory_map = make_memory_map
@@ -278,7 +360,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
 
     def __call__(self,
                  params: np.array,
-                 nshots: int =1) -> Union[float, Tuple]:
+                 nshots: int = None) -> Union[float, Tuple]:
         """
         Parameters
         ----------
@@ -293,6 +375,12 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
             Either only the cost or a tuple of the cost and the standard
             deviation estimate based on the samples.
         """
+        if nshots is None:
+            if self.scalar:
+                nshots = self.nshots
+            else:
+                raise ValueError("nshots cannot be None")
+
         memory_map = self.make_memory_map(params)
 
         bitstrings = []
@@ -303,16 +391,17 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                 bitstring = np.append(bitstring, new_bits, axis=0)
             bitstrings.append(bitstring)
 
-        res = hamiltonian_list_expectation_value(self.hams, bitstrings)
+        out = hamiltonian_list_expectation_value(self.hams, bitstrings)
         try:
-            self.log.append(res)
+            self.log.append(out)
         except AttributeError:
             pass
 
-        if not self.return_standard_deviation:
-            return res[0]
+        if self.scalar:
+            return out[0]
         else:
-            return res
+            return out
+
 
 
 def address_qubits_hamiltonian(hamiltonian: PauliSum,
