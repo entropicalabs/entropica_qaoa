@@ -8,6 +8,7 @@ sys.path.insert(0, myPath + '/../')
 
 import numpy as np
 import pytest
+from scipy.optimize import minimize
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
@@ -39,13 +40,13 @@ def test_vqe_on_WFSim():
                                         make_memory_map=lambda p: {"params": p},
                                         hamiltonian=hamiltonian,
                                         sim=sim,
-                                        return_standard_deviation=True,
+                                        scalar_cost_function=True,
+                                        nshots=100,
                                         noisy=False,
                                         log=log)
 
     with local_qvm():
-        out = scipy_optimizer(cost_fun, p0, epsilon=1e-3)
-        print(out)
+        out = minimize(cost_fun, p0, tol=1e-3, method="COBYLA")
         wf = sim.wavefunction(prepare_ansatz, {"params": out['x']})
     assert np.allclose(wf.probabilities(), [0, 0, 0, 1], rtol=1.5, atol=0.01)
     assert np.allclose(out['fun'], -1.3)
@@ -62,10 +63,11 @@ def test_vqe_on_QVM():
                                           make_memory_map=lambda p: {"params": p},
                                           hamiltonian=hamiltonian,
                                           qvm=qvm,
-                                          return_standard_deviation=True,
+                                          scalar_cost_function=True,
+                                          nshots=4,
                                           base_numshots=50,
                                           log=log)
-        out = scipy_optimizer(cost_fun, p0, epsilon=1e-2, nshots=4)
+        out = minimize(cost_fun, p0, tol=1e-2, method="Cobyla")
         print(out)
     assert np.allclose(out['fun'], -1.3, rtol=1.1)
     assert out['success']

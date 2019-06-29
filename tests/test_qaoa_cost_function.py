@@ -34,10 +34,10 @@ def test_QAOACostFunctionOnWFSim():
         cost_function = QAOACostFunctionOnWFSim(hamiltonian,
                                                 params=params,
                                                 sim=sim,
-                                                return_standard_deviation=True,
+                                                scalar_cost_function=False,
                                                 noisy=True,
                                                 log=log)
-        out = cost_function(params.raw())
+        out = cost_function(params.raw(), nshots=100)
         print("output of QAOACostFunctionOnWFSim: ", out)
 
 
@@ -50,7 +50,9 @@ def test_QAOACostFunctionOnWFSim_get_wavefunction():
     with local_qvm():
         cost_function = QAOACostFunctionOnWFSim(ham,
                                                 params=params,
-                                                sim=sim)
+                                                sim=sim,
+                                                scalar_cost_function=True,
+                                                nshots=100)
         wf = cost_function.get_wavefunction(params.raw())
         print(wf.probabilities())
         assert np.allclose(wf.probabilities(),
@@ -68,7 +70,7 @@ def test_QAOACostFunctionOnQVM():
         cost_function = QAOACostFunctionOnQVM(hamiltonian,
                                               params=params,
                                               qvm=qvm,
-                                              return_standard_deviation=True,
+                                              scalar_cost_function=False,
                                               log=log)
-        out = cost_function(params.raw())
+        out = cost_function(params.raw(), nshots=1)
         print("output of QAOACostFunctionOnQVM: ", out)

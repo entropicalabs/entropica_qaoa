@@ -1,3 +1,8 @@
+import sys
+import os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../')
+
 import numpy as np
 
 from pyquil.paulis import PauliSum, PauliTerm
@@ -63,7 +68,7 @@ def test_vqe_on_QVM_QubitPlaceholders():
                                           make_memory_map=lambda p: {"params": p},
                                           hamiltonian=hamiltonian,
                                           qvm=qvm,
-                                          return_standard_deviation=True,
+                                          scalar_cost_function=False,
                                           base_numshots=50,
                                           log=log,
                                           qubit_mapping=qubit_mapping)
