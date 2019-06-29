@@ -6,6 +6,7 @@ vqe/cost_functions and change only the QAOA specific details.
 
 from typing import Union, List, Type, Dict, Iterable
 import numpy as np
+from copy import deepcopy
 
 from pyquil import Program
 from pyquil.quil import MemoryReference, QubitPlaceholder, Qubit
@@ -15,7 +16,9 @@ from pyquil.paulis import PauliSum
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
-from vqe.cost_function import PrepareAndMeasureOnQVM, PrepareAndMeasureOnWFSim
+from vqe.cost_function import (PrepareAndMeasureOnQVM,
+                               PrepareAndMeasureOnWFSim,
+                               LogEntry)
 from qaoa.parameters import AbstractQAOAParameters
 
 
@@ -256,6 +259,15 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
     def __call__(self, params, nshots: int = None):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
+
+        # remove last entry from the log and replace it with something
+        # immutable
+        try:
+            self.log[-1] = LogEntry(x=deepcopy(params),
+                                    fun=self.log[-1].fun)
+        except AttributeError:
+            pass
+
         return out
 
     def get_wavefunction(self,
@@ -334,4 +346,11 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
     def __call__(self, params, nshots: int = None):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
+        # remove last entry from the log and replace it with something
+        # immutable
+        try:
+            self.log[-1] = LogEntry(x=deepcopy(params),
+                                    fun=self.log[-1].fun)
+        except AttributeError:
+            pass
         return out
