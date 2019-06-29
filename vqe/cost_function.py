@@ -299,7 +299,9 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                  make_memory_map: Callable[[Iterable], dict],
                  hamiltonian: PauliSum,
                  qvm: QuantumComputer,
-                 return_standard_deviation: bool = False,
+                 return_standard_deviation: bool = None,
+                 scalar_cost_function: bool = True,
+                 nshots: int = None,
                  base_numshots: int = 100,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None,
                  log: list = None):
