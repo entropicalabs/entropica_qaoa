@@ -1,3 +1,8 @@
+import sys
+import os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../')
+
 import numpy as np
 
 from pyquil.paulis import PauliSum, PauliTerm
@@ -31,7 +36,6 @@ p0 = [0, 5.2, 0, 0]
 
 def test_vqe_on_WFSim_QubitPlaceholders():
     qubit_mapping = get_default_qubit_mapping(prepare_ansatz)
-    log = []
     sim = WavefunctionSimulator()
     cost_fun = PrepareAndMeasureOnWFSim(prepare_ansatz=prepare_ansatz,
                                         make_memory_map=lambda p: {"params": p},
@@ -39,7 +43,6 @@ def test_vqe_on_WFSim_QubitPlaceholders():
                                         sim=sim,
                                         return_standard_deviation=True,
                                         noisy=False,
-                                        log=log,
                                         qubit_mapping=qubit_mapping)
 
     with local_qvm():
@@ -56,18 +59,18 @@ def test_vqe_on_WFSim_QubitPlaceholders():
 def test_vqe_on_QVM_QubitPlaceholders():
     qubit_mapping = {q0: 0, q1: 1}
     p0 = [3.1, -1.5, 0, 0]  # make it easier when sampling
-    log = []
     qvm = get_qc("2q-qvm")
     with local_qvm():
         cost_fun = PrepareAndMeasureOnQVM(prepare_ansatz=prepare_ansatz,
                                           make_memory_map=lambda p: {"params": p},
                                           hamiltonian=hamiltonian,
                                           qvm=qvm,
-                                          return_standard_deviation=True,
+                                          scalar_cost_function=False,
                                           base_numshots=50,
-                                          log=log,
+                                          enable_logging=True,
                                           qubit_mapping=qubit_mapping)
         out = scipy_optimizer(cost_fun, p0, epsilon=1e-2, nshots=4)
         print(out)
+        print(cost_fun.log)
     assert np.allclose(out['fun'], -4, rtol=1.1)
     assert out['success']

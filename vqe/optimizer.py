@@ -5,8 +5,7 @@ manner, that we can later swap it out with more sophisticated optimizers.
 """
 
 from scipy.optimize import minimize
-from functools import partial
-from typing import Callable, Tuple, Iterable, Union, List, Dict
+from typing import Callable, Tuple, Union, List, Dict
 import numpy as np
 
 # TODO decide, whether we really want to support cost_functions that return
@@ -20,29 +19,31 @@ def _reduce_noisy_cost_function(fun, nshots):
             return out
     return reduced
 
-def scipy_optimizer(cost_function : Callable[[Union[List[float], np.array]], Tuple[float, float]],
-                    params0 : Union[List[float], np.array],
-                    epsilon : float =1e-5,
-                    nshots: int =1000,
-                    method: str ="COBYLA",
+
+def scipy_optimizer(cost_function: Callable[[Union[List[float], np.array]],
+                                            Tuple[float, float]],
+                    params0: Union[List[float], np.array],
+                    epsilon: float = 1e-5,
+                    nshots: int = 1000,
+                    method: str = "COBYLA",
                     **mininize_kwargs) -> Dict:
     """A ``scipy.optimize.minimize`` wrapper for VQE.
 
     Parameters
     ----------
-    cost_function:
+    param cost_function: Callable[Union[List[float], np.array], Tuple[float, float]]
         The cost function to minimize. It takes a list of floats or numpy array
         as parameters and returns a tuple ``(expectation_value, standard_deviation)``
-    params0:
+    param params0: Union[List[float], np.array]
         The initial parameters for the optimization
-    epsilon:
+    param epsilon: float
         The desired accuracy for the function value after optimization
-    nshots:
+    nshots: int
         The number of shots to take for each function evaluation of the cost_function
-    method:
+    param method : string
         The optimizer to use. Can be any of the optimizer included in
         ``scipy.optimize.minimize``. Default is `Cobyla`.
-    minimize_kwargs:
+    param minimize_kwargs:
         The keyword arguments passed forward to ``scipy.optimize.minimize``.
         See its documentation for the options.
 
