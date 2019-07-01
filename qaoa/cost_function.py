@@ -10,12 +10,8 @@ from copy import deepcopy
 
 from pyquil import Program
 from pyquil.quil import MemoryReference, QubitPlaceholder, Qubit
-<<<<<<< HEAD
-from pyquil.gates import RX, RZ, CPHASE, H, X, I
-=======
 from pyquil.wavefunction import Wavefunction
 from pyquil.gates import RX, RZ, CPHASE, H
->>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
 from pyquil.paulis import PauliSum
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
@@ -156,36 +152,9 @@ def _all_plus_state(reg: Iterable) -> Program:
         p.inst(H(qubit))
     return p
 
-def _prepare_custom_classical_state(reg, state) -> Program:
-    """Prepare a custom classical state for all qubits in reg.
-     Parameters
-    ----------
-    state : Type[list]
-        A list of 0s and 1s which represent the starting state of the register, bit-wise.
 
-<<<<<<< HEAD
-    Returns
-    -------
-    Program
-        Parametric Quil Program with a circuit in an initial classical state.    
-    """
-    
-    if len(reg) != len(state):
-        raise ValueError("qubit state must be the same length as reg")
-    
-    p = Program()
-    for qubit, s in zip(reg, state):
-    # if int(s) == 0 we don't need to add any gates, since the qubit is in state 0 by default
-        if int(s) == 1:
-            p.inst(X(qubit))
-    return p
-
-
-def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters], init_state=None) -> Program:
-=======
 def prepare_qaoa_ansatz(initial_state: Program,
                         qaoa_params: Type[AbstractQAOAParameters]) -> Program:
->>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
     """Create parametric quil code for QAOA circuit.
 
     Parameters
@@ -194,8 +163,6 @@ def prepare_qaoa_ansatz(initial_state: Program,
         Returns a program for preparation of the initial state
     qaoa_params:
         The parameters of the QAOA circuit.
-    init_state : Type[list<int>]
-        A list of 0s and 1s which represent the starting state of the QAOA circuit, bit-wise.
 
     Returns
     -------
@@ -203,14 +170,7 @@ def prepare_qaoa_ansatz(initial_state: Program,
         Parametric Quil Program with the whole circuit.
 
     """
-<<<<<<< HEAD
-    if not init_state:
-        p = _prepare_all_plus_state(qaoa_params.reg)
-    else: 
-        p = _prepare_custom_classical_state(qaoa_params.reg, init_state)
-=======
     p = initial_state
->>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
     p += _qaoa_annealing_program(qaoa_params)
     return p
 
@@ -272,32 +232,6 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                  hamiltonian: PauliSum,
                  params: Type[AbstractQAOAParameters],
                  sim: WavefunctionSimulator,
-<<<<<<< HEAD
-                 return_standard_deviation=False,
-                 noisy=False,
-                 log=None,
-                 init_state=None,
-                 qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
-        """Create a cost-function for QAOA.
-
-        Parameters
-        ----------
-        hamiltonian : PauliSum
-            The cost hamiltonian
-        params : Type[AbstractQAOAParameters]
-            Form of the QAOA parameters (with timesteps and type fixed for this instance)
-        sim : WavefunctionSimulator
-            connection to the WavefunctionSimulator to run the simulation on
-        return_standard_deviation : bool
-            return standard deviation or only expectation value?
-        noisy : False
-            Add simulated samplign noise?
-        log : list
-            List to keep log of function calls
-        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
-            A mapping to fix QubitPlaceholders to physical qubits. E.g.
-            pyquil.quil.get_default_qubit_mapping(program) gives you on.
-=======
                  return_standard_deviation: bool = None,
                  scalar_cost_function: bool = True,
                  nshots: int = None,
@@ -309,16 +243,9 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
         """The constructor. See class documentation."""
         if initial_state is None:
             initial_state = _all_plus_state(params.reg)
->>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
 
         self.params = params
-<<<<<<< HEAD
-        self.init_state = init_state
-        
-        super().__init__(prepare_qaoa_ansatz(params,init_state=init_state),
-=======
         super().__init__(prepare_qaoa_ansatz(initial_state, params),
->>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
                          make_memory_map=make_qaoa_memory_map,
                          hamiltonian=hamiltonian,
                          sim=sim,
@@ -329,12 +256,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          enable_logging=enable_logging,
                          qubit_mapping=qubit_mapping)
 
-<<<<<<< HEAD
-
-    def __call__(self, params, nshots: int = 1000):
-=======
     def __call__(self, params, nshots: int = None):
->>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
 
