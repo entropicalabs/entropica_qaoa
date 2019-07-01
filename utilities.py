@@ -74,8 +74,14 @@ def create_random_hamiltonian(nqubits):
 def create_graph(vertices,edge_weights):
 
 	"""
-	Creates a networkx graph on specified number of vertices, with the specified edge_weights
-	"""
+    Creates a networkx graph on specified number of vertices, with the specified edge_weights.
+    
+    Parameters
+    ----------
+    vertices:
+        
+    
+    """
 
 	G = nx.Graph()
 	G.add_nodes_from(range(vertices))
@@ -201,7 +207,7 @@ def ring_of_disagrees(n):
 
 ### METHODS FOR CREATING SIMPLE TOY DATA SETS FOR MAXCUT CLUSTERING ###
 
-def distances_dataset(data):
+def distances_dataset(data, metric='euclidean'):
 
 	"""
 	Compute the pairwise Euclidean distance between data points in a specified dataset.
@@ -214,7 +220,7 @@ def distances_dataset(data):
 	if type(data) == dict:
 	   data = np.concatenate(list(data.values()))
 
-	return distance.cdist(data, data, 'euclidean')
+    return distance.cdist(data, data, metric)
 
 def create_gaussian_2Dclusters(n_clusters,n_points,means,cov_matrices):
 
@@ -254,48 +260,6 @@ def plot_cluster_data(data):
 	data_matr = np.concatenate(list(data.values()))
 	plt.scatter(data_matr[:,0],data_matr[:,1])
 	plt.show()
-
-def create_circular_clusters(n_clusters,n_points,centres,radii):
-
-	"""
-	Description
-	-----------
-	Creates a set of circularly clustered data points.
-	In each cluster, points are uniformly sampled within each circle, with the
-	specified centres and radii.
-
-	Parameters
-	----------
-	:param      n_clusters:      The number of clusters
-	:param      n_points:        A list of the number of points in each cluster
-	:param      centres:         [X,Y] coordinates of the centres of each circle
-	:param      radii:           A list of the radii of the circles.
-
-	Returns
-	-------
-	:param      data
-	"""
-
-	args_in = [len(n_points),len(centres),len(radii)]
-	assert all(item == n_clusters for item in args_in), "Insufficient data provided for specified number of clusters"
-
-	a = np.linspace(0,2*np.pi,100)
-	data = [], cluster_labels = []
-	for i in range(n_clusters):
-	   
-	   points = n_points[i]
-	   r = radii[i]
-	   for j in range(points): 
-	         
-	       theta = np.random.choice(a)
-	       x = r*np.cos(theta)
-	       y = r*np.sin(theta)
-	       data.append([x,y])
-	       cluster_labels += i
-	   
-	data = np.array(data)
-	   
-	return data, cluster_labels
     
 ### ANALYTIC FORMULAE ###
     
