@@ -5,10 +5,6 @@ import matplotlib.pyplot as plt
 
 from pyquil import Program
 from pyquil.paulis import PauliSum, PauliTerm 
-<<<<<<< HEAD
-from math import log
-from sklearn.metrics import accuracy_score
-=======
 from pyquil.gates import X
 from scipy.spatial import distance
 
@@ -24,7 +20,6 @@ TODOs / considerations:
 - Improve distances_dataset so it can do more than just compute Euclidean distances.
 - Keep create_circular_clusters method? If so, it likely needs some attention.
 - Qubit placeholder use in Networkx graphs
->>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
 
 """
 
@@ -351,43 +346,6 @@ def evaluate_lowest_state(lowest, true):
     :param      lowest:      A little-endian list of binary integers representing the lowest energy state of the wavefunction
     :param     true:        A little-endian list of binary integers representing the true solution to the MAXCUT clustering problem.
 
-<<<<<<< HEAD
-    return params, param1, param2, param1_range, param2_range, param_labels
-
-def return_lowest_state(probs):
-    '''
-    Description
-    -----------
-    Returns the lowest energy state of a QAOA run from the list of probabilities
-    returned by pyQuil's Wavefunction.probabilities()method.
-
-    Parameters
-    ----------
-    :param      probs:      A numpy array of length 2^n, returned by Wavefunction.probabilities() 
-
-    Returns
-    -------
-    :param      lowest:     A little endian list of binary integers indicating the lowest energy state of the wavefunction.
-    '''
-    index_max = max(range(len(probs)), key=probs.__getitem__)
-    string = '{0:0'+str(int(log(len(probs),2)))+'b}'
-    string = string.format(index_max)
-    return [int(item) for item in string]
-
-def evaluate_lowest_state(lowest, true):
-    '''
-    Description
-    -----------
-    Prints informative statements comparing QAOA's returned bit string to the true
-    cluster values.
-
-    Parameters
-    ----------
-    :param      lowest:      A littleiendian list of binary integers representing the lowest energy state of the wavefunction
-    :param     true:        A little-endian list of binary integers representing the true solution to the MAXCUT clustering problem.
-
-=======
->>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
     Returns
     -------
     Nothing
@@ -398,50 +356,4 @@ def evaluate_lowest_state(lowest, true):
     print('Accuracy of Original State:',acc*100,'%')
     final_c = [0 if item == 1 else 1 for item in lowest]
     acc_c = accuracy_score(final_c,true_clusters)
-<<<<<<< HEAD
     print('Accuracy of Complement State:',acc_c*100,'%')
-
-def generate_hamiltonian_from_dist(dist,biases=None):
-    '''
-    Description
-    -----------
-    Generates a hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
-    of in biases is applied to the i'th qubit. 
-
-    Parameters
-    ----------
-    :param      dist:      A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
-    :param     biases:     A numpy array of length(dist), with non-zero entries indicating single-qubit bias terms.
-
-    Returns
-    -------
-    :param     hamiltonian: A PauliSum object modelling the hamiltonian of the system  
-    '''
-    pauli_list = list()
-    m,n = dist.shape
-
-    #only if a list is passed in for biases
-    if biases:
-        if not isinstance(biases,type(list())) or isinstance(biases,np.ndarray):
-           raise ValueError("biases must be of type list()")
-        if not len(biases)==len(dist):
-            raise ValueError("biases must be the same length as dist (one number for each qubit)")
-
-        #single qubit interactions
-        for i, num in enumerate(biases):
-            term = PauliTerm("Z",i,num)
-            pauli_list.append(term)
-
-    #pairwise interactions
-    for i in range(m):
-        for j in range(n):
-            if i < j:
-                term = PauliTerm("Z",i,dist.values[i][j])*PauliTerm("Z",j, 1.0)
-                pauli_list.append(term)
-            
-    
-    
-    return PauliSum(pauli_list)
-=======
-    print('Accuracy of Complement State:',acc_c*100,'%')
->>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
