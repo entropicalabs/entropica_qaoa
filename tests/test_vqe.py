@@ -51,6 +51,8 @@ def test_vqe_on_WFSim():
     assert out['success']
 
 
+test_vqe_on_WFSim()
+
 @pytest.mark.slow
 def test_vqe_on_QVM():
     p0 = [3.1, -1.5, 0, 0] # make it easier when sampling

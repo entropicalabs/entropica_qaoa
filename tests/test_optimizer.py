@@ -22,3 +22,5 @@ def test_scipy_optimizer():
     print(res)
     assert np.allclose(res['fun'], -1, rtol=1.1)
     assert np.allclose(res['x'], [0, -np.pi/2], rtol=1.5, atol=0.5)
+
+test_scipy_optimizer()

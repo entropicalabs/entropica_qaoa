@@ -179,6 +179,17 @@ def hamiltonian_from_hyperparams(nqubits,singles,biases,pairs,couplings):
         
     return PauliSum(hamiltonian)
 
+def hamiltonian_from_hyperparams(nqubits,singles,biases,pairs,couplings):
+    
+    hamiltonian = []
+    for i in range(len(pairs)):
+        hamiltonian.append(PauliTerm("Z",pairs[i][0],couplings[i])*PauliTerm("Z",pairs[i][1]))  
+    
+    for i in range(len(singles)):
+        hamiltonian.append(PauliTerm("Z",singles[i],biases[i]))  
+        
+    return PauliSum(hamiltonian)
+
 def ring_of_disagrees(n):
     
     hamiltonian = []

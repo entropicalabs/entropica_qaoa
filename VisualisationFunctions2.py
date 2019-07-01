@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import networkx as nx
+from scipy.optimize import minimize
 
 """
 JL's comments
@@ -13,30 +14,6 @@ because sphinx (the tool I plan to use for automatic documentation) works
 well with this docstring style.
 
 EM: OK, will do this more or less at the end.
-
-For function, variable and class names I (mostly) adhere to the PEP8 style.
-(https://www.python.org/dev/peps/pep-0008/), just so that it looks like any
-other good python code out there. (ThisIsAClass, this_is_a_function, this_is_variable).
-Would you mind renaming your classes and functions accordingly for consistency
-across the code base (I know pycharm can do project wide renames. Only in the
-notebooks we will have to do it manually :/)
-
-EM: Done.
-
-
-QAOA parametrizations
-~~~~~~~~~~~~~~~~~~~~~
-You have only gammas and x_rotation_angles, where all my QAOA parameter classes have
-different gammas for the one qubit terms / bias terms and the two qubit terms /
-coupling terms. (I call them z_rotation_angles and zz_rotation_angles). Do you want me
-to implement a QAOAParameter class, that has only gammas and x_rotation_angles like you use them?
-(Wouldn't take too long, since I just have to inherit from AbstractQAOAParameters and
-copy paste the code from AlternatingOperatorsQAOAParameters with minor modifications)
-
-EM: I think we need to make a decision wrt how the user inputs parameters, and how they are 
-returned from the optimiser. That will guide how the parameters for the sweeps
-are passed in.
-    
 """
 
 def plot_qaoa_parameters(parameters):
@@ -55,18 +32,63 @@ def vqe_optimization_stacktrace_plot(ax=None):
     Plot the cost_function values of a VQE run (and by extension of a QAOA run),
     vs. the iteration step in the optimization process.
     
-    :TODO (JL):  Decide, whether to create the log in the cost_function or in the
-                 optimizer. Does scipy.optimize.minimize allow logging of function
-                 calls? 
-            
-    :TODO (EM):  I like the idea of plotting information related to function
-                 calls. I wonder if we can keep track of the number of function
-                 evaluations at each step. Also, for the steps where the most function 
-                 evaluations had to be made in order to proceed, what the values of the 
-                 parameters at those locations? 
-                 I can imagine that might be useful somehow.
-            
+    :TODO:  Decide, whether to create the log in the cost_function or in the
+            optimizer. Does scipy.optimize.minimize allow logging of function
+            calls? 
+        
     """
+
+    def fun(x):
+        global current_cost
+        current_cost = # Compute cost function as usual
+    return current_cost
+
+    def logcost(x):
+        cost_log.append(current_cost)
+    
+    cost_log = []
+    minimize(fun, initial_params,callback=logcost)
+    
+    return cost_log
+    
+def vqe_track_nfevals(args):
+
+    """
+    This function records the number of function evaluations as the solver progresses,
+    along with the parameter values and the cost_function values.
+    
+    This might be useful for seeing where the solver is spending a lot of time. 
+    
+    Eventually want to plot this - eg plot how the different parameter values vary with
+    the accumulated number of function evaluations, which should show in which directions
+    the solver is progressing slowly.
+    
+    NOTE: This duplicates some functionality of the vqe_optimization_stacktrace_plot function above. 
+    We can perhaps just keep this one, and then allow the user do what s/he wants with the output.
+    """
+    
+    global calls
+    calls = 0
+
+    global param
+    param = []
+
+    def fun(x):
+        global param
+        global calls
+        global current_cost
+        calls += 1
+        current_cost = # Compute cost function as usual
+        param = x
+    return current_cost
+
+    def logcost(x):
+        cost_log.append([calls,param,current_cost])
+    
+    cost_log = []
+    minimize(fun, initial_params,callback=logcost)
+    
+    return cost_log
 
 def plot_networkx_graph(G):
     
