@@ -14,9 +14,9 @@ from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
 from forest_qaoa.vqe.measurelib import (append_measure_register,
-                            hamiltonian_expectation_value,
-                            commuting_decomposition,
-                            hamiltonian_list_expectation_value)
+                                        hamiltonian_expectation_value,
+                                        commuting_decomposition,
+                                        hamiltonian_list_expectation_value)
 
 
 LogEntry = namedtuple("LogEntry", ['x', 'fun'])

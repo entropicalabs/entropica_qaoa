@@ -8,10 +8,13 @@ from pytest import raises
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder, Qubit
 
-from qaoa.parameters import (GeneralQAOAParameters,
-    AlternatingOperatorsQAOAParameters, AdiabaticTimestepsQAOAParameters,
-    FourierQAOAParameters, QAOAParameterIterator, AbstractQAOAParameters,
-    ClassicalFarhiQAOAParameters)
+from forest_qaoa.qaoa.parameters import (GeneralQAOAParameters,
+                                         AlternatingOperatorsQAOAParameters,
+                                         AdiabaticTimestepsQAOAParameters,
+                                         FourierQAOAParameters,
+                                         QAOAParameterIterator,
+                                         AbstractQAOAParameters,
+                                         ClassicalFarhiQAOAParameters)
 
 # build a hamiltonian to test everything on
 q1 = QubitPlaceholder()

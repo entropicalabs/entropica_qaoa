@@ -15,8 +15,9 @@ from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 from pyquil.quil import Program
 from pyquil.gates import RX, CNOT
 
-from vqe.optimizer import scipy_optimizer
-from vqe.cost_function import PrepareAndMeasureOnWFSim, PrepareAndMeasureOnQVM
+from forest_qaoa.vqe.optimizer import scipy_optimizer
+from forest_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
+                                           PrepareAndMeasureOnQVM)
 
 
 # gonna need this program and hamiltonian for both tests. So define them globally

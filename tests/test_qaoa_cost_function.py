@@ -10,9 +10,10 @@ from pyquil import get_qc, Program
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder
 
-from qaoa.cost_function import QAOACostFunctionOnQVM, QAOACostFunctionOnWFSim
-from qaoa.parameters import AdiabaticTimestepsQAOAParameters,\
-    AlternatingOperatorsQAOAParameters
+from forest_qaoa.qaoa.cost_function import (QAOACostFunctionOnQVM,
+                                            QAOACostFunctionOnWFSim)
+from forest_qaoa.qaoa.parameters import (AdiabaticTimestepsQAOAParameters,
+                                         AlternatingOperatorsQAOAParameters)
 
 # Create a mixed and somehwat more complicated hamiltonian
 # TODO fix the whole Qubit Placeholder Business

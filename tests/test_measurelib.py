@@ -2,16 +2,16 @@ import sys, os
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
+import numpy as np
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import RX, RY, H, CNOT
 from pyquil.quil import Program, QubitPlaceholder, MEASURE
 
-from vqe.measurelib import (append_measure_register,
-                            hamiltonian_expectation_value,
-                            hamiltonian_list_expectation_value)
+from forest_qaoa.vqe.measurelib import (append_measure_register,
+                                        hamiltonian_expectation_value,
+                                        hamiltonian_list_expectation_value)
 
-import numpy as np
 
 # TODO make a more complicated test case and sure, that the test case is
 # actually correct
