@@ -361,12 +361,12 @@ def evaluate_lowest_state(lowest, true):
 	-------
 	Nothing
 	'''
-	print('True Labels of samples:',true_clusters)
+	print('True Labels of samples:',true)
 	print('Lowest QAOA State:',lowest)
-	acc = accuracy_score(lowest,true_clusters)
+	acc = accuracy_score(lowest,true)
 	print('Accuracy of Original State:',acc*100,'%')
 	final_c = [0 if item == 1 else 1 for item in lowest]
-	acc_c = accuracy_score(final_c,true_clusters)
+	acc_c = accuracy_score(final_c,true)
 	print('Accuracy of Complement State:',acc_c*100,'%')
     
 def plot_amplitudes(amplitudes, energies, ax=None):
