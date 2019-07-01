@@ -18,3 +18,11 @@
     - [EWAN] Landscape should have height for cost, colour for variance.
     - [EWAN] Think more about the plot.object() or plot(object) question.
 
+3 MAY:
+
+    Talking points:
+    
+    Parameter definition for sweeps
+    Logging function values and number of function calls: this is partially implemented in cost_function call methods, but can we extend them?
+    Build up more examples of user workflow
+    Best type of data structures to use for input data (eg graphs, datasets etc): dictionaries?
