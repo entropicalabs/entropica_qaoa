@@ -25,33 +25,18 @@ TODOs / considerations:
 
 def create_random_hamiltonian(nqubits):
     """
-    Description
-    -----------
     Creates a random hamiltonian.
 
     Parameters
     ----------
-    :param      nqubits:            The number of qubits
-
+    nqubits:           
+        The desired number of qubits.
 
     Returns
     -------
-    :returns:   (PauliSum) a random diagonal hamiltonian on nqubits qubits
+    hamiltonian:
+        A random diagonal hamiltonian as a PauliSum object.
     
-    TODO: Since only Hamiltonians with couplings are interesting, the pair_terms argument is a little 
-    unnecessary. Should we make this function a little more interesting by, eg:
-        
-        - allowing the user to specify the sparsity of the couplings they may want, rather than
-        us just randomly choosing for them?
-        - allowing a mean and standard deviation of the number of couplings to be passed in, then generate
-        an instance obeying those statistics? Could be useful for studying averages over many random graphs with certain
-        distributions.
-        - adding in the ability to specify some maximum node degree (or again some statistical measure)?
-    
-    
-    1) k-regular graphs (graphs where all nodes have the same degree)
-    2) degree distribution (exponential, log-normal, power law)
-    3) graph from some empirically observed degree distribution
     """
     hamiltonian = []
 
@@ -79,7 +64,10 @@ def create_graph(vertices,edge_weights):
     Parameters
     ----------
     vertices:
+        The total number of vertices in the graph.
         
+    edge_weights:
+        The weights on the edges, given as a list.
     
     """
 
@@ -87,34 +75,61 @@ def create_graph(vertices,edge_weights):
 	G.add_nodes_from(range(vertices))
 	i_pointer = 0
 	for i in range(vertices):  
-
-	   for j in range(i,vertices):
-	   
+	   for j in range(i,vertices):	   
 	       weight = edge_weights[i_pointer] + j
-	       G.add_edge(i,j,weight=weight)
-	   
+	       G.add_edge(i,j,weight=weight)	   
 	   i_pointer += vertices - i
 	   
 	return G
 
 def graph_from_hamiltonian(hamiltonian):
 
-	G = nx.Graph()
-	dim = len(hamiltonian)
-	for i in range(dim):
-	   qubits = hamiltonian.terms[i].get_qubits()
-	   if len(qubits) == 1:
-	       G.add_node(qubits[0], weight=hamiltonian.terms[i].coefficient)
-	   else:
-	       G.add_edge(qubits[0],qubits[1],weight=hamiltonian.terms[i].coefficient)
+    """
+    Creates a networkx graph corresponding to a specified problem Hamiltonian.
+    
+    Parameters
+    ----------
+    hamiltonian:
+        The Hamiltonian of interest. Must be specified as a PauliSum object.
+        
+    Returns
+    -------
+    G:
+        The corresponding networkx graph with the edge weights being the two-qubit coupling coefficients,
+        and the node weights being the single-qubit bias terms.
+        
+    TODO:
+        
+        Allow ndarrays to be input as hamiltonian too.
+        
+    """
+    
+    G = nx.Graph()
+    dim = len(hamiltonian)
+    for i in range(dim):
+        qubits = hamiltonian.terms[i].get_qubits()
+        if len(qubits) == 1:
+            G.add_node(qubits[0], weight=hamiltonian.terms[i].coefficient)
+        else:
+            G.add_edge(qubits[0],qubits[1],weight=hamiltonian.terms[i].coefficient)
 	   
-	return G
+    return G
 
 def plot_graph(G):
 
 	"""
-	Takes in a networkx graph and plots it
-	TODO: can we also take in the list of nodes with a bias, and somehow show this on the plot too?
+	Plots a networkx graph.
+    
+    Parameters
+    ----------
+    G:
+        The networkx graph of interest.
+        
+	
+    TODO:
+        
+        Allow the user to specify some desired plot properties?
+        
 	"""
 
 	weights = np.real([*nx.get_edge_attributes(G,'weight').values()])
@@ -127,7 +142,18 @@ def plot_graph(G):
 def hamiltonian_from_graph(G):
 
 	"""
-	Builds a Hamiltonian from a networkx graph
+	Builds a cost Hamiltonian as a PauliSum from a networkx graph.
+    
+    Parameters
+    ----------
+    G:
+        The networkx graph of interest.
+        
+    Returns
+    -------
+    Hamiltonian
+        The PauliSum representation of the networkx graph.
+    
 	"""
 
 	hamiltonian = []
@@ -140,9 +166,7 @@ def hamiltonian_from_graph(G):
 	return PauliSum(hamiltonian)
 
 def hamiltonian_from_distance_matrix(dist,biases=None):
-	'''
-	Description
-	-----------
+	"""
 	Generates a hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
 	of in biases is applied to the i'th qubit. 
 
@@ -154,7 +178,8 @@ def hamiltonian_from_distance_matrix(dist,biases=None):
 	Returns
 	-------
 	:param     hamiltonian: A PauliSum object modelling the hamiltonian of the system  
-	'''
+	"""
+    
 	pauli_list = list()
 	m,n = dist.shape
 
@@ -174,36 +199,63 @@ def hamiltonian_from_distance_matrix(dist,biases=None):
 	       
 	return PauliSum(pauli_list)
 
-def hamiltonian_from_hyperparams(nqubits,singles,biases,pairs,couplings):
+def hamiltonian_from_hyperparams(nqubits: int,singles: List[int], biases: List[float], pairs: List[int] ,couplings: List[float]):
+    
+    """
+	Builds a cost Hamiltonian as a PauliSum from a specified set of problem hyperparameters.
+    
+    Parameters
+    ----------
+    nqubits:
+        The number of qubits.
+    singles:
+        The register indices of the qubits that have a bias term
+    biases:
+        Values of the biases on the qubits specified in singles.
+    pairs:
+        The qubit pairs that have a non-zero coupling coefficient.
+    couplings:
+        The value of the couplings for each pair of qubits in pairs.
+        
+    Returns
+    -------
+    Hamiltonian
+        The PauliSum representation of the networkx graph.
+    """
 
-	hamiltonian = []
-	for i in range(len(pairs)):
-	   hamiltonian.append(PauliTerm('Z',pairs[i][0],couplings[i])*PauliTerm('Z',pairs[i][1]))  
+    hamiltonian = []
+    for i in range(len(pairs)):
+        hamiltonian.append(PauliTerm('Z',pairs[i][0],couplings[i])*PauliTerm('Z',pairs[i][1]))  
 
-	for i in range(len(singles)):
-	   hamiltonian.append(PauliTerm('Z',singles[i],biases[i]))  
+    for i in range(len(singles)):
+        hamiltonian.append(PauliTerm('Z',singles[i],biases[i]))  
 	   
-	return PauliSum(hamiltonian)
+    return PauliSum(hamiltonian)
 
-def hamiltonian_from_hyperparams(nqubits,singles,biases,pairs,couplings):
+def ring_of_disagrees(n: int):
+    
+    """
+    Builds the cost Hamiltonian for the "Ring of Disagrees" described in the original QAOA paper (https://arxiv.org/abs/1411.4028),
+    for the specified number of vertices n.
+    
+    Parameters
+    ----------
+    n:
+        Number of vertices in the ring
+        
+    Returns
+    -------
+    hamiltonian:
+        The cost Hamiltonian representing the ring, as a PauliSum object.
+    
+    """
 
-	hamiltonian = []
-	for i in range(len(pairs)):
-	   hamiltonian.append(PauliTerm("Z",pairs[i][0],couplings[i])*PauliTerm("Z",pairs[i][1]))  
-
-	for i in range(len(singles)):
-	   hamiltonian.append(PauliTerm("Z",singles[i],biases[i]))  
+    hamiltonian = []
+    for i in range(n-1):
+        hamiltonian.append(PauliTerm("Z",i,0.5)*PauliTerm("Z",i+1))  
+    hamiltonian.append(PauliTerm("Z",n-1,0.5)*PauliTerm("Z", 0))
 	   
-	return PauliSum(hamiltonian)
-
-def ring_of_disagrees(n):
-
-	hamiltonian = []
-	for i in range(n-1):
-	   hamiltonian.append(PauliTerm("Z",i,0.5)*PauliTerm("Z",i+1))  
-	hamiltonian.append(PauliTerm("Z",n-1,0.5)*PauliTerm("Z", 0))
-	   
-	return PauliSum(hamiltonian)   
+    return PauliSum(hamiltonian)   
 
 ### METHODS FOR CREATING SIMPLE TOY DATA SETS FOR MAXCUT CLUSTERING ###
 
@@ -216,10 +268,10 @@ def distances_dataset(data, metric='euclidean'):
 	Could expand to include an arbitrary function of the Euclidean distance
 	(eg with exponential decay) - would just require passing in the desired distance metric for cdist.
 	"""
-
-	if type(data) == dict:
-	   data = np.concatenate(list(data.values()))
-
+    
+    if type(data) == dict:
+        data = np.concatenate(list(data.values()))
+    
     return distance.cdist(data, data, metric)
 
 def create_gaussian_2Dclusters(n_clusters,n_points,means,cov_matrices):
