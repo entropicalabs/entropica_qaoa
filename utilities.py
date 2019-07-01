@@ -5,17 +5,21 @@ import matplotlib.pyplot as plt
 
 from pyquil import Program
 from pyquil.paulis import PauliSum, PauliTerm 
-from qaoa.parameters import QAOAParameterIterator
+from pyquil.gates import X
 from scipy.spatial import distance
+
 
 
 ### METHODS FOR CREATING RANDOM HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ###
 
 """
-General TODOs / considerations:
+TODOs / considerations:
     
 - Include JL's other functions, eg create_normalized_random_hamiltonian?
 - Implement certain types of graphs (eg Erdos-Renyi, scale-free, etc)
+- Improve distances_dataset so it can do more than just compute Euclidean distances.
+- Keep create_circular_clusters method? If so, it likely needs some attention.
+- Qubit placeholder use in Networkx graphs
 
 """
 
@@ -129,14 +133,50 @@ def hamiltonian_from_graph(G):
     
     return PauliSum(hamiltonian)
 
-def hamiltonian_from_distance_matrix(matr):
+def hamiltonian_from_distance_matrix(dist,biases=None):
+    '''
+    Description
+    -----------
+    Generates a hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
+    of in biases is applied to the i'th qubit. 
+
+    Parameters
+    ----------
+    :param      dist:      A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
+    :param     biases:     A dictionary of floats, with keys indicating the qubits with bias terms, and corresponding values being the bias coefficients.
+
+    Returns
+    -------
+    :param     hamiltonian: A PauliSum object modelling the hamiltonian of the system  
+    '''
+    pauli_list = list()
+    m,n = dist.shape
+
+    if biases:
+        if not isinstance(biases,type(dict())):
+           raise ValueError(“biases must be of type dict()“)        
+        for key in biases:
+            term = PauliTerm(“Z”,key,biases[key])
+            pauli_list.append(term)
+
+    #pairwise interactions
+    for i in range(m):
+        for j in range(n):
+            if i < j:
+                term = PauliTerm("Z",i,dist.values[i][j])*PauliTerm("Z",j, 1.0)
+                pauli_list.append(term)
+            
+    return PauliSum(pauli_list)
+
+def hamiltonian_from_hyperparams(nqubits,singles,biases,pairs,couplings):
     
     hamiltonian = []
-    dim = len(matr)
-    for i in range(dim):
-        for j in range(i+1,dim):
-            hamiltonian.append(PauliTerm("Z",i,matr[i][j])*PauliTerm("Z",j, 1.0))
-      
+    for i in range(len(pairs)):
+        hamiltonian.append(PauliTerm("Z",pairs[i][0],couplings[i])*PauliTerm("Z",pairs[i][1]))  
+    
+    for i in range(len(singles)):
+        hamiltonian.append(PauliTerm("Z",singles[i],biases[i]))  
+        
     return PauliSum(hamiltonian)
 
 def ring_of_disagrees(n):
@@ -273,4 +313,47 @@ def prepare_classical_state(reg, state) -> Program:
         if int(s) == 1:
             p.inst(X(qubit))
     return p
+    
+    def return_lowest_state(probs):
+    '''
+    Description
+    -----------
+    Returns the lowest energy state of a QAOA run from the list of probabilities
+    returned by pyQuil's Wavefunction.probabilities()method.
 
+    Parameters
+    ----------
+    :param      probs:      A numpy array of length 2^n, returned by Wavefunction.probabilities() 
+
+    Returns
+    -------
+    :param      lowest:     A little endian list of binary integers indicating the lowest energy state of the wavefunction.
+    '''
+    index_max = max(range(len(probs)), key=probs.__getitem__)
+    string = '{0:0'+str(int(log(len(probs),2)))+'b}'
+    string = string.format(index_max)
+    return [int(item) for item in string]
+
+def evaluate_lowest_state(lowest, true):
+    '''
+    Description
+    -----------
+    Prints informative statements comparing QAOA's returned bit string to the true
+    cluster values.
+
+    Parameters
+    ----------
+    :param      lowest:      A little-endian list of binary integers representing the lowest energy state of the wavefunction
+    :param     true:        A little-endian list of binary integers representing the true solution to the MAXCUT clustering problem.
+
+    Returns
+    -------
+    Nothing
+    '''
+    print('True Labels of samples:',true_clusters)
+    print('Lowest QAOA State:',lowest)
+    acc = accuracy_score(lowest,true_clusters)
+    print('Accuracy of Original State:',acc*100,'%')
+    final_c = [0 if item == 1 else 1 for item in lowest]
+    acc_c = accuracy_score(final_c,true_clusters)
+    print('Accuracy of Complement State:',acc_c*100,'%')
