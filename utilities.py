@@ -8,24 +8,12 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
 from scipy.spatial import distance
 
-
-
 ### METHODS FOR CREATING RANDOM HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ###
 
-"""
-TODOs / considerations:
+def create_random_hamiltonian(nqubits: int) -> PauliSum:
     
-- Include JL's other functions, eg create_normalized_random_hamiltonian?
-- Implement certain types of graphs (eg Erdos-Renyi, scale-free, etc)
-- Improve distances_dataset so it can do more than just compute Euclidean distances.
-- Keep create_circular_clusters method? If so, it likely needs some attention.
-- Qubit placeholder use in Networkx graphs
-
-"""
-
-def create_random_hamiltonian(nqubits):
     """
-    Creates a random hamiltonian.
+    Creates a random cost hamiltonian, diagonal in the computational basis.
 
     Parameters
     ----------
@@ -35,7 +23,7 @@ def create_random_hamiltonian(nqubits):
     Returns
     -------
     hamiltonian:
-        A random diagonal hamiltonian as a PauliSum object.
+        A hamiltonian with random couplings and biases, as a PauliSum object.
     
     """
     hamiltonian = []
@@ -139,7 +127,7 @@ def plot_graph(G):
 	            width=4, edge_cmap=plt.cm.Blues)
 	plt.show()
 
-def hamiltonian_from_graph(G):
+def hamiltonian_from_graph(G) -> PauliSum:
 
 	"""
 	Builds a cost Hamiltonian as a PauliSum from a networkx graph.
@@ -165,7 +153,7 @@ def hamiltonian_from_graph(G):
 
 	return PauliSum(hamiltonian)
 
-def hamiltonian_from_distance_matrix(dist,biases=None):
+def hamiltonian_from_distance_matrix(dist,biases=None) -> PauliSum:
 	"""
 	Generates a hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
 	of in biases is applied to the i'th qubit. 
@@ -199,7 +187,11 @@ def hamiltonian_from_distance_matrix(dist,biases=None):
 	       
 	return PauliSum(pauli_list)
 
-def hamiltonian_from_hyperparams(nqubits: int,singles: List[int], biases: List[float], pairs: List[int] ,couplings: List[float]):
+def hamiltonian_from_hyperparams(nqubits: int,
+                                 singles: List[int],
+                                 biases: List[float],
+                                 pairs: List[int],
+                                 couplings: List[float]) -> PauliSum:
     
     """
 	Builds a cost Hamiltonian as a PauliSum from a specified set of problem hyperparameters.
@@ -232,7 +224,7 @@ def hamiltonian_from_hyperparams(nqubits: int,singles: List[int], biases: List[f
 	   
     return PauliSum(hamiltonian)
 
-def ring_of_disagrees(n: int):
+def ring_of_disagrees(n: int) -> PauliSum:
     
     """
     Builds the cost Hamiltonian for the "Ring of Disagrees" described in the original QAOA paper (https://arxiv.org/abs/1411.4028),
