@@ -3,13 +3,15 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
 import numpy as np
+from pytest import raises
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder, Qubit
 
-from qaoa.parameters import GeneralQAOAParameters,\
-    AlternatingOperatorsQAOAParameters, AdiabaticTimestepsQAOAParameters,\
-    FourierQAOAParameters, QAOAParameterIterator, AbstractQAOAParameters
+from qaoa.parameters import (GeneralQAOAParameters,
+    AlternatingOperatorsQAOAParameters, AdiabaticTimestepsQAOAParameters,
+    FourierQAOAParameters, QAOAParameterIterator, AbstractQAOAParameters,
+    ClassicalFarhiQAOAParameters)
 
 # build a hamiltonian to test everything on
 q1 = QubitPlaceholder()
@@ -118,6 +120,19 @@ def test_AlternatingOperatorsQAOAParameters():
     params.update_from_raw(raw)
     assert np.allclose(raw, params.raw())
 
+def test_ClassicalFarhiQAOAParameters():
+    params = ClassicalFarhiQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
+    assert set(params.reg) == {0, 1, q1}
+    assert np.allclose(params.x_rotation_angles, [[0.75] * 3, [0.25] * 3])
+    assert np.allclose(params.z_rotation_angles, [[0.125], [0.375]])
+    assert np.allclose(params.zz_rotation_angles, [[0.25, -0.5], [0.75, -1.5]])
+    assert [params.qubits_singles] == [term.get_qubits() for term in hamiltonian
+                                       if len(term) == 1]
+    # Test updating and raw output
+    raw = np.random.rand(len(params))
+    params.update_from_raw(raw)
+    assert np.allclose(raw, params.raw())
+
 
 def test_FourierQAOAParameters():
     params = FourierQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, timesteps=3, q=2, time=2)
@@ -142,3 +157,13 @@ def test_QAOAParameterIterator():
     print(log[1])
     assert np.allclose(log[0], [0, 1.049999999])
     assert np.allclose(log[1], [0.5, 1.049999999])
+
+
+def test_inputChecking():
+    ham = PauliSum.from_compact_str("0.7*Z0*Z1")
+    betas = [1, 2, 3, 4]
+    gammas_singles = []
+    gammas_pairs = [1, 2, 3]
+    with raises(ValueError):
+        params = GeneralQAOAParameters((ham, 3),
+                                       (betas, gammas_singles, gammas_pairs))

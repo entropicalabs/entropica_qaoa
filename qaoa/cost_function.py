@@ -1,35 +1,40 @@
 """
-Implementation of the QAOA cost_functions. We inherit from vqe/cost_functions
-and change only the QAOA specific details.
-
-TODO
-----
-Change type of `reg` to Iterable or create custom type for it.
+Implementation of the QAOA cost_functions. We inherit from
+vqe/cost_functions and change only the QAOA specific details.
 """
 
 
-from typing import Union, List, Type, Dict
+from typing import Union, List, Type, Dict, Iterable
+import numpy as np
+from copy import deepcopy
 
 from pyquil import Program
 from pyquil.quil import MemoryReference, QubitPlaceholder, Qubit
+<<<<<<< HEAD
 from pyquil.gates import RX, RZ, CPHASE, H, X, I
+=======
+from pyquil.wavefunction import Wavefunction
+from pyquil.gates import RX, RZ, CPHASE, H
+>>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
 from pyquil.paulis import PauliSum
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
-from vqe.cost_function import PrepareAndMeasureOnQVM, PrepareAndMeasureOnWFSim
-from qaoa.parameters import AbstractQAOAParameters, GeneralQAOAParameters
+from vqe.cost_function import (PrepareAndMeasureOnQVM,
+                               PrepareAndMeasureOnWFSim,
+                               LogEntry)
+from qaoa.parameters import AbstractQAOAParameters
 
 
 def _qaoa_mixing_ham_rotation(betas: MemoryReference,
-                              reg: Union[List, range]) -> Program:
+                              reg: Iterable) -> Program:
     """Produce parametric Quil-Code for the mixing hamiltonian rotation.
 
     Parameters
     ----------
-    betas : MemoryReference
+    betas:
         Classic register to read the x_rotation_angles from.
-    reg : Union[List, Range]
+    reg:
         The register to apply the X-rotations on.
 
     Returns
@@ -55,13 +60,13 @@ def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
 
     Parameters
     ----------
-    gammas_pairs : MemoryReference
+    gammas_pairs:
         Classic register to read the zz_rotation_angles from.
-    qubit_pairs : List
+    qubit_pairs:
         List of the Qubit pairs to apply rotations on.
-    gammas_singles : MemoryReference
+    gammas_singles:
         Classic register to read the z_rotation_angles from.
-    qubit_singles : List
+    qubit_singles:
         List of the single qubits to apply rotations on.
 
     Returns
@@ -89,13 +94,12 @@ def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
     return p
 
 
-# TODO check, whether aliased angles are supported yet
 def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Program:
-    """Create parametric quil code for QAOA annealing circuit.
+    """Create parametric quil code for the QAOA annealing circuit.
 
     Parameters
     ----------
-    qaoa_params : Type[AbstractQAOAParameters]
+    qaoa_params:
         The parameters of the QAOA circuit.
 
     Returns
@@ -145,7 +149,7 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
     return p
 
 
-def _prepare_all_plus_state(reg) -> Program:
+def _all_plus_state(reg: Iterable) -> Program:
     """Prepare the |+>...|+> state on all qubits in reg."""
     p = Program()
     for qubit in reg:
@@ -159,6 +163,7 @@ def _prepare_custom_classical_state(reg, state) -> Program:
     state : Type[list]
         A list of 0s and 1s which represent the starting state of the register, bit-wise.
 
+<<<<<<< HEAD
     Returns
     -------
     Program
@@ -177,11 +182,17 @@ def _prepare_custom_classical_state(reg, state) -> Program:
 
 
 def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters], init_state=None) -> Program:
+=======
+def prepare_qaoa_ansatz(initial_state: Program,
+                        qaoa_params: Type[AbstractQAOAParameters]) -> Program:
+>>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
     """Create parametric quil code for QAOA circuit.
 
     Parameters
     ----------
-    qaoa_params : Type[AbstractQAOAParameters]
+    state_prep_program:
+        Returns a program for preparation of the initial state
+    qaoa_params:
         The parameters of the QAOA circuit.
     init_state : Type[list<int>]
         A list of 0s and 1s which represent the starting state of the QAOA circuit, bit-wise.
@@ -192,10 +203,14 @@ def prepare_qaoa_ansatz(qaoa_params: Type[AbstractQAOAParameters], init_state=No
         Parametric Quil Program with the whole circuit.
 
     """
+<<<<<<< HEAD
     if not init_state:
         p = _prepare_all_plus_state(qaoa_params.reg)
     else: 
         p = _prepare_custom_classical_state(qaoa_params.reg, init_state)
+=======
+    p = initial_state
+>>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
     p += _qaoa_annealing_program(qaoa_params)
     return p
 
@@ -205,12 +220,12 @@ def make_qaoa_memory_map(qaoa_params: Type[AbstractQAOAParameters]) -> dict:
 
     Parameters
     ----------
-    qaoa_params : Type(AbstractQAOAParameters)
+    qaoa_params:
         QAOA parameters to take angles from
 
     Returns
     -------
-    dict:
+    Dict:
         A memory_map as expected by QVM.run().
 
     """
@@ -226,12 +241,38 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
     """
     A cost function that inherits from PrepareAndMeasureOnWFSim and implements
     the specifics of QAOA
+
+    Parameters
+    ----------
+    hamiltonian:
+        The cost hamiltonian
+    params:
+        Form of the QAOA parameters (with timesteps and type fixed for this instance)
+    sim:
+        connection to the WavefunctionSimulator to run the simulation on
+    return_standard_deviation:
+        return standard deviation or only expectation value?
+    noisy:
+        Add simulated sampling noise?
+    log:
+        List to keep log of function calls
+    initial_state:
+        A Program to run for state preparation. Defaults to
+        applying a Hadamard on each qubit (all plust state).
+    qubit_mapping:
+        A mapping to fix QubitPlaceholders to physical qubits. E.g.
+        pyquil.quil.get_default_qubit_mapping(program) gives you on.
+
+    Todo
+    ----
+    Remove ``return_standard_deviation`` argument in next versions
     """
 
     def __init__(self,
                  hamiltonian: PauliSum,
                  params: Type[AbstractQAOAParameters],
                  sim: WavefunctionSimulator,
+<<<<<<< HEAD
                  return_standard_deviation=False,
                  noisy=False,
                  log=None,
@@ -256,33 +297,65 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
         qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
             A mapping to fix QubitPlaceholders to physical qubits. E.g.
             pyquil.quil.get_default_qubit_mapping(program) gives you on.
+=======
+                 return_standard_deviation: bool = None,
+                 scalar_cost_function: bool = True,
+                 nshots: int = None,
+                 noisy: bool = False,
+                 enable_logging: bool = False,
+                 initial_state: Program = None,
+                 qubit_mapping: Dict[QubitPlaceholder,
+                                     Union[Qubit, int]] = None):
+        """The constructor. See class documentation."""
+        if initial_state is None:
+            initial_state = _all_plus_state(params.reg)
+>>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
 
-        """
         self.params = params
+<<<<<<< HEAD
         self.init_state = init_state
         
         super().__init__(prepare_qaoa_ansatz(params,init_state=init_state),
+=======
+        super().__init__(prepare_qaoa_ansatz(initial_state, params),
+>>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
                          make_memory_map=make_qaoa_memory_map,
                          hamiltonian=hamiltonian,
                          sim=sim,
                          return_standard_deviation=return_standard_deviation,
+                         scalar_cost_function=scalar_cost_function,
+                         nshots=nshots,
                          noisy=noisy,
-                         log=log,
+                         enable_logging=enable_logging,
                          qubit_mapping=qubit_mapping)
 
+<<<<<<< HEAD
 
     def __call__(self, params, nshots: int = 1000):
+=======
+    def __call__(self, params, nshots: int = None):
+>>>>>>> d05d5b0eed84a8658b25d932d89dd09c016e8aa3
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
+
+        # remove last entry from the log and replace it with something
+        # immutable
+        try:
+            self.log[-1] = LogEntry(x=deepcopy(params),
+                                    fun=self.log[-1].fun)
+        except AttributeError:
+            pass
+
         return out
 
-    def get_wavefunction(self, params):
+    def get_wavefunction(self,
+                         params: Union[list, np.ndarray]) -> Wavefunction:
         """Same as __call__ but returns the wavefunction instead of cost
 
         Parameters
         ----------
-        params: Union[list, np.ndarray]
-            Raw(!) QAOA parameters for the state preparation. Can be obtained
+        params:
+            _Raw_(!) QAOA parameters for the state preparation. Can be obtained
             from Type[AbstractQAOAParameters] objects via ``.raw()``
 
         Returns
@@ -298,50 +371,64 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
     """
     A cost function that inherits from PrepareAndMeasureOnQVM and implements
     the specifics of QAOA
-    """
+
+    Parameters
+    ----------
+    hamiltonian:
+        The cost hamiltonian
+    params:
+        Form of the QAOA parameters (with timesteps and type fixed for this
+        instance)
+    qvm:
+        connection to the QuantumComputer to run on
+    return_standard_deviation:
+        return standard deviation or only expectation value?
+    param base_numshots:
+        numshots to compile into the binary. The argument nshots of __call__
+        is then a multplier of this.
+    log:
+        List to keep log of function calls
+    qubit_mapping:
+        A mapping to fix QubitPlaceholders to physical qubits. E.g.
+        pyquil.quil.get_default_qubit_mapping(program) gives you on.
+     """
 
     def __init__(self,
                  hamiltonian: PauliSum,
                  params: Type[AbstractQAOAParameters],
                  qvm: QuantumComputer,
-                 return_standard_deviation=False,
+                 return_standard_deviation: bool = None,
+                 scalar_cost_function: bool = True,
+                 nshots: int = None,
                  base_numshots: int = 100,
-                 log=None,
-                 qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None):
-        """Create a cost-function for QAOA.
+                 enable_logging: bool = False,
+                 initial_state: Program = None,
+                 qubit_mapping: Dict[QubitPlaceholder,
+                                     Union[Qubit, int]] = None):
+        """The constructor. See class documentation for details."""
+        if initial_state is None:
+            initial_state = _all_plus_state(params.reg)
 
-        Parameters
-        ----------
-        hamiltonian : PauliSum
-            The cost hamiltonian
-        params : Type[AbstractQAOAParameters]
-            Form of the QAOA parameters (with timesteps and type fixed for this instance)
-        qvm : QuantumComputer
-            connection to the QuantumComputer to run on
-        return_standard_deviation : bool
-            return standard deviation or only expectation value?
-        param base_numshots : int
-            numshots to compile into the binary. The argument nshots of __call__
-            is then a multplier of this.
-        log : list
-            List to keep log of function calls
-        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
-            A mapping to fix QubitPlaceholders to physical qubits. E.g.
-            pyquil.quil.get_default_qubit_mapping(program) gives you on.
-
-
-        """
         self.params = params
-        super().__init__(prepare_qaoa_ansatz(params),
+        super().__init__(prepare_qaoa_ansatz(initial_state, params),
                          make_memory_map=make_qaoa_memory_map,
                          hamiltonian=hamiltonian,
                          qvm=qvm,
                          return_standard_deviation=return_standard_deviation,
+                         scalar_cost_function=scalar_cost_function,
+                         nshots=nshots,
                          base_numshots=base_numshots,
-                         log=log,
+                         enable_logging=enable_logging,
                          qubit_mapping=qubit_mapping)
 
-    def __call__(self, params, nshots: int = 10):
+    def __call__(self, params, nshots: int = None):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
+        # remove last entry from the log and replace it with something
+        # immutable
+        try:
+            self.log[-1] = LogEntry(x=deepcopy(params),
+                                    fun=self.log[-1].fun)
+        except AttributeError:
+            pass
         return out

@@ -7,7 +7,9 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import RX, RY, H, CNOT
 from pyquil.quil import Program, QubitPlaceholder, MEASURE
 
-from vqe.measurelib import append_measure_register, hamiltonian_expectation_value
+from vqe.measurelib import (append_measure_register,
+                            hamiltonian_expectation_value,
+                            hamiltonian_list_expectation_value)
 
 import numpy as np
 
@@ -26,3 +28,14 @@ def test_append_measure_register():
     p = Program(H(q0), RX(np.pi/2, 0))
     p = append_measure_register(p)
     assert str(p[-1]) == "MEASURE 0 ro[1]"
+
+def test_hamiltonian_list_expectation_value():
+    bitstring1 = np.array([[1,0], [0,1], [1,1], [1,1]])
+    bitstring2 = np.array([[1,0], [0,1], [1,1], [1,1]])
+    bitstrings = [bitstring1, bitstring2]
+    ham1 = PauliSum.from_compact_str("1.0*Z0*Z1 + 0.5*Z0 + (-1)*Z1")
+    ham2 = PauliSum.from_compact_str("1.0*X0*Z1 + 0.5*X0 + (-1)*Z1")
+    hams = [ham1, ham2]
+    out = hamiltonian_list_expectation_value(hams, bitstrings)
+    print(out)
+    assert np.allclose(out, (0.5, 1.1592023119369628))

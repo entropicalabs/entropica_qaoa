@@ -27,17 +27,17 @@ hamiltonian += next_term
 
 def test_QAOACostFunctionOnWFSim():
     sim = WavefunctionSimulator()
-    log = []
     params = AdiabaticTimestepsQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, timesteps=4)
 
     with local_qvm():
         cost_function = QAOACostFunctionOnWFSim(hamiltonian,
                                                 params=params,
                                                 sim=sim,
-                                                return_standard_deviation=True,
+                                                scalar_cost_function=False,
                                                 noisy=True,
-                                                log=log)
-        out = cost_function(params.raw())
+                                                enable_logging=True)
+        out = cost_function(params.raw(), nshots=100)
+        print("Log:", cost_function.log)
         print("output of QAOACostFunctionOnWFSim: ", out)
 
 
@@ -50,7 +50,9 @@ def test_QAOACostFunctionOnWFSim_get_wavefunction():
     with local_qvm():
         cost_function = QAOACostFunctionOnWFSim(ham,
                                                 params=params,
-                                                sim=sim)
+                                                sim=sim,
+                                                scalar_cost_function=True,
+                                                nshots=100)
         wf = cost_function.get_wavefunction(params.raw())
         print(wf.probabilities())
         assert np.allclose(wf.probabilities(),
@@ -61,14 +63,12 @@ def test_QAOACostFunctionOnWFSim_get_wavefunction():
 
 def test_QAOACostFunctionOnQVM():
     qvm = get_qc("2q-qvm")
-    log = []
     params = AdiabaticTimestepsQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, timesteps=4)
 
     with local_qvm():
         cost_function = QAOACostFunctionOnQVM(hamiltonian,
                                               params=params,
                                               qvm=qvm,
-                                              return_standard_deviation=True,
-                                              log=log)
-        out = cost_function(params.raw())
+                                              scalar_cost_function=False)
+        out = cost_function(params.raw(), nshots=1)
         print("output of QAOACostFunctionOnQVM: ", out)
