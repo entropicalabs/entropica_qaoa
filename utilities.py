@@ -1,4 +1,8 @@
-from typing import List
+"""
+Utilty and convenience functions for a number of QAOA applications. 
+"""
+
+from typing import Union, List, Type, Dict, Iterable
 
 import numpy as np
 import networkx as nx
@@ -12,10 +16,15 @@ from scipy.spatial import distance
 
 ### METHODS FOR CREATING RANDOM HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ###
 
-def create_random_hamiltonian(nqubits: int) -> PauliSum:
+def random_hamiltonian(nqubits: int) -> PauliSum:
     
     """
-    Creates a random cost hamiltonian, diagonal in the computational basis.
+    Creates a random cost hamiltonian, diagonal in the computational basis:
+        
+     - Randomly selects which qubits that will have a bias term, then assigns them a bias coefficient.
+     - Randomly selects which qubit pairs will have a coupling term, then assigns them a coupling coefficient.
+     
+     In both cases, the random coefficient is drawn from the uniform distribution on the interval [0,1).
 
     Parameters
     ----------
@@ -46,33 +55,42 @@ def create_random_hamiltonian(nqubits: int) -> PauliSum:
 
     return PauliSum(hamiltonian)
 
-def create_graph(vertices,edge_weights):
+def graph_from_edges(vertices: int, edges: Dict, biases: Dict = None) -> nx.Graph:
 
     """
-    Creates a networkx graph on specified number of vertices, with the specified edge_weights.
+    Creates a networkx graph on specified number of vertices, with the specified edges connected by corresponding edge weights.
 
     Parameters
     ----------
     vertices:
         The total number of vertices in the graph.
 
-    edge_weights:
-        The weights on the edges, given as a list.
-
+    edges:
+        A dictionary whose keys are tuples of the nodes connected by an edge. The corresponding dict values are the edge weights.
     """
-
+    
     G = nx.Graph()
     G.add_nodes_from(range(vertices))
-    i_pointer = 0
-    for i in range(vertices):
-       for j in range(i,vertices):
-           weight = edge_weights[i_pointer] + j
-           G.add_edge(i,j,weight=weight)
-       i_pointer += vertices - i
-
+    edges_ = [*edges]
+    weights = [*edges.values()]
+    for i in range(len(edges_)):   
+           G.add_edge(edges[i][0],edges[i][1],weight=weights[i])
+    
     return G
 
-def graph_from_hamiltonian(hamiltonian):
+
+#    G = nx.Graph()
+#    G.add_nodes_from(range(vertices))
+#    i_pointer = 0
+#    for i in range(vertices):
+#       for j in range(i,vertices):
+#           weight = edge_weights[i_pointer] + j
+#           G.add_edge(i,j,weight=weight)
+#       i_pointer += vertices - i
+#
+#    return G
+
+def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
 
     """
     Creates a networkx graph corresponding to a specified problem Hamiltonian.
@@ -119,7 +137,6 @@ def plot_graph(G):
     TODO:
 
         Allow the user to specify some desired plot properties?
-
     """
 
     weights = np.real([*nx.get_edge_attributes(G,'weight').values()])
@@ -129,10 +146,10 @@ def plot_graph(G):
                 width=4, edge_cmap=plt.cm.Blues)
     plt.show()
 
-def hamiltonian_from_graph(G) -> PauliSum:
+def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
 
     """
-    Builds a cost Hamiltonian as a PauliSum from a networkx graph.
+    Builds a cost Hamiltonian as a PauliSum from a specified networkx graph, extracting any node biases and edge weights.
 
     Parameters
     ----------
@@ -147,47 +164,58 @@ def hamiltonian_from_graph(G) -> PauliSum:
     """
 
     hamiltonian = []
+    
+    # Node bias terms
+    bias_nodes = [*nx.get_edge_attributes(G,'weight')]
+    biases = [*nx.get_edge_attributes(G,'weight').values()]
+    for i in range(len(biases)):
+        hamiltonian.append(PauliTerm("Z", bias_nodes[i], biases[i]))
+    
+    # Edge terms
     edges = list(G.edges)
-    weights = [*nx.get_edge_attributes(G,'weight').values()]
-    hamiltonian = []
-    for i in range(len(edges)):
-        hamiltonian.append(PauliTerm("Z", edges[i][0], weights[i])*PauliTerm("Z", edges[i][1], 1.0))
+    edge_weights = [*nx.get_edge_attributes(G,'weight').values()]
+    for i in range(len(edge_weights)):
+        hamiltonian.append(PauliTerm("Z", edges[i][0], edge_weights[i])*PauliTerm("Z", edges[i][1]))
 
     return PauliSum(hamiltonian)
 
 def hamiltonian_from_distance_matrix(dist,biases=None) -> PauliSum:
-	"""
-	Generates a hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
+	
+    """
+	Generates a Hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
 	of in biases is applied to the i'th qubit. 
 
 	Parameters
 	----------
-	:param      dist:      A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
-	:param     biases:     A dictionary of floats, with keys indicating the qubits with bias terms, and corresponding values being the bias coefficients.
+	dist:      
+        A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
+	biases:     
+        A dictionary of floats, with keys indicating the qubits with bias terms, and corresponding values being the bias coefficients.
 
 	Returns
 	-------
-	:param     hamiltonian: A PauliSum object modelling the hamiltonian of the system  
+	hamiltonian: 
+        A PauliSum object modelling the Hamiltonian of the system  
 	"""
     
-	pauli_list = list()
-	m,n = dist.shape
+    pauli_list = list()
+    m,n = dist.shape
 
-	if biases:
-		if not isinstance(biases,type(dict())):
- 			raise ValueError('biases must be of type dict()')        
-		for key in biases:
-			term = PauliTerm('Z',key,biases[key])
-			pauli_list.append(term)
+    if biases:
+        if not isinstance(biases,type(dict())):
+            raise ValueError('biases must be of type dict()')        
+        for key in biases:
+            term = PauliTerm('Z',key,biases[key])
+            pauli_list.append(term)
 
 	#pairwise interactions
-	for i in range(m):
-	   for j in range(n):
-	       if i < j:
-	           term = PauliTerm('Z',i,dist.values[i][j])*PauliTerm('Z',j, 1.0)
-	           pauli_list.append(term)
+    for i in range(m):
+        for j in range(n):
+            if i < j:
+                term = PauliTerm('Z',i,dist.values[i][j])*PauliTerm('Z', j)
+                pauli_list.append(term)
 	       
-	return PauliSum(pauli_list)
+    return PauliSum(pauli_list)
 
 def hamiltonian_from_hyperparams(nqubits: int,
                                  singles: List[int],
@@ -254,12 +282,22 @@ def ring_of_disagrees(n: int) -> PauliSum:
 ### METHODS FOR CREATING SIMPLE TOY DATA SETS FOR MAXCUT CLUSTERING ###
 
 def distances_dataset(data, metric='euclidean'):
+    
     """
-    Compute the pairwise Euclidean distance between data points in a specified dataset.
-    The idea here is to take any dataset and get the weights to be used in (eg) a simple
-    QAOA Maxcut.
-    Could expand to include an arbitrary function of the Euclidean distance
-    (eg with exponential decay) - would just require passing in the desired distance metric for cdist.
+    Computes the distance between data points in a specified dataset, according to the specified metric (default is Euclidean).
+
+    Parameters
+    ----------
+    data:
+        
+        
+    Returns
+    -------
+    
+
+    TODO
+        Decide what format the input and output should be.
+
     """
 
     if type(data) == dict:
@@ -267,23 +305,33 @@ def distances_dataset(data, metric='euclidean'):
 
     return distance.cdist(data, data, metric)
 
-def create_gaussian_2Dclusters(n_clusters,n_points,means,cov_matrices):
+def gaussian_2Dclusters(n_clusters: int, 
+                               n_points: int,
+                               means: List[float],
+                               cov_matrices: List[float]):
 
     """
-    Description
-    -----------
     Creates a set of clustered data points, where the distribution within each cluster is Gaussian.
 
     Parameters
     ----------
-    :param      n_clusters:      The number of clusters
-    :param      n_points:        A list of the number of points in each cluster
-    :param      means:           A list of the means [x,y] coordinates of each cluster in the plane (i.e. their centre)
-    :param      cov_matrices:    A list of the covariance matrices of the clusters
+    n_clusters:      
+        The number of clusters
+    n_points:        
+        A list of the number of points in each cluster
+    means:           
+        A list of the means [x,y] coordinates of each cluster in the plane (i.e. their centre)
+    cov_matrices:    
+        A list of the covariance matrices of the clusters
 
     Returns
     -------
-    :param      data             A dict whose keys are the cluster labels, and values are a matrix of the with the x and y coordinates as its rows.
+    data             
+        A dict whose keys are the cluster labels, and values are a matrix of the with the x and y coordinates as its rows.
+        
+    TODO
+        Decide on the format of the output here and redo code if needed, put -> in function header
+        
     """
     args_in = [len(means),len(cov_matrices),len(n_points)]
     assert all(item == n_clusters for item in args_in), "Insufficient data provided for specified number of clusters"
@@ -301,6 +349,13 @@ def create_gaussian_2Dclusters(n_clusters,n_points,means,cov_matrices):
     return data
 
 def plot_cluster_data(data):
+    
+    """
+    Creates a scatterplot of the input data specified
+    
+    TODO
+        Decide which format the input should be (ndarray, dataframe, etc)
+    """
 
     data_matr = np.concatenate(list(data.values()))
     plt.scatter(data_matr[:,0],data_matr[:,1])
@@ -312,11 +367,14 @@ def plot_cluster_data(data):
 
 ### OTHER MISCELLANEOUS ###
 
-def prepare_classical_state(reg, state) -> Program:
-    """Prepare a custom classical state for all qubits in reg.
+def prepare_classical_state(reg, state: List) -> Program:
+    
+    """
+    Prepare a custom classical state for all qubits in the specified register reg.
+    
     Parameters
     ----------
-    state : Type[list]
+    state : 
        A list of 0s and 1s which represent the starting state of the register, bit-wise.
 
     Returns
@@ -324,6 +382,7 @@ def prepare_classical_state(reg, state) -> Program:
     Program
        Quil Program with a circuit in an initial classical state.
     """
+    
     if len(reg) != len(state):
        raise ValueError("qubit state must be the same length as reg")
 
@@ -335,41 +394,44 @@ def prepare_classical_state(reg, state) -> Program:
     return p
 
 def return_lowest_state(probs):
-    '''
-    Description
-    -----------
+    
+    """
     Returns the lowest energy state of a QAOA run from the list of probabilities
     returned by pyQuil's Wavefunction.probabilities()method.
 
     Parameters
     ----------
-    :param      probs:      A numpy array of length 2^n, returned by Wavefunction.probabilities()
+    probs:      
+        A numpy array of length 2^n, returned by Wavefunction.probabilities()
 
     Returns
     -------
-    :param      lowest:     A little endian list of binary integers indicating the lowest energy state of the wavefunction.
-    '''
+    lowest:     
+        A little endian list of binary integers indicating the lowest energy state of the wavefunction.
+    """
+    
     index_max = max(range(len(probs)), key=probs.__getitem__)
     string = '{0:0'+str(int(np.log2(len(probs))))+'b}'
     string = string.format(index_max)
     return [int(item) for item in string]
 
 def evaluate_lowest_state(lowest, true):
-    '''
-    Description
-    -----------
+    
+    """
     Prints informative statements comparing QAOA's returned bit string to the true
     cluster values.
 
     Parameters
     ----------
-    :param      lowest:      A little-endian list of binary integers representing the lowest energy state of the wavefunction
-    :param     true:        A little-endian list of binary integers representing the true solution to the MAXCUT clustering problem.
+    lowest:      
+        A little-endian list of binary integers representing the lowest energy state of the wavefunction
+    true:        
+        A little-endian list of binary integers representing the true solution to the MAXCUT clustering problem.
 
     Returns
     -------
     Nothing
-    '''
+    """
     print('True Labels of samples:',true)
     print('Lowest QAOA State:',lowest)
     acc = accuracy_score(lowest,true)
