@@ -70,8 +70,8 @@ def append_measure_register(program: Program,
     return program
 
 
-def hamiltonian_expectation_value(hamiltonian: PauliSum,
-                                  bitstrings: np.array) -> Tuple[float, float]:
+def sampling_expectation(hamiltonian: PauliSum,
+                         bitstrings: np.array) -> Tuple[float, float]:
     """Calculates the energy expectation value of ``bitstrings`` w.r.t ``ham``.
 
     Warning
@@ -108,14 +108,14 @@ def hamiltonian_expectation_value(hamiltonian: PauliSum,
             np.sqrt(np.var(energies)) / np.sqrt(bitstrings.shape[0]))
 
 
-def hamiltonian_list_expectation_value(hamiltonians: List[PauliSum],
-                                       bitstrings: List[np.array]) -> Tuple:
-    """Mapped wrapper around ``hamiltonian_expectation_value``.
+def sampling_expectation_z_base(hamiltonians: List[PauliSum],
+                                bitstrings: List[np.array]) -> Tuple:
+    """Mapped wrapper around ``sampling_expectation``.
 
     A function that computes expectation values of a list of hamiltonians
     w.r.t a list of bitstrings. Assumes, that each pair in
     ``zip(hamiltonians, bitstrings)`` is as needed by
-    ``hamiltonian_expectation_value``
+    ``sampling_expectation``
 
     Parameters
     ----------
@@ -133,7 +133,7 @@ def hamiltonian_list_expectation_value(hamiltonians: List[PauliSum],
     energies = 0
     var = 0
     for ham, bits in zip(hamiltonians, bitstrings):
-        e, s = hamiltonian_expectation_value(ham, bits)
+        e, s = sampling_expectation(ham, bits)
         energies += e
         var += s**2
 

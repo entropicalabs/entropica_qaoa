@@ -14,9 +14,9 @@ from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
 from forest_qaoa.vqe.measurelib import (append_measure_register,
-                                        hamiltonian_expectation_value,
+                                        sampling_expectation,
                                         commuting_decomposition,
-                                        hamiltonian_list_expectation_value)
+                                        sampling_expectation_z_base)
 
 
 LogEntry = namedtuple("LogEntry", ['x', 'fun'])
@@ -405,7 +405,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                 bitstring = np.append(bitstring, new_bits, axis=0)
             bitstrings.append(bitstring)
 
-        out = hamiltonian_list_expectation_value(self.hams, bitstrings)
+        out = sampling_expectation_z_base(self.hams, bitstrings)
 
         # Append function value and params to the log.
         # deepcopy is needed, because x may be a mutable type.
