@@ -9,7 +9,7 @@ you need to follow the following things:
     of it, the class now takes care of the functionality all by itselt. It is
     an adult now.
  - `QAOAParameters.from_hamiltonian()` got renamed to `QAOA_Parameters.linear_ramp_from_hamiltonian`
- - All child classes of `AbstractQAOAParameters` `__init__`-function have changed signature.
+ - All child classes of `AbstractParams` `__init__`-function have changed signature.
    `hyperparams` is now of the form `(hamiltonian, timesteps , ...)` wherer ... is the total
    annealing time or the q-number of fourier params.
  - All of the `QAOAParameters.linear_ramp_from_hamiltonian` have changed signature. The

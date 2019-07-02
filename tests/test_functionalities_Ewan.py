@@ -48,10 +48,10 @@ def test_Gaussian_clusters():
 
 #from vqe.optimizer import scipy_optimizer
 #from qaoa.cost_function import QAOACostFunctionOnWFSim
-#from qaoa.parameters import FourierQAOAParameters
+#from qaoa.parameters import FourierParams
 #
 #hamiltonian = PauliSum([PauliTerm("Z",0,-1.0)*PauliTerm("Z",1,1.0), PauliTerm("Z",0,0.8), PauliTerm("Z",1,-0.5)])
-#params = FourierQAOAParameters.from_hamiltonian(hamiltonian, timesteps=10, q=2)
+#params = FourierParams.from_hamiltonian(hamiltonian, n_steps=10, q=2)
 #p0 = params.raw()
 #
 # def test_qaoa_on_WFSim():

@@ -13,7 +13,7 @@ from forest_qaoa.vqe.optimizer import scipy_optimizer
 from forest_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
                                            PrepareAndMeasureOnQVM)
 from forest_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
-from forest_qaoa.qaoa.parameters import GeneralQAOAParameters
+from forest_qaoa.qaoa.parameters import ExtendedlParams
 
 # Define a simple Hamiltonian
 hamiltonian = PauliSum([PauliTerm("Z", 0, -1.0) * PauliTerm("Z", 1, 1.0),
@@ -27,8 +27,8 @@ hamiltonian = PauliSum([PauliTerm("Z", 0, -1.0) * PauliTerm("Z", 1, 1.0),
 
 
 def test_parameter_infos():
-    params = GeneralQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian,
-                                                                timesteps=2)
+    params = ExtendedlParams.linear_ramp_from_hamiltonian(hamiltonian,
+                                                          n_steps=2)
     print(params)
     p0 = params.raw()
     print(p0)
