@@ -897,9 +897,10 @@ class AnnealingParams(AbstractParams):
 
     .. math::
 
-        U = e^{-i (T-t_p) H_0} e^{-i t_p H_c} \cdots e^{-i(T-t_p)H_0} e^{-i t_p H_c}
+        U = e^{-i (1-s(t_p)) H_0 \Delta t} e^{-i s(t_p) H_c \Delta t} \cdots e^{-i(1-s(t_1)H_0 \Delta t} e^{-i s(t_1) H_c \Delta t}
 
-    where the :math:`t_i` are the variable parameters. This corresponds to the
+    where the :math:`t_i` are the variable parameters and
+    :math:`\Delta t = \frac{T}{N}`. This corresponds to the
     idea of discretized adiabatic annealing and specifying the schedule by specifying at which timesteps we discretize.
 
     Parameters
