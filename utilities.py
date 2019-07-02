@@ -16,7 +16,7 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
 from scipy.spatial import distance
 
-### METHODS FOR CREATING RANDOM HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ###
+### METHODS FOR CREATING HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ###
 
 
 def hamiltonian_from_hyperparams(nqubits: int,
@@ -241,22 +241,22 @@ def graph_from_hyperparams(nqubits: int,
 
 def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     """
-        Generates a Hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
-        of in biases is applied to the i'th qubit.
+    Generates a Hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
+    of in biases is applied to the i'th qubit. 
 
-        Parameters
-        ----------
-        dist:
+    Parameters
+    ----------
+    dist:      
         A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
-        biases:
+    biases:     
         A dictionary of floats, with keys indicating the qubits with bias terms, and corresponding values being the bias coefficients.
 
-        Returns
-        -------
-        hamiltonian:
-        A PauliSum object modelling the Hamiltonian of the system
-        """
-
+    Returns
+    -------
+    hamiltonian: 
+        A PauliSum object modelling the Hamiltonian of the system  
+    """
+    
     pauli_list = list()
     m, n = dist.shape
 
