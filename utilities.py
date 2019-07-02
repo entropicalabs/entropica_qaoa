@@ -1,5 +1,7 @@
 """
 Utilty and convenience functions for a number of QAOA applications. 
+
+See the demo notebook UtilitiesDemo.ipynb for exampels on usage of the methods herein.
 """
 
 from typing import Union, List, Type, Dict, Iterable
@@ -15,207 +17,6 @@ from pyquil.gates import X
 from scipy.spatial import distance
 
 ### METHODS FOR CREATING RANDOM HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ###
-
-def random_hamiltonian(nqubits: int) -> PauliSum:
-    
-    """
-    Creates a random cost hamiltonian, diagonal in the computational basis:
-        
-     - Randomly selects which qubits that will have a bias term, then assigns them a bias coefficient.
-     - Randomly selects which qubit pairs will have a coupling term, then assigns them a coupling coefficient.
-     
-     In both cases, the random coefficient is drawn from the uniform distribution on the interval [0,1).
-
-    Parameters
-    ----------
-    nqubits:
-        The desired number of qubits.
-
-    Returns
-    -------
-    hamiltonian:
-        A hamiltonian with random couplings and biases, as a PauliSum object.
-    
-    """
-    hamiltonian = []
-
-    numb_biases = np.random.randint(nqubits)
-    bias_qubits = np.random.choice(nqubits,numb_biases,replace=False)
-    bias_coeffs = np.random.rand(numb_biases)
-    for i in range(numb_biases):
-        hamiltonian.append(PauliTerm("Z", int(bias_qubits[i]), bias_coeffs[i]))
-
-
-    for i in range(nqubits):
-        for j in range(i+1,nqubits):
-            are_coupled = np.random.randint(2)
-            if are_coupled:
-                couple_coeff = np.random.rand()
-                hamiltonian.append(PauliTerm("Z", i, couple_coeff)*PauliTerm("Z", j, 1.0))
-
-    return PauliSum(hamiltonian)
-
-def graph_from_edges(vertices: int, edges: Dict, biases: Dict = None) -> nx.Graph:
-
-    """
-    Creates a networkx graph on specified number of vertices, with the specified edges connected by corresponding edge weights.
-
-    Parameters
-    ----------
-    vertices:
-        The total number of vertices in the graph.
-
-    edges:
-        A dictionary whose keys are tuples of the nodes connected by an edge. The corresponding dict values are the edge weights.
-    """
-    
-    G = nx.Graph()
-    G.add_nodes_from(range(vertices))
-    edges_ = [*edges]
-    weights = [*edges.values()]
-    for i in range(len(edges_)):   
-           G.add_edge(edges[i][0],edges[i][1],weight=weights[i])
-    
-    return G
-
-
-#    G = nx.Graph()
-#    G.add_nodes_from(range(vertices))
-#    i_pointer = 0
-#    for i in range(vertices):
-#       for j in range(i,vertices):
-#           weight = edge_weights[i_pointer] + j
-#           G.add_edge(i,j,weight=weight)
-#       i_pointer += vertices - i
-#
-#    return G
-
-def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
-
-    """
-    Creates a networkx graph corresponding to a specified problem Hamiltonian.
-
-    Parameters
-    ----------
-    hamiltonian:
-        The Hamiltonian of interest. Must be specified as a PauliSum object.
-
-    Returns
-    -------
-    G:
-        The corresponding networkx graph with the edge weights being the two-qubit coupling coefficients,
-        and the node weights being the single-qubit bias terms.
-
-    TODO:
-
-        Allow ndarrays to be input as hamiltonian too.
-
-    """
-
-    G = nx.Graph()
-    dim = len(hamiltonian)
-    for i in range(dim):
-        qubits = hamiltonian.terms[i].get_qubits()
-        if len(qubits) == 1:
-            G.add_node(qubits[0], weight=hamiltonian.terms[i].coefficient)
-        else:
-            G.add_edge(qubits[0],qubits[1],weight=hamiltonian.terms[i].coefficient)
-
-    return G
-
-def plot_graph(G):
-
-    """
-    Plots a networkx graph.
-
-    Parameters
-    ----------
-    G:
-        The networkx graph of interest.
-
-
-    TODO:
-
-        Allow the user to specify some desired plot properties?
-    """
-
-    weights = np.real([*nx.get_edge_attributes(G,'weight').values()])
-    pos = nx.shell_layout(G)
-
-    nx.draw(G,pos,node_color='#A0CBE2',with_labels=True,edge_color=weights,
-                width=4, edge_cmap=plt.cm.Blues)
-    plt.show()
-
-def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
-
-    """
-    Builds a cost Hamiltonian as a PauliSum from a specified networkx graph, extracting any node biases and edge weights.
-
-    Parameters
-    ----------
-    G:
-        The networkx graph of interest.
-
-    Returns
-    -------
-    Hamiltonian
-        The PauliSum representation of the networkx graph.
-
-    """
-
-    hamiltonian = []
-    
-    # Node bias terms
-    bias_nodes = [*nx.get_edge_attributes(G,'weight')]
-    biases = [*nx.get_edge_attributes(G,'weight').values()]
-    for i in range(len(biases)):
-        hamiltonian.append(PauliTerm("Z", bias_nodes[i], biases[i]))
-    
-    # Edge terms
-    edges = list(G.edges)
-    edge_weights = [*nx.get_edge_attributes(G,'weight').values()]
-    for i in range(len(edge_weights)):
-        hamiltonian.append(PauliTerm("Z", edges[i][0], edge_weights[i])*PauliTerm("Z", edges[i][1]))
-
-    return PauliSum(hamiltonian)
-
-def hamiltonian_from_distance_matrix(dist,biases=None) -> PauliSum:
-	
-    """
-	Generates a Hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
-	of in biases is applied to the i'th qubit. 
-
-	Parameters
-	----------
-	dist:      
-        A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
-	biases:     
-        A dictionary of floats, with keys indicating the qubits with bias terms, and corresponding values being the bias coefficients.
-
-	Returns
-	-------
-	hamiltonian: 
-        A PauliSum object modelling the Hamiltonian of the system  
-	"""
-    
-    pauli_list = list()
-    m,n = dist.shape
-
-    if biases:
-        if not isinstance(biases,type(dict())):
-            raise ValueError('biases must be of type dict()')        
-        for key in biases:
-            term = PauliTerm('Z',key,biases[key])
-            pauli_list.append(term)
-
-	#pairwise interactions
-    for i in range(m):
-        for j in range(n):
-            if i < j:
-                term = PauliTerm('Z',i,dist.values[i][j])*PauliTerm('Z', j)
-                pauli_list.append(term)
-	       
-    return PauliSum(pauli_list)
 
 def hamiltonian_from_hyperparams(nqubits: int,
                                  singles: List[int],
@@ -254,32 +55,225 @@ def hamiltonian_from_hyperparams(nqubits: int,
 
     return PauliSum(hamiltonian)
 
-def ring_of_disagrees(n: int) -> PauliSum:
+def random_hamiltonian(nqubits: int) -> PauliSum:
     
     """
-    Builds the cost Hamiltonian for the "Ring of Disagrees" described in the original QAOA paper (https://arxiv.org/abs/1411.4028),
-    for the specified number of vertices n.
+    Creates a random cost hamiltonian, diagonal in the computational basis:
+        
+     - Randomly selects which qubits that will have a bias term, then assigns them a bias coefficient.
+     - Randomly selects which qubit pairs will have a coupling term, then assigns them a coupling coefficient.
+     
+     In both cases, the random coefficient is drawn from the uniform distribution on the interval [0,1).
 
     Parameters
     ----------
-    n:
-        Number of vertices in the ring
+    nqubits:
+        The desired number of qubits.
 
     Returns
     -------
     hamiltonian:
-        The cost Hamiltonian representing the ring, as a PauliSum object.
+        A hamiltonian with random couplings and biases, as a PauliSum object.
+    
+    """
+    hamiltonian = []
+
+    numb_biases = np.random.randint(nqubits)
+    bias_qubits = np.random.choice(nqubits,numb_biases,replace=False)
+    bias_coeffs = np.random.rand(numb_biases)
+    for i in range(numb_biases):
+        hamiltonian.append(PauliTerm("Z", int(bias_qubits[i]), bias_coeffs[i]))
+
+
+    for i in range(nqubits):
+        for j in range(i+1,nqubits):
+            are_coupled = np.random.randint(2)
+            if are_coupled:
+                couple_coeff = np.random.rand()
+                hamiltonian.append(PauliTerm("Z", i, couple_coeff)*PauliTerm("Z", j))
+
+    return PauliSum(hamiltonian)
+
+def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
+
+    """
+    Creates a networkx graph corresponding to a specified problem Hamiltonian.
+
+    Parameters
+    ----------
+    hamiltonian:
+        The Hamiltonian of interest. Must be specified as a PauliSum object.
+
+    Returns
+    -------
+    G:
+        The corresponding networkx graph with the edge weights being the two-qubit coupling coefficients,
+        and the node weights being the single-qubit bias terms.
+
+    TODO:
+
+        Allow ndarrays to be input as hamiltonian too.
+
+    """
+
+    G = nx.Graph()
+    dim = len(hamiltonian)
+    for i in range(dim):
+        qubits = hamiltonian.terms[i].get_qubits()
+        if len(qubits) == 1:
+            G.add_node(qubits[0], weight=hamiltonian.terms[i].coefficient)
+        else:
+            G.add_edge(qubits[0],qubits[1],weight=hamiltonian.terms[i].coefficient)
+
+    return G
+
+def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
+
+    """
+    Builds a cost Hamiltonian as a PauliSum from a specified networkx graph, extracting any node biases and edge weights.
+
+    Parameters
+    ----------
+    G:
+        The networkx graph of interest.
+
+    Returns
+    -------
+    Hamiltonian
+        The PauliSum representation of the networkx graph.
 
     """
 
     hamiltonian = []
-    for i in range(n-1):
-        hamiltonian.append(PauliTerm("Z",i,0.5)*PauliTerm("Z",i+1))
-    hamiltonian.append(PauliTerm("Z",n-1,0.5)*PauliTerm("Z", 0))
+    
+    # Node bias terms
+    bias_nodes = [*nx.get_node_attributes(G,'weight')]
+    biases = [*nx.get_node_attributes(G,'weight').values()]
+    for i in range(len(biases)):
+        hamiltonian.append(PauliTerm("Z", bias_nodes[i], biases[i]))
+    
+    # Edge terms
+    edges = list(G.edges)
+    edge_weights = [*nx.get_edge_attributes(G,'weight').values()]
+    for i in range(len(edge_weights)):
+        hamiltonian.append(PauliTerm("Z", edges[i][0], edge_weights[i])*PauliTerm("Z", edges[i][1]))
 
     return PauliSum(hamiltonian)
 
-### METHODS FOR CREATING SIMPLE TOY DATA SETS FOR MAXCUT CLUSTERING ###
+def plot_graph(G):
+
+    """
+    Plots a networkx graph.
+
+    Parameters
+    ----------
+    G:
+        The networkx graph of interest.
+
+
+    TODO:
+
+        Allow the user to specify some desired plot properties?
+    """
+
+    weights = np.real([*nx.get_edge_attributes(G,'weight').values()])
+    pos = nx.shell_layout(G)
+
+    nx.draw(G,pos,node_color='#A0CBE2',with_labels=True,edge_color=weights,
+                width=4, edge_cmap=plt.cm.Blues)
+    plt.show()
+
+def graph_from_hyperparams(nqubits: int,
+                           singles: List[int],
+                           biases: List[float],
+                           pairs: List[int],
+                           couplings: List[float]) -> nx.Graph:
+    
+    G = nx.Graph()
+    G.add_nodes_from(range(nqubits))
+    
+    for i in range(len(singles)):
+        G.add_node(singles[i], weight=biases[i])
+    
+    for i in range(len(pairs)):   
+        G.add_edge(pairs[i][0],pairs[i][1],weight=couplings[i])
+    
+    return G
+
+#def graph_from_edges(vertices: int, edges: Dict, biases: Dict = None) -> nx.Graph:
+#
+#    """
+#    Creates a networkx graph on specified number of vertices, with the specified edges connected by corresponding edge weights.
+#
+#    Parameters
+#    ----------
+#    vertices:
+#        The total number of vertices in the graph.
+#
+#    edges:
+#        A dictionary whose keys are tuples of the nodes connected by an edge. The corresponding dict values are the edge weights.
+#    """
+#    
+#    G = nx.Graph()
+#    G.add_nodes_from(range(vertices))
+#    edges_ = [*edges]
+#    weights = [*edges.values()]
+#    for i in range(len(edges_)):   
+#           G.add_edge(edges[i][0],edges[i][1],weight=weights[i])
+#    
+#    return G
+#
+#
+##    G = nx.Graph()
+##    G.add_nodes_from(range(vertices))
+##    i_pointer = 0
+##    for i in range(vertices):
+##       for j in range(i,vertices):
+##           weight = edge_weights[i_pointer] + j
+##           G.add_edge(i,j,weight=weight)
+##       i_pointer += vertices - i
+##
+##    return G
+
+### HAMILTONIANS AND DATA ###
+
+def hamiltonian_from_distance_matrix(dist,biases=None) -> PauliSum:
+	
+    """
+	Generates a Hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
+	of in biases is applied to the i'th qubit. 
+
+	Parameters
+	----------
+	dist:      
+        A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
+	biases:     
+        A dictionary of floats, with keys indicating the qubits with bias terms, and corresponding values being the bias coefficients.
+
+	Returns
+	-------
+	hamiltonian: 
+        A PauliSum object modelling the Hamiltonian of the system  
+	"""
+    
+    pauli_list = list()
+    m,n = dist.shape
+
+    if biases:
+        if not isinstance(biases,type(dict())):
+            raise ValueError('biases must be of type dict()')        
+        for key in biases:
+            term = PauliTerm('Z',key,biases[key])
+            pauli_list.append(term)
+
+	#pairwise interactions
+    for i in range(m):
+        for j in range(n):
+            if i < j:
+                term = PauliTerm('Z',i,dist.values[i][j])*PauliTerm('Z', j)
+                pauli_list.append(term)
+	       
+    return PauliSum(pauli_list)
 
 def distances_dataset(data, metric='euclidean'):
     
@@ -363,7 +357,30 @@ def plot_cluster_data(data):
 
 ### ANALYTIC FORMULAE ###
 
-# etc
+def ring_of_disagrees(n: int) -> PauliSum:
+    
+    """
+    Builds the cost Hamiltonian for the "Ring of Disagrees" described in the original QAOA paper (https://arxiv.org/abs/1411.4028),
+    for the specified number of vertices n.
+
+    Parameters
+    ----------
+    n:
+        Number of vertices in the ring
+
+    Returns
+    -------
+    hamiltonian:
+        The cost Hamiltonian representing the ring, as a PauliSum object.
+
+    """
+
+    hamiltonian = []
+    for i in range(n-1):
+        hamiltonian.append(PauliTerm("Z",i,0.5)*PauliTerm("Z",i+1))
+    hamiltonian.append(PauliTerm("Z",n-1,0.5)*PauliTerm("Z", 0))
+
+    return PauliSum(hamiltonian)
 
 ### OTHER MISCELLANEOUS ###
 
