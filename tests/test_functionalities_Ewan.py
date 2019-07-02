@@ -16,14 +16,14 @@ import numpy as np
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 
-from forest_qaoa.utilities import (create_random_hamiltonian,
+from forest_qaoa.utilities import (random_hamiltonian,
                                    distances_dataset,
-                                   create_gaussian_2Dclusters)
+                                   gaussian_2Dclusters)
 
 
-def test_create_random_hamiltonian():
+def test_random_hamiltonian():
     nqubits = 2
-    ham = create_random_hamiltonian(nqubits)
+    ham = random_hamiltonian(nqubits)
     print(ham)
 
 
@@ -36,12 +36,12 @@ def test_Gaussian_clusters():
     n_clusters = 3
     n_points = [10, 10, 10]
     means = [[0, 0], [1, 1], [1, 3]]
-    cov_matrices = [np.array([[1, 0], [0,1]]),
+    cov_matrices = [np.array([[1, 0], [0, 1]]),
                     np.array([[0.5, 0], [0, 0.5]]),
                     np.array([[0.5, 0], [0, 0.5]])
                     ]
 
-    data = create_gaussian_2Dclusters(n_clusters, n_points, means,
+    data = gaussian_2Dclusters(n_clusters, n_points, means,
                                       cov_matrices)
     print(data)
 
