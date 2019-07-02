@@ -7,6 +7,7 @@ See the demo notebook UtilitiesDemo.ipynb for exampels on usage of the methods h
 from typing import Union, List, Type, Dict, Iterable
 
 import numpy as np
+import pandas as pd
 import networkx as nx
 
 import matplotlib.pyplot as plt
@@ -259,6 +260,10 @@ def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     
     pauli_list = list()
     m, n = dist.shape
+    
+    #allows tolerance for both matrices and dataframes
+    if isinstance(dist,pd.DataFrame):
+        dist = dist.values
 
     if biases:
         if not isinstance(biases, type(dict())):
@@ -271,7 +276,7 @@ def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     for i in range(m):
         for j in range(n):
             if i < j:
-                term = PauliTerm('Z', i, dist.values[i][j]) * PauliTerm('Z', j)
+                term = PauliTerm('Z', i, dist[i][j]) * PauliTerm('Z', j)
                 pauli_list.append(term)
 
     return PauliSum(pauli_list)
@@ -295,9 +300,11 @@ def distances_dataset(data, metric='euclidean'):
 
     """
 
-    if type(data) == dict:
+    if isinstance(data, dict):
         data = np.concatenate(list(data.values()))
-
+    elif isinstance(data,pd.DataFrame):
+        return pd.DataFrame(distance.cdist(data, data, metric),
+                     index=data.index,columns=data.index)
     return distance.cdist(data, data, metric)
 
 
