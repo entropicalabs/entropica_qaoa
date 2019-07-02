@@ -9,8 +9,8 @@ from pyquil.gates import RX, RY, H, CNOT
 from pyquil.quil import Program, QubitPlaceholder, MEASURE
 
 from forest_qaoa.vqe.measurelib import (append_measure_register,
-                                        sampling_expectation,
-                                        sampling_expectation_z_base)
+                                        sampling_expectation_z_base,
+                                        sampling_expectation)
 
 
 # TODO make a more complicated test case and sure, that the test case is
@@ -18,7 +18,7 @@ from forest_qaoa.vqe.measurelib import (append_measure_register,
 def test_hamiltonian_expectation_value():
     bitstrings = np.array([[1,0], [0,1], [1,1], [1,1]])
     ham = PauliSum.from_compact_str("1.0*Z0*Z1 + 0.5*Z0 + (-1)*Z1")
-    out = sampling_expectation(ham, bitstrings)
+    out = sampling_expectation_z_base(ham, bitstrings)
     assert np.allclose(out, (0.25, 0.81967981553775))
 
 
@@ -36,6 +36,6 @@ def test_hamiltonian_list_expectation_value():
     ham1 = PauliSum.from_compact_str("1.0*Z0*Z1 + 0.5*Z0 + (-1)*Z1")
     ham2 = PauliSum.from_compact_str("1.0*X0*Z1 + 0.5*X0 + (-1)*Z1")
     hams = [ham1, ham2]
-    out = sampling_expectation_z_base(hams, bitstrings)
+    out = sampling_expectation(hams, bitstrings)
     print(out)
     assert np.allclose(out, (0.5, 1.1592023119369628))

@@ -43,4 +43,4 @@ docs/build
 node_modules/*
 .idea/*
 Package_Scheme.pptx
-
+examples/*.py

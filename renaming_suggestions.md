@@ -20,12 +20,12 @@
  - `qaoa.cost_functions`:
    [JL] exactly the same goes for the cost_function classes. Additionally PEP8 suggests to name classes that have a `.__call__` method in snake_case, because they behave like functions.
 
- - `sampling_expectation_z_base`:
+ - `sampling_expectation`:
    [JL] -> `measurement_expectation` is shorter and (arguably) a bit more concise
    [EM] The name here needs to convey that it's a list of expectation values of different Hamiltonians (if I have understood correctly). How about `expectation_value_list`?
-   [JL] Haha, that is exactly the problem. It returns _one_ expectation value calculated over a list (sum) of PauliSums. Has to be done this way, because I can't neccesarily all terms in a PauliSum simultaneously. I will do `sampling_expectation`
+   [JL] Haha, that is exactly the problem. It returns _one_ expectation value calculated over a list (sum) of PauliSums. Has to be done this way, because I can't neccesarily all terms in a PauliSum simultaneously. I will do `sampling_expectation_z_base`
 
- - `sampling_expectation`:
+ - `sampling_expectation_z_base`:
    [JL] -> `measurement_expectation_z_base` should have the same name as above, with sth indicating, that this function is limited to diagonal hamiltonians
    [EM] Why not just `expectation_value` for this one?i
    [JL] See previous one. I will call this one `sampling_expectation_only_z` (not the shortest name, but it isn't part of the public interface anyway)
@@ -39,10 +39,10 @@
 Here a list of all the top-level(!) names in our packages sorted by length.
 If someone knows how to recursively get _all_ names defined by us, feel free to update this list 
 
-['sampling_expectation_z_base',
+['sampling_expectation',
  'StandardWithBiasParams',
  'AnnealingParams',
- 'sampling_expectation',
+ 'sampling_expectation_z_base',
  'address_qubits_hamiltonian',
  'create_gaussian_2Dclusters',
  'create_random_hamiltonian',
