@@ -57,7 +57,7 @@ If someone knows how to recursively get _all_ names defined by us, feel free to 
  'AbstractParams',
  'hamiltonian_from_edges',
  'WavefunctionSimulator',
- 'ExtendedlParams',
+ 'ExtendedParams',
  'QAOACostFunctionOnQVM',
  'FourierParams',
  'QAOAParameterIterator',

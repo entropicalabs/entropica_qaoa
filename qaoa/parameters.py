@@ -160,7 +160,7 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
                     "As of now we can only handle hamiltonians with at most two-qubit terms")
 
         # extract the cofficients of the terms from the hamiltonian
-        # if creating `ExtendedlParams` form this, we can delete this attributes
+        # if creating `ExtendedParams` form this, we can delete this attributes
         # again. Check if there are complex coefficients and issue a warning.
         self.single_qubit_coeffs = np.array([
             term.coefficient for term in hamiltonian if len(term) == 1])
@@ -355,7 +355,7 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
         raise NotImplementedError()
 
 
-class ExtendedlParams(AbstractParams):
+class ExtendedParams(AbstractParams):
     r"""
     QAOA parameters in their most general form with different angles for each
     operator.
@@ -485,7 +485,7 @@ class ExtendedlParams(AbstractParams):
 
         Returns
         -------
-        ExtendedlParams
+        ExtendedParams
             The initial parameters according to a linear ramp for
             ``hamiltonian``.
 
@@ -555,7 +555,7 @@ class ExtendedlParams(AbstractParams):
 
         Returns
         -------
-        ExtendedlParams
+        ExtendedParams
             A ``GeneralQAOAParameters`` object with the hyperparameters taken from
             ``abstract_params`` and the normal parameters from ``parameters``
         """

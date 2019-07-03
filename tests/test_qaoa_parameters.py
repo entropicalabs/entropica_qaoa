@@ -8,7 +8,7 @@ from pytest import raises
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder, Qubit
 
-from forest_qaoa.qaoa.parameters import (ExtendedlParams,
+from forest_qaoa.qaoa.parameters import (ExtendedParams,
                                          StandardWithBiasParams,
                                          AnnealingParams,
                                          FourierParams,
@@ -28,7 +28,7 @@ hamiltonian += next_term
 # TODO test fourier params
 # TODO Test set_hyperparameters and update_variable_parameters
 def test_GeneralQAOAParameters():
-    params = ExtendedlParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
+    params = ExtendedParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
     assert np.allclose(params.betas, [[0.75] * 3, [0.25] * 3])
     assert np.allclose(params.gammas_singles, [[0.125], [0.375]])
@@ -47,8 +47,8 @@ def test_GeneralQAOAParametersfromAbstractParameters():
     gammas_singles = [[0.0], [0.5]]
     gammas_pairs   = [[0.1, 0.3], [0.2, 1.2]]
     parameters = (betas, gammas_singles, gammas_pairs)
-    general_params = ExtendedlParams.from_AbstractParameters(abstract_params, parameters)
-    print("The rotation angles from ExtendedlParams.fromAbstractParameters")
+    general_params = ExtendedParams.from_AbstractParameters(abstract_params, parameters)
+    print("The rotation angles from ExtendedParams.fromAbstractParameters")
     print("x_rotation_angles:\n", general_params.x_rotation_angles)
     print("z_rotation_angles:\n", general_params.z_rotation_angles)
     print("zz_rotation_angles:\n", general_params.zz_rotation_angles)
@@ -168,5 +168,5 @@ def test_inputChecking():
     gammas_singles = []
     gammas_pairs = [1, 2, 3]
     with raises(ValueError):
-        params = ExtendedlParams((ham, 3),
-                                 (betas, gammas_singles, gammas_pairs))
+        params = ExtendedParams((ham, 3),
+                                (betas, gammas_singles, gammas_pairs))
