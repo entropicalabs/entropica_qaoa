@@ -1,0 +1,7 @@
+README.md
+setup.py
+forest_qaoa.egg-info/PKG-INFO
+forest_qaoa.egg-info/SOURCES.txt
+forest_qaoa.egg-info/dependency_links.txt
+forest_qaoa.egg-info/requires.txt
+forest_qaoa.egg-info/top_level.txt
