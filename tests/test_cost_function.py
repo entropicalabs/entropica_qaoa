@@ -16,7 +16,9 @@ from pyquil.api import local_qvm, WavefunctionSimulator
 from pyquil import get_qc, Program
 from pyquil.gates import RX, CNOT, RY
 from pyquil.paulis import PauliSum, PauliTerm
-from vqe.cost_function import PrepareAndMeasureOnWFSim, PrepareAndMeasureOnQVM
+
+from forest_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
+                                           PrepareAndMeasureOnQVM)
 
 
 def test_PrepareAndMeasureOnWFSim():

@@ -13,10 +13,9 @@ from pyquil.wavefunction import Wavefunction
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
-from vqe.measurelib import (append_measure_register,
-                            hamiltonian_expectation_value,
-                            commuting_decomposition,
-                            hamiltonian_list_expectation_value)
+from forest_qaoa.vqe.measurelib import (append_measure_register,
+                                        commuting_decomposition,
+                                        sampling_expectation)
 
 
 LogEntry = namedtuple("LogEntry", ['x', 'fun'])
@@ -194,15 +193,14 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # TODO What if prepare_ansatz acts on more qubits than ham?
         # then hamiltonian and wavefunction don't fit together...
         if isinstance(hamiltonian, PauliSum):
-            nqubits = len(hamiltonian.get_qubits())
-            self.ham = hamiltonian.matrix(int_mapping or {}, nqubits)
+            self.ham = hamiltonian.matrix(int_mapping or {})
         elif isinstance(hamiltonian, (np.matrix, np.ndarray)):
             self.ham = hamiltonian
         else:
             raise ValueError(
                 "hamiltonian has to be a PauliSum or numpy matrix")
 
-        self.ham_squared = self.ham**2
+        self.ham_squared = self.ham@self.ham
 
         if enable_logging:
             self.log = []
@@ -234,10 +232,10 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         memory_map = self.make_memory_map(params)
         wf = self.sim.wavefunction(self.prepare_ansatz, memory_map=memory_map)
-        wf = np.reshape(wf.amplitudes, (-1, 1))
-        E = np.conj(wf).T.dot(self.ham.dot(wf)).real
+        wf = wf.amplitudes
+        E = (wf.conj()@self.ham@wf).real
         sigma_E = nshots**(-1 / 2) * (
-                    np.conj(wf).T.dot(self.ham_squared.dot(wf)).real - E**2)
+                    (wf.conj()@self.ham_squared@wf) - E**2).real
 
         # add simulated noise, if wanted
         if self.noisy:
@@ -405,7 +403,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                 bitstring = np.append(bitstring, new_bits, axis=0)
             bitstrings.append(bitstring)
 
-        out = hamiltonian_list_expectation_value(self.hams, bitstrings)
+        out = sampling_expectation(self.hams, bitstrings)
 
         # Append function value and params to the log.
         # deepcopy is needed, because x may be a mutable type.

@@ -1,6 +1,6 @@
 # IPython Notebooks 
 ###################
-*.ipynb
+*.ipynb_checkpoints
 
 #compiled stuff
 ###############
@@ -43,4 +43,4 @@ docs/build
 node_modules/*
 .idea/*
 Package_Scheme.pptx
-
+examples/*.py

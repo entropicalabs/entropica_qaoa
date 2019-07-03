@@ -16,10 +16,10 @@ from pyquil.paulis import PauliSum
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
-from vqe.cost_function import (PrepareAndMeasureOnQVM,
-                               PrepareAndMeasureOnWFSim,
-                               LogEntry)
-from qaoa.parameters import AbstractQAOAParameters
+from forest_qaoa.vqe.cost_function import (PrepareAndMeasureOnQVM,
+                                           PrepareAndMeasureOnWFSim,
+                                           LogEntry)
+from forest_qaoa.qaoa.parameters import AbstractParams
 
 
 def _qaoa_mixing_ham_rotation(betas: MemoryReference,
@@ -90,12 +90,12 @@ def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
     return p
 
 
-def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Program:
+def _qaoa_annealing_program(params: Type[AbstractParams]) -> Program:
     """Create parametric quil code for the QAOA annealing circuit.
 
     Parameters
     ----------
-    qaoa_params:
+    params:
         The parameters of the QAOA circuit.
 
     Returns
@@ -104,9 +104,9 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
         Parametric Quil Program with the annealing circuit.
 
     """
-    (reg, qubits_singles, qubits_pairs, timesteps) =\
-        (qaoa_params.reg, qaoa_params.qubits_singles,
-         qaoa_params.qubits_pairs, qaoa_params.timesteps)
+    (reg, qubits_singles, qubits_pairs, n_steps) =\
+        (params.reg, params.qubits_singles,
+         params.qubits_pairs, params.n_steps)
 
     p = Program()
     # create list of memory references to store angles in.
@@ -115,7 +115,7 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
     betas = []
     gammas_singles = []
     gammas_pairs = []
-    for i in range(timesteps):
+    for i in range(n_steps):
         beta = p.declare('x_rotation_angles{}'.format(i),
                          memory_type='REAL',
                          memory_size=len(reg))
@@ -138,7 +138,7 @@ def _qaoa_annealing_program(qaoa_params: Type[AbstractQAOAParameters]) -> Progra
             p.pop()
 
     # apply cost and mixing hamiltonian alternating
-    for i in range(timesteps):
+    for i in range(n_steps):
         p += _qaoa_cost_ham_rotation(gammas_pairs[i], qubits_pairs,
                                      gammas_singles[i], qubits_singles)
         p += _qaoa_mixing_ham_rotation(betas[i], reg)
@@ -154,7 +154,7 @@ def _all_plus_state(reg: Iterable) -> Program:
 
 
 def prepare_qaoa_ansatz(initial_state: Program,
-                        qaoa_params: Type[AbstractQAOAParameters]) -> Program:
+                        qaoa_params: Type[AbstractParams]) -> Program:
     """Create parametric quil code for QAOA circuit.
 
     Parameters
@@ -175,7 +175,7 @@ def prepare_qaoa_ansatz(initial_state: Program,
     return p
 
 
-def make_qaoa_memory_map(qaoa_params: Type[AbstractQAOAParameters]) -> dict:
+def make_qaoa_memory_map(qaoa_params: Type[AbstractParams]) -> dict:
     """Make a memory map for the QAOA Ansatz as produced by `prepare_qaoa_ansatz`.
 
     Parameters
@@ -190,7 +190,7 @@ def make_qaoa_memory_map(qaoa_params: Type[AbstractQAOAParameters]) -> dict:
 
     """
     memory_map = {}
-    for i in range(qaoa_params.timesteps):
+    for i in range(qaoa_params.n_steps):
         memory_map['x_rotation_angles{}'.format(i)] = qaoa_params.x_rotation_angles[i]
         memory_map['z_rotation_angles{}'.format(i)] = qaoa_params.z_rotation_angles[i]
         memory_map['zz_rotation_angles{}'.format(i)] = qaoa_params.zz_rotation_angles[i]
@@ -207,7 +207,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
     hamiltonian:
         The cost hamiltonian
     params:
-        Form of the QAOA parameters (with timesteps and type fixed for this instance)
+        Form of the QAOA parameters (with n_steps and type fixed for this instance)
     sim:
         connection to the WavefunctionSimulator to run the simulation on
     return_standard_deviation:
@@ -230,7 +230,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
 
     def __init__(self,
                  hamiltonian: PauliSum,
-                 params: Type[AbstractQAOAParameters],
+                 params: Type[AbstractParams],
                  sim: WavefunctionSimulator,
                  return_standard_deviation: bool = None,
                  scalar_cost_function: bool = True,
@@ -278,7 +278,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
         ----------
         params:
             _Raw_(!) QAOA parameters for the state preparation. Can be obtained
-            from Type[AbstractQAOAParameters] objects via ``.raw()``
+            from Type[AbstractParams] objects via ``.raw()``
 
         Returns
         -------
@@ -299,7 +299,7 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
     hamiltonian:
         The cost hamiltonian
     params:
-        Form of the QAOA parameters (with timesteps and type fixed for this
+        Form of the QAOA parameters (with n_steps and type fixed for this
         instance)
     qvm:
         connection to the QuantumComputer to run on
@@ -317,7 +317,7 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
 
     def __init__(self,
                  hamiltonian: PauliSum,
-                 params: Type[AbstractQAOAParameters],
+                 params: Type[AbstractParams],
                  qvm: QuantumComputer,
                  return_standard_deviation: bool = None,
                  scalar_cost_function: bool = True,
