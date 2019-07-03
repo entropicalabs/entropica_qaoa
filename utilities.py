@@ -17,6 +17,8 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
 from scipy.spatial import distance
 
+from sklearn.metrics import accuracy_score
+
 ### METHODS FOR CREATING HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ###
 
 
@@ -503,3 +505,4 @@ def plot_amplitudes(amplitudes, energies, ax=None):
     ax.grid(linestyle='--')
     ax.legend()
     #    plt.show()
+
