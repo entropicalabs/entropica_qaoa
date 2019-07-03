@@ -193,8 +193,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # TODO What if prepare_ansatz acts on more qubits than ham?
         # then hamiltonian and wavefunction don't fit together...
         if isinstance(hamiltonian, PauliSum):
-            nqubits = len(hamiltonian.get_qubits())
-            self.ham = hamiltonian.matrix(int_mapping or {}, nqubits)
+            self.ham = hamiltonian.matrix(int_mapping or {})
         elif isinstance(hamiltonian, (np.matrix, np.ndarray)):
             self.ham = hamiltonian
         else:
