@@ -50,7 +50,7 @@
  - [x] print coefficients and number of timesteps in `__repr__`
  - [x] convert all the parameter lists to numpy arrays
  - [?] rename `self.timesteps` everywhere to `self.p` or `self.ntimesteps`?
- - [?] rename `self._T` to `self.annealing_time` in `AdiabaticTimestepsQAOAParameters`? 
+ - [?] rename `self._T` to `self.annealing_time` in `AnnealingParams`?
  
 
 
