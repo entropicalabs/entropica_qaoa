@@ -1,7 +1,7 @@
 """
 Utilty and convenience functions for a number of QAOA applications.
 
-See the demo notebook UtilitiesDemo.ipynb for exampels on usage of the methods herein.
+See the demo notebook UtilitiesDemo.ipynb for examples on usage of the methods herein.
 """
 
 from typing import Union, List, Type, Dict, Iterable
@@ -120,21 +120,21 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
 
     # Get hyperparameters from Hamiltonian
     hyperparams = {'nqubits': len(hamiltonian.get_qubits()), 'singles': [], 'biases': [], 'pairs': [], 'couplings': []}
-    
+
     for term in hamiltonian.terms:
-        
+
         qubits_in_term = term.get_qubits()
-        
+
         if len(qubits_in_term) == 1:
             hyperparams['singles'] += qubits_in_term
             hyperparams['biases'] += [term.coefficient.real]
-        
+
         if len(qubits_in_term) == 2:
             hyperparams['pairs'].append(qubits_in_term)
             hyperparams['couplings'] += [term.coefficient.real]
-        
+
     G = graph_from_hyperparams(*hyperparams.values())
-    
+
     return G
 
 #    G = nx.Graph()
@@ -281,24 +281,24 @@ def graph_from_hyperparams(nqubits: int,
 def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     """
     Generates a Hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
-    of in biases is applied to the i'th qubit. 
+    of in biases is applied to the i'th qubit.
 
     Parameters
     ----------
-    dist:      
+    dist:
         A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
-    biases:     
+    biases:
         A dictionary of floats, with keys indicating the qubits with bias terms, and corresponding values being the bias coefficients.
 
     Returns
     -------
-    hamiltonian: 
-        A PauliSum object modelling the Hamiltonian of the system  
+    hamiltonian:
+        A PauliSum object modelling the Hamiltonian of the system
     """
-    
+
     pauli_list = list()
     m, n = dist.shape
-    
+
     #allows tolerance for both matrices and dataframes
     if isinstance(dist,pd.DataFrame):
         dist = dist.values
@@ -505,17 +505,19 @@ def evaluate_lowest_state(lowest, true):
     print('Accuracy of Complement State:', acc_c * 100, '%')
 
 
-def plot_amplitudes(amplitudes, energies, ax=None):
-    """
-    Description
-    -----------
-    Makes a nice plot of the probabilities for each state and its energy
+def plot_amplitudes(amplitudes: Union[np.array, list],
+                    energies: Union[np.array, list],
+                    ax=None):
+    """Makes a nice plot of the probabilities for each state and its energy
 
     Parameters
     ----------
-    :param amplitudes: (array/list) the probabilites to find the state
-    :param energies:   (array/list) The energy of that state
-    :ax:               (matplotlib axes object) The canvas to draw on
+    amplitudes:
+        The probabilites to find the state
+    energies:
+        The energy of that state
+    ax: matplotlib axes object
+        The canvas to draw on
     """
     if ax == None:
         fig, ax = plt.subplots()

@@ -25,7 +25,7 @@ For those unsure of the location of their site-packages folder, you can simply r
 
 2. Clone the forest_qaoa repository into your site-packages folder.
 ```
-git clone <put http here>
+git clone git@gitlab.com:entropica/forest_qaoa.git
 ```
 3. Enter the forest_qaoa folder and run the following command
  
@@ -43,4 +43,4 @@ You can now import this package as you would any conda- or pip-installed library
  - with `pytest tests/<testfile>` single tests can be run to check single modules.
 
 ## Contributing
-Lets be real, this is Entropica internal for now.
+This project is hosted on gitlab and can be found at `https://gitlab.com/entropica/forest-qaoa`. If you have feature requests or already implemented them, feel free to send us pull request. 

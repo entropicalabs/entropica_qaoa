@@ -7,6 +7,7 @@ manner, that we can later swap it out with more sophisticated optimizers.
 from scipy.optimize import minimize
 from typing import Callable, Tuple, Union, List, Dict
 import numpy as np
+import warnings
 
 # TODO decide, whether we really want to support cost_functions that return
 # floats and ones that return tuples (exp_val, std_dev)
@@ -51,7 +52,24 @@ def scipy_optimizer(cost_function: Callable[[Union[List[float], np.array]],
     -------
     Dict :
         The output of ``scipy.optimize.minimize`` after minimization
+
+    Note
+    ----
+    This method is deprecated in favor of using your optimizer of choice
+    directly. To do so you have to make sure, that the cost function only
+    returns a scalar and only takes in an array of parameters, by using the
+    `scalar_cost_function` toggle in the cost function constructor and then replace the optimizer call: Replace
+
+    >>> scipy_optimizer(cost_fn, params, epsilon=epsilon)
+
+    with
+
+    >>> scipy.optimize.minimize(cost_fn, params, tol=epsilon, method="Cobyla")
+
     """
+    warnings.warn("This method is deprecated in favor of using "
+                  "scipy.optimize.minimize directly. See the docstring "
+                  "of this method, to see how to do this.", DeprecationWarning)
     fun = _reduce_noisy_cost_function(cost_function, nshots=nshots)
     out = minimize(fun, params0, method=method, tol=epsilon, options=mininize_kwargs)
     return out

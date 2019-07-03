@@ -107,7 +107,7 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
     hyperparameters:
         The hyperparameters containing the hamiltonian, the number of steps
         and possibly more (e.g. the total annealing time).
-        ``hyperparametesr = (hamiltonian, n_steps, ...)``
+        ``hyperparameters = (hamiltonian, n_steps, ...)``
     parameters: Tuple
         The QAOA parameters, that can be optimized. E.g. the gammas and betas
         or the annealing timesteps. AbstractParams doesn't implement
