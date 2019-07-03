@@ -12,8 +12,8 @@ from pyquil.quil import QubitPlaceholder
 
 from forest_qaoa.qaoa.cost_function import (QAOACostFunctionOnQVM,
                                             QAOACostFunctionOnWFSim)
-from forest_qaoa.qaoa.parameters import (AdiabaticTimestepsQAOAParameters,
-                                         AlternatingOperatorsQAOAParameters)
+from forest_qaoa.qaoa.parameters import (AnnealingParams,
+                                         StandardWithBiasParams)
 
 # Create a mixed and somehwat more complicated hamiltonian
 # TODO fix the whole Qubit Placeholder Business
@@ -28,7 +28,7 @@ hamiltonian += next_term
 
 def test_QAOACostFunctionOnWFSim():
     sim = WavefunctionSimulator()
-    params = AdiabaticTimestepsQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, timesteps=4)
+    params = AnnealingParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=4)
 
     with local_qvm():
         cost_function = QAOACostFunctionOnWFSim(hamiltonian,
@@ -46,7 +46,7 @@ def test_QAOACostFunctionOnWFSim_get_wavefunction():
     sim = WavefunctionSimulator()
     ham = PauliSum.from_compact_str("0.7*Z0*Z1 + 1.2*Z0*Z2")
     timesteps = 2
-    params = AlternatingOperatorsQAOAParameters\
+    params = StandardWithBiasParams\
         .linear_ramp_from_hamiltonian(ham, timesteps)
     with local_qvm():
         cost_function = QAOACostFunctionOnWFSim(ham,
@@ -64,7 +64,7 @@ def test_QAOACostFunctionOnWFSim_get_wavefunction():
 
 def test_QAOACostFunctionOnQVM():
     qvm = get_qc("2q-qvm")
-    params = AdiabaticTimestepsQAOAParameters.linear_ramp_from_hamiltonian(hamiltonian, timesteps=4)
+    params = AnnealingParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=4)
 
     with local_qvm():
         cost_function = QAOACostFunctionOnQVM(hamiltonian,
