@@ -118,16 +118,52 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
 
     """
 
-    G = nx.Graph()
-    dim = len(hamiltonian)
-    for i in range(dim):
-        qubits = hamiltonian.terms[i].get_qubits()
-        if len(qubits) == 1:
-            G.add_node(qubits[0], weight=hamiltonian.terms[i].coefficient)
-        else:
-            G.add_edge(qubits[0], qubits[1], weight=hamiltonian.terms[i].coefficient)
-
+    # Get hyperparameters from Hamiltonian
+    hyperparams = {'nqubits': len(hamiltonian.get_qubits()), 'singles': [], 'biases': [], 'pairs': [], 'couplings': []}
+    
+    for term in hamiltonian.terms:
+        
+        qubits_in_term = term.get_qubits()
+        
+        if len(qubits_in_term) == 1:
+            hyperparams['singles'] += qubits_in_term
+            hyperparams['biases'] += [term.coefficient.real]
+        
+        if len(qubits_in_term) == 2:
+            hyperparams['pairs'].append(qubits_in_term)
+            hyperparams['couplings'] += [term.coefficient.real]
+        
+    G = graph_from_hyperparams(*hyperparams.values())
+    
     return G
+
+#    G = nx.Graph()
+#    dim = len(hamiltonian)
+#    for i in range(dim):
+#        qubits = hamiltonian.terms[i].get_qubits()
+#        if len(qubits) == 1:
+#            G.add_node(qubits[0], weight=hamiltonian.terms[i].coefficient)
+#        else:
+#            G.add_edge(qubits[0], qubits[1], weight=hamiltonian.terms[i].coefficient)
+#
+#    return G
+#
+#def graph_from_hyperparams(nqubits: int,
+#                           singles: List[int],
+#                           biases: List[float],
+#                           pairs: List[int],
+#                           couplings: List[float]) -> nx.Graph:
+#
+#    G = nx.Graph()
+#    G.add_nodes_from(range(nqubits))
+#
+#    for i in range(len(singles)):
+#        G.add_node(singles[i], weight=biases[i])
+#
+#    for i in range(len(pairs)):
+#        G.add_edge(pairs[i][0], pairs[i][1], weight=couplings[i])
+#
+#    return G
 
 
 def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
