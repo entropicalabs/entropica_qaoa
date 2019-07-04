@@ -23,9 +23,9 @@ cd /anaconda3/envs/<my-env>/lib/pythonX.Y/site-packages/
 ```
 For those unsure of the location of their site-packages folder, you can simply run 'pip show <package name>' and your terminal will display the directory location of your python packages.
 
-2. Clone the forest_qaoa repository into your site-packages folder.
+2. Clone the repository into your site-packages folder, into a directory called forest_qaoa:
 ```
-git clone git@gitlab.com:entropica/forest_qaoa.git
+git clone git@gitlab.com:entropica/forest-qaoa.git forest_qaoa
 ```
 3. Enter the forest_qaoa folder and run the following command
  
@@ -43,4 +43,4 @@ You can now import this package as you would any conda- or pip-installed library
  - with `pytest tests/<testfile>` single tests can be run to check single modules.
 
 ## Contributing
-This project is hosted on gitlab and can be found at `https://gitlab.com/entropica/forest-qaoa`. If you have feature requests or already implemented them, feel free to send us pull request. 
+This project is hosted on Gitlab and can be found at `https://gitlab.com/entropica/forest-qaoa`. If you have feature requests or have already implemented them, feel free to send us a pull request. 
