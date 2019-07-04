@@ -98,6 +98,7 @@ def random_hamiltonian(nqubits: int) -> PauliSum:
 
 
 def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
+    
     """
     Creates a networkx graph corresponding to a specified problem Hamiltonian.
 
@@ -112,31 +113,68 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
         The corresponding networkx graph with the edge weights being the two-qubit coupling coefficients,
         and the node weights being the single-qubit bias terms.
 
-    TODO:
+    TODO
 
-        Allow ndarrays to be input as hamiltonian too.
+        Allow ndarrays to be input as hamiltonian too (?)
 
     """
 
     # Get hyperparameters from Hamiltonian
-    hyperparams = {'nqubits': len(hamiltonian.get_qubits()), 'singles': [], 'biases': [], 'pairs': [], 'couplings': []}
+    hyperparams = {'nqubits': len(hamiltonian.get_qubits()), 'qubit_placeholders': [], 'singles': [], 'biases': [], 'pairs': [], 'couplings': []}
     
     for term in hamiltonian.terms:
         
         qubits_in_term = term.get_qubits()
+        placeholders = [i for i in qubits_in_term if isinstance(i, QubitPlaceholder)]
         
         if len(qubits_in_term) == 1:
-            hyperparams['singles'] += qubits_in_term
+            
+            if placeholders:
+                qubits_in_term = [qubit_placeholder_id(*qubits_in_term)]
+                
+            hyperparams['singles'] += qubits_in_term                
             hyperparams['biases'] += [term.coefficient.real]
         
-        if len(qubits_in_term) == 2:
-            hyperparams['pairs'].append(qubits_in_term)
+        elif len(qubits_in_term) == 2:
+            
+            for i in range(len(placeholders)):
+                qubits_in_term[i] = qubit_placeholder_id(placeholders[i]) 
+            
+            hyperparams['pairs'] += [qubits_in_term]
             hyperparams['couplings'] += [term.coefficient.real]
+            
+        else:
+            raise ValueError("Only single- and two-qubit terms supported in Hamiltonian currently")
+        
+    print(hyperparams)
         
     G = graph_from_hyperparams(*hyperparams.values())
     
     return G
 
+
+def qubit_placeholder_id(qubit_placeholder):
+    
+    """
+    Generate a simple string to identify a placeholder, intended for display purposes in Networkx graphs.
+    
+    Parameters
+    ----------
+    qubit_placeholder:
+        A QubitPlaceholder object.
+        
+    Returns
+    -------
+    A string of the form "Holder ABC", where ABC are the last 3 digits of the QubitPlaceholder memory address.
+    
+    """
+    
+    if not isinstance(qubit_placeholder, QubitPlaceholder):
+        raise TypeError("qubit_placeholder must be a QubitPlaceholder object")
+        
+    address_id = qubit_placeholder.__str__()[-4:-1]
+
+    return "Holder " + str(address_id)
 
 def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
     """
@@ -172,7 +210,7 @@ def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
     return PauliSum(hamiltonian)
 
 
-def plot_graph(G):
+def plot_graph(G, labels = {}):
     """
     Plots a networkx graph.
 
@@ -187,11 +225,15 @@ def plot_graph(G):
         Allow the user to specify some desired plot properties?
     """
 
+    print(labels)
+    print(G.)
+
     weights = np.real([*nx.get_edge_attributes(G, 'weight').values()])
     pos = nx.shell_layout(G)
 
-    nx.draw(G, pos, node_color='#A0CBE2', with_labels=True, edge_color=weights,
+    nx.draw(G, pos, node_color='#A0CBE2', labels=labels, with_labels=True, edge_color=weights,
             width=4, edge_cmap=plt.cm.Blues)
+
     plt.show()
 
 
@@ -199,18 +241,22 @@ def graph_from_hyperparams(nqubits: int,
                            singles: List[int],
                            biases: List[float],
                            pairs: List[int],
-                           couplings: List[float]) -> nx.Graph:
+                           couplings: List[float],
+                           nplaceholders: int = None) -> nx.Graph:
 
     G = nx.Graph()
-    G.add_nodes_from(range(nqubits))
 
+    # Add nodes with biases
+    labels = {}
     for i in range(len(singles)):
-        G.add_node(singles[i], weight=biases[i])
-
+        G.nodes[i]['weight'] = biases[i]
+        G.nodes[i]['name'] = singles[i]
+        labels[i] = singles[i]
+        
     for i in range(len(pairs)):
-        G.add_edge(pairs[i][0], pairs[i][1], weight=couplings[i])
+        G.add_edge(str(pairs[i][0]), str(pairs[i][1]), weight=couplings[i])
 
-    return G
+    return G, labels
 
 ### HAMILTONIANS AND DATA ###
 
