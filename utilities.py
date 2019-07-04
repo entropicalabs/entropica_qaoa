@@ -12,7 +12,7 @@ import networkx as nx
 
 import matplotlib.pyplot as plt
 
-from pyquil import Program
+from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
 from scipy.spatial import distance
@@ -137,34 +137,6 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
     
     return G
 
-#    G = nx.Graph()
-#    dim = len(hamiltonian)
-#    for i in range(dim):
-#        qubits = hamiltonian.terms[i].get_qubits()
-#        if len(qubits) == 1:
-#            G.add_node(qubits[0], weight=hamiltonian.terms[i].coefficient)
-#        else:
-#            G.add_edge(qubits[0], qubits[1], weight=hamiltonian.terms[i].coefficient)
-#
-#    return G
-#
-#def graph_from_hyperparams(nqubits: int,
-#                           singles: List[int],
-#                           biases: List[float],
-#                           pairs: List[int],
-#                           couplings: List[float]) -> nx.Graph:
-#
-#    G = nx.Graph()
-#    G.add_nodes_from(range(nqubits))
-#
-#    for i in range(len(singles)):
-#        G.add_node(singles[i], weight=biases[i])
-#
-#    for i in range(len(pairs)):
-#        G.add_edge(pairs[i][0], pairs[i][1], weight=couplings[i])
-#
-#    return G
-
 
 def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
     """
@@ -240,43 +212,7 @@ def graph_from_hyperparams(nqubits: int,
 
     return G
 
-# def graph_from_edges(vertices: int, edges: Dict, biases: Dict = None) -> nx.Graph:
-#
-#    """
-#    Creates a networkx graph on specified number of vertices, with the specified edges connected by corresponding edge weights.
-#
-#    Parameters
-#    ----------
-#    vertices:
-#        The total number of vertices in the graph.
-#
-#    edges:
-#        A dictionary whose keys are tuples of the nodes connected by an edge. The corresponding dict values are the edge weights.
-#    """
-#
-#    G = nx.Graph()
-#    G.add_nodes_from(range(vertices))
-#    edges_ = [*edges]
-#    weights = [*edges.values()]
-#    for i in range(len(edges_)):
-#           G.add_edge(edges[i][0],edges[i][1],weight=weights[i])
-#
-#    return G
-#
-#
-##    G = nx.Graph()
-# G.add_nodes_from(range(vertices))
-##    i_pointer = 0
-# for i in range(vertices):
-# for j in range(i,vertices):
-##           weight = edge_weights[i_pointer] + j
-# G.add_edge(i,j,weight=weight)
-##       i_pointer += vertices - i
-##
-# return G
-
 ### HAMILTONIANS AND DATA ###
-
 
 def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     """
