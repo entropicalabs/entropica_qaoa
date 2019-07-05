@@ -225,8 +225,8 @@ def plot_graph(G, labels = {}):
         Allow the user to specify some desired plot properties?
     """
 
-    print(labels)
-    print(G.)
+    #print(labels)
+    #print(G.)
 
     weights = np.real([*nx.get_edge_attributes(G, 'weight').values()])
     pos = nx.shell_layout(G)
