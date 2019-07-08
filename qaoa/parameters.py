@@ -88,13 +88,13 @@ class shapedArray(object):
     def __set__(self, obj, values):
         """The setter with input checking."""
         try:
-            self.values = np.reshape(values, self.shape(obj))
+            setattr(obj, f"__{self.name}", np.reshape(values, self.shape(obj)))
         except ValueError:
             raise ValueError(f"{self.name} must have shape {self.shape(obj)}")
 
     def __get__(self, obj, objtype):
         """The getter."""
-        return self.values
+        return getattr(obj, f"__{self.name}")
 
 
 class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
@@ -107,7 +107,7 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
     hyperparameters:
         The hyperparameters containing the hamiltonian, the number of steps
         and possibly more (e.g. the total annealing time).
-        ``hyperparameters = (hamiltonian, n_steps, ...)``
+        ``hyperparametesr = (hamiltonian, n_steps, ...)``
     parameters: Tuple
         The QAOA parameters, that can be optimized. E.g. the gammas and betas
         or the annealing timesteps. AbstractParams doesn't implement
@@ -440,7 +440,6 @@ class ExtendedParams(AbstractParams):
 
     @property
     def z_rotation_angles(self):
-        # TODO: Check, that broadcasting works also in the square case
         return self.single_qubit_coeffs * self.gammas_singles
 
     @property
