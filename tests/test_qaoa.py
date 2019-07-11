@@ -20,11 +20,16 @@ from forest_qaoa.qaoa.parameters import FourierParams
 
 
 def test_qaoa_on_wfsim():
-    hamiltonian = PauliSum.from_compact_str("(-1.0)*Z0*Z1 + 0.8*Z0 + (-0.5)*Z1")
-    params = FourierParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=10, q=2)
+    # ham = PauliSum.from_compact_str("(-1.0)*Z0*Z1 + 0.8*Z0 + (-0.5)*Z1")
+    term1 = PauliTerm("Z", 0, -1) * PauliTerm("Z", 1)
+    term2 = PauliTerm("Z", 0, 0.8)
+    term3 = PauliTerm("Z", 1, -0.5)
+    ham = PauliSum([term1, term2, term3])
+
+    params = FourierParams.linear_ramp_from_hamiltonian(ham, n_steps=10, q=2)
     p0 = params.raw()
     sim = WavefunctionSimulator()
-    cost_fun = QAOACostFunctionOnWFSim(hamiltonian, params, sim,
+    cost_fun = QAOACostFunctionOnWFSim(ham, params, sim,
                                        scalar_cost_function=True, nshots=100,
                                        noisy=True)
     with local_qvm():
@@ -40,14 +45,18 @@ def test_qaoa_on_wfsim():
 
 @pytest.mark.slow
 def test_qaoa_on_qvm():
-    hamiltonian = PauliSum.from_compact_str("(-1.0)*Z0*Z1 + 0.8*Z0 + (-0.5)*Z1")
-    params = FourierParams.linear_ramp_from_hamiltonian(hamiltonian,
+    # ham = PauliSum.from_compact_str("(-1.0)*Z0*Z1 + 0.8*Z0 + (-0.5)*Z1")
+    term1 = PauliTerm("Z", 0, -1) * PauliTerm("Z", 1)
+    term2 = PauliTerm("Z", 0, 0.8)
+    term3 = PauliTerm("Z", 1, -0.5)
+    ham = PauliSum([term1, term2, term3])
+    params = FourierParams.linear_ramp_from_hamiltonian(ham,
                                                         n_steps=10,
                                                         q=2)
     p0 = params.raw()
     qvm = get_qc("2q-qvm")
     with local_qvm():
-        cost_fun = QAOACostFunctionOnQVM(hamiltonian, params, qvm,
+        cost_fun = QAOACostFunctionOnQVM(ham, params, qvm,
                                          scalar_cost_function=True, nshots=4,
                                          base_numshots=50)
         out = minimize(cost_fun, p0, tol=2e-1, method="Cobyla",

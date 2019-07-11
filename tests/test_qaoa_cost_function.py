@@ -17,7 +17,9 @@ from forest_qaoa.qaoa.parameters import (AnnealingParams,
 
 # Create a mixed and somehwat more complicated hamiltonian
 # TODO fix the whole Qubit Placeholder Business
-hamiltonian = PauliSum.from_compact_str("1.0*Z0Z1")
+
+# hamiltonian = PauliSum.from_compact_str("1.0*Z0Z1")
+hamiltonian = PauliTerm("Z", 1) * PauliTerm("Z", 1)
 hamiltonian += PauliTerm("Z", 1, 0.5)
 next_term = PauliTerm("Z", 0, -2.0)
 next_term *= PauliTerm("Z", 1)
@@ -44,7 +46,10 @@ def test_QAOACostFunctionOnWFSim():
 
 def test_QAOACostFunctionOnWFSim_get_wavefunction():
     sim = WavefunctionSimulator()
-    ham = PauliSum.from_compact_str("0.7*Z0*Z1 + 1.2*Z0*Z2")
+    # ham = PauliSum.from_compact_str("0.7*Z0*Z1 + 1.2*Z0*Z2")
+    term1 = PauliTerm("Z", 0, 0.7) * PauliTerm("Z", 1)
+    term2 = PauliTerm("Z", 0, 1.2) * PauliTerm("Z", 2)
+    ham = PauliSum([term1, term2])
     timesteps = 2
     params = StandardWithBiasParams\
         .linear_ramp_from_hamiltonian(ham, timesteps)

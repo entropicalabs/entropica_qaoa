@@ -21,7 +21,13 @@ from forest_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
 
 
 # gonna need this program and hamiltonian for both tests. So define them globally
-hamiltonian = PauliSum.from_compact_str("(-1.0)*Z0*Z1 + 0.8*Z0 + (-0.5)*Z1")
+# hamiltonian = PauliSum.from_compact_str("(-1.0)*Z0*Z1 + 0.8*Z0 + (-0.5)*Z1")
+term1 = PauliTerm("Z", 0, -1)
+term1 *= PauliTerm("Z", 1)
+term2 = PauliTerm("Z", 0, 0.8)
+term3 = PauliTerm("Z", 1, -0.5)
+hamiltonian = PauliSum([term1, term2, term3])
+
 prepare_ansatz = Program()
 params = prepare_ansatz.declare("params", memory_type="REAL", memory_size=4)
 prepare_ansatz.inst(RX(params[0], 0))

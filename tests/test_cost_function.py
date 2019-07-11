@@ -30,7 +30,10 @@ def test_PrepareAndMeasureOnWFSim():
     def make_memory_map(params):
         return {"params": params}
 
-    ham = PauliSum.from_compact_str("1.0*Z0 + 1.0*Z1")
+#    ham = PauliSum.from_compact_str("1.0*Z0 + 1.0*Z1")
+    term1 = PauliTerm("Z", 0)
+    term2 = PauliTerm("Z", 1)
+    ham = PauliSum([term1, term2])
     sim = WavefunctionSimulator()
     with local_qvm():
         cost_fn = PrepareAndMeasureOnWFSim(p,
@@ -79,7 +82,10 @@ def test_PrepareAndMeasureOnQVM():
     def make_memory_map(params):
         return {"params": params}
 
-    ham = PauliSum.from_compact_str("1.0*Z0 + 1.0*Z1")
+#    ham = PauliSum.from_compact_str("1.0*Z0 + 1.0*Z1")
+    term1 = PauliTerm("Z", 0)
+    term2 = PauliTerm("Z", 1)
+    ham = PauliSum([term1, term2])
     qvm = get_qc("2q-qvm")
     with local_qvm():
         #        qvm = proc.qvm

@@ -18,7 +18,9 @@ from forest_qaoa.qaoa.parameters import (ExtendedParams,
 
 # build a hamiltonian to test everything on
 q1 = QubitPlaceholder()
-hamiltonian = PauliSum.from_compact_str("1.0*Z0Z1")
+# hamiltonian = PauliSum.from_compact_str("1.0*Z0Z1")
+hamiltonian = PauliTerm("Z", 0)
+hamiltonian *= PauliTerm("Z", 1)
 hamiltonian += PauliTerm("Z", q1, 0.5)
 next_term = PauliTerm("Z", 0, -2.0)
 next_term *= PauliTerm("Z", q1)
@@ -163,7 +165,8 @@ def test_QAOAParameterIterator():
 
 
 def test_inputChecking():
-    ham = PauliSum.from_compact_str("0.7*Z0*Z1")
+    # ham = PauliSum.from_compact_str("0.7*Z0*Z1")
+    ham = PauliSum([PauliTerm("Z", 0, 0.7) * PauliTerm("Z", 1)])
     betas = [1, 2, 3, 4]
     gammas_singles = []
     gammas_pairs = [1, 2, 3]
