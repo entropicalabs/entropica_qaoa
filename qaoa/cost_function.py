@@ -212,6 +212,12 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
         connection to the WavefunctionSimulator to run the simulation on
     return_standard_deviation:
         return standard deviation or only expectation value?
+        (Deprecated. Use scalar_cost_function instead!)
+    scalar_cost_function:
+        If ``True``: self.__call__ has  signature
+        ``(x, nshots) -> (exp_val, std_val)``
+        If ``False``: ``self.__call__()`` has  signature ``(x) -> (exp_val)``,
+        but the ``nshots`` argument in ``__init__`` has to be given.
     noisy:
         Add simulated sampling noise?
     log:
@@ -305,6 +311,12 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
         connection to the QuantumComputer to run on
     return_standard_deviation:
         return standard deviation or only expectation value?
+        (Deprecated. Use ``scalar_cost_function`` instead)
+    scalar_cost_function:
+        If ``True``: self.__call__ has  signature
+        ``(x, nshots) -> (exp_val, std_val)``
+        If ``False``: ``self.__call__()`` has  signature ``(x) -> (exp_val)``,
+        but the ``nshots`` argument in ``__init__`` has to be given.
     param base_numshots:
         numshots to compile into the binary. The argument nshots of __call__
         is then a multplier of this.
