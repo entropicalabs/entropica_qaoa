@@ -27,9 +27,9 @@ class AbstractCostFunction():
     Parameters
     ----------
     scalar_cost_function:
-        If ``False``: self.__call__ has  signature
+        If ``True``: self.__call__ has  signature
         ``(x, nshots) -> (exp_val, std_val)``
-        If ``True``: ``self.__call__()`` has  signature ``(x) -> (exp_val)``,
+        If ``False``: ``self.__call__()`` has  signature ``(x) -> (exp_val)``,
         but the ``nshots`` argument in ``__init__`` has to be given.
     nshots:
         Optional.  Has to be given, if ``scalar_cost_function``
@@ -94,9 +94,9 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
     sim:
         A WavefunctionSimulator instance to get the wavefunction from.
     scalar_cost_function:
-        If True: __call__ has signature
+        If False: __call__ has signature
         ``(x: array, nshots: int) -> (exp_val: float, std_dev: float)``
-        If False: __call__ has signature ``(x: array) -> (exp_val: float)``
+        If True: __call__ has signature ``(x: array) -> (exp_val: float)``
         i.e. it takes no argument ``nshots`` and only returns the expectation
         value
         Defaults to True.
@@ -295,9 +295,9 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
     qvm:
         Connection the QC to run the program on.
     scalar_cost_function:
-        If True: __call__ has signature
+        If False: __call__ has signature
         ``(x: array, nshots: int) -> (exp_val: float, std_dev: float)``
-        If False: __call__ has signature ``(x: array) -> (exp_val: float)``
+        If True: __call__ has signature ``(x: array) -> (exp_val: float)``
         i.e. it takes no argument ``nshots`` and only returns the expectation
         value
         Defaults to True.
