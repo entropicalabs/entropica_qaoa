@@ -11,9 +11,13 @@
 ###########
 *.orig
 
-# everything in the docs, except the files we actually edit
-# #########################################################
+# Distribution / packaging
+##########################
+eggs/
 docs/build
+*.egg-info/
+*.egg
+.eggs/
 
 # latex stuff
 # ##########
