@@ -11,8 +11,8 @@ from pyquil.quil import Program, get_default_qubit_mapping
 from pyquil.gates import RX, CNOT
 from pyquil.quil import QubitPlaceholder, Qubit, address_qubits
 
-from forest_qaoa.vqe.optimizer import scipy_optimizer
-from forest_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
+from entropica_qaoa.vqe.optimizer import scipy_optimizer
+from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
                                            PrepareAndMeasureOnQVM)
 
 # gonna need this program and hamiltonian for both tests.

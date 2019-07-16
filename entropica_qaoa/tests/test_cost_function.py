@@ -17,7 +17,7 @@ from pyquil import get_qc, Program
 from pyquil.gates import RX, CNOT, RY
 from pyquil.paulis import PauliSum, PauliTerm
 
-from forest_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
+from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
                                            PrepareAndMeasureOnQVM)
 
 

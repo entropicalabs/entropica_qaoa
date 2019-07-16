@@ -10,9 +10,9 @@ from pyquil import get_qc, Program
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder
 
-from forest_qaoa.qaoa.cost_function import (QAOACostFunctionOnQVM,
+from entropica_qaoa.qaoa.cost_function import (QAOACostFunctionOnQVM,
                                             QAOACostFunctionOnWFSim)
-from forest_qaoa.qaoa.parameters import (AnnealingParams,
+from entropica_qaoa.qaoa.parameters import (AnnealingParams,
                                          StandardWithBiasParams)
 
 # Create a mixed and somehwat more complicated hamiltonian

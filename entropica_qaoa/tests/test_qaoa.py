@@ -14,9 +14,9 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 
 #from vqe.optimizer import scipy_optimizer
-from forest_qaoa.qaoa.cost_function import (QAOACostFunctionOnWFSim,
+from entropica_qaoa.qaoa.cost_function import (QAOACostFunctionOnWFSim,
                                             QAOACostFunctionOnQVM)
-from forest_qaoa.qaoa.parameters import FourierParams
+from entropica_qaoa.qaoa.parameters import FourierParams
 
 
 def test_qaoa_on_wfsim():

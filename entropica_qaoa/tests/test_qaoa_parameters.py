@@ -8,7 +8,7 @@ from pytest import raises
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder, Qubit
 
-from forest_qaoa.qaoa.parameters import (ExtendedParams,
+from entropica_qaoa.qaoa.parameters import (ExtendedParams,
                                          StandardWithBiasParams,
                                          AnnealingParams,
                                          FourierParams,

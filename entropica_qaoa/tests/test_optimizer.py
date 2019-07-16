@@ -8,7 +8,7 @@ sys.path.insert(0, myPath + '/../')
 
 
 import numpy as np
-from forest_qaoa.vqe.optimizer import scipy_optimizer
+from entropica_qaoa.vqe.optimizer import scipy_optimizer
 
 # TODO write a test involving the whole VQE stuff
 def test_scipy_optimizer():

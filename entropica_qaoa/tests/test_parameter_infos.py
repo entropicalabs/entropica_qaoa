@@ -9,11 +9,11 @@ from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 from pyquil.quil import Program
 from pyquil.gates import RX, CNOT
 
-from forest_qaoa.vqe.optimizer import scipy_optimizer
-from forest_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
+from entropica_qaoa.vqe.optimizer import scipy_optimizer
+from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
                                            PrepareAndMeasureOnQVM)
-from forest_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
-from forest_qaoa.qaoa.parameters import ExtendedParams
+from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
+from entropica_qaoa.qaoa.parameters import ExtendedParams
 
 # Define a simple Hamiltonian
 hamiltonian = PauliSum([PauliTerm("Z", 0, -1.0) * PauliTerm("Z", 1, 1.0),

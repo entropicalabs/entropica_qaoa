@@ -8,7 +8,7 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import RX, RY, H, CNOT
 from pyquil.quil import Program, QubitPlaceholder, MEASURE
 
-from forest_qaoa.vqe.measurelib import (append_measure_register,
+from entropica_qaoa.vqe.measurelib import (append_measure_register,
                                         sampling_expectation_z_base,
                                         sampling_expectation)
 
