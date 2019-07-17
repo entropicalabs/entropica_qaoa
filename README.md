@@ -1,18 +1,6 @@
 # entropica_qaoa
 A package implementing the quantum approximate optimisation algorithm (QAOA), providing a number of different features, parametrisations, and utility functions. 
 
-## Documentation
-The documentation can be installed and built by following these two steps:
-
-**Install the Prerequisites**
-```bash
-pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints nbsphinx
-```
-**Compile the documentation**
-```bash
-cd docs && make html
-```
-
 ## Installation
 
 We assume that the user has already installed Rigetti's pyQuil package, as well as the Rigetti QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation here: http://docs.rigetti.com/en/stable/start.html
@@ -50,6 +38,18 @@ To ensure the package has been successfully installed, you can run the following
  - `pytest --all` runs all of the above tests. Ideally all of them pass, before you do a `git push`
  - If you need more infos than `pytest` give you be default: Use the toggle `pytest (options) -s` to get all output.
  - with `pytest tests/<testfile>` single tests can be run to check single modules.
+ 
+ ## Documentation
+The documentation can be installed and built by following these two steps:
+
+**Install the Prerequisites**
+```bash
+pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints nbsphinx
+```
+**Compile the documentation**
+```bash
+cd docs && make html
+```
 
 ## Contributing
 This project is hosted on GitHub and can be found at https://github.com/entropicalabs/entropica_qaoa.git. If you have feature requests or have already implemented them, feel free to send us a pull request. 
