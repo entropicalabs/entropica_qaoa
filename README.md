@@ -42,6 +42,8 @@ python setup.py install
 You can now import this package as you would any conda- or pip-installed library!
 
 ## Testing
+To ensure the package has been successfully installed, you can run the following commands:
+
  - `pytest` runs the default tests and skips longer tests that need heavy simulations and tests of the Notebooks in `examples/`
  - `pytest --runslow` the tests with heavy simulations. I didn't fix the seed for the random generator yet, so sometimes the test doesn't even work.... If it takes longer than 5 Minutes just kill the tests and restart it.
  - `pytest --notebooks` runs the Notebook tests. To achieve this, the notebooks are converted to python scripts which are then executed. So the line numbers in the error messages refer to the lines in `<TheNotebook>.py` and not in `<TheNotebook>.ipynb`.
