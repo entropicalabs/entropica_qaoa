@@ -27,10 +27,10 @@ cd /anaconda3/envs/<my-env>/lib/pythonX.Y/site-packages/
 ```
 For those unsure of the location of their site-packages folder, you can simply run 'pip show <package name>' and your terminal will display the directory location of your python packages.
 
-2. Clone the repository into your site-packages folder, into a directory called entropica_qaoa:
+2. Clone the repository into your site-packages folder:
 
 ```
-git clone https://github.com/entropicalabs/entropica_qaoa.git entropica_qaoa
+git clone https://github.com/entropicalabs/entropica_qaoa.git 
 ```
 3. Move into the entropica_qaoa directory and install the package:
 
