@@ -32,7 +32,7 @@ For those unsure of the location of their site-packages folder, you can simply r
 ```
 git clone https://github.com/entropicalabs/entropica_qaoa.git entropica_qaoa
 ```
-3. Install the package:
+3. Move into the entropica_qaoa directory and install the package:
 
 ```bash
 python setup.py install
