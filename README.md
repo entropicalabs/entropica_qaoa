@@ -14,7 +14,10 @@ cd docs && make html
 ```
 
 ## Installation
-Installation of this package can be performed in a few simple steps.
+
+We assume that the user has already installed Rigetti's pyQuil package, as well as the Rigetti QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation here: http://docs.rigetti.com/en/stable/start.html
+
+Installation of the `entropica_qaoa` package can be performed in a few simple steps.
 
 1. Open terminal and enter the site-packages folder of your preferred Python environment.
 
