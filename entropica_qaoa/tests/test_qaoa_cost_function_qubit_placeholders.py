@@ -42,7 +42,7 @@ def test_vqe_on_WFSim_QubitPlaceholders():
                                         make_memory_map=lambda p: {"params": p},
                                         hamiltonian=hamiltonian,
                                         sim=sim,
-                                        return_standard_deviation=True,
+                                        scalar_cost_function=False,
                                         noisy=False,
                                         qubit_mapping=qubit_mapping)
 

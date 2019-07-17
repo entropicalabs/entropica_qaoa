@@ -82,6 +82,20 @@ def test_QAOAParameterDemo():
 
 
 @pytest.mark.notebook
+def test_AdvancedQAOAParameterDemo():
+    name = "../examples/AdvancedQAOAParameterDemo.ipynb"
+    command = f"jupyter nbconvert --to script {name}"
+
+    print(f"Converting {name} to a python script")
+    ret_code = subprocess.call(command.split(" "), stderr=None, stdout=None)
+
+    if ret_code is not 0:
+        print(f"The command '{command}' failed. "
+              "Run it manually, to see what went wrong.")
+    import examples.AdvancedQAOAParameterDemo
+
+
+@pytest.mark.notebook
 def test_QAOAWorkflowDemo():
     name = "../examples/QAOAWorkflowDemo.ipynb"
     command = f"jupyter nbconvert --to script {name}"
