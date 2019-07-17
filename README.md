@@ -2,7 +2,7 @@
 A package implementing the quantum approximate optimisation algorithm (QAOA), providing a number of different features, parametrisations, and utility functions. 
 
 ## Documentation
-The Documentation in HTML format can be found in `docs/build/html/index.html`. You can also compile it yourself by following these two steps:
+The documentation can be installed and built by following these two steps:
 
 **Install the Prerequisites**
 ```bash
@@ -22,14 +22,14 @@ Installation of the `entropica_qaoa` package can be performed in a few simple st
 1. Open terminal and enter the site-packages folder of your preferred Python environment.
 
 For those with Anaconda installed, the command looks like:
-```
+```bash
 cd /anaconda3/envs/<my-env>/lib/pythonX.Y/site-packages/
 ```
-For those unsure of the location of their site-packages folder, you can simply run 'pip show <package name>' and your terminal will display the directory location of your python packages.
+For those unsure of the location of their site-packages folder, you can simply run ```bash pip show <package name>``` and your terminal will display the directory location of your python packages.
 
 2. Clone the repository into your site-packages folder, into a directory called entropica_qaoa:
 
-```
+```bash
 git clone [insert the link when set up] entropica_qaoa
 ```
 3. Install the package using pip:
