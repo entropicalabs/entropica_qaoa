@@ -870,7 +870,7 @@ class StandardParams(AbstractParams):
         Returns
         -------
         StandardParams
-            A ``ClassicalFarhiQAOAParameters`` object with the hyperparameters
+            A ``StandardParams`` object with the hyperparameters
             taken from ``abstract_params`` and the normal parameters from
             ``parameters``
         """
@@ -898,9 +898,9 @@ class AnnealingParams(AbstractParams):
 
         U = e^{-i (1-s(t_p)) H_0 \Delta t} e^{-i s(t_p) H_c \Delta t} \cdots e^{-i(1-s(t_1)H_0 \Delta t} e^{-i s(t_1) H_c \Delta t}
 
-    where the :math:`t_i` are the variable parameters and
-    :math:`\Delta t = \frac{T}{N}` as well as :math:`s(t) = \frac{t}{T}`.
-    This corresponds to the idea of discretized adiabatic annealing and specifying the schedule by specifying at which timesteps we discretize.
+    where the :math:`s(t_i) =: s_i` are the variable parameters and
+    :math:`\Delta t = \frac{T}{N}`.
+    So the schedule is specified by specifying s(t) at evenly spaced timesteps.
 
     Parameters
     ----------
@@ -913,13 +913,8 @@ class AnnealingParams(AbstractParams):
 
     Attributes
     ----------
-    times: np.array
+    schedule: np.array
         An 1D array holding the timesteps specifying the schedule.
-
-    Notes
-    -----
-    It makes more sense to specify :math:`s(t_i) = s_i` directly, instead of
-    specifying the :math:`t_i`. So this is about to change.
     """
 
     def __init__(self,
@@ -928,7 +923,7 @@ class AnnealingParams(AbstractParams):
         # setup reg, qubits_singles and qubits_pairs
         super().__init__(hyperparameters)
         self._annealing_time = hyperparameters[2]
-        self.times = np.array(parameters)
+        self.schedule = np.array(parameters)
 
     def __repr__(self):
         string = "Hyperparameters:\n"
@@ -936,7 +931,7 @@ class AnnealingParams(AbstractParams):
         string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
         string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
         string = "Parameters:\n"
-        string += "\ttimes: " + str(self.times)
+        string += "\tschedule: " + str(self.schedule)
         return string
 
     def __len__(self):
@@ -949,29 +944,29 @@ class AnnealingParams(AbstractParams):
     @property
     def x_rotation_angles(self):
         dt = self._annealing_time / self.n_steps
-        tmp = (1 - self.times / self._annealing_time) * dt
+        tmp = (1 - self.schedule) * dt
         return np.outer(tmp, np.ones(len(self.reg)))
 
     @property
     def z_rotation_angles(self):
         dt = self._annealing_time / self.n_steps
-        tmp = self.times * dt / self._annealing_time
+        tmp = self.schedule * dt
         return np.outer(tmp, self.single_qubit_coeffs)
 
     @property
     def zz_rotation_angles(self):
         dt = self._annealing_time / self.n_steps
-        tmp = self.times * dt / self._annealing_time
+        tmp = self.schedule * dt
         return np.outer(tmp, self.pair_qubit_coeffs)
 
     def update_from_raw(self, new_values):
         if len(new_values) != self.n_steps:
             raise RuntimeWarning(
                 "the new times should have length n_steps+1")
-        self.times = np.array(new_values)
+        self.schedule = np.array(new_values)
 
     def raw(self):
-        return self.times
+        return self.schedule
 
     @classmethod
     def linear_ramp_from_hamiltonian(cls,
@@ -988,11 +983,10 @@ class AnnealingParams(AbstractParams):
         if time is None:
             time = 0.7 * n_steps
 
-        times = np.array(np.linspace(time * (0.5 / n_steps),
-                                     time * (1 - 0.5 / n_steps), n_steps))
+        schedule = np.linspace(0.5 / n_steps, 1 - 0.5 / n_steps, n_steps)
 
         # wrap it all nicely in a qaoa_parameters object
-        params = cls((hamiltonian, n_steps, time), (times))
+        params = cls((hamiltonian, n_steps, time), (schedule))
         return params
 
     @classmethod
@@ -1012,14 +1006,14 @@ class AnnealingParams(AbstractParams):
         if time is None:
             time = 0.7 * out.n_steps
         out._annealing_time = time
-        out.times = np.array(parameters)
+        out.schedule = np.array(parameters)
         return out
 
     def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self.times, label="times", marker="s", ls="", **kwargs)
+        ax.plot(self.schedule, label="s(t)", marker="s", ls="", **kwargs)
         ax.set_xlabel("timestep number")
         ax.legend()
 

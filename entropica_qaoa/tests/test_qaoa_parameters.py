@@ -29,7 +29,7 @@ hamiltonian += next_term
 # TODO Test plot functionality
 # TODO test fourier params
 # TODO Test set_hyperparameters and update_variable_parameters
-def test_GeneralQAOAParameters():
+def test_ExtendedParams():
     params = ExtendedParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
     assert np.allclose(params.betas, [[0.75] * 3, [0.25] * 3])
@@ -43,7 +43,7 @@ def test_GeneralQAOAParameters():
     assert np.allclose(raw, params.raw())
 
 # TODO check that the values also make sense
-def test_GeneralQAOAParametersfromAbstractParameters():
+def test_ExtendedParamsfromAbstractParameters():
     abstract_params = AbstractParams((hamiltonian, 2))
     betas          = [[0.0, 0.1, 0.3], [0.5, 0.2, 1.2]]
     gammas_singles = [[0.0], [0.5]]
@@ -56,7 +56,7 @@ def test_GeneralQAOAParametersfromAbstractParameters():
     print("zz_rotation_angles:\n", general_params.zz_rotation_angles)
 
 # Todo: Check that the values also make sense
-def test_AlternatingOperatorsQAOAParametersfromAbstractParameters():
+def test_StandardWithBiasParamsfromAbstractParameters():
     abstract_params = AbstractParams((hamiltonian, 2))
     betas          = [np.pi, 0.4]
     gammas_singles = [10, 24]
@@ -71,10 +71,10 @@ def test_AlternatingOperatorsQAOAParametersfromAbstractParameters():
 
 
 # Todo: Check that the values also make sense
-def test_AdiabaticTimestepsQAOAParametersfromAbstractParameters():
+def test_AnnealingParamsfromAbstractParameters():
     abstract_params = AbstractParams((hamiltonian, 2))
-    times = [0.4, 1.0]
-    parameters = (times)
+    schedule = [0.4, 1.0]
+    parameters = (schedule)
     adiabatic_params = AnnealingParams.from_AbstractParameters(abstract_params, parameters, time=5.0)
     print("The rotation angles from AnnealingParams.fromAbstractParameters")
     print("x_rotation_angles:\n", adiabatic_params.x_rotation_angles)
@@ -84,7 +84,7 @@ def test_AdiabaticTimestepsQAOAParametersfromAbstractParameters():
 
 
 # Todo: Check that the values also make sense
-def test_FourierTimestepsQAOAParametersfromAbstractParameters():
+def test_FourierParamsfromAbstractParameters():
     abstract_params = AbstractParams((hamiltonian, 2))
     v = [0.4, 1.0]
     u_singles = [0.5, 1.2]
@@ -98,7 +98,7 @@ def test_FourierTimestepsQAOAParametersfromAbstractParameters():
     assert type(fourier_params) == FourierParams
 
 
-def test_AdiabaticTimestepsQAOAParameters():
+def test_AnnealingParams():
     params = AnnealingParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
     assert np.allclose(params.x_rotation_angles, [[0.75] * 3, [0.25] * 3])
@@ -112,7 +112,7 @@ def test_AdiabaticTimestepsQAOAParameters():
     assert np.allclose(raw, params.raw())
 
 
-def test_AlternatingOperatorsQAOAParameters():
+def test_StandardWithBiasParams():
     params = StandardWithBiasParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
     assert np.allclose(params.x_rotation_angles, [[0.75] * 3, [0.25] * 3])
@@ -125,7 +125,7 @@ def test_AlternatingOperatorsQAOAParameters():
     params.update_from_raw(raw)
     assert np.allclose(raw, params.raw())
 
-def test_ClassicalFarhiQAOAParameters():
+def test_StandardParams():
     params = StandardParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
     assert np.allclose(params.x_rotation_angles, [[0.75] * 3, [0.25] * 3])
@@ -139,7 +139,7 @@ def test_ClassicalFarhiQAOAParameters():
     assert np.allclose(raw, params.raw())
 
 
-def test_FourierQAOAParameters():
+def test_FourierParams():
     params = FourierParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=3, q=2, time=2)
     # just access the angles, to check that it actually creates them
     assert len(params.z_rotation_angles) == len(params.zz_rotation_angles)
@@ -154,14 +154,14 @@ def test_FourierQAOAParameters():
 
 def test_QAOAParameterIterator():
     params = AnnealingParams.linear_ramp_from_hamiltonian(hamiltonian, 2)
-    iterator = QAOAParameterIterator(params, "times[0]", np.arange(0,1,0.5))
+    iterator = QAOAParameterIterator(params, "schedule[0]", np.arange(0,1,0.5))
     log = []
     for p in iterator:
-        log.append((p.times).copy())
+        log.append((p.schedule).copy())
     print(log[0])
     print(log[1])
-    assert np.allclose(log[0], [0, 1.049999999])
-    assert np.allclose(log[1], [0.5, 1.049999999])
+    assert np.allclose(log[0], [0, 0.75])
+    assert np.allclose(log[1], [0.5, 0.75])
 
 
 def test_inputChecking():
