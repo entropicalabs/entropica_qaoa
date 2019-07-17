@@ -30,7 +30,7 @@ For those unsure of the location of their site-packages folder, you can simply r
 2. Clone the repository into your site-packages folder, into a directory called entropica_qaoa:
 
 ```
-git clone [insert the link when set up] entropica_qaoa
+git clone https://github.com/entropicalabs/entropica_qaoa.git entropica_qaoa
 ```
 3. Install the package using pip:
 
@@ -49,4 +49,4 @@ You can now import this package as you would any conda- or pip-installed library
  - with `pytest tests/<testfile>` single tests can be run to check single modules.
 
 ## Contributing
-This project is hosted on Gitlab and can be found at [insert link]. If you have feature requests or have already implemented them, feel free to send us a pull request. 
+This project is hosted on GitHub and can be found at https://github.com/entropicalabs/entropica_qaoa.git. If you have feature requests or have already implemented them, feel free to send us a pull request. 
