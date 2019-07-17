@@ -1,0 +1,50 @@
+# IPython Notebooks 
+###################
+*.ipynb_checkpoints
+
+#compiled stuff
+###############
+*.pyc
+*.html
+
+# orig files
+###########
+*.orig
+
+# Distribution / packaging
+##########################
+eggs/
+docs/build
+*.egg-info/
+*.egg
+.eggs/
+
+# latex stuff
+# ##########
+*.log
+*.md5
+*.vrb
+*.dpth
+*.bcf
+*.bbl
+*.blg
+*.fls
+*.auxlock
+*.run.xml
+*.json
+*.fdb_latexmk
+*.nav
+*.xdv
+*.toc
+*.synctex.gz
+*.aux
+*.out
+
+# Some specific files and folders
+#################################
+.ipynb_checkpoints/*
+.ropeproject/*
+node_modules/*
+.idea/*
+Package_Scheme.pptx
+examples/*.py
