@@ -1,4 +1,4 @@
-# Copyright 2019 Entropica Labs
+#   Copyright 2019 Entropica Labs
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -906,12 +906,12 @@ class StandardParams(AbstractParams):
 
 
 class AnnealingParams(AbstractParams):
-    r"""
+    """
     QAOA parameters that implement a state preparation circuit of the form
 
     .. math::
 
-        U = e^{-i (1-s(t_p)) H_0 \Delta t} e^{-i s(t_p) H_c \Delta t} \cdots e^{-i(1-s(t_1)H_0 \Delta t} e^{-i s(t_1) H_c \Delta t}
+        U = e^{-i (1-s(t_p)) H_M \Delta t} e^{-i s(t_p) H_C \Delta t} \cdots e^{-i(1-s(t_1)H_M \Delta t} e^{-i s(t_1) H_C \Delta t}
 
     where the :math:`s(t_i) =: s_i` are the variable parameters and
     :math:`\Delta t = \frac{T}{N}`.
@@ -924,12 +924,12 @@ class AnnealingParams(AbstractParams):
         and the total annealing time ``hyperparameters = (hamiltonian,
         n_steps, time)``
     parameters : Tuple
-        Tuple containing ``(times)`` of length ``n_steps``
+        Tuple containing ``(schedule values)`` of length ``n_steps``
 
     Attributes
     ----------
     schedule: np.array
-        An 1D array holding the timesteps specifying the schedule.
+        An 1D array holding the values of the schedule function at each timestep.
     """
 
     def __init__(self,
@@ -1014,7 +1014,7 @@ class AnnealingParams(AbstractParams):
         Returns
         -------
         AnnealingParams
-            A ``AnnealingParams`` object with the hyperparameters taken from
+            An ``AnnealingParams`` object with the hyperparameters taken from
             ``abstract_params`` and the normal parameters from ``parameters``
         """
         out = super().from_AbstractParameters(abstract_params)
