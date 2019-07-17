@@ -35,9 +35,11 @@ To ensure the package has been successfully installed, you can run the following
  - `pytest` runs the default tests and skips longer tests that need heavy simulations and tests of the Notebooks in `examples/`
  - `pytest --runslow` the tests with heavy simulations. 
  - `pytest --notebooks` runs the Notebook tests. To achieve this, the notebooks are converted to python scripts which are then executed. So the line numbers in the error messages refer to the lines in `<TheNotebook>.py` and not in `<TheNotebook>.ipynb`.
- - `pytest --all` runs all of the above tests. Ideally all of them pass, before you do a `git push`
- - If you need more infos than `pytest` give you be default: Use the toggle `pytest (options) -s` to get all output.
+ - `pytest --all` runs all of the above tests. `
+ - If you need more info than `pytest` give you by default: Use the toggle `pytest (options) -s` to get all output.
  - with `pytest tests/<testfile>` single tests can be run to check single modules.
+ 
+ NOTE: we are aware of a testing error with the `test_qaoa.py` file, related to the random number generator used there. This does not affect the smooth running of the code, and will be fixed soon.
  
  ## Documentation
 The documentation can be installed and built by following these two steps:
