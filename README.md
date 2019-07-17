@@ -35,6 +35,7 @@ git clone https://github.com/entropicalabs/entropica_qaoa.git
 3. Move into the entropica_qaoa directory and install the package:
 
 ```bash
+cd entropica_qaoa
 python setup.py install
 ```
 
