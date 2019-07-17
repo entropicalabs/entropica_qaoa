@@ -289,7 +289,7 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
         """Alternative to ``__init__`` that already fills ``parameters``.
 
         Calculate initial parameters from a hamiltonian corresponding to a
-        linear ramp annealing schedule and return a ``QAOAParameters`` object.
+        linear ramp annealing schedule and return a ``QAOAParams`` object.
 
         Parameters
         ----------
@@ -841,7 +841,7 @@ class StandardParams(AbstractParams):
         Returns
         -------
         StandardParams
-            A `ClassicalFarhiQAOAParameters` object with parameters according
+            A ``StandardParams`` object with parameters according
             to a linear ramp schedule for ``hamiltonian``
         """
         if time is None:
@@ -899,14 +899,15 @@ class AnnealingParams(AbstractParams):
         U = e^{-i (1-s(t_p)) H_0 \Delta t} e^{-i s(t_p) H_c \Delta t} \cdots e^{-i(1-s(t_1)H_0 \Delta t} e^{-i s(t_1) H_c \Delta t}
 
     where the :math:`t_i` are the variable parameters and
-    :math:`\Delta t = \frac{T}{N}`. This corresponds to the
-    idea of discretized adiabatic annealing and specifying the schedule by specifying at which timesteps we discretize.
+    :math:`\Delta t = \frac{T}{N}` as well as :math:`s(t) = \frac{t}{T}`.
+    This corresponds to the idea of discretized adiabatic annealing and specifying the schedule by specifying at which timesteps we discretize.
 
     Parameters
     ----------
     hyperparameters:
         The hyperparameters containing the hamiltonian, the number of steps
-        and the total annealing time ``hyperparameters = (hamiltonian, n_steps, time)``
+        and the total annealing time ``hyperparameters = (hamiltonian,
+        n_steps, time)``
     parameters : Tuple
         Tuple containing ``(times)`` of length ``n_steps``
 
@@ -914,6 +915,11 @@ class AnnealingParams(AbstractParams):
     ----------
     times: np.array
         An 1D array holding the timesteps specifying the schedule.
+
+    Notes
+    -----
+    It makes more sense to specify :math:`s(t_i) = s_i` directly, instead of
+    specifying the :math:`t_i`. So this is about to change.
     """
 
     def __init__(self,
@@ -999,9 +1005,8 @@ class AnnealingParams(AbstractParams):
         Returns
         -------
         AnnealingParams
-            A ``AdiabaticTimestepsQAOAParameters`` object with the
-            hyperparameters taken from ``abstract_params`` and the normal
-            parameters from ``parameters``
+            A ``AnnealingParams`` object with the hyperparameters taken from
+            ``abstract_params`` and the normal parameters from ``parameters``
         """
         out = super().from_AbstractParameters(abstract_params)
         if time is None:
@@ -1203,7 +1208,7 @@ class FourierParams(AbstractParams):
         Returns
         -------
         FourierParams
-            A ``FourierQAOAParameters`` object with the hyperparameters taken
+            A ``FourierParams`` object with the hyperparameters taken
             from ``abstract_params`` and the normal parameters from
             ``parameters``
         """
