@@ -32,10 +32,10 @@ For those unsure of the location of their site-packages folder, you can simply r
 ```
 git clone https://github.com/entropicalabs/entropica_qaoa.git entropica_qaoa
 ```
-3. Install the package using pip:
+3. Install the package:
 
-```
-pip install entropica_qaoa
+```bash
+python setup.py install
 ```
 
 You can now import this package as you would any conda- or pip-installed library!
