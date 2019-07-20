@@ -14,7 +14,6 @@
 
 """
 Utilty and convenience functions for a number of QAOA applications.
-
 See the demo notebook UtilitiesDemo.ipynb for examples on usage of the methods herein.
 """
 
@@ -110,7 +109,6 @@ def random_hamiltonian(nqubits: int) -> PauliSum:
 
     return PauliSum(hamiltonian)
 
-
 def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
     """
     Creates a networkx graph corresponding to a specified problem Hamiltonian.
@@ -129,6 +127,7 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
     TODO:
 
         Allow ndarrays to be input as hamiltonian too.
+        Provide support for qubit placeholders.
 
     """
 
@@ -151,34 +150,52 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
 
     return G
 
-#    G = nx.Graph()
-#    dim = len(hamiltonian)
-#    for i in range(dim):
-#        qubits = hamiltonian.terms[i].get_qubits()
-#        if len(qubits) == 1:
-#            G.add_node(qubits[0], weight=hamiltonian.terms[i].coefficient)
-#        else:
-#            G.add_edge(qubits[0], qubits[1], weight=hamiltonian.terms[i].coefficient)
-#
-#    return G
-#
-#def graph_from_hyperparams(nqubits: int,
-#                           singles: List[int],
-#                           biases: List[float],
-#                           pairs: List[int],
-#                           couplings: List[float]) -> nx.Graph:
-#
-#    G = nx.Graph()
-#    G.add_nodes_from(range(nqubits))
-#
-#    for i in range(len(singles)):
-#        G.add_node(singles[i], weight=biases[i])
-#
-#    for i in range(len(pairs)):
-#        G.add_edge(pairs[i][0], pairs[i][1], weight=couplings[i])
-#
-#    return G
-
+def random_k_regular_graph(degree: int,
+                           nodes: int,
+                           seed: int = None,
+                           weighted: bool = False,
+                           biases: bool =False) -> nx.Graph:
+    
+    """
+    Produces a random graph with specified number of nodes, each having degree k.
+    
+    Parameters
+    ----------
+    degree:
+        Desired degree for the nodes   
+    nodes:
+        Total number of nodes in the graph    
+    seed:
+        A seed for the random number generator    
+    weighted:
+        Whether the edge weights should be uniform or different. If false, all weights are set to 1. 
+        If true, the weight is set to a random number drawn from the uniform distribution in the interval 0 to 1.    
+    biases:
+        Whether or not the graph nodes should be assigned a weight.
+        If true, the weight is set to a random number drawn from the uniform distribution in the interval 0 to 1.
+        
+    Returns
+    -------
+    G
+        A graph with the properties as specified.
+    
+    """
+    
+    G = nx.random_regular_graph(degree,nodes,seed)
+    
+    for edge in G.edges():
+        
+        if not weighted:
+            G[edge[0]][edge[1]]['weight'] = 1
+        else:
+            G[edge[0]][edge[1]]['weight'] = np.random.rand()
+    
+    if biases:
+        
+        for node in G.nodes():
+            G[node]['weight'] = np.random.rand()
+   
+    return G
 
 def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
     """
@@ -222,11 +239,6 @@ def plot_graph(G):
     ----------
     G:
         The networkx graph of interest.
-
-
-    TODO:
-
-        Allow the user to specify some desired plot properties?
     """
 
     weights = np.real([*nx.get_edge_attributes(G, 'weight').values()])
@@ -242,6 +254,29 @@ def graph_from_hyperparams(nqubits: int,
                            biases: List[float],
                            pairs: List[int],
                            couplings: List[float]) -> nx.Graph:
+    
+    """
+    Builds a networkx graph from the specified QAOA hyperparameters
+    
+    Parameters
+    ----------
+    nqubits:
+        The number of qubits (graph nodes)   
+    singles:
+        The qubits that have a bias term (node weight)    
+    biases:
+        The values of the single-qubit biases (i.e. the node weight values)       
+    pairs:
+        The qubit pairs that are coupled (i.e. the nodes conected by an edge)   
+    couplings:
+        The strength of the coupling between the qubit pairs (i.e. the edge weights)
+        
+    Returns
+    -------
+    G:
+        Networkx graph with the specified properties
+    
+    """
 
     G = nx.Graph()
     G.add_nodes_from(range(nqubits))
@@ -253,41 +288,6 @@ def graph_from_hyperparams(nqubits: int,
         G.add_edge(pairs[i][0], pairs[i][1], weight=couplings[i])
 
     return G
-
-# def graph_from_edges(vertices: int, edges: Dict, biases: Dict = None) -> nx.Graph:
-#
-#    """
-#    Creates a networkx graph on specified number of vertices, with the specified edges connected by corresponding edge weights.
-#
-#    Parameters
-#    ----------
-#    vertices:
-#        The total number of vertices in the graph.
-#
-#    edges:
-#        A dictionary whose keys are tuples of the nodes connected by an edge. The corresponding dict values are the edge weights.
-#    """
-#
-#    G = nx.Graph()
-#    G.add_nodes_from(range(vertices))
-#    edges_ = [*edges]
-#    weights = [*edges.values()]
-#    for i in range(len(edges_)):
-#           G.add_edge(edges[i][0],edges[i][1],weight=weights[i])
-#
-#    return G
-#
-#
-##    G = nx.Graph()
-# G.add_nodes_from(range(vertices))
-##    i_pointer = 0
-# for i in range(vertices):
-# for j in range(i,vertices):
-##           weight = edge_weights[i_pointer] + j
-# G.add_edge(i,j,weight=weight)
-##       i_pointer += vertices - i
-##
-# return G
 
 ### HAMILTONIANS AND DATA ###
 
@@ -334,21 +334,21 @@ def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     return PauliSum(pauli_list)
 
 
-def distances_dataset(data, metric='euclidean'):
+def distances_dataset(data: Union[np.array,pd.DataFrame,Dict], 
+                      metric='euclidean') -> Union[np.array,pd.DataFrame]:
     """
     Computes the distance between data points in a specified dataset, according to the specified metric (default is Euclidean).
 
     Parameters
     ----------
     data:
-
+        The user's dataset, either as an array, dictionary, or a Pandas DataFrame. 
 
     Returns
     -------
+    If input is a dictionary or numpy array, output is a numpy array of dimension NxN, where N is the number of data points.
+    If input is a Pandas DataFrame, the distances are returned in this format.
 
-
-    TODO
-        Decide what format the input and output should be.
 
     """
 
@@ -384,7 +384,7 @@ def gaussian_2Dclusters(n_clusters: int,
         A dict whose keys are the cluster labels, and values are a matrix of the with the x and y coordinates as its rows.
 
     TODO
-        Decide on the format of the output here and redo code if needed, put -> in function header
+        Output data as Pandas DataFrame?
 
     """
     args_in = [len(means), len(cov_matrices), len(n_points)]
@@ -405,11 +405,9 @@ def gaussian_2Dclusters(n_clusters: int,
 
 
 def plot_cluster_data(data):
+
     """
     Creates a scatterplot of the input data specified
-
-    TODO
-        Decide which format the input should be (ndarray, dataframe, etc)
     """
 
     data_matr = np.concatenate(list(data.values()))
