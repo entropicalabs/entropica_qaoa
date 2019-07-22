@@ -30,11 +30,6 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-
-   parameter_demo_1
-
-.. toctree::
-   :maxdepth: 2
    :caption: The VQE modules
 
    optimizer
