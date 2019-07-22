@@ -11,10 +11,10 @@
 ###########
 *.orig
 
-# Distribution / packaging
-##########################
+# Distribution / packaging / docs
+#################################
 eggs/
-docs/build
+docs/
 *.egg-info/
 *.egg
 .eggs/

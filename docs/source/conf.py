@@ -16,7 +16,7 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../../'))
 
-from qaoa.parameters import shapedArray
+from entropica_qaoa.qaoa.parameters import shapedArray
 
 
 
@@ -36,8 +36,12 @@ extensions = [
         "sphinx.ext.todo",
         "sphinx.ext.napoleon",
         "sphinx.ext.autodoc",
+	"sphinx.ext.coverage",
         "sphinx_autodoc_typehints",
         "sphinx.ext.mathjax",
+        "sphinx.ext.ifconfig",
+	"sphinx.ext.intersphinx",
+	"nbsphinx"
 ]
 
 napoleon_google_docstring = False

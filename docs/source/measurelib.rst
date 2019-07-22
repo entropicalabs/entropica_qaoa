@@ -2,7 +2,7 @@ The `measurelib` module
 =======================
 
 
-.. automodule:: vqe.measurelib
+.. automodule:: entropica_qaoa.vqe.measurelib
     :members:
     :undoc-members:
     :show-inheritance:

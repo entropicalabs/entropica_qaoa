@@ -1,37 +1,37 @@
-.. Entropica QAOA documentation master file, created by
-   sphinx-quickstart on Tue Apr 23 00:13:37 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Welcome to Entropica QAOA!
+==========================
 
-Welcome to Entropica QAOA's documentation!
-==========================================
+Here we explain what the module is about, what it does.
+Explain the different components & structure
+What are the utility and convenience functions?
+etc...
+Basically anything we want to include on the landing page of these docs.
 
-To compile this documentation you first must install Sphinx and some of its
-extensions.
-Sphinx and the neccesary extensions can be installed with
+Contents
+========
 
-.. code-block:: bash
+.. toctree::
+   :maxdepth: 2 
+   
+   installation
 
-   pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints nbsphinx
+.. toctree::
+   :maxdepth: 2
 
-(I hope this list is complete. Otherwise you will get errors during compilation
-that hopefully tell you, what is missing)
-Then the documentation can be compiled with
+   quickstart
 
-.. code-block:: bash
+.. toctree::
+   :maxdepth: 2
 
-   cd docs && make html
+   QAOAParameterDemo
+   AdvancedQAOAParameterDemo
+   UtilitiesDemo
+   VQEDemo
 
-(or however you use the ``make.bat`` on Windows)
-and is found in ``docs/build/html``
+.. toctree::
+   :maxdepth: 2
 
-.. todo::
-
- - Replace all single backticks with double backticks for monospace formatting
-
-
-API reference
-=============
+   parameter_demo_1
 
 .. toctree::
    :maxdepth: 2
@@ -48,10 +48,3 @@ API reference
    qaoa_cost_function
    parameters
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

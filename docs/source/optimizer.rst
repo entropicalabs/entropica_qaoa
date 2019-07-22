@@ -1,7 +1,7 @@
 The `optimizer` module
 ======================
 
-.. automodule:: vqe.optimizer
+.. automodule:: entropica_qaoa.vqe.optimizer
     :members:
     :undoc-members:
     :show-inheritance:

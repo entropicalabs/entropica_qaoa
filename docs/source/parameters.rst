@@ -1,7 +1,7 @@
 The `parameters` module for QAOA
 ================================
 
-.. automodule:: qaoa.parameters
+.. automodule:: entropica_qaoa.qaoa.parameters
     :members:
     :undoc-members:
     :show-inheritance:
