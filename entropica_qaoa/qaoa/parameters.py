@@ -900,7 +900,7 @@ class StandardParams(AbstractParams):
 
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
         ax.plot(self.gammas, label="gammas", marker="^", ls="", **kwargs)
-        ax.set_xlabel("timestep")
+        ax.set_xlabel("timestep", fontsize=12)
         # ax.grid(linestyle='--')
         ax.legend()
 
@@ -1028,12 +1028,210 @@ class AnnealingParams(AbstractParams):
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self.schedule, label="s(t)", marker="s", ls="", **kwargs)
-        ax.set_xlabel("timestep number")
+        ax.plot(self.schedule, marker="s", **kwargs)
+        ax.set_xlabel("timestep number", fontsize=14)
+        ax.set_ylabel("s(t)", fontsize=14)
+
+class FourierParams(AbstractParams):
+    """
+    The QAOA parameters as the sine/cosine transform of the original gammas
+    and x_rotation_angles. See "Quantum Approximate Optimization Algorithm:
+    Performance, Mechanism, and Implementation on Near-Term Devices"
+    [https://arxiv.org/abs/1812.01041] for a detailed description.
+
+    Parameters
+    ----------
+    hyperparameters:
+        The hyperparameters containing the hamiltonian, the number of steps
+        and the total annealing time
+        ``hyperparameters = (hamiltonian, n_steps, q)``.
+        ``q`` is the number of fourier coefficients. For ``q == n_steps`` we
+        have the full expressivity of ``StandardParams``.
+        More are redundant.
+    parameters:
+        Tuple containing ``(v, u)`` with dimensions
+        ``(q, q)``
+
+    Attributes
+    ----------
+    q : int
+        The number of coefficients for the discrete sine and cosine transforms
+        below
+    u : np.array
+        The discrete sine transform of the ``gammas`` in
+        ``StandardParams``
+    v : np.array
+        The discrete cosine transform of the betas in
+        ``StandardParams``
+    """
+
+    def __init__(self,
+                 hyperparameters: Tuple[PauliSum, int, float],
+                 parameters: Tuple):
+        # setup reg, qubits_singles and qubits_pairs
+        super().__init__(hyperparameters)
+        self.q = hyperparameters[2]
+        self.v, self.u = parameters
+
+    def __repr__(self):
+        string = "Hyperparameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "Parameters:\n"
+        string += "\tu: " + str(self.u) + "\n"
+        string += "\tv: " + str(self.v) + "\n"
+        return(string)
+
+    def __len__(self):
+        return 2 * self.q
+
+    # Todo: properly vectorize this or search for already implemented
+    # DST and DCT
+    @staticmethod
+    def _dst(v, p):
+        """Compute the discrete sine transform from frequency to timespace."""
+        x = np.zeros(p)
+        for i in range(p):
+            for k in range(len(v)):
+                x[i] += v[k] * np.sin((k + 0.5) * (i + 0.5) * np.pi / p)
+        return x
+
+    @staticmethod
+    def _dct(u, p):
+        """Compute the discrete cosine transform from frequency to timespace."""
+        x = np.zeros(p)
+        for i in range(p):
+            for k in range(len(u)):
+                x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
+        return x
+
+    @shapedArray
+    def v(self):
+        return self.q
+
+    @shapedArray
+    def u(self):
+        return self.q
+
+    @property
+    def x_rotation_angles(self):
+        betas = self._dct(self.v, self.n_steps)
+        return np.outer(betas, np.ones(len(self.reg)))
+    
+    @property
+    def z_rotation_angles(self):
+        gammas_singles = self._dst(self.u, self.n_steps)
+        return np.outer(gammas_singles, self.single_qubit_coeffs)
+
+    @property
+    def zz_rotation_angles(self):
+        gammas = self._dst(self.u, self.n_steps)
+        return np.outer(gammas, self.pair_qubit_coeffs)
+
+    def update_from_raw(self, new_values):
+        # overwrite x_rotation_angles with new ones
+        self.v = np.array(new_values[0:self.q])
+        # cut x_rotation_angles from new_values
+        new_values = new_values[self.q:]
+        self.u_pairs = np.array(new_values[0:self.q])
+        new_values = new_values[self.q:]
+
+        if not len(new_values) == 0:
+            raise RuntimeWarning("list to make new u's and v's out of"
+                                 "didn't have the right length!")
+
+    def raw(self):
+        raw_data = np.concatenate((self.v,self.u))
+        return raw_data
+
+    @classmethod
+    def linear_ramp_from_hamiltonian(cls,
+                                     hamiltonian: PauliSum,
+                                     n_steps: int,
+                                     q: int = 4,
+                                     time: float = None):
+        """
+        Parameters
+        ----------
+        hamiltonian:
+            The hamiltonian
+        n_steps:
+            number of timesteps
+        q:
+            Number of Fourier coefficients. Defaults to 4
+        time:
+            total time. Set to ``0.7*n_steps`` if ``None`` is passed.
+
+        Returns
+        -------
+        FourierParams:
+            A ``FourierParams`` object with initial parameters
+            corresponding to a linear ramp annealing schedule
+
+        ToDo
+        ----
+        Make a more informed choice of the default value for ``q``. Probably
+        depending on ``n_qubits``
+        """
+        if time is None:
+            time = 0.7 * n_steps
+
+        # fill x_rotation_angles, z_rotation_angles and zz_rotation_angles
+        # Todo make this an easier expresssion
+        v = np.array([time / n_steps, *[0] * (q - 1)])
+        u = np.array([time / n_steps, *[0] * (q - 1)])
+
+        # wrap it all nicely in a qaoa_parameters object
+        params = cls((hamiltonian, n_steps, q), (v, u))
+        return params
+
+    @classmethod
+    def from_AbstractParameters(cls,
+                                abstract_params: AbstractParams,
+                                parameters: Tuple,
+                                q: int = 4):
+        """
+
+        Parameters
+        ----------
+        abstract_params:
+            An AbstractQAOAParameters instance to which to add the parameters
+        parameters:
+            Same as ``parameters`` in ``.__init__()``
+        q:
+            Number of fourier coefficients. Defaults to 4
+
+        Returns
+        -------
+        FourierParams
+            A ``FourierParams`` object with the hyperparameters taken
+            from ``abstract_params`` and the normal parameters from
+            ``parameters``
+        """
+        out = super().from_AbstractParameters(abstract_params)
+        if q is None:
+            q = 4
+        out.q = q
+        out.v, out.u =\
+            np.array(parameters[0]), np.array(parameters[1])
+        return out
+
+    def plot(self, ax=None, **kwargs):
+        warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
+                      "interested in v, u you can access them via "
+                      "params.v, params.u")
+        if ax is None:
+            fig, ax = plt.subplots()
+
+        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
+        if not _is_list_empty(self.gammas_pairs):
+            ax.plot(self.gammas,
+                    label="gammas", marker="v", ls="", **kwargs)
+        ax.set_xlabel("timestep")
+        # ax.grid(linestyle='--')
         ax.legend()
 
 
-class FourierParams(AbstractParams):
+class FourierWithBiasParams(AbstractParams):
     """
     The QAOA parameters as the sine/cosine transform of the original gammas
     and x_rotation_angles. See "Quantum Approximate Optimization Algorithm:
@@ -1176,8 +1374,8 @@ class FourierParams(AbstractParams):
 
         Returns
         -------
-        FourierParams:
-            A ``FourierParams`` object with initial parameters
+        FourierWithBiasParams:
+            A ``FourierWithBiasParams`` object with initial parameters
             corresponding to a linear ramp annealing schedule
 
         ToDo
@@ -1216,8 +1414,8 @@ class FourierParams(AbstractParams):
 
         Returns
         -------
-        FourierParams
-            A ``FourierParams`` object with the hyperparameters taken
+        FourierWithBiasParams
+            A ``FourierWithBiasParams`` object with the hyperparameters taken
             from ``abstract_params`` and the normal parameters from
             ``parameters``
         """
