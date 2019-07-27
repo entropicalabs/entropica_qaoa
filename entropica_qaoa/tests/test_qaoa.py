@@ -15,8 +15,8 @@ from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 
 #from vqe.optimizer import scipy_optimizer
 from entropica_qaoa.qaoa.cost_function import (QAOACostFunctionOnWFSim,
-                                            QAOACostFunctionOnQVM)
-from entropica_qaoa.qaoa.parameters import FourierParams
+                                               QAOACostFunctionOnQVM)
+from entropica_qaoa.qaoa.parameters import FourierParams, FourierWithBiasParams
 
 
 def test_qaoa_on_wfsim():
@@ -26,17 +26,20 @@ def test_qaoa_on_wfsim():
     term3 = PauliTerm("Z", 1, -0.5)
     ham = PauliSum([term1, term2, term3])
 
-    params = FourierParams.linear_ramp_from_hamiltonian(ham, n_steps=10, q=2)
+    params = FourierWithBiasParams.linear_ramp_from_hamiltonian(ham,
+                                                                n_steps=10,
+                                                                q=2)
     p0 = params.raw()
     sim = WavefunctionSimulator()
     cost_fun = QAOACostFunctionOnWFSim(ham, params, sim,
                                        scalar_cost_function=True, nshots=100,
-                                       noisy=True)
+                                       noisy=False)
     with local_qvm():
         out = minimize(cost_fun, p0, tol=1e-3, method="Cobyla",
                        options={"maxiter": 500})
         wf = sim.wavefunction(cost_fun.prepare_ansatz,
                               memory_map=cost_fun.make_memory_map(params))
+
     assert np.allclose(out["fun"], -1.3, rtol=1.1)
     assert out["success"]
     assert np.allclose(wf.probabilities(), [0, 0, 0, 1], rtol=1.5, atol=0.05)

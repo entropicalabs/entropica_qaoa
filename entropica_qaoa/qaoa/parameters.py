@@ -515,46 +515,22 @@ class ExtendedParams(AbstractParams):
         times = np.linspace(time * (0.5 / n_steps), time
                             * (1 - 0.5 / n_steps), n_steps)
 
-        betas = []
-        gammas_pairs = []
-        gammas_singles = []
+        term_lengths = [len(t) for t in hamiltonian]
+        n_sing = term_lengths.count(1)
+        n_pairs = term_lengths.count(2)
+        n_betas = len(hamiltonian.get_qubits())
+        has_higher_order_terms = any(l > 2 for l in term_lengths)
+        if has_higher_order_terms:
+            raise NotImplementedError(
+                "As of now we can only handle hamiltonians with at most "
+                "two-qubit terms")
 
-        # fill betas and gammas_singles, gammas_pairs according to the times and
-        # coefficients of the terms in the hamiltonian
-        for t in times:
-            gamma_pairs = []
-            gamma_singles = []
-            beta = []
-
-            for term in hamiltonian:
-                if len(term) == 1:
-                    gamma_singles.append(t * term.coefficient.real * dt / time)
-
-                elif len(term) == 2:
-                    gamma_pairs.append(t * term.coefficient.real * dt / time)
-                elif len(term) == 0:
-                    pass  # could give a notice, that multiples of the identity are ignored, since unphysical
-
-                else:
-                    raise NotImplementedError(
-                        "As of now we can only handle hamiltonians with at most two-qubit terms")
-
-            if gamma_singles:
-                gammas_singles.append(gamma_singles)
-            if gamma_pairs:
-                gammas_pairs.append(gamma_pairs)
-
-            for qubit in hamiltonian.get_qubits():              # not efficient, but following the
-                beta.append((1 - t / time) * dt)   # same logic as above
-            betas.append(beta)
-
-        # if there are no one qubit terms return a list containing an empty list
-        # same for no two qubit terms. This ensures that prepare_qaoa_ansatz
-        # works as expected
-        if not gammas_singles:
-            gammas_singles = [[]]
-        if not gammas_pairs:
-            gammas_pairs = [[]]
+        betas = np.array([dt * (1 - t / time) for t in times])
+        betas = betas.repeat(n_betas).reshape(n_steps, n_betas)
+        gammas_singles = np.array([dt * t / time for t in times])
+        gammas_singles = gammas_singles.repeat(n_sing).reshape(n_steps, n_sing)
+        gammas_pairs = np.array([dt * t / time for t in times])
+        gammas_pairs = gammas_pairs.repeat(n_pairs).reshape(n_steps, n_pairs)
 
         # wrap it all nicely in a qaoa_parameters object
         params = cls((hamiltonian, n_steps),
@@ -1116,7 +1092,7 @@ class FourierParams(AbstractParams):
     def x_rotation_angles(self):
         betas = self._dct(self.v, self.n_steps)
         return np.outer(betas, np.ones(len(self.reg)))
-    
+
     @property
     def z_rotation_angles(self):
         gammas_singles = self._dst(self.u, self.n_steps)
@@ -1132,7 +1108,7 @@ class FourierParams(AbstractParams):
         self.v = np.array(new_values[0:self.q])
         # cut x_rotation_angles from new_values
         new_values = new_values[self.q:]
-        self.u_pairs = np.array(new_values[0:self.q])
+        self.u = np.array(new_values[0:self.q])
         new_values = new_values[self.q:]
 
         if not len(new_values) == 0:
@@ -1140,7 +1116,7 @@ class FourierParams(AbstractParams):
                                  "didn't have the right length!")
 
     def raw(self):
-        raw_data = np.concatenate((self.v,self.u))
+        raw_data = np.concatenate((self.v, self.u))
         return raw_data
 
     @classmethod

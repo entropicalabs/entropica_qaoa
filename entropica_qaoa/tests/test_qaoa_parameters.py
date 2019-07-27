@@ -12,6 +12,7 @@ from entropica_qaoa.qaoa.parameters import (ExtendedParams,
                                          StandardWithBiasParams,
                                          AnnealingParams,
                                          FourierParams,
+                                         FourierWithBiasParams,
                                          QAOAParameterIterator,
                                          AbstractParams,
                                          StandardParams)
@@ -33,8 +34,8 @@ def test_ExtendedParams():
     params = ExtendedParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
     assert np.allclose(params.betas, [[0.75] * 3, [0.25] * 3])
-    assert np.allclose(params.gammas_singles, [[0.125], [0.375]])
-    assert np.allclose(params.gammas_pairs, [[0.25, -0.5], [0.75, -1.5]])
+    assert np.allclose(params.gammas_singles, [[0.25], [0.75]])
+    assert np.allclose(params.gammas_pairs, [[0.25, 0.25], [0.75, 0.75]])
     assert [params.qubits_singles] == [term.get_qubits() for term in hamiltonian
                                        if len(term) == 1]
     # Test updating and raw output
@@ -139,8 +140,36 @@ def test_StandardParams():
     assert np.allclose(raw, params.raw())
 
 
+def test_non_fourier_params_are_consistent():
+    """
+    Check that StandardParams, StandardWithBiasParams and
+    ExtendedParams give the same rotation angles, given the same data"""
+    p1 = StandardParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
+    p2 = ExtendedParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
+    p3 = StandardWithBiasParams.linear_ramp_from_hamiltonian(hamiltonian,
+                                                             2, time=2)
+    assert np.allclose(p1.x_rotation_angles, p2.x_rotation_angles)
+    assert np.allclose(p2.x_rotation_angles, p3.x_rotation_angles)
+    assert np.allclose(p1.z_rotation_angles, p2.z_rotation_angles)
+    assert np.allclose(p2.z_rotation_angles, p3.z_rotation_angles)
+    assert np.allclose(p1.zz_rotation_angles, p2.zz_rotation_angles)
+    assert np.allclose(p2.zz_rotation_angles, p3.zz_rotation_angles)
+
+
 def test_FourierParams():
     params = FourierParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=3, q=2, time=2)
+    # just access the angles, to check that it actually creates them
+    assert len(params.z_rotation_angles) == len(params.zz_rotation_angles)
+    assert np.allclose(params.v, [2/3, 0])
+    assert np.allclose(params.u, [2/3, 0])
+    # Test updating and raw output
+    raw = np.random.rand(len(params))
+    params.update_from_raw(raw)
+    assert np.allclose(raw, params.raw())
+
+
+def test_FourierWithBiasParams():
+    params = FourierWithBiasParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=3, q=2, time=2)
     # just access the angles, to check that it actually creates them
     assert len(params.z_rotation_angles) == len(params.zz_rotation_angles)
     assert np.allclose(params.v, [2/3, 0])
@@ -150,6 +179,20 @@ def test_FourierParams():
     raw = np.random.rand(len(params))
     params.update_from_raw(raw)
     assert np.allclose(raw, params.raw())
+
+
+def test_FourierParams_are_consistent():
+    """
+    Check, that both Fourier Parametrizations give the same rotation angles,
+    given the same data"""
+    params1 = FourierParams.linear_ramp_from_hamiltonian(
+                  hamiltonian, n_steps=3, q=2, time=2)
+    params2 = FourierWithBiasParams.linear_ramp_from_hamiltonian(
+                  hamiltonian, n_steps=3, q=2, time=2)
+
+    assert np.allclose(params1.x_rotation_angles, params2.x_rotation_angles)
+    assert np.allclose(params1.z_rotation_angles, params2.z_rotation_angles)
+    assert np.allclose(params1.zz_rotation_angles, params2.zz_rotation_angles)
 
 
 def test_QAOAParameterIterator():
