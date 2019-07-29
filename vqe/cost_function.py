@@ -234,8 +234,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         wf = self.sim.wavefunction(self.prepare_ansatz, memory_map=memory_map)
         wf = wf.amplitudes
         E = (wf.conj()@self.ham@wf).real
-        sigma_E = nshots**(-1 / 2) * (
-                    (wf.conj()@self.ham_squared@wf) - E**2).real
+        sigma_E = np.sqrt((wf.conj()@self.ham_squared@wf - E**2).real / nshots)
 
         # add simulated noise, if wanted
         if self.noisy:
