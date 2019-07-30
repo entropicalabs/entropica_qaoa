@@ -3,6 +3,7 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
 import numpy as np
+import matplotlib.pyplot as plt
 from pytest import raises
 
 from pyquil.paulis import PauliSum, PauliTerm
@@ -14,7 +15,8 @@ from forest_qaoa.qaoa.parameters import (ExtendedParams,
                                          FourierParams,
                                          QAOAParameterIterator,
                                          AbstractParams,
-                                         StandardParams)
+                                         StandardParams,
+                                         _is_iterable_empty)
 
 # build a hamiltonian to test everything on
 q1 = QubitPlaceholder()
@@ -24,9 +26,25 @@ next_term = PauliTerm("Z", 0, -2.0)
 next_term *= PauliTerm("Z", q1)
 hamiltonian += next_term
 
-# TODO Test plot functionality
 # TODO test fourier params
 # TODO Test set_hyperparameters and update_variable_parameters
+
+
+def test_is_iterable_empty():
+    empty_lists = ([], [[]], [[],[]], [[], [[[]]]])
+    empty_tuples = ((), (()), ((), ()), ((), (((())))))
+    empty_arrays = (np.array(l) for l in empty_lists)
+
+    for l in empty_lists:
+        assert(_is_iterable_empty(l))
+
+    for t in empty_tuples:
+        assert(_is_iterable_empty(t))
+
+    for a in empty_arrays:
+        assert(_is_iterable_empty(a))
+
+
 def test_GeneralQAOAParameters():
     params = ExtendedParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
@@ -40,6 +58,7 @@ def test_GeneralQAOAParameters():
     params.update_from_raw(raw)
     assert np.allclose(raw, params.raw())
 
+
 # TODO check that the values also make sense
 def test_GeneralQAOAParametersfromAbstractParameters():
     abstract_params = AbstractParams((hamiltonian, 2))
@@ -52,6 +71,7 @@ def test_GeneralQAOAParametersfromAbstractParameters():
     print("x_rotation_angles:\n", general_params.x_rotation_angles)
     print("z_rotation_angles:\n", general_params.z_rotation_angles)
     print("zz_rotation_angles:\n", general_params.zz_rotation_angles)
+
 
 # Todo: Check that the values also make sense
 def test_AlternatingOperatorsQAOAParametersfromAbstractParameters():
@@ -170,3 +190,44 @@ def test_inputChecking():
     with raises(ValueError):
         params = ExtendedParams((ham, 3),
                                 (betas, gammas_singles, gammas_pairs))
+
+
+# Plot Tests
+
+def test_StandardParams_plot():
+    ham = PauliSum.from_compact_str('(0.1)*Z0*Z1 + (1)*Z0*Z2 + (-0.5)*Z0*Z3 + (0.2)*Z3*Z0 + (3)*Z1*Z3')
+    p = 5
+    params = StandardParams.linear_ramp_from_hamiltonian(ham, p)
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()
+
+    ham = PauliSum.from_compact_str('(-0.1)*Z0*Z1 + (1)*Z0*Z2 + (-0.5)*Z0*Z3 + (24.2)*Z3*Z0 + (3)*Z0*Z3')
+    p = 8
+    params = StandardParams((ham,p),([0.1]*p, [0.2]*p))
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()
+
+    ham = PauliSum.from_compact_str('(-0.1)*Z0*Z1 + (-7.1)*Z0*Z2 + (-0.5)*Z0*Z3 + (4.2)*Z3*Z0 + (3.123)*Z0*Z1')
+    p = 2
+    params = StandardParams.    params = StandardParams((ham,p),([5]*p, [10]*p))
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()
+
+
+def test_ExtendedParams_plot():
+    ham = PauliSum.from_compact_str('(0.1)*Z0*Z1 + (1)*Z0*Z2 + (-0.5)*Z0*Z3 + (0.2)*Z3*Z0 + (3)*Z1*Z3')
+    p = 5
+    params = ExtendedParams.linear_ramp_from_hamiltonian(ham, p)
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()
+
+    ham = PauliSum.from_compact_str('(-0.1)*Z0*Z1 + (1)*Z0*Z2 + (-0.5)*Z0*Z3 + (24.2)*Z3*Z0 + (3)*Z0*Z3')
+    p = 8
+    params = ExtendedParams((ham, p), ([0.1] * p*len(ham.get_qubits()), [], [0.2] * p*len(ham)))
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()

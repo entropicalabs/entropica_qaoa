@@ -24,10 +24,10 @@ import numpy as np
 from pyquil.paulis import PauliSum
 
 
-def _is_list_empty(in_list):
-    if isinstance(in_list, list):    # Is a list
-        return all(map(_is_list_empty, in_list))
-    return False    # Not a list
+def _is_iterable_empty(in_iterable):
+    if isinstance(in_iterable, Iterable):    # Is Iterable
+        return all(map(_is_iterable_empty, in_iterable))
+    return False    # Not an Iterable
 
 
 class shapedArray(object):
@@ -568,10 +568,10 @@ class ExtendedParams(AbstractParams):
             fig, ax = plt.subplots()
 
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_singles):
+        if not _is_iterable_empty(self.gammas_singles):
             ax.plot(self.gammas_singles,
                     label="gammas_singles", marker="^", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_pairs):
+        if not _is_iterable_empty(self.gammas_pairs):
             ax.plot(self.gammas_pairs,
                     label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
@@ -733,10 +733,10 @@ class StandardWithBiasParams(AbstractParams):
             fig, ax = plt.subplots()
 
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_singles):
+        if not _is_iterable_empty(self.gammas_singles):
             ax.plot(self.gammas_singles,
                     label="gammas_singles", marker="^", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_pairs):
+        if not _is_iterable_empty(self.gammas_pairs):
             ax.plot(self.gammas_pairs,
                     label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
@@ -1223,10 +1223,10 @@ class FourierParams(AbstractParams):
             fig, ax = plt.subplots()
 
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_singles):
+        if not _is_iterable_empty(self.gammas_singles):
             ax.plot(self.gammas_singles,
                     label="gammas_singles", marker="^", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_pairs):
+        if not _is_iterable_empty(self.gammas_pairs):
             ax.plot(self.gammas_pairs,
                     label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
