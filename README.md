@@ -1,8 +1,8 @@
-# EntropiQAOA
-A module for Rigettis Forest ecosystem that implements a QAOA and VQE that is more modular than the one already packaged in Grove.
+# entropica_qaoa
+A package implementing the quantum approximate optimisation algorithm (QAOA), providing a number of different features, parametrisations, and utility functions. 
 
 ## Documentation
-The Documentation in HTML format can be found in `docs/build/html/index.html`. If it isn't there, you can compile it yourself by following these two steps:
+The documentation can be installed and built by following these two steps:
 
 **Install the Prerequisites**
 ```bash
@@ -14,24 +14,30 @@ cd docs && make html
 ```
 
 ## Installation
-Installation of this package can be performed in a few simple steps.
+
+We assume that the user has already installed Rigetti's pyQuil package, as well as the Rigetti QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation here: http://docs.rigetti.com/en/stable/start.html
+
+Installation of the `entropica_qaoa` package can be performed in a few simple steps.
+
 1. Open terminal and enter the site-packages folder of your preferred Python environment.
 
 For those with Anaconda installed, the command looks like:
-```
+```bash
 cd /anaconda3/envs/<my-env>/lib/pythonX.Y/site-packages/
 ```
-For those unsure of the location of their site-packages folder, you can simply run 'pip show <package name>' and your terminal will display the directory location of your python packages.
+For those unsure of the location of their site-packages folder, you can simply run ```bash pip show <package name>``` and your terminal will display the directory location of your python packages.
 
-2. Clone the repository into your site-packages folder, into a directory called forest_qaoa:
+2. Clone the repository into your site-packages folder, into a directory called entropica_qaoa:
+
+```bash
+git clone [insert the link when set up] entropica_qaoa
 ```
-git clone git@gitlab.com:entropica/forest-qaoa.git forest_qaoa
+3. Install the package using pip:
+
 ```
-3. Enter the forest_qaoa folder and run the following command
- 
+pip install entropica_qaoa
 ```
-python setup.py install
-```
+
 You can now import this package as you would any conda- or pip-installed library!
 
 ## Testing
@@ -43,4 +49,4 @@ You can now import this package as you would any conda- or pip-installed library
  - with `pytest tests/<testfile>` single tests can be run to check single modules.
 
 ## Contributing
-This project is hosted on Gitlab and can be found at `https://gitlab.com/entropica/forest-qaoa`. If you have feature requests or have already implemented them, feel free to send us a pull request. 
+This project is hosted on Gitlab and can be found at [insert link]. If you have feature requests or have already implemented them, feel free to send us a pull request. 

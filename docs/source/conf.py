@@ -12,10 +12,10 @@
 #
 import os
 import sys
-# sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('../../entropica_qaoa/'))
 
+# from entropica_qaoa.qaoa.parameters import shapedArray
 from qaoa.parameters import shapedArray
 
 
@@ -24,7 +24,7 @@ from qaoa.parameters import shapedArray
 
 project = 'Entropica QAOA'
 copyright = '2019, EntropicaLabs'
-author = 'Ewan Munro, Jan Lukas Bosse, Tommaso Demarie'
+author = 'Ewan Munro, Jan Lukas Bosse, Tommaso Demarie, Cooper Midroni, Benjamin Jones'
 
 
 # -- General configuration ---------------------------------------------------
