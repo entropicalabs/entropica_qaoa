@@ -28,8 +28,8 @@ from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
 from entropica_qaoa.vqe.measurelib import (append_measure_register,
-                                        commuting_decomposition,
-                                        sampling_expectation)
+                                           commuting_decomposition,
+                                           sampling_expectation)
 
 
 LogEntry = namedtuple("LogEntry", ['x', 'fun'])

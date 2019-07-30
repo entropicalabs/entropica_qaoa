@@ -39,10 +39,10 @@ import numpy as np
 from pyquil.paulis import PauliSum
 
 
-def _is_list_empty(in_list):
-    if isinstance(in_list, list):    # Is a list
-        return all(map(_is_list_empty, in_list))
-    return False    # Not a list
+def _is_iterable_empty(in_iterable):
+    if isinstance(in_iterable, Iterable):    # Is Iterable
+        return all(map(_is_iterable_empty, in_iterable))
+    return False    # Not an Iterable
 
 
 class shapedArray(object):
@@ -142,6 +142,8 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
         `single_qubit_coeffs`
     reg : List
         List of all qubits for the X-rotations
+    n_steps : int
+        Number of timesteps. Corresponds to p_steps in the literature
     """
     # pylint: disable=too-many-instance-attributes
 
@@ -172,7 +174,8 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
                 # ignored, since unphysical
             else:
                 raise NotImplementedError(
-                    "As of now we can only handle hamiltonians with at most two-qubit terms")
+                    "As of now we can only handle hamiltonians with at most"
+                    " two-qubit terms")
 
         # extract the cofficients of the terms from the hamiltonian
         # if creating `ExtendedParams` form this, we can delete this attributes
@@ -180,13 +183,15 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
         self.single_qubit_coeffs = np.array([
             term.coefficient for term in hamiltonian if len(term) == 1])
         if np.any(np.iscomplex(self.single_qubit_coeffs)):
-            warnings.warn("hamiltonian contained complex coefficients. Ignoring imaginary parts")
+            warnings.warn("hamiltonian contained complex coefficients."
+                          " Ignoring imaginary parts")
         self.single_qubit_coeffs = self.single_qubit_coeffs.real
         # and the same for the pair qubit coefficients
         self.pair_qubit_coeffs = np.array([
             term.coefficient for term in hamiltonian if len(term) == 2])
         if np.any(np.iscomplex(self.pair_qubit_coeffs)):
-            warnings.warn("hamiltonian contained complex coefficients. Ignoring imaginary parts")
+            warnings.warn("hamiltonian contained complex coefficients."
+                          " Ignoring imaginary parts")
         self.pair_qubit_coeffs = self.pair_qubit_coeffs.real
 
     def __repr__(self):
@@ -559,10 +564,10 @@ class ExtendedParams(AbstractParams):
             fig, ax = plt.subplots()
 
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_singles):
+        if not _is_iterable_empty(self.gammas_singles):
             ax.plot(self.gammas_singles,
                     label="gammas_singles", marker="^", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_pairs):
+        if not _is_iterable_empty(self.gammas_pairs):
             ax.plot(self.gammas_pairs,
                     label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
@@ -724,10 +729,10 @@ class StandardWithBiasParams(AbstractParams):
             fig, ax = plt.subplots()
 
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_singles):
+        if not _is_iterable_empty(self.gammas_singles):
             ax.plot(self.gammas_singles,
                     label="gammas_singles", marker="^", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_pairs):
+        if not _is_iterable_empty(self.gammas_pairs):
             ax.plot(self.gammas_pairs,
                     label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
@@ -1184,8 +1189,6 @@ class FourierParams(AbstractParams):
             ``parameters``
         """
         out = super().from_AbstractParameters(abstract_params)
-        if q is None:
-            q = 4
         out.q = q
         out.v, out.u =\
             np.array(parameters[0]), np.array(parameters[1])
@@ -1199,7 +1202,7 @@ class FourierParams(AbstractParams):
             fig, ax = plt.subplots()
 
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_pairs):
+        if not _is_iterable_empty(self.gammas_pairs):
             ax.plot(self.gammas,
                     label="gammas", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
@@ -1411,10 +1414,10 @@ class FourierWithBiasParams(AbstractParams):
             fig, ax = plt.subplots()
 
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_singles):
+        if not _is_iterable_empty(self.gammas_singles):
             ax.plot(self.gammas_singles,
                     label="gammas_singles", marker="^", ls="", **kwargs)
-        if not _is_list_empty(self.gammas_pairs):
+        if not _is_iterable_empty(self.gammas_pairs):
             ax.plot(self.gammas_pairs,
                     label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")

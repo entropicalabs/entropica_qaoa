@@ -3,19 +3,21 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
 import numpy as np
+import matplotlib.pyplot as plt
 from pytest import raises
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder, Qubit
 
 from entropica_qaoa.qaoa.parameters import (ExtendedParams,
-                                         StandardWithBiasParams,
-                                         AnnealingParams,
-                                         FourierParams,
-                                         FourierWithBiasParams,
-                                         QAOAParameterIterator,
-                                         AbstractParams,
-                                         StandardParams)
+                                            StandardWithBiasParams,
+                                            AnnealingParams,
+                                            FourierParams,
+                                            FourierWithBiasParams,
+                                            QAOAParameterIterator,
+                                            AbstractParams,
+                                            StandardParams,
+                                            _is_iterable_empty)
 
 # build a hamiltonian to test everything on
 q1 = QubitPlaceholder()
@@ -27,9 +29,25 @@ next_term = PauliTerm("Z", 0, -2.0)
 next_term *= PauliTerm("Z", q1)
 hamiltonian += next_term
 
-# TODO Test plot functionality
 # TODO test fourier params
 # TODO Test set_hyperparameters and update_variable_parameters
+
+
+def test_is_iterable_empty():
+    empty_lists = ([], [[]], [[],[]], [[], [[[]]]])
+    empty_tuples = ((), (()), ((), ()), ((), (((())))))
+    empty_arrays = (np.array(l) for l in empty_lists)
+
+    for l in empty_lists:
+        assert(_is_iterable_empty(l))
+
+    for t in empty_tuples:
+        assert(_is_iterable_empty(t))
+
+    for a in empty_arrays:
+        assert(_is_iterable_empty(a))
+
+
 def test_ExtendedParams():
     params = ExtendedParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
@@ -216,3 +234,54 @@ def test_inputChecking():
     with raises(ValueError):
         params = ExtendedParams((ham, 3),
                                 (betas, gammas_singles, gammas_pairs))
+
+
+# Plot Tests
+
+def test_StandardParams_plot():
+    ham_no_bias = PauliTerm("Z", 0)
+    ham_no_bias *= PauliTerm("Z", 1)
+    next_term = PauliTerm("Z", 0, -2.0)
+    next_term *= PauliTerm("Z", 2)
+    ham_no_bias += next_term
+
+    p = 5
+    params = StandardParams.linear_ramp_from_hamiltonian(hamiltonian, p)
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()
+
+    p = 8
+    params = StandardParams((hamiltonian, p),([0.1]*p, [0.2]*p))
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()
+
+    p = 2
+    params = StandardParams((ham_no_bias,p),([5]*p, [10]*p))
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()
+
+
+def test_ExtendedParams_plot():
+    ham_no_bias = PauliTerm("Z", 0)
+    ham_no_bias *= PauliTerm("Z", 1)
+    next_term = PauliTerm("Z", 0, -2.0)
+    next_term *= PauliTerm("Z", 2)
+    ham_no_bias += next_term
+
+    p = 5
+    params = ExtendedParams.linear_ramp_from_hamiltonian(ham_no_bias, p)
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()
+
+    p = 8
+    params = ExtendedParams((ham_no_bias, p),
+                            ([0.1] * p*len(ham_no_bias.get_qubits()),
+                             [],
+                             [0.2] * p*len(ham_no_bias)))
+    fig, ax = plt.subplots()
+    params.plot(ax=ax)
+    # plt.show()
