@@ -4,6 +4,7 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
 import numpy as np
+import scipy.optimize
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
@@ -11,9 +12,8 @@ from pyquil.quil import Program, get_default_qubit_mapping
 from pyquil.gates import RX, CNOT
 from pyquil.quil import QubitPlaceholder, Qubit, address_qubits
 
-from entropica_qaoa.vqe.optimizer import scipy_optimizer
 from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
-                                           PrepareAndMeasureOnQVM)
+                                              PrepareAndMeasureOnQVM)
 
 # gonna need this program and hamiltonian for both tests.
 # So define them globally
@@ -42,12 +42,13 @@ def test_vqe_on_WFSim_QubitPlaceholders():
                                         make_memory_map=lambda p: {"params": p},
                                         hamiltonian=hamiltonian,
                                         sim=sim,
-                                        scalar_cost_function=False,
+                                        scalar_cost_function=True,
+                                        nshots=1,
                                         noisy=False,
                                         qubit_mapping=qubit_mapping)
 
     with local_qvm():
-        out = scipy_optimizer(cost_fun, p0, epsilon=1e-3)
+        out = scipy.optimize.minimize(cost_fun, p0, tol=1e-3, method="Cobyla")
         print(out)
         prog = address_qubits(prepare_ansatz, qubit_mapping=qubit_mapping)
         wf = sim.wavefunction(prog, {"params": out['x']})
@@ -66,11 +67,12 @@ def test_vqe_on_QVM_QubitPlaceholders():
                                           make_memory_map=lambda p: {"params": p},
                                           hamiltonian=hamiltonian,
                                           qvm=qvm,
-                                          scalar_cost_function=False,
+                                          scalar_cost_function=True,
                                           base_numshots=50,
+                                          nshots=4,
                                           enable_logging=True,
                                           qubit_mapping=qubit_mapping)
-        out = scipy_optimizer(cost_fun, p0, epsilon=1e-2, nshots=4)
+        out = scipy.optimize.minimize(cost_fun, p0, tol=1e-2, method="Cobyla")
         print(out)
         print(cost_fun.log)
     assert np.allclose(out['fun'], -4, rtol=1.1)

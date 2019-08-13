@@ -13,7 +13,6 @@ from scipy.optimize import minimize
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 
-#from vqe.optimizer import scipy_optimizer
 from entropica_qaoa.qaoa.cost_function import (QAOACostFunctionOnWFSim,
                                                QAOACostFunctionOnQVM)
 from entropica_qaoa.qaoa.parameters import FourierParams, FourierWithBiasParams

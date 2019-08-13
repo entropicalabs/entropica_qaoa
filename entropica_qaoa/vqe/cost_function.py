@@ -170,26 +170,16 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         self.scalar = scalar_cost_function
         self.nshots = nshots
-        if return_standard_deviation is not None:
-            warnings.warn("The argument `return_standard_deviation` "
-                          "is deprecated in favor of scalar_cost_function.\n"
-                          "See the documentation for details of "
-                          "vqe.cost_function.PrepareAndMeasureOnWFSim for "
-                          "details, on how to update your code.\n"
-                          " Proceeding now with scalar_cost_function = "
-                          f"{True} and nshots = 1000.",
-                          DeprecationWarning)
-            self.scalar = True
-            self.nshots = 1000
-
-        if self.scalar and self.nshots is None:
-            raise ValueError("If scalar_cost_function is set, nshots has to "
-                             "be specified")
-
         self.make_memory_map = make_memory_map
-        self.return_standard_deviation = return_standard_deviation
         self.noisy = noisy
         self.sim = sim  # TODO start own simulator, if None is passed
+
+        if self.scalar and self.nshots is None:
+            if self.noisy:
+                raise ValueError("If `scalar_cost_function=True` and "
+                                 "`noisy=True` `nshots` has to be specified")
+            else:
+                self.nshots = 1  #doesn't really matter what number we put here
 
         # TODO automatically generate Qubit mapping, if None is passed?
         # TODO ask Rigetti to implement "<" between qubits?
@@ -240,7 +230,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             deviation estimate based on the samples.
         """
         if nshots is None:
-            if self.scalar:
+            if self.scalar and not self.noisy:
                 nshots = self.nshots
             else:
                 raise ValueError("nshots cannot be None")
@@ -341,28 +331,14 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None,
                  enable_logging: bool = False):
 
-
         self.scalar = scalar_cost_function
         self.nshots = nshots
+        self.qvm = qvm
+        self.make_memory_map = make_memory_map
+
         if self.scalar and self.nshots is None:
             raise ValueError("If scalar_cost_function is set, nshots has to "
                              "be specified")
-
-        if return_standard_deviation is not None:
-            warnings.warn("The argument `return_standard_deviation` "
-                          "is deprecated in favor of scalar_cost_function.\n"
-                          "See the documentation for details of "
-                          "vqe.cost_function.PrepareAndMeasureOnWFSim for "
-                          "details, on how to update your code.\n"
-                          " Proceeding now with scalar_cost_function = "
-                          f"{True} and nshots = 1000.",
-                          DeprecationWarning)
-            self.scalar = True
-            self.nshots = 1000
-
-        self.qvm = qvm
-        self.return_standard_deviation = return_standard_deviation
-        self.make_memory_map = make_memory_map
 
         if qubit_mapping is not None:
             prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)

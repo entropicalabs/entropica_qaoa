@@ -8,12 +8,13 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
 import numpy as np
+import scipy.optimize
+
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 from pyquil.quil import Program
 from pyquil.gates import RX, CNOT
 
-from entropica_qaoa.vqe.optimizer import scipy_optimizer
 from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
                                            PrepareAndMeasureOnQVM)
 from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
@@ -40,11 +41,12 @@ def test_vqe_on_WFSim():
                                         make_memory_map=lambda p: {"params": p},
                                         hamiltonian=hamiltonian,
                                         sim=sim,
-                                        return_standard_deviation=True,
+                                        scalar_cost_function=True,
+                                        nshots=1,
                                         noisy=False)
 
     with local_qvm():
-        out = scipy_optimizer(cost_fun, p0, epsilon=1e-3)
+        out = scipy.optimize.minimize(cost_fun, p0, tol=1e-3, method="Cobyla")
         print(out)
         wf = sim.wavefunction(prepare_ansatz, {"params": out['x']})
     assert np.allclose(np.abs(wf.amplitudes**2),
@@ -62,9 +64,10 @@ def test_qaoa_on_WFSim():
     cost_fun = QAOACostFunctionOnWFSim(hamiltonian=hamiltonian,
                                        params=params,
                                        sim=sim,
-                                       return_standard_deviation=True,
+                                       scalar_cost_function=True,
+                                       nshots=1,
                                        noisy=False)
 
     with local_qvm():
-        out = scipy_optimizer(cost_fun, p0, epsilon=1e-3)
+        out = scipy.optimize.minimize(cost_fun, p0, tol=1e-3, method="Cobyla")
         print(out)

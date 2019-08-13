@@ -4,12 +4,13 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
 import numpy as np
+import scipy.optimize
+
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 from pyquil.quil import Program
 from pyquil.gates import RX, CNOT
 
-from entropica_qaoa.vqe.optimizer import scipy_optimizer
 from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
                                            PrepareAndMeasureOnQVM)
 from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
@@ -40,7 +41,7 @@ def test_parameter_infos():
                                        nshots=1,
                                        noisy=False)
     with local_qvm():
-        out = scipy_optimizer(cost_fun, p0, epsilon=1e-3)
+        out = scipy.optimize.minimize(cost_fun, p0, tol=1e-3, method="Cobyla")
         print(out)
 
 # Now the user would need to take the optimal parameters and specify which they want to modify, the range, etc.
