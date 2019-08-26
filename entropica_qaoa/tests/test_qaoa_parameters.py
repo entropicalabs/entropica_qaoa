@@ -201,6 +201,40 @@ def test_FourierWithBiasParams():
     assert np.allclose(raw, params.raw())
 
 
+def test_parameter_empty():
+    p = ExtendedParams.empty((hamiltonian, 4))
+    assert isinstance(p, ExtendedParams)
+    assert p.betas.shape == (4, 3)
+    assert p.gammas_singles.shape == (4, 1)
+    assert p.gammas_pairs.shape == (4, 2)
+
+    p = StandardParams.empty((hamiltonian, 4))
+    assert isinstance(p, StandardParams)
+    assert p.betas.shape == (4,)
+    assert p.gammas.shape == (4,)
+
+    p = StandardWithBiasParams.empty((hamiltonian, 4))
+    assert isinstance(p, StandardWithBiasParams)
+    assert p.betas.shape == (4,)
+    assert p.gammas_singles.shape == (4,)
+    assert p.gammas_pairs.shape == (4,)
+
+    p = AnnealingParams.empty((hamiltonian, 4))
+    assert isinstance(p, AnnealingParams)
+    assert p.times.shape == (4,)
+
+    p = FourierParams.empty((hamiltonian, 4, 2))
+    assert isinstance(p, FourierParams)
+    assert p.u.shape == (2,)
+    assert p.v.shape == (2,)
+
+    p = FourierWithBiasParams.empty((hamiltonian, 4, 2))
+    assert isinstance(p, FourierWithBiasParams)
+    assert p.u_singles.shape == (2,)
+    assert p.u_pairs.shape == (2,)
+    assert p.v.shape == (2,)
+
+
 def test_FourierParams_are_consistent():
     """
     Check, that both Fourier Parametrizations give the same rotation angles,

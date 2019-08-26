@@ -359,6 +359,25 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
 
         return params
 
+    @classmethod
+    def empty(cls, hyperparameters: tuple):
+        """Alternative to ``__init__`` that only takes ``hyperparameters`` and
+        fills ``parameters`` via ``np.empty``
+
+        Parameters
+        ----------
+        hyperparameters:
+            Same as the hyperparameters argument for ``cls.__init__()``
+
+        Returns
+        -------
+        Type[AbstractParams]
+            A Parameter object with the parameters filled by ``np.empty``
+        """
+        self = AbstractParams(hyperparameters)
+        self.__class__ = cls
+        return self
+
     def plot(self, ax=None, **kwargs):
         """
         Plots ``self`` in a sensible way to the canvas ``ax``, if provided.
@@ -559,6 +578,15 @@ class ExtendedParams(AbstractParams):
             = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        (self.betas, self.gammas_singles, self.gammas_pairs)\
+            = (np.empty((self.n_steps, len(self.reg))),
+               np.empty((self.n_steps, len(self.qubits_singles))),
+               np.empty((self.n_steps, len(self.qubits_pairs))))
+        return self
+
     def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
@@ -724,6 +752,15 @@ class StandardWithBiasParams(AbstractParams):
             = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        (self.betas, self.gammas_singles, self.gammas_pairs)\
+            = (np.empty((self.n_steps)),
+               np.empty((self.n_steps)),
+               np.empty((self.n_steps)))
+        return self
+
     def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
@@ -875,6 +912,13 @@ class StandardParams(AbstractParams):
             = np.array(parameters[0]), np.array(parameters[1])
         return out
 
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        (self.betas, self.gammas) = (np.empty((self.n_steps)),
+                                     np.empty((self.n_steps)))
+        return self
+
     def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
@@ -882,7 +926,6 @@ class StandardParams(AbstractParams):
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
         ax.plot(self.gammas, label="gammas", marker="^", ls="", **kwargs)
         ax.set_xlabel("timestep", fontsize=12)
-        # ax.grid(linestyle='--')
         ax.legend()
 
 
@@ -1004,6 +1047,12 @@ class AnnealingParams(AbstractParams):
         out._annealing_time = time
         out.schedule = np.array(parameters)
         return out
+
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        self.times = np.empty((self.n_steps))
+        return self
 
     def plot(self, ax=None, **kwargs):
         if ax is None:
@@ -1193,6 +1242,13 @@ class FourierParams(AbstractParams):
         out.v, out.u =\
             np.array(parameters[0]), np.array(parameters[1])
         return out
+
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        self.q = hyperparameters[2]
+        self.v, self.u = np.empty((self.q)), np.empty((self.q))
+        return self
 
     def plot(self, ax=None, **kwargs):
         warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
@@ -1405,6 +1461,14 @@ class FourierWithBiasParams(AbstractParams):
         out.v, out.u_singles, out.u_pairs =\
             np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
+
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        self.q = hyperparameters[2]
+        self.v, self.u_singles, self.u_pairs\
+            = np.empty((self.q)), np.empty((self.q)), np.empty((self.q))
+        return self
 
     def plot(self, ax=None, **kwargs):
         warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
