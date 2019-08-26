@@ -38,6 +38,7 @@ import numpy as np
 
 from pyquil.paulis import PauliSum
 
+from entropica_qaoa.qaoa._trig_transforms import dst, dct
 
 def _is_iterable_empty(in_iterable):
     if isinstance(in_iterable, Iterable):    # Is Iterable
@@ -977,7 +978,7 @@ class AnnealingParams(AbstractParams):
         return self.n_steps
 
     @shapedArray
-    def times(self):
+    def schedule(self):
         return self.n_steps
 
     @property
@@ -1051,7 +1052,7 @@ class AnnealingParams(AbstractParams):
     @classmethod
     def empty(cls, hyperparameters):
         self = super().empty(hyperparameters)
-        self.times = np.empty((self.n_steps))
+        self.schedule = np.empty((self.n_steps))
         return self
 
     def plot(self, ax=None, **kwargs):
@@ -1114,26 +1115,6 @@ class FourierParams(AbstractParams):
     def __len__(self):
         return 2 * self.q
 
-    # Todo: properly vectorize this or search for already implemented
-    # DST and DCT
-    @staticmethod
-    def _dst(v, p):
-        """Compute the discrete sine transform from frequency to timespace."""
-        x = np.zeros(p)
-        for i in range(p):
-            for k in range(len(v)):
-                x[i] += v[k] * np.sin((k + 0.5) * (i + 0.5) * np.pi / p)
-        return x
-
-    @staticmethod
-    def _dct(u, p):
-        """Compute the discrete cosine transform from frequency to timespace."""
-        x = np.zeros(p)
-        for i in range(p):
-            for k in range(len(u)):
-                x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
-        return x
-
     @shapedArray
     def v(self):
         return self.q
@@ -1144,17 +1125,17 @@ class FourierParams(AbstractParams):
 
     @property
     def x_rotation_angles(self):
-        betas = self._dct(self.v, self.n_steps)
+        betas = dct(self.v, self.n_steps)
         return np.outer(betas, np.ones(len(self.reg)))
 
     @property
     def z_rotation_angles(self):
-        gammas_singles = self._dst(self.u, self.n_steps)
-        return np.outer(gammas_singles, self.single_qubit_coeffs)
+        gammas = dst(self.u, self.n_steps)
+        return np.outer(gammas, self.single_qubit_coeffs)
 
     @property
     def zz_rotation_angles(self):
-        gammas = self._dst(self.u, self.n_steps)
+        gammas = dst(self.u, self.n_steps)
         return np.outer(gammas, self.pair_qubit_coeffs)
 
     def update_from_raw(self, new_values):
@@ -1322,26 +1303,6 @@ class FourierWithBiasParams(AbstractParams):
     def __len__(self):
         return 3 * self.q
 
-    # Todo: properly vectorize this or search for already implemented
-    # DST and DCT
-    @staticmethod
-    def _dst(v, p):
-        """Compute the discrete sine transform from frequency to timespace."""
-        x = np.zeros(p)
-        for i in range(p):
-            for k in range(len(v)):
-                x[i] += v[k] * np.sin((k + 0.5) * (i + 0.5) * np.pi / p)
-        return x
-
-    @staticmethod
-    def _dct(u, p):
-        """Compute the discrete cosine transform from frequency to timespace."""
-        x = np.zeros(p)
-        for i in range(p):
-            for k in range(len(u)):
-                x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
-        return x
-
     @shapedArray
     def v(self):
         return self.q
@@ -1356,17 +1317,17 @@ class FourierWithBiasParams(AbstractParams):
 
     @property
     def x_rotation_angles(self):
-        betas = self._dct(self.v, self.n_steps)
+        betas = dct(self.v, self.n_steps)
         return np.outer(betas, np.ones(len(self.reg)))
 
     @property
     def z_rotation_angles(self):
-        gammas_singles = self._dst(self.u_singles, self.n_steps)
+        gammas_singles = dst(self.u_singles, self.n_steps)
         return np.outer(gammas_singles, self.single_qubit_coeffs)
 
     @property
     def zz_rotation_angles(self):
-        gammas_pairs = self._dst(self.u_pairs, self.n_steps)
+        gammas_pairs = dst(self.u_pairs, self.n_steps)
         return np.outer(gammas_pairs, self.pair_qubit_coeffs)
 
     def update_from_raw(self, new_values):

@@ -221,7 +221,7 @@ def test_parameter_empty():
 
     p = AnnealingParams.empty((hamiltonian, 4))
     assert isinstance(p, AnnealingParams)
-    assert p.times.shape == (4,)
+    assert p.schedule.shape == (4,)
 
     p = FourierParams.empty((hamiltonian, 4, 2))
     assert isinstance(p, FourierParams)
