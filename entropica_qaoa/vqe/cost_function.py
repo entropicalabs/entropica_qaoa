@@ -54,13 +54,9 @@ class AbstractCostFunction():
         values at each function call. It is a list of namedtuples of the form
         ("x", "fun")
 
-    Todo
-    ----
-    Remove return_standard_deviation argument and deprecation warnings.
     """
 
     def __init__(self,
-                 return_standard_deviation: bool = False,
                  scalar_cost_function: bool = True,
                  nshots: int = None,
                  enable_logging: bool = False):
@@ -135,7 +131,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
     `QAOACostFunctionOnQVM`)  turns from
 
     >>> cost_fun = PrepareAndMeasureOnWFSim(...,
-                            return_standard_deviation=False,...)
+                            scalar_cost_function=True,...)
 
     into
 
@@ -143,15 +139,10 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
                                                  nshots=<nshots>, ...)
 
     or if you want to return the standard deviation and vary `nshots` during
-    the VQE run you have
+    the VQE run you have to do
 
     >>> cost_fun = PrepareAndMeasureOnWFSim(...,
-                        return_standard_deviation=True,...)
-
-    into
-
-    >>> cost_fun = PrepareAndMeasureOnWFSim(...,
-                        scalar_cost_function=False, ...)
+                        scalar_cost_function=False,...)
 
     """
 
@@ -160,7 +151,6 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
                  make_memory_map: Callable[[np.array], Dict],
                  hamiltonian: Union[PauliSum, np.array],
                  sim: WavefunctionSimulator,
-                 return_standard_deviation: bool = None,
                  scalar_cost_function: bool = True,
                  nshots: int = None,
                  noisy: bool = False,
@@ -230,7 +220,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             deviation estimate based on the samples.
         """
         if nshots is None:
-            if self.scalar and not self.noisy:
+            if self.scalar:
                 nshots = self.nshots
             else:
                 raise ValueError("nshots cannot be None")
@@ -324,7 +314,6 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                  make_memory_map: Callable[[Iterable], dict],
                  hamiltonian: PauliSum,
                  qvm: QuantumComputer,
-                 return_standard_deviation: bool = None,
                  scalar_cost_function: bool = True,
                  nshots: int = None,
                  base_numshots: int = 100,
