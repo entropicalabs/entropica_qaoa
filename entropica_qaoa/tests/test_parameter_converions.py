@@ -52,3 +52,44 @@ def test_standard_to_standard_with_bias():
     assert np.allclose(params.x_rotation_angles, params2.x_rotation_angles)
     assert np.allclose(params.z_rotation_angles, params2.z_rotation_angles)
     assert np.allclose(params.zz_rotation_angles, params2.zz_rotation_angles)
+
+
+def test_fourier_to_standard():
+    params = FourierParams.empty((hamiltonian, 4, 3))
+    params2 = fourier_to_standard(params)
+    assert isinstance(params2, StandardParams)
+    assert np.allclose(params.x_rotation_angles, params2.x_rotation_angles)
+    assert np.allclose(params.z_rotation_angles, params2.z_rotation_angles)
+    assert np.allclose(params.zz_rotation_angles, params2.zz_rotation_angles)
+
+
+def test_fourier_w_bias_to_standard_w_bias():
+    params = FourierWithBiasParams.empty((hamiltonian, 4, 3))
+    params2 = fourier_w_bias_to_standard_w_bias(params)
+    assert np.allclose(params.x_rotation_angles, params2.x_rotation_angles)
+    assert np.allclose(params.z_rotation_angles, params2.z_rotation_angles)
+    assert np.allclose(params.zz_rotation_angles, params2.zz_rotation_angles)
+
+
+def test_fourier_to_fourier_with_bias():
+    params = FourierParams.empty((hamiltonian, 4, 3))
+    params2 = fourier_to_fourier_w_bias(params)
+    assert np.allclose(params.x_rotation_angles, params2.x_rotation_angles)
+    assert np.allclose(params.z_rotation_angles, params2.z_rotation_angles)
+    assert np.allclose(params.zz_rotation_angles, params2.zz_rotation_angles)
+
+
+def test_fourier_w_bias_to_fourier_extended():
+    params = FourierWithBiasParams.empty((hamiltonian, 4, 3))
+    params2 = fourier_w_bias_to_fourier_extended(params)
+    assert np.allclose(params.x_rotation_angles, params2.x_rotation_angles)
+    assert np.allclose(params.z_rotation_angles, params2.z_rotation_angles)
+    assert np.allclose(params.zz_rotation_angles, params2.zz_rotation_angles)
+
+
+def test_fourier_extended_to_extended():
+    params = FourierExtendedParams.empty((hamiltonian, 4, 3))
+    params2 = fourier_extended_to_extended(params)
+    assert np.allclose(params.x_rotation_angles, params2.x_rotation_angles)
+    assert np.allclose(params.z_rotation_angles, params2.z_rotation_angles)
+    assert np.allclose(params.zz_rotation_angles, params2.zz_rotation_angles)
