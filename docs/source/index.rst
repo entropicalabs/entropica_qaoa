@@ -40,7 +40,14 @@ Then the documentation can be compiled with
 (or however you use the ``make.bat`` on Windows)
 and is found in ``docs/build/html``
 
+Intro to QAOA and VQE
+=====================
 
+.. toctree::
+   :maxdepth: 2
+   :caption: The Demo Notebooks
+
+   notebooks
 
 API reference
 =============
