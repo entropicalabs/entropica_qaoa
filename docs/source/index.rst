@@ -40,42 +40,30 @@ Then the documentation can be compiled with
 (or however you use the ``make.bat`` on Windows)
 and is found in ``docs/build/html``
 
-Intro to QAOA and VQE
-=====================
+
+Contents
+--------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: The Demo Notebooks
 
    notebooks
 
-API reference
-=============
 
 .. toctree::
-   :maxdepth: 2
-   :caption: The VQE and QAOA utilities
+   :maxdepth: 1
+   :caption: API Reference
 
-   utilities
-
-.. toctree::
-   :maxdepth: 2
-   :caption: The VQE modules
-
-   optimizer
    vqe_cost_function
-   measurelib
-
-.. toctree::
-   :maxdepth: 2
-   :caption: The QAOA modules
-
    qaoa_cost_function
    parameters
+   utilities
+   measurelib
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

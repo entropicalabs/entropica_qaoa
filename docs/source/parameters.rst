@@ -1,5 +1,5 @@
-The `parameters` module for QAOA
-================================
+QAOA Parametrizations
+=====================
 
 We offer (currently) 7 different parametrizations for QAOA that can be found in
 the ``entropica_qaoa.qaoa.parameters`` module. They fall broadly into three categories: The `Standard` classes are parametrizations that have the
@@ -34,10 +34,64 @@ tree is shown below and the arrows mark possible conversions:
               |
         AnnealingParams
 
-``qaoa.parameters.py``
-----------------------
+Standard Parameters
+-------------------
 
-.. automodule:: qaoa.parameters
+.. autoclass:: qaoa.parameters.StandardParams
     :members:
     :undoc-members:
-    :show-inheritance:
+    :inherited-members:
+
+
+.. autoclass:: qaoa.parameters.StandardWithBiasParams
+    :members:
+    :undoc-members:
+    :inherited-members:
+
+
+.. autoclass:: qaoa.parameters.ExtendedParams
+    :members:
+    :undoc-members:
+    :inherited-members:
+
+
+Fourier Parameters
+------------------
+
+.. autoclass:: qaoa.parameters.FourierParams
+    :members:
+    :undoc-members:
+    :inherited-members:
+
+
+.. autoclass:: qaoa.parameters.FourierWithBiasParams
+    :members:
+    :undoc-members:
+    :inherited-members:
+
+
+.. autoclass:: qaoa.parameters.FourierExtendedParams
+    :members:
+    :undoc-members:
+    :inherited-members:
+
+
+Annealing Parameters
+--------------------
+
+.. autoclass:: qaoa.parameters.AnnealingParams
+    :members:
+    :undoc-members:
+    :inherited-members:
+
+
+Parameter Iterators
+-------------------
+
+To facilitate iterating one or more of the free parameters over a given range
+(e.g. for landscape plots) we also provide a way to build Iterables that leave
+all parameters except one fixed. The one is iterated over a range specified by the user.
+
+.. autoclass:: qaoa.parameters.QAOAParameterIterator
+    :members:
+    :undoc-members:
