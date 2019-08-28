@@ -17,7 +17,7 @@ Different parametrizations of QAOA circuits.
 
 This module holds an abstract class to store QAOA parameters in and (so far)
 five derived classes that allow for more or less degrees of freedom in the QAOA
-Ansätze
+Ansatze
 
 Todo
 ----
