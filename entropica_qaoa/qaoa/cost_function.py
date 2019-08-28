@@ -226,12 +226,12 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
     sim:
         connection to the WavefunctionSimulator to run the simulation on
     scalar_cost_function:
-        If ``True``: self.__call__ has  signature
-        ``(x, nshots) -> (exp_val, std_val)``
-        If ``False``: ``self.__call__()`` has  signature ``(x) -> (exp_val)``,
-        but the ``nshots`` argument in ``__init__`` has to be given.
-    noisy:
-        Add simulated sampling noise?
+        If True: __call__ returns only the expectation value
+        If False: __call__ returns a tuple (exp_val, std_dev)
+        Defaults to True.
+    nshots:
+        Number of shots to assume to simulate the sampling noise. 0
+        corresponds to no sampling noise added and is the default.
     log:
         List to keep log of function calls
     initial_state:
@@ -248,8 +248,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                  params: Type[AbstractParams],
                  sim: WavefunctionSimulator,
                  scalar_cost_function: bool = True,
-                 nshots: int = None,
-                 noisy: bool = False,
+                 nshots: int = 0,
                  enable_logging: bool = False,
                  initial_state: Program = None,
                  qubit_mapping: Dict[QubitPlaceholder,
@@ -265,7 +264,6 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          sim=sim,
                          scalar_cost_function=scalar_cost_function,
                          nshots=nshots,
-                         noisy=noisy,
                          enable_logging=enable_logging,
                          qubit_mapping=qubit_mapping)
 
@@ -317,13 +315,15 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
     qvm:
         connection to the QuantumComputer to run on
     scalar_cost_function:
-        If ``True``: self.__call__ has  signature
-        ``(x, nshots) -> (exp_val, std_val)``
-        If ``False``: ``self.__call__()`` has  signature ``(x) -> (exp_val)``,
-        but the ``nshots`` argument in ``__init__`` has to be given.
-    param base_numshots:
-        numshots to compile into the binary. The argument nshots of __call__
-        is then a multplier of this.
+        If True: __call__ returns only the expectation value
+        If False: __call__ returns a tuple (exp_val, std_dev)
+        Defaults to True.
+    nshots:
+        Fixed multiple of ``base_numshots`` for each estimation of the
+        expectation value. Defaults to 1
+    base_numshots:
+        numshots multiplier to compile into the binary. The argument nshots of
+         __call__ is then a multplier of this.
     log:
         List to keep log of function calls
     qubit_mapping:
@@ -336,7 +336,7 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                  params: Type[AbstractParams],
                  qvm: QuantumComputer,
                  scalar_cost_function: bool = True,
-                 nshots: int = None,
+                 nshots: int = 1,
                  base_numshots: int = 100,
                  enable_logging: bool = False,
                  initial_state: Program = None,

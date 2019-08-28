@@ -31,18 +31,16 @@ def test_qaoa_on_wfsim():
     p0 = params.raw()
     sim = WavefunctionSimulator()
     cost_fun = QAOACostFunctionOnWFSim(ham, params, sim,
-                                       scalar_cost_function=True, nshots=100,
-                                       noisy=False)
+                                       scalar_cost_function=True)
     with local_qvm():
         out = minimize(cost_fun, p0, tol=1e-3, method="Cobyla",
                        options={"maxiter": 500})
         wf = sim.wavefunction(cost_fun.prepare_ansatz,
                               memory_map=cost_fun.make_memory_map(params))
-
+    print(wf.probabilities())
     assert np.allclose(out["fun"], -1.3, rtol=1.1)
     assert out["success"]
     assert np.allclose(wf.probabilities(), [0, 0, 0, 1], rtol=1.5, atol=0.05)
-    print(out)
 
 
 @pytest.mark.slow

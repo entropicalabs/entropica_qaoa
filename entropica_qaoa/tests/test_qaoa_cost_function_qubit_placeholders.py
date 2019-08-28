@@ -43,8 +43,6 @@ def test_vqe_on_WFSim_QubitPlaceholders():
                                         hamiltonian=hamiltonian,
                                         sim=sim,
                                         scalar_cost_function=True,
-                                        nshots=1,
-                                        noisy=False,
                                         qubit_mapping=qubit_mapping)
 
     with local_qvm():

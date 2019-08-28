@@ -37,7 +37,6 @@ def test_QAOACostFunctionOnWFSim():
                                                 params=params,
                                                 sim=sim,
                                                 scalar_cost_function=False,
-                                                noisy=True,
                                                 enable_logging=True)
         out = cost_function(params.raw(), nshots=100)
         print("Log:", cost_function.log)
