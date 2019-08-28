@@ -225,9 +225,6 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
         Form of the QAOA parameters (with n_steps and type fixed for this instance)
     sim:
         connection to the WavefunctionSimulator to run the simulation on
-    return_standard_deviation:
-        return standard deviation or only expectation value?
-        (Deprecated. Use scalar_cost_function instead!)
     scalar_cost_function:
         If ``True``: self.__call__ has  signature
         ``(x, nshots) -> (exp_val, std_val)``
@@ -244,16 +241,12 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
         A mapping to fix QubitPlaceholders to physical qubits. E.g.
         pyquil.quil.get_default_qubit_mapping(program) gives you on.
 
-    Todo
-    ----
-    Remove ``return_standard_deviation`` argument in next versions
     """
 
     def __init__(self,
                  hamiltonian: PauliSum,
                  params: Type[AbstractParams],
                  sim: WavefunctionSimulator,
-                 return_standard_deviation: bool = None,
                  scalar_cost_function: bool = True,
                  nshots: int = None,
                  noisy: bool = False,
@@ -270,7 +263,6 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          make_memory_map=make_qaoa_memory_map,
                          hamiltonian=hamiltonian,
                          sim=sim,
-                         return_standard_deviation=return_standard_deviation,
                          scalar_cost_function=scalar_cost_function,
                          nshots=nshots,
                          noisy=noisy,
@@ -324,9 +316,6 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
         instance)
     qvm:
         connection to the QuantumComputer to run on
-    return_standard_deviation:
-        return standard deviation or only expectation value?
-        (Deprecated. Use ``scalar_cost_function`` instead)
     scalar_cost_function:
         If ``True``: self.__call__ has  signature
         ``(x, nshots) -> (exp_val, std_val)``
@@ -346,7 +335,6 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                  hamiltonian: PauliSum,
                  params: Type[AbstractParams],
                  qvm: QuantumComputer,
-                 return_standard_deviation: bool = None,
                  scalar_cost_function: bool = True,
                  nshots: int = None,
                  base_numshots: int = 100,
@@ -363,7 +351,6 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                          make_memory_map=make_qaoa_memory_map,
                          hamiltonian=hamiltonian,
                          qvm=qvm,
-                         return_standard_deviation=return_standard_deviation,
                          scalar_cost_function=scalar_cost_function,
                          nshots=nshots,
                          base_numshots=base_numshots,

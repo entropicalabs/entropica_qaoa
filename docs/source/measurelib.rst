@@ -1,5 +1,5 @@
-The `measurelib` module
-=======================
+Measurement utilities
+=====================
 
 
 .. automodule:: vqe.measurelib

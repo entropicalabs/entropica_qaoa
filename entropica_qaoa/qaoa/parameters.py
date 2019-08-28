@@ -17,7 +17,7 @@ Different parametrizations of QAOA circuits.
 
 This module holds an abstract class to store QAOA parameters in and (so far)
 five derived classes that allow for more or less degrees of freedom in the QAOA
-Ansätze
+Ansatze
 
 Todo
 ----
@@ -32,11 +32,13 @@ from typing import Iterable, Union, List, Tuple, Any, Type, Callable
 import warnings
 from custom_inherit import DocInheritMeta
 
-# from custom_inherit import DocInheritMeta
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.fftpack import dct, dst
 
 from pyquil.paulis import PauliSum
+
+# import entropica_qaoa.qaoa._parameter_conversions.converter as converter
 
 
 def _is_iterable_empty(in_iterable):
@@ -359,6 +361,51 @@ class AbstractParams(metaclass=DocInheritMeta(style="numpy")):
 
         return params
 
+    @classmethod
+    def from_other_parameters(cls, params):
+        """Alternative to ``__init__`` that takes parameters with less degrees
+        of freedom as the input.
+
+        Parameters
+        ----------
+        params: Type[AbstractParams]
+            The input parameters
+
+        Returns
+        -------
+        Type[AbstractParams]:
+            The converted paramters s.t. all the rotation angles of the in
+            and output parameters are the same.
+
+        Note
+        ----
+        If all conversion functions for your parametrization are in
+        qaoa._parameter_conversions.py and correctly registered for converter
+        you don't need to override this function in its child classes
+        """
+        # Todo: Somehow fix this deferred import w/o creating cyclic imports?
+        from entropica_qaoa.qaoa._parameter_conversions import converter
+        return converter(params, cls)
+
+    @classmethod
+    def empty(cls, hyperparameters: tuple):
+        """Alternative to ``__init__`` that only takes ``hyperparameters`` and
+        fills ``parameters`` via ``np.empty``
+
+        Parameters
+        ----------
+        hyperparameters:
+            Same as the hyperparameters argument for ``cls.__init__()``
+
+        Returns
+        -------
+        Type[AbstractParams]
+            A Parameter object with the parameters filled by ``np.empty``
+        """
+        self = AbstractParams(hyperparameters)
+        self.__class__ = cls
+        return self
+
     def plot(self, ax=None, **kwargs):
         """
         Plots ``self`` in a sensible way to the canvas ``ax``, if provided.
@@ -559,6 +606,15 @@ class ExtendedParams(AbstractParams):
             = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        (self.betas, self.gammas_singles, self.gammas_pairs)\
+            = (np.empty((self.n_steps, len(self.reg))),
+               np.empty((self.n_steps, len(self.qubits_singles))),
+               np.empty((self.n_steps, len(self.qubits_pairs))))
+        return self
+
     def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
@@ -724,6 +780,15 @@ class StandardWithBiasParams(AbstractParams):
             = np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        (self.betas, self.gammas_singles, self.gammas_pairs)\
+            = (np.empty((self.n_steps)),
+               np.empty((self.n_steps)),
+               np.empty((self.n_steps)))
+        return self
+
     def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
@@ -875,6 +940,13 @@ class StandardParams(AbstractParams):
             = np.array(parameters[0]), np.array(parameters[1])
         return out
 
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        (self.betas, self.gammas) = (np.empty((self.n_steps)),
+                                     np.empty((self.n_steps)))
+        return self
+
     def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
@@ -882,7 +954,6 @@ class StandardParams(AbstractParams):
         ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
         ax.plot(self.gammas, label="gammas", marker="^", ls="", **kwargs)
         ax.set_xlabel("timestep", fontsize=12)
-        # ax.grid(linestyle='--')
         ax.legend()
 
 
@@ -926,7 +997,7 @@ class AnnealingParams(AbstractParams):
         string += "\tregister: " + str(self.reg) + "\n"
         string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
         string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
-        string = "Parameters:\n"
+        string += "Parameters:\n"
         string += "\tschedule: " + str(self.schedule)
         return string
 
@@ -934,7 +1005,7 @@ class AnnealingParams(AbstractParams):
         return self.n_steps
 
     @shapedArray
-    def times(self):
+    def schedule(self):
         return self.n_steps
 
     @property
@@ -1005,6 +1076,13 @@ class AnnealingParams(AbstractParams):
         out.schedule = np.array(parameters)
         return out
 
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        self._annealing_time = hyperparameters[2]
+        self.schedule = np.empty((self.n_steps))
+        return self
+
     def plot(self, ax=None, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
@@ -1012,6 +1090,7 @@ class AnnealingParams(AbstractParams):
         ax.plot(self.schedule, marker="s", **kwargs)
         ax.set_xlabel("timestep number", fontsize=14)
         ax.set_ylabel("s(t)", fontsize=14)
+
 
 class FourierParams(AbstractParams):
     """
@@ -1042,7 +1121,7 @@ class FourierParams(AbstractParams):
         The discrete sine transform of the ``gammas`` in
         ``StandardParams``
     v : np.array
-        The discrete cosine transform of the betas in
+        The discrete cosine transform of the ``betas`` in
         ``StandardParams``
     """
 
@@ -1057,33 +1136,15 @@ class FourierParams(AbstractParams):
     def __repr__(self):
         string = "Hyperparameters:\n"
         string += "\tregister: " + str(self.reg) + "\n"
+        string += "\tqubits_singles" + str(self.qubits_singles) + "\n"
+        string += "\tqubits_pairs" + str(self.qubits_pairs) + "\n"
         string += "Parameters:\n"
-        string += "\tu: " + str(self.u) + "\n"
         string += "\tv: " + str(self.v) + "\n"
+        string += "\tu: " + str(self.u) + "\n"
         return(string)
 
     def __len__(self):
         return 2 * self.q
-
-    # Todo: properly vectorize this or search for already implemented
-    # DST and DCT
-    @staticmethod
-    def _dst(v, p):
-        """Compute the discrete sine transform from frequency to timespace."""
-        x = np.zeros(p)
-        for i in range(p):
-            for k in range(len(v)):
-                x[i] += v[k] * np.sin((k + 0.5) * (i + 0.5) * np.pi / p)
-        return x
-
-    @staticmethod
-    def _dct(u, p):
-        """Compute the discrete cosine transform from frequency to timespace."""
-        x = np.zeros(p)
-        for i in range(p):
-            for k in range(len(u)):
-                x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
-        return x
 
     @shapedArray
     def v(self):
@@ -1095,17 +1156,17 @@ class FourierParams(AbstractParams):
 
     @property
     def x_rotation_angles(self):
-        betas = self._dct(self.v, self.n_steps)
+        betas = dct(self.v, n=self.n_steps)
         return np.outer(betas, np.ones(len(self.reg)))
 
     @property
     def z_rotation_angles(self):
-        gammas_singles = self._dst(self.u, self.n_steps)
-        return np.outer(gammas_singles, self.single_qubit_coeffs)
+        gammas = dst(self.u, n=self.n_steps)
+        return np.outer(gammas, self.single_qubit_coeffs)
 
     @property
     def zz_rotation_angles(self):
-        gammas = self._dst(self.u, self.n_steps)
+        gammas = dst(self.u, n=self.n_steps)
         return np.outer(gammas, self.pair_qubit_coeffs)
 
     def update_from_raw(self, new_values):
@@ -1158,8 +1219,9 @@ class FourierParams(AbstractParams):
 
         # fill x_rotation_angles, z_rotation_angles and zz_rotation_angles
         # Todo make this an easier expresssion
-        v = np.array([time / n_steps, *[0] * (q - 1)])
-        u = np.array([time / n_steps, *[0] * (q - 1)])
+        v = np.zeros(q)
+        v[0] = 0.5 * time / n_steps
+        u = np.copy(v)
 
         # wrap it all nicely in a qaoa_parameters object
         params = cls((hamiltonian, n_steps, q), (v, u))
@@ -1193,6 +1255,13 @@ class FourierParams(AbstractParams):
         out.v, out.u =\
             np.array(parameters[0]), np.array(parameters[1])
         return out
+
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        self.q = hyperparameters[2]
+        self.v, self.u = np.empty((self.q)), np.empty((self.q))
+        return self
 
     def plot(self, ax=None, **kwargs):
         warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
@@ -1266,26 +1335,6 @@ class FourierWithBiasParams(AbstractParams):
     def __len__(self):
         return 3 * self.q
 
-    # Todo: properly vectorize this or search for already implemented
-    # DST and DCT
-    @staticmethod
-    def _dst(v, p):
-        """Compute the discrete sine transform from frequency to timespace."""
-        x = np.zeros(p)
-        for i in range(p):
-            for k in range(len(v)):
-                x[i] += v[k] * np.sin((k + 0.5) * (i + 0.5) * np.pi / p)
-        return x
-
-    @staticmethod
-    def _dct(u, p):
-        """Compute the discrete cosine transform from frequency to timespace."""
-        x = np.zeros(p)
-        for i in range(p):
-            for k in range(len(u)):
-                x[i] += u[k] * np.cos((k + 0.5) * (i + 0.5) * np.pi / p)
-        return x
-
     @shapedArray
     def v(self):
         return self.q
@@ -1300,17 +1349,17 @@ class FourierWithBiasParams(AbstractParams):
 
     @property
     def x_rotation_angles(self):
-        betas = self._dct(self.v, self.n_steps)
+        betas = dct(self.v, n=self.n_steps)
         return np.outer(betas, np.ones(len(self.reg)))
 
     @property
     def z_rotation_angles(self):
-        gammas_singles = self._dst(self.u_singles, self.n_steps)
+        gammas_singles = dst(self.u_singles, n=self.n_steps)
         return np.outer(gammas_singles, self.single_qubit_coeffs)
 
     @property
     def zz_rotation_angles(self):
-        gammas_pairs = self._dst(self.u_pairs, self.n_steps)
+        gammas_pairs = dst(self.u_pairs, n=self.n_steps)
         return np.outer(gammas_pairs, self.pair_qubit_coeffs)
 
     def update_from_raw(self, new_values):
@@ -1365,12 +1414,10 @@ class FourierWithBiasParams(AbstractParams):
         if time is None:
             time = 0.7 * n_steps
 
-        # fill x_rotation_angles, z_rotation_angles and zz_rotation_angles
-        # Todo make this an easier expresssion
-        v = np.array([time / n_steps, *[0] * (q - 1)])
-        u_singles = np.array([time / n_steps, *[0] * (q - 1)])
-        u_pairs = np.array([time / n_steps, *[0] * (q - 1)])
-
+        v = np.zeros(q)
+        v[0] = 0.5 * time / n_steps
+        u_singles = np.copy(v)
+        u_pairs = np.copy(v)
         # wrap it all nicely in a qaoa_parameters object
         params = cls((hamiltonian, n_steps, q), (v, u_singles, u_pairs))
         return params
@@ -1406,6 +1453,14 @@ class FourierWithBiasParams(AbstractParams):
             np.array(parameters[0]), np.array(parameters[1]), np.array(parameters[2])
         return out
 
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        self.q = hyperparameters[2]
+        self.v, self.u_singles, self.u_pairs\
+            = np.empty((self.q)), np.empty((self.q)), np.empty((self.q))
+        return self
+
     def plot(self, ax=None, **kwargs):
         warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
                       "interested in v, u_singles and u_pairs you can access them via "
@@ -1423,6 +1478,211 @@ class FourierWithBiasParams(AbstractParams):
         ax.set_xlabel("timestep")
         # ax.grid(linestyle='--')
         ax.legend()
+
+
+class FourierExtendedParams(AbstractParams):
+    r"""
+    The Fourier pendant to ExtendedParams.
+
+    Parameters
+    ----------
+    hyperparameters:
+        The hyperparameters containing the hamiltonian and the number of steps
+        and the number of fourier coefficients
+        ``hyperparameters = (hamiltonian, n_steps, q)``
+    parameters:
+        Tuple containing ``(v, u_singles, u_pairs)`` with dimensions
+        ``((q x nqubits), (q x nsingle_terms), (q x npair_terms))``
+
+    Attributes
+    ----------
+    q : int
+        The number of coefficients for the discrete sine and cosine transforms
+        below
+    v: np.array
+        The discrete cosine transform of the ``betas`` in ``ExtendedParams``
+    u_singles: np.array
+        The discrete sine transform of the ``gammas_singles`` in
+        ``ExtendedParams``
+    u_pairs: np.array
+        The discrete sine transform of the ``gammas_pairs`` in
+        ``ExtendedParams``
+    """
+
+    def __init__(self,
+                 hyperparameters: Tuple[PauliSum, int],
+                 parameters: Tuple):
+        # setup reg, qubits_singles and qubits_pairs
+        super().__init__(hyperparameters)
+        self.q = hyperparameters[2]
+        self.v, self.u_singles, self.u_pairs = (np.array(parameters[0]),
+                                                np.array(parameters[1]),
+                                                np.array(parameters[2]))
+
+    def __repr__(self):
+        string = "Hyperparameters:\n"
+        string += "\tregister: " + str(self.reg) + "\n"
+        string += "\tqubits_singles: " + str(self.qubits_singles) + "\n"
+        string += "\tqubits_pairs: " + str(self.qubits_pairs) + "\n"
+        string += "Parameters:\n"
+        string += "\tv: " + str(self.v).replace("\n", ",") + "\n"
+        string += "\tu_singles: " + str(self.u_singles)\
+            .replace("\n", ",") + "\n"
+        string += "\tu_pairs: " + str(self.u_pairs)\
+            .replace("\n", ",") + "\n"
+        return string
+
+    def __len__(self):
+        return self.q * (len(self.reg) + len(self.qubits_pairs)
+                         + len(self.qubits_singles))
+
+    @shapedArray
+    def v(self):
+        return (self.q, len(self.reg))
+
+    @shapedArray
+    def u_singles(self):
+        return (self.q, len(self.qubits_singles))
+
+    @shapedArray
+    def u_pairs(self):
+        return (self.q, len(self.qubits_pairs))
+
+    @property
+    def x_rotation_angles(self):
+        betas = dct(self.v, n=self.n_steps, axis=0)
+        return betas
+
+    @property
+    def z_rotation_angles(self):
+        gammas_singles = dst(self.u_singles,
+                             n=self.n_steps, axis=0)
+        return self.single_qubit_coeffs * gammas_singles
+
+    @property
+    def zz_rotation_angles(self):
+        gammas_pairs = dst(self.u_pairs,
+                           n=self.n_steps, axis=0)
+        return self.pair_qubit_coeffs * gammas_pairs
+
+    def update_from_raw(self, new_values):
+        self.v = np.array(new_values[:len(self.reg) * self.q])
+        self.v = self.v.reshape((self.q, len(self.reg)))
+        new_values = new_values[self.q * len(self.reg):]
+
+        self.u_singles = np.array(new_values[:len(self.qubits_singles)
+                                  * self.q])
+        self.u_singles = self.u_singles.reshape((self.q,
+                                                 len(self.qubits_singles)))
+        new_values = new_values[self.q * len(self.qubits_singles):]
+
+        self.u_pairs = np.array(new_values[:len(self.qubits_pairs)
+                                           * self.q])
+        self.u_pairs = self.u_pairs.reshape((self.q,
+                                             len(self.qubits_pairs)))
+        new_values = new_values[self.q * len(self.qubits_pairs):]
+
+        # PEP8 complains, but new_values could be np.array and not list!
+        if not len(new_values) == 0:
+            raise RuntimeWarning(
+                "list to make new u's and v's out of didn't"
+                "have the right length!")
+
+    def raw(self):
+        raw_data = np.concatenate((self.v.flatten(),
+                                   self.u_singles.flatten(),
+                                   self.u_pairs.flatten()))
+        return raw_data
+
+    @classmethod
+    def linear_ramp_from_hamiltonian(cls,
+                                     hamiltonian: PauliSum,
+                                     n_steps: int,
+                                     q: int = 4,
+                                     time: float = None):
+        """
+        Returns
+        -------
+        FourierExtendedParams
+            The initial parameters according to a linear ramp for
+            ``hamiltonian``.
+
+        """
+        # create evenly spaced timesteps at the centers of n_steps intervals
+        if time is None:
+            time = float(0.7 * n_steps)
+
+        term_lengths = [len(t) for t in hamiltonian]
+        n_sing = term_lengths.count(1)
+        n_pairs = term_lengths.count(2)
+        n_betas = len(hamiltonian.get_qubits())
+        has_higher_order_terms = any(l > 2 for l in term_lengths)
+        if has_higher_order_terms:
+            raise NotImplementedError(
+                "As of now we can only handle hamiltonians with at most "
+                "two-qubit terms")
+
+        v = np.zeros(q)
+        v[0] = 0.5 * time / n_steps
+        u_singles = np.copy(v)
+        u_pairs = np.copy(v)
+
+        v = v.repeat(n_betas).reshape(q, n_betas)
+        u_singles = u_singles.repeat(n_sing).reshape(q, n_sing)
+        u_pairs = u_pairs.repeat(n_pairs).reshape(q, n_pairs)
+
+        # wrap it all nicely in a qaoa_parameters object
+        params = cls((hamiltonian, n_steps, q), (v, u_singles, u_pairs))
+        return params
+
+
+    @classmethod
+    def from_AbstractParameters(cls,
+                                abstract_params: AbstractParams,
+                                parameters: Tuple,
+                                q: int = 4) -> AbstractParams:
+        """
+
+        Returns
+        -------
+        FourierExtendedParams
+            A ``FourierExtendedParams`` object with the hyperparameters taken
+            from ``abstract_params`` and the normal parameters from
+            ``parameters``
+        """
+        out = super().from_AbstractParameters(abstract_params)
+        if q is None:
+            q = 4
+        out.q = q
+        out.v, out.u_singles, out.u_pairs = (np.array(parameters[0]),
+                                             np.array(parameters[1]),
+                                             np.array(parameters[2]))
+        return out
+
+    @classmethod
+    def empty(cls, hyperparameters):
+        self = super().empty(hyperparameters)
+        self.q = hyperparameters[2]
+        (self.v, self.u_singles, self.u_pairs)\
+            = (np.empty((self.q, len(self.reg))),
+               np.empty((self.q, len(self.qubits_singles))),
+               np.empty((self.q, len(self.qubits_pairs))))
+        return self
+
+    def plot(self, ax=None, **kwargs):
+        if ax is None:
+            fig, ax = plt.subplots()
+
+        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
+        if not _is_iterable_empty(self.gammas_singles):
+            ax.plot(self.gammas_singles,
+                    label="gammas_singles", marker="^", ls="", **kwargs)
+        if not _is_iterable_empty(self.gammas_pairs):
+            ax.plot(self.gammas_pairs,
+                    label="gammas_pairs", marker="v", ls="", **kwargs)
+        ax.set_xlabel("timestep")
+        ax.legend()
+
 
 
 class QAOAParameterIterator:

@@ -14,6 +14,7 @@ from entropica_qaoa.qaoa.parameters import (ExtendedParams,
                                             AnnealingParams,
                                             FourierParams,
                                             FourierWithBiasParams,
+                                            FourierExtendedParams,
                                             QAOAParameterIterator,
                                             AbstractParams,
                                             StandardParams,
@@ -119,6 +120,21 @@ def test_FourierParamsfromAbstractParameters():
     assert type(fourier_params) == FourierParams
 
 
+# Todo: Check that the values also make sense
+def test_FourierExtendedParamsfromAbstractParameters():
+    abstract_params = AbstractParams((hamiltonian, 2))
+    v = [[0.4]*3, [1.0]*3]
+    u_singles = [[0.5], [1.2]]
+    u_pairs = [[4.5]*2, [123]*2]
+    parameters = (v, u_singles, u_pairs)
+    fourier_params = FourierExtendedParams.from_AbstractParameters(abstract_params, parameters, q=2)
+    print("The rotation angles from AnnealingParams.fromAbstractParameters")
+    print("x_rotation_angles:\n", fourier_params.x_rotation_angles)
+    print("z_rotation_angles:\n", fourier_params.z_rotation_angles)
+    print("zz_rotation_angles:\n", fourier_params.zz_rotation_angles)
+    assert type(fourier_params) == FourierExtendedParams
+
+
 def test_AnnealingParams():
     params = AnnealingParams.linear_ramp_from_hamiltonian(hamiltonian, 2, time=2)
     assert set(params.reg) == {0, 1, q1}
@@ -180,8 +196,8 @@ def test_FourierParams():
     params = FourierParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=3, q=2, time=2)
     # just access the angles, to check that it actually creates them
     assert len(params.z_rotation_angles) == len(params.zz_rotation_angles)
-    assert np.allclose(params.v, [2/3, 0])
-    assert np.allclose(params.u, [2/3, 0])
+    assert np.allclose(params.v, [1/3, 0])
+    assert np.allclose(params.u, [1/3, 0])
     # Test updating and raw output
     raw = np.random.rand(len(params))
     params.update_from_raw(raw)
@@ -192,9 +208,22 @@ def test_FourierWithBiasParams():
     params = FourierWithBiasParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=3, q=2, time=2)
     # just access the angles, to check that it actually creates them
     assert len(params.z_rotation_angles) == len(params.zz_rotation_angles)
-    assert np.allclose(params.v, [2/3, 0])
-    assert np.allclose(params.u_singles, [2/3, 0])
-    assert np.allclose(params.u_pairs, [2/3, 0])
+    assert np.allclose(params.v, [1/3, 0])
+    assert np.allclose(params.u_singles, [1/3, 0])
+    assert np.allclose(params.u_pairs, [1/3, 0])
+    # Test updating and raw output
+    raw = np.random.rand(len(params))
+    params.update_from_raw(raw)
+    assert np.allclose(raw, params.raw())
+
+
+def test_FourierExtendedParams():
+    params = FourierExtendedParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=3, q=2, time=2)
+    # just access the angles, to check that it actually creates them
+    assert len(params.z_rotation_angles) == len(params.zz_rotation_angles)
+    assert np.allclose(params.v, [[1/3] * 3, [0] * 3])
+    assert np.allclose(params.u_singles, [[1/3] * 1, [0] * 1])
+    assert np.allclose(params.u_pairs, [[1/3] * 2, [0] * 2])
     # Test updating and raw output
     raw = np.random.rand(len(params))
     params.update_from_raw(raw)
@@ -209,10 +238,55 @@ def test_FourierParams_are_consistent():
                   hamiltonian, n_steps=3, q=2, time=2)
     params2 = FourierWithBiasParams.linear_ramp_from_hamiltonian(
                   hamiltonian, n_steps=3, q=2, time=2)
+    params3 = FourierExtendedParams.linear_ramp_from_hamiltonian(
+                  hamiltonian, n_steps=3, q=2, time=2)
 
     assert np.allclose(params1.x_rotation_angles, params2.x_rotation_angles)
     assert np.allclose(params1.z_rotation_angles, params2.z_rotation_angles)
     assert np.allclose(params1.zz_rotation_angles, params2.zz_rotation_angles)
+    assert np.allclose(params1.x_rotation_angles, params3.x_rotation_angles)
+    assert np.allclose(params1.z_rotation_angles, params3.z_rotation_angles)
+    assert np.allclose(params1.zz_rotation_angles, params3.zz_rotation_angles)
+
+
+def test_parameter_empty():
+    p = ExtendedParams.empty((hamiltonian, 4))
+    assert isinstance(p, ExtendedParams)
+    assert p.betas.shape == (4, 3)
+    assert p.gammas_singles.shape == (4, 1)
+    assert p.gammas_pairs.shape == (4, 2)
+
+    p = StandardParams.empty((hamiltonian, 4))
+    assert isinstance(p, StandardParams)
+    assert p.betas.shape == (4,)
+    assert p.gammas.shape == (4,)
+
+    p = StandardWithBiasParams.empty((hamiltonian, 4))
+    assert isinstance(p, StandardWithBiasParams)
+    assert p.betas.shape == (4,)
+    assert p.gammas_singles.shape == (4,)
+    assert p.gammas_pairs.shape == (4,)
+
+    p = AnnealingParams.empty((hamiltonian, 4, 2.0))
+    assert isinstance(p, AnnealingParams)
+    assert p.schedule.shape == (4,)
+
+    p = FourierParams.empty((hamiltonian, 4, 2))
+    assert isinstance(p, FourierParams)
+    assert p.u.shape == (2,)
+    assert p.v.shape == (2,)
+
+    p = FourierWithBiasParams.empty((hamiltonian, 4, 2))
+    assert isinstance(p, FourierWithBiasParams)
+    assert p.u_singles.shape == (2,)
+    assert p.u_pairs.shape == (2,)
+    assert p.v.shape == (2,)
+
+    p = FourierExtendedParams.empty((hamiltonian, 4, 2))
+    assert isinstance(p, FourierExtendedParams)
+    assert p.u_singles.shape == (2,1)
+    assert p.u_pairs.shape == (2,2)
+    assert p.v.shape == (2,3)
 
 
 def test_QAOAParameterIterator():

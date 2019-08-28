@@ -41,34 +41,29 @@ Then the documentation can be compiled with
 and is found in ``docs/build/html``
 
 
-
-API reference
-=============
-
-.. toctree::
-   :maxdepth: 2
-   :caption: The VQE and QAOA utilities
-
-   utilities
+Contents
+--------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: The VQE modules
+   :maxdepth: 3
+   :caption: The Demo Notebooks
 
-   optimizer
+   notebooks
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API Reference
+
    vqe_cost_function
-   measurelib
-
-.. toctree::
-   :maxdepth: 2
-   :caption: The QAOA modules
-
    qaoa_cost_function
    parameters
+   utilities
+   measurelib
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

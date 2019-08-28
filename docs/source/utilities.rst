@@ -1,5 +1,5 @@
-The `utilities` module for VQE and QAOA
-=======================================
+VQE and QAOA utilities
+======================
 
 .. automodule:: utilities
     :members:
