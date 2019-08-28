@@ -15,7 +15,7 @@ See ``README.md`` in the root directory of this package.
 First Steps
 -----------
 
-You can find some Notebooks showing you the basic Usage of EntropiQAOA in the folder ``examples/``.
+You can find some Notebooks showing you the basic Usage of `entropica_qaoa` in the folder ``examples/``.
 
 
 Compiling this Documentation
@@ -46,9 +46,18 @@ Contents
 
 .. toctree::
    :maxdepth: 3
+
+   faq
+
+.. toctree::
+   :maxdepth: 3
    :caption: The Demo Notebooks
 
-   notebooks
+   vqe_demo
+   qaoa_workflow
+   qaoa_parameter_demo
+   advanced_qaoa_demo
+   utilities_demo
 
 
 .. toctree::
