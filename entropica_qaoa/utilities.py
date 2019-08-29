@@ -80,9 +80,9 @@ def random_hamiltonian(nqubits: int) -> PauliSum:
     Creates a random cost hamiltonian, diagonal in the computational basis:
 
      - Randomly selects which qubits that will have a bias term, then assigns
-     them a bias coefficient.
+       them a bias coefficient.
      - Randomly selects which qubit pairs will have a coupling term, then
-     assigns them a coupling coefficient.
+       assigns them a coupling coefficient.
 
      In both cases, the random coefficient is drawn from the uniform
      distribution on the interval [0,1).
@@ -94,7 +94,7 @@ def random_hamiltonian(nqubits: int) -> PauliSum:
 
     Returns
     -------
-    hamiltonian:
+    PauliSum:
         A hamiltonian with random couplings and biases, as a PauliSum object.
 
     """
@@ -188,7 +188,7 @@ def random_k_regular_graph(degree: int,
 
     Returns
     -------
-    G
+    nx.Graph:
         A graph with the properties as specified.
 
     """
@@ -222,7 +222,7 @@ def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
 
     Returns
     -------
-    Hamiltonian
+    PauliSum:
         The PauliSum representation of the networkx graph.
 
     """
@@ -286,7 +286,7 @@ def graph_from_hyperparams(nqubits: int,
 
     Returns
     -------
-    G:
+    nx.Graph:
         Networkx graph with the specified properties
 
     """
@@ -325,7 +325,7 @@ def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
 
     Returns
     -------
-    hamiltonian:
+    PauliSum:
         A PauliSum object modelling the Hamiltonian of the system
     """
     pauli_list = list()
@@ -366,11 +366,10 @@ def distances_dataset(data: Union[np.array, pd.DataFrame, Dict],
 
     Returns
     -------
-    If input is a dictionary or numpy array, output is a numpy array of
-    dimension NxN, where N is the number of data points.
-    If input is a Pandas DataFrame, the distances are returned in this format.
-
-
+    Union[np.array, pd.Dataframe]:
+        If input is a dictionary or numpy array, output is a numpy array of
+        dimension NxN, where N is the number of data points.
+        If input is a Pandas DataFrame, the distances are returned in this format.
     """
 
     if isinstance(data, dict):
@@ -456,7 +455,7 @@ def ring_of_disagrees(n: int) -> PauliSum:
 
     Returns
     -------
-    hamiltonian:
+    PauliSum:
         The cost Hamiltonian representing the ring, as a PauliSum object.
 
     """
@@ -513,7 +512,7 @@ def return_lowest_state(probs):
 
     Returns
     -------
-    lowest:
+    int:
         A little endian list of binary integers indicating the lowest energy
         state of the wavefunction.
     """
@@ -537,10 +536,6 @@ def evaluate_lowest_state(lowest, true):
     true:
         A little-endian list of binary integers representing the true solution
         to the MAXCUT clustering problem.
-
-    Returns
-    -------
-    Nothing
     """
     print('True Labels of samples:', true)
     print('Lowest QAOA State:', lowest)
