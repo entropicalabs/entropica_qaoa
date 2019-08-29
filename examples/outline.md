@@ -49,7 +49,15 @@ only a special instance of VQE.
  - the `scalar_cost_function` argument
  - the `enable_logging` argument
 
+**Status**
+Rewritten, but not yet double checked
+
+
 # `Utilities.ipynb`
- - graph creation routines
+ - Hamiltonians and graphs (including the ring of disagrees)
+ - Hamiltonians and data
+ - more miscellaneous
  - hamiltonian to graph conversions
- - landscape demos?
+ 
+# `Landscapes Demo`
+Duh...
