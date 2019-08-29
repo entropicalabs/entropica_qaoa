@@ -30,6 +30,7 @@ Todo
 import copy
 from typing import Iterable, Union, List, Tuple, Any, Type, Callable
 import warnings
+import math
 from custom_inherit import DocInheritMeta
 
 import matplotlib.pyplot as plt
@@ -614,6 +615,15 @@ class ExtendedParams(AbstractParams):
                np.empty((self.n_steps, len(self.qubits_singles))),
                np.empty((self.n_steps, len(self.qubits_pairs))))
         return self
+
+    def get_constraints(self):
+        beta_constraints = [(0, 2*math.pi)]*len(self.betas.flatten())
+        gamma_pair_constraints = [(0, 2*math.pi/w) for w in self.pair_qubit_coeffs]*self.n_steps
+        gamma_single_constraints = [(0, 2 * math.pi / w) for w in self.single_qubit_coeffs] * self.n_steps
+
+        all_constraints = beta_constraints + gamma_single_constraints + gamma_pair_constraints
+
+        return all_constraints
 
     def plot(self, ax=None, **kwargs):
         if ax is None:
