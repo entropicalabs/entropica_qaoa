@@ -58,6 +58,9 @@ Rewritten, but not yet double checked
  - Hamiltonians and data
  - more miscellaneous
  - hamiltonian to graph conversions
+
+**Status**
+Rewritten, but not yet double checked
  
 # `Landscapes Demo`
 Duh...
