@@ -6,7 +6,7 @@ The documentation can be installed and built by following these two steps:
 
 **Install the Prerequisites**
 ```bash
-pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints nbsphinx
+pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints nbsphinx nbconvert
 ```
 **Compile the documentation**
 ```bash
@@ -14,8 +14,7 @@ cd docs && make html
 ```
 
 ## Installation
-
-We assume that the user has already installed Rigetti's pyQuil package, as well as the Rigetti QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation here: http://docs.rigetti.com/en/stable/start.html
+If you don't have them already, install first Rigetti's pyQquil package and their QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation here: http://docs.rigetti.com/en/stable/start.html
 
 Installation of the `entropica_qaoa` package can be performed in a few simple steps.
 
