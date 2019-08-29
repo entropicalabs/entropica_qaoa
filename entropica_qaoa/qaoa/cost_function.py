@@ -191,7 +191,8 @@ def prepare_qaoa_ansatz(initial_state: Program,
 
 
 def make_qaoa_memory_map(qaoa_params: Type[AbstractParams]) -> dict:
-    """Make a memory map for the QAOA Ansatz as produced by `prepare_qaoa_ansatz`.
+    """Make a memory map for the QAOA Ansatz as produced by
+    `prepare_qaoa_ansatz`.
 
     Parameters
     ----------
@@ -225,6 +226,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
         Form of the QAOA parameters (with n_steps and type fixed for this instance)
     sim:
         connection to the WavefunctionSimulator to run the simulation on
+        Automatically creates one, if None is passed.
     scalar_cost_function:
         If True: __call__ returns only the expectation value
         If False: __call__ returns a tuple (exp_val, std_dev)
@@ -246,7 +248,7 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
     def __init__(self,
                  hamiltonian: PauliSum,
                  params: Type[AbstractParams],
-                 sim: WavefunctionSimulator,
+                 sim: WavefunctionSimulator = None,
                  scalar_cost_function: bool = True,
                  nshots: int = 0,
                  enable_logging: bool = False,
@@ -313,7 +315,8 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
         Form of the QAOA parameters (with n_steps and type fixed for this
         instance)
     qvm:
-        connection to the QuantumComputer to run on
+        Connection the QC to run the program on OR a name string like expected
+        by ``pyquil.api.get_qc``
     scalar_cost_function:
         If True: __call__ returns only the expectation value
         If False: __call__ returns a tuple (exp_val, std_dev)
@@ -334,7 +337,7 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
     def __init__(self,
                  hamiltonian: PauliSum,
                  params: Type[AbstractParams],
-                 qvm: QuantumComputer,
+                 qvm: Union[QuantumComputer, str],
                  scalar_cost_function: bool = True,
                  nshots: int = 1,
                  base_numshots: int = 100,

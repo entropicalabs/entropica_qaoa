@@ -23,8 +23,7 @@ from copy import deepcopy
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
 from pyquil.wavefunction import Wavefunction
-from pyquil.api._wavefunction_simulator import WavefunctionSimulator
-from pyquil.api._quantum_computer import QuantumComputer
+from pyquil.api import WavefunctionSimulator, QuantumComputer, get_qc
 
 from entropica_qaoa.vqe.measurelib import (append_measure_register,
                                            commuting_decomposition,
@@ -101,12 +100,14 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         The hamiltonian with respect to which to measure the energy.
     sim:
         A WavefunctionSimulator instance to get the wavefunction from.
+        Automatically created, if None is passed.
     scalar_cost_function:
         If True: __call__ returns only the expectation value
         If False: __call__ returns a tuple (exp_val, std_dev)
         Defaults to True.
     nshots:
-        Number of shots to assume to simulate the sampling noise. 0 corresponds to no sampling noise added and is the default.
+        Number of shots to assume to simulate the sampling noise. 0
+        corresponds to no sampling noise added and is the default.
     enable_logging:
         If true, a log is created which contains the parameter and function
         values at each function call. It is a list of namedtuples of the form
@@ -120,7 +121,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
                  prepare_ansatz: Program,
                  make_memory_map: Callable[[np.array], Dict],
                  hamiltonian: Union[PauliSum, np.array],
-                 sim: WavefunctionSimulator,
+                 sim: WavefunctionSimulator = None,
                  scalar_cost_function: bool = True,
                  nshots: int = 0,
                  enable_logging: bool = False,
@@ -130,7 +131,10 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         self.scalar = scalar_cost_function
         self.nshots = nshots
         self.make_memory_map = make_memory_map
-        self.sim = sim  # TODO start own simulator, if None is passed
+
+        if sim is None:
+            sim = WavefunctionSimulator()
+        self.sim = sim
 
         # TODO automatically generate Qubit mapping, if None is passed?
         # TODO ask Rigetti to implement "<" between qubits?
@@ -245,7 +249,8 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
     hamiltonian:
         The hamiltonian
     qvm:
-        Connection the QC to run the program on.
+        Connection the QC to run the program on OR a name string like expected
+        by ``pyquil.api.get_qc``
     scalar_cost_function:
         If True: __call__ returns only the expectation value
         If False: __call__ returns a tuple (exp_val, std_dev)
@@ -269,7 +274,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                  prepare_ansatz: Program,
                  make_memory_map: Callable[[Iterable], dict],
                  hamiltonian: PauliSum,
-                 qvm: QuantumComputer,
+                 qvm: Union[QuantumComputer, str],
                  scalar_cost_function: bool = True,
                  nshots: int = 1,
                  base_numshots: int = 100,
@@ -278,8 +283,11 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
 
         self.scalar = scalar_cost_function
         self.nshots = nshots
-        self.qvm = qvm
         self.make_memory_map = make_memory_map
+
+        if isinstance(qvm, str):
+            qvm = get_qc(qvm)
+        self.qvm = qvm
 
         if qubit_mapping is not None:
             prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
