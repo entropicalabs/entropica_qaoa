@@ -29,7 +29,7 @@ For those unsure of the location of their site-packages folder, you can simply r
 2. Clone the repository into your site-packages folder, into a directory called entropica_qaoa:
 
 ```bash
-git clone [insert the link when set up] entropica_qaoa
+git clone https://github.com/entropicalabs/entropica_qaoa entropica_qaoa
 ```
 3. Install the package using pip:
 

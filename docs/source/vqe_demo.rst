@@ -1,3 +1,4 @@
+.. _cost-functions-demo:
 
 A VQE Demonstration
 ===================
