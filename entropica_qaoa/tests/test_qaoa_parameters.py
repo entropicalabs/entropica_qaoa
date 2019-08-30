@@ -1,10 +1,14 @@
 import sys, os
+import math
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 
 import numpy as np
 import matplotlib.pyplot as plt
 from pytest import raises
+
+from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
+from pyquil.api import WavefunctionSimulator
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import QubitPlaceholder, Qubit
@@ -361,3 +365,43 @@ def test_ExtendedParams_plot():
     fig, ax = plt.subplots()
     params.plot(ax=ax)
     # plt.show()
+
+
+def test_extended_get_constraints():
+    weights = [0.1, 0.3, 0.5, -0.7]
+    term1 = PauliTerm.from_list([("Z", 0), ("Z", 1)], 0.1)
+    term2 = PauliTerm.from_list([("Z", 1), ("Z", 2)], 0.3)
+    term3 = PauliTerm.from_list([("Z", 2), ("Z", 3)], 0.5)
+    term4 = PauliTerm.from_list([("Z", 3), ("Z", 0)], -0.7)
+    ham = PauliSum([term1, term2, term3, term4])
+    p = 2
+
+    params = ExtendedParams.linear_ramp_from_hamiltonian(ham, p)
+
+    actual_constraints = params.get_constraints()
+
+    expected_constraints = [(0, 2 * math.pi), (0, 2 * math.pi),
+                            (0, 2 * math.pi), (0, 2 * math.pi),
+                            (0, 2 * math.pi), (0, 2 * math.pi),
+                            (0, 2 * math.pi), (0, 2 * math.pi),
+                            (0, 2 * math.pi / weights[0]),
+                            (0, 2 * math.pi / weights[1]),
+                            (0, 2 * math.pi / weights[2]),
+                            (0, 2 * math.pi / weights[3]),
+                            (0, 2 * math.pi / weights[0]),
+                            (0, 2 * math.pi / weights[1]),
+                            (0, 2 * math.pi / weights[2]),
+                            (0, 2 * math.pi / weights[3])]
+
+    assert(np.allclose(expected_constraints, actual_constraints))
+
+    cost_function = QAOACostFunctionOnWFSim(ham, params)
+    np.random.seed(0)
+    random_angles = np.random.uniform(-100, 100, size=len(params.raw()))
+    value = cost_function(random_angles)
+
+    normalised_angles = [random_angles[i] % actual_constraints[i][1]
+                         for i in range(len(params.raw()))]
+    normalised_value = cost_function(normalised_angles)
+
+    assert(np.allclose(value, normalised_value))
