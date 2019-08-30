@@ -164,7 +164,7 @@ def random_k_regular_graph(degree: int,
                            nodes: int,
                            seed: int = None,
                            weighted: bool = False,
-                           biases: bool =False) -> nx.Graph:
+                           biases: bool = False) -> nx.Graph:
     """
     Produces a random graph with specified number of nodes, each having degree k.
 
@@ -196,16 +196,14 @@ def random_k_regular_graph(degree: int,
     G = nx.random_regular_graph(degree, nodes, seed)
 
     for edge in G.edges():
-
         if not weighted:
             G[edge[0]][edge[1]]['weight'] = 1
         else:
             G[edge[0]][edge[1]]['weight'] = np.random.rand()
 
     if biases:
-
         for node in G.nodes():
-            G[node]['weight'] = np.random.rand()
+            G.node[node]['weight'] = np.random.rand()
 
     return G
 
