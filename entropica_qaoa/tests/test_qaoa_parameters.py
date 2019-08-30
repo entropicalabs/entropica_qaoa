@@ -368,70 +368,40 @@ def test_ExtendedParams_plot():
 
 
 def test_extended_get_constraints():
-
-    # TEST 1
     weights = [0.1, 0.3, 0.5, -0.7]
-    ham = PauliSum.from_compact_str('{}*Z0*Z1 + {}*Z1*Z2 + {}*Z2*Z3 + {}*Z3*Z0'.format(*weights))
+    term1 = PauliTerm.from_list([("Z", 0), ("Z", 1)], 0.1)
+    term2 = PauliTerm.from_list([("Z", 1), ("Z", 2)], 0.3)
+    term3 = PauliTerm.from_list([("Z", 2), ("Z", 3)], 0.5)
+    term4 = PauliTerm.from_list([("Z", 3), ("Z", 0)], -0.7)
+    ham = PauliSum([term1, term2, term3, term4])
     p = 2
 
     params = ExtendedParams.linear_ramp_from_hamiltonian(ham, p)
 
     actual_constraints = params.get_constraints()
 
-    expected_constraints = [(0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi),  # beta constraints
-                            (0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi),
-
-                            (0, 2 * math.pi / weights[0]), (0, 2 * math.pi / weights[1]),  # gamma pair constraints
-                            (0, 2 * math.pi / weights[2]), (0, 2 * math.pi / weights[3]),
-                            (0, 2 * math.pi / weights[0]), (0, 2 * math.pi / weights[1]),
-                            (0, 2 * math.pi / weights[2]), (0, 2 * math.pi / weights[3])]
-
-    assert(np.allclose(expected_constraints, actual_constraints))
-
-    cost_function = QAOACostFunctionOnWFSim(ham, params, sim=WavefunctionSimulator())
-    np.random.seed(0)
-    random_angles = np.random.uniform(-100, 100, size = len(params.raw()))
-    value = cost_function(random_angles)
-
-    normalised_angles = [random_angles[i] % actual_constraints[i][1] for i in range(len(params.raw()))]
-    normalised_value = cost_function(normalised_angles)
-
-    assert(np.allclose(value, normalised_value))
-
-    # TEST 2
-    weights = [0.1324, -0.32, 0.35, -0.7]
-    bias_weight = 0.35
-    ham = PauliSum.from_compact_str('{}*Z0 + {}*Z0*Z1 + {}*Z1*Z2 + {}*Z1*Z3 + {}*Z3*Z0'.format(bias_weight, *weights))
-    p = 3
-
-    params = ExtendedParams.linear_ramp_from_hamiltonian(ham, p)
-
-    actual_constraints = params.get_constraints()
-
-    expected_constraints = [(0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi),  # beta constraints
-                            (0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi),
-                            (0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi), (0, 2 * math.pi),
-
-                            (0, 2*math.pi / bias_weight),  # gamma single constraints
-                            (0, 2*math.pi / bias_weight),
-                            (0, 2*math.pi / bias_weight),
-
-                            (0, 2 * math.pi / weights[0]), (0, 2 * math.pi / weights[1]),  # gamma pair constraints
-                            (0, 2 * math.pi / weights[2]), (0, 2 * math.pi / weights[3]),
-                            (0, 2 * math.pi / weights[0]), (0, 2 * math.pi / weights[1]),
-                            (0, 2 * math.pi / weights[2]), (0, 2 * math.pi / weights[3]),
-                            (0, 2 * math.pi / weights[0]), (0, 2 * math.pi / weights[1]),
-                            (0, 2 * math.pi / weights[2]), (0, 2 * math.pi / weights[3])]
+    expected_constraints = [(0, 2 * math.pi), (0, 2 * math.pi),
+                            (0, 2 * math.pi), (0, 2 * math.pi),
+                            (0, 2 * math.pi), (0, 2 * math.pi),
+                            (0, 2 * math.pi), (0, 2 * math.pi),
+                            (0, 2 * math.pi / weights[0]),
+                            (0, 2 * math.pi / weights[1]),
+                            (0, 2 * math.pi / weights[2]),
+                            (0, 2 * math.pi / weights[3]),
+                            (0, 2 * math.pi / weights[0]),
+                            (0, 2 * math.pi / weights[1]),
+                            (0, 2 * math.pi / weights[2]),
+                            (0, 2 * math.pi / weights[3])]
 
     assert(np.allclose(expected_constraints, actual_constraints))
 
-    cost_function = QAOACostFunctionOnWFSim(ham, params, sim=WavefunctionSimulator())
+    cost_function = QAOACostFunctionOnWFSim(ham, params)
     np.random.seed(0)
     random_angles = np.random.uniform(-100, 100, size=len(params.raw()))
     value = cost_function(random_angles)
 
-    normalised_angles = [random_angles[i] % actual_constraints[i][1] for i in range(len(params.raw()))]
+    normalised_angles = [random_angles[i] % actual_constraints[i][1]
+                         for i in range(len(params.raw()))]
     normalised_value = cost_function(normalised_angles)
 
     assert(np.allclose(value, normalised_value))
-

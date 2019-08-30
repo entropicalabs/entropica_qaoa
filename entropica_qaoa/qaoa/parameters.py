@@ -617,11 +617,26 @@ class ExtendedParams(AbstractParams):
         return self
 
     def get_constraints(self):
-        beta_constraints = [(0, 2*math.pi)]*len(self.betas.flatten())
-        gamma_pair_constraints = [(0, 2*math.pi/w) for w in self.pair_qubit_coeffs]*self.n_steps
-        gamma_single_constraints = [(0, 2 * math.pi / w) for w in self.single_qubit_coeffs] * self.n_steps
+        """Constraints on the parameters for constrained parameters.
 
-        all_constraints = beta_constraints + gamma_single_constraints + gamma_pair_constraints
+        Returns
+        -------
+        List[Tuple]:
+            A list of tuples (0, upper_boundary) of constraints on the
+            parameters s.t. we are exploiting the periodicity of the cost
+            function. Useful for constrained optimizers.
+
+        """
+        beta_constraints = [(0, 2 * math.pi)] * len(self.betas.flatten())
+        gamma_pair_constraints = [(0, 2 * math.pi / w)
+                                  for w in self.pair_qubit_coeffs]
+        gamma_pair_constraints *= self.n_steps
+        gamma_single_constraints = [(0, 2 * math.pi / w)
+                                    for w in self.single_qubit_coeffs]
+        gamma_single_constraints *= self.n_steps
+
+        all_constraints = beta_constraints + gamma_single_constraints\
+            + gamma_pair_constraints
 
         return all_constraints
 
@@ -1581,7 +1596,7 @@ class FourierExtendedParams(AbstractParams):
         new_values = new_values[self.q * len(self.reg):]
 
         self.u_singles = np.array(new_values[:len(self.qubits_singles)
-                                  * self.q])
+                                             * self.q])
         self.u_singles = self.u_singles.reshape((self.q,
                                                  len(self.qubits_singles)))
         new_values = new_values[self.q * len(self.qubits_singles):]
@@ -1645,7 +1660,6 @@ class FourierExtendedParams(AbstractParams):
         params = cls((hamiltonian, n_steps, q), (v, u_singles, u_pairs))
         return params
 
-
     @classmethod
     def from_AbstractParameters(cls,
                                 abstract_params: AbstractParams,
@@ -1692,7 +1706,6 @@ class FourierExtendedParams(AbstractParams):
                     label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
         ax.legend()
-
 
 
 class QAOAParameterIterator:
