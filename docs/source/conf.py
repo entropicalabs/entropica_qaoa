@@ -38,6 +38,7 @@ extensions = [
         "sphinx.ext.autodoc",
         "sphinx_autodoc_typehints",
         "sphinx.ext.mathjax",
+        "IPython.sphinxext.ipython_console_highlighting",
 ]
 
 napoleon_google_docstring = False

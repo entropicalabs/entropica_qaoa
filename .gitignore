@@ -1,4 +1,4 @@
-# IPython Notebooks 
+# IPython Notebooks
 ###################
 *.ipynb_checkpoints
 
@@ -48,4 +48,5 @@ node_modules/*
 .idea/*
 Package_Scheme.pptx
 examples/*.py
+docs/source/notebooks/*
 Untitled.ipynb

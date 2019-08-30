@@ -10,9 +10,9 @@ A Notebook giving a quick overview over the basic functionality of the package t
    note that more parametrizations and more things you can do with the
    parameters can be found in `QAOA_Parametrizations.ipynb`
  - Creating a QAOA cost function with these parameters and a hamiltonian. Then
-   a note that the possibility to run on the QPU instead of the WFsim and more
-   sophisticated options for the cost functions are explained in 
-   `VQE_and_cost_functions.ipynb`
+   a note that more sophisticated options for the cost functions are explained
+   in `VQE_and_cost_functions.ipynb` and running everything else is explained
+   in `Running_on_the_QPU.ipynb`
  - A run with the optimizer and again the note, that the demo of other
    optimizers and more details in `VQE_and_cost_functions.ipynb`
 
@@ -52,6 +52,8 @@ only a special instance of VQE.
 **Status**
 Rewritten, but not yet double checked
 
+# `Running_on_the_QPU.ipynb`
+ 
 
 # `Utilities.ipynb`
  - Hamiltonians and graphs (including the ring of disagrees)

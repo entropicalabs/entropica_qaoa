@@ -47,12 +47,12 @@ You can now import this package as you would any conda- or pip-installed library
 First Steps
 -----------
 
-In :ref:`qaoa-workflow-notebook` we show you the basic usage of EntropicaQAOA.
+In <qaoa-workflow-notebook> we show you the basic usage of EntropicaQAOA.
 More advanced examples on working with different parametrizations are found in
-:ref:`qaoa-parameter-classes` and the more advanced features of the cost
-functions are explained in :ref:`cost-functions-demo`. To learn, how to create
+<qaoa-parameter-demo> and the more advanced features of the cost
+functions are explained in <cost-functions-demo>. To learn, how to create
 problem instances faster and convert between different formats you can read
-:ref:`utilities-demo`.
+<utilities-demo>.
 
 If you are not content just reading above linked notebooks you can also download them from our github page at `<https://github.com/entropicalabs/entropica_qaoa/tree/master/examples>`_ .
 
@@ -69,11 +69,11 @@ Contents
    :maxdepth: 3
    :caption: The Demo Notebooks
 
-   vqe_demo
-   qaoa_workflow
-   qaoa_parameter_demo
-   advanced_qaoa_demo
-   utilities_demo
+   notebooks/QAOAWorkflowDemo
+   notebooks/QAOAParameterDemo
+   notebooks/UtilitiesDemo
+   notebooks/VQEDemo
+   notebooks/AdvancedQAOAParameterDemo
 
 
 .. toctree::
