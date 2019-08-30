@@ -1,3 +1,5 @@
+.. _utilities-demo:
+
 
 More Utilities
 ==============

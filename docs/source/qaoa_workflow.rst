@@ -1,3 +1,4 @@
+.. _qaoa-workflow-notebook:
 
 The QAOA Workflow
 =================
