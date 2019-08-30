@@ -17,7 +17,7 @@ Utilty and convenience functions for a number of QAOA applications.
 See the demo notebook UtilitiesDemo.ipynb for examples on usage of the methods herein.
 """
 
-from typing import Union, List, Type, Dict, Iterable
+from typing import Union, List, Dict
 
 import numpy as np
 import pandas as pd
@@ -32,7 +32,9 @@ from scipy.spatial import distance
 
 from sklearn.metrics import accuracy_score
 
-### METHODS FOR CREATING HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO ###
+#############################################################################
+# METHODS FOR CREATING HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO
+#############################################################################
 
 
 def hamiltonian_from_hyperparams(nqubits: int,
@@ -64,7 +66,8 @@ def hamiltonian_from_hyperparams(nqubits: int,
 
     hamiltonian = []
     for i in range(len(pairs)):
-        hamiltonian.append(PauliTerm('Z', pairs[i][0], couplings[i]) * PauliTerm('Z', pairs[i][1]))
+        hamiltonian.append(PauliTerm('Z', pairs[i][0], couplings[i]) *
+                           PauliTerm('Z', pairs[i][1]))
 
     for i in range(len(singles)):
         hamiltonian.append(PauliTerm('Z', singles[i], biases[i]))
@@ -76,10 +79,13 @@ def random_hamiltonian(nqubits: int) -> PauliSum:
     """
     Creates a random cost hamiltonian, diagonal in the computational basis:
 
-     - Randomly selects which qubits that will have a bias term, then assigns them a bias coefficient.
-     - Randomly selects which qubit pairs will have a coupling term, then assigns them a coupling coefficient.
+     - Randomly selects which qubits that will have a bias term, then assigns
+       them a bias coefficient.
+     - Randomly selects which qubit pairs will have a coupling term, then
+       assigns them a coupling coefficient.
 
-     In both cases, the random coefficient is drawn from the uniform distribution on the interval [0,1).
+     In both cases, the random coefficient is drawn from the uniform
+     distribution on the interval [0,1).
 
     Parameters
     ----------
@@ -88,7 +94,7 @@ def random_hamiltonian(nqubits: int) -> PauliSum:
 
     Returns
     -------
-    hamiltonian:
+    PauliSum:
         A hamiltonian with random couplings and biases, as a PauliSum object.
 
     """
@@ -109,6 +115,7 @@ def random_hamiltonian(nqubits: int) -> PauliSum:
 
     return PauliSum(hamiltonian)
 
+
 def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
     """
     Creates a networkx graph corresponding to a specified problem Hamiltonian.
@@ -121,7 +128,8 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
     Returns
     -------
     G:
-        The corresponding networkx graph with the edge weights being the two-qubit coupling coefficients,
+        The corresponding networkx graph with the edge weights being the
+        two-qubit coupling coefficients,
         and the node weights being the single-qubit bias terms.
 
     TODO:
@@ -132,7 +140,8 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
     """
 
     # Get hyperparameters from Hamiltonian
-    hyperparams = {'nqubits': len(hamiltonian.get_qubits()), 'singles': [], 'biases': [], 'pairs': [], 'couplings': []}
+    hyperparams = {'nqubits': len(hamiltonian.get_qubits()), 'singles': [],
+                   'biases': [], 'pairs': [], 'couplings': []}
 
     for term in hamiltonian.terms:
 
@@ -150,56 +159,61 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
 
     return G
 
+
 def random_k_regular_graph(degree: int,
                            nodes: int,
                            seed: int = None,
                            weighted: bool = False,
                            biases: bool =False) -> nx.Graph:
-    
     """
     Produces a random graph with specified number of nodes, each having degree k.
-    
+
     Parameters
     ----------
     degree:
-        Desired degree for the nodes   
+        Desired degree for the nodes
     nodes:
-        Total number of nodes in the graph    
+        Total number of nodes in the graph
     seed:
-        A seed for the random number generator    
+        A seed for the random number generator
     weighted:
-        Whether the edge weights should be uniform or different. If false, all weights are set to 1. 
-        If true, the weight is set to a random number drawn from the uniform distribution in the interval 0 to 1.    
+        Whether the edge weights should be uniform or different. If false, all
+        weights are set to 1.
+        If true, the weight is set to a random number drawn from the uniform
+        distribution in the interval 0 to 1.
     biases:
         Whether or not the graph nodes should be assigned a weight.
-        If true, the weight is set to a random number drawn from the uniform distribution in the interval 0 to 1.
-        
+        If true, the weight is set to a random number drawn from the uniform
+        distribution in the interval 0 to 1.
+
     Returns
     -------
-    G
+    nx.Graph:
         A graph with the properties as specified.
-    
+
     """
-    
-    G = nx.random_regular_graph(degree,nodes,seed)
-    
+
+    G = nx.random_regular_graph(degree, nodes, seed)
+
     for edge in G.edges():
-        
+
         if not weighted:
             G[edge[0]][edge[1]]['weight'] = 1
         else:
             G[edge[0]][edge[1]]['weight'] = np.random.rand()
-    
+
     if biases:
-        
+
         for node in G.nodes():
             G[node]['weight'] = np.random.rand()
-   
+
     return G
+
 
 def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
     """
-    Builds a cost Hamiltonian as a PauliSum from a specified networkx graph, extracting any node biases and edge weights.
+    Builds a cost Hamiltonian as a PauliSum from a specified networkx graph,
+    extracting any node biases and edge weights.
 
     Parameters
     ----------
@@ -208,7 +222,7 @@ def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
 
     Returns
     -------
-    Hamiltonian
+    PauliSum:
         The PauliSum representation of the networkx graph.
 
     """
@@ -254,28 +268,27 @@ def graph_from_hyperparams(nqubits: int,
                            biases: List[float],
                            pairs: List[int],
                            couplings: List[float]) -> nx.Graph:
-    
     """
     Builds a networkx graph from the specified QAOA hyperparameters
-    
+
     Parameters
     ----------
     nqubits:
-        The number of qubits (graph nodes)   
+        The number of qubits (graph nodes)
     singles:
-        The qubits that have a bias term (node weight)    
+        The qubits that have a bias term (node weight)
     biases:
-        The values of the single-qubit biases (i.e. the node weight values)       
+        The values of the single-qubit biases (i.e. the node weight values)
     pairs:
-        The qubit pairs that are coupled (i.e. the nodes conected by an edge)   
+        The qubit pairs that are coupled (i.e. the nodes conected by an edge)
     couplings:
         The strength of the coupling between the qubit pairs (i.e. the edge weights)
-        
+
     Returns
     -------
-    G:
+    nx.Graph:
         Networkx graph with the specified properties
-    
+
     """
 
     G = nx.Graph()
@@ -289,32 +302,37 @@ def graph_from_hyperparams(nqubits: int,
 
     return G
 
-### HAMILTONIANS AND DATA ###
+
+#############################################################################
+# HAMILTONIANS AND DATA
+#############################################################################
 
 
 def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     """
-    Generates a Hamiltonian from a distance matrix and a numpy array of single qubit bias terms where the i'th indexed value
-    of in biases is applied to the i'th qubit.
+    Generates a Hamiltonian from a distance matrix and a numpy array of single
+    qubit bias terms where the i'th indexed value of in biases is applied to
+    the i'th qubit.
 
     Parameters
     ----------
     dist:
-        A 2-dimensional square matrix where entries in row i, column j represent the distance between node i and node j.
+        A 2-dimensional square matrix where entries in row i, column j
+        represent the distance between node i and node j.
     biases:
-        A dictionary of floats, with keys indicating the qubits with bias terms, and corresponding values being the bias coefficients.
+        A dictionary of floats, with keys indicating the qubits with bias
+        terms, and corresponding values being the bias coefficients.
 
     Returns
     -------
-    hamiltonian:
+    PauliSum:
         A PauliSum object modelling the Hamiltonian of the system
     """
-
     pauli_list = list()
     m, n = dist.shape
 
-    #allows tolerance for both matrices and dataframes
-    if isinstance(dist,pd.DataFrame):
+    # allows tolerance for both matrices and dataframes
+    if isinstance(dist, pd.DataFrame):
         dist = dist.values
 
     if biases:
@@ -334,29 +352,31 @@ def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     return PauliSum(pauli_list)
 
 
-def distances_dataset(data: Union[np.array,pd.DataFrame,Dict], 
-                      metric='euclidean') -> Union[np.array,pd.DataFrame]:
+def distances_dataset(data: Union[np.array, pd.DataFrame, Dict],
+                      metric='euclidean') -> Union[np.array, pd.DataFrame]:
     """
-    Computes the distance between data points in a specified dataset, according to the specified metric (default is Euclidean).
+    Computes the distance between data points in a specified dataset,
+    according to the specified metric (default is Euclidean).
 
     Parameters
     ----------
     data:
-        The user's dataset, either as an array, dictionary, or a Pandas DataFrame. 
+        The user's dataset, either as an array, dictionary, or a Pandas
+        DataFrame.
 
     Returns
     -------
-    If input is a dictionary or numpy array, output is a numpy array of dimension NxN, where N is the number of data points.
-    If input is a Pandas DataFrame, the distances are returned in this format.
-
-
+    Union[np.array, pd.Dataframe]:
+        If input is a dictionary or numpy array, output is a numpy array of
+        dimension NxN, where N is the number of data points.
+        If input is a Pandas DataFrame, the distances are returned in this format.
     """
 
     if isinstance(data, dict):
         data = np.concatenate(list(data.values()))
-    elif isinstance(data,pd.DataFrame):
+    elif isinstance(data, pd.DataFrame):
         return pd.DataFrame(distance.cdist(data, data, metric),
-                     index=data.index,columns=data.index)
+                            index=data.index, columns=data.index)
     return distance.cdist(data, data, metric)
 
 
@@ -365,7 +385,8 @@ def gaussian_2Dclusters(n_clusters: int,
                         means: List[float],
                         cov_matrices: List[float]):
     """
-    Creates a set of clustered data points, where the distribution within each cluster is Gaussian.
+    Creates a set of clustered data points, where the distribution within each
+    cluster is Gaussian.
 
     Parameters
     ----------
@@ -374,22 +395,24 @@ def gaussian_2Dclusters(n_clusters: int,
     n_points:
         A list of the number of points in each cluster
     means:
-        A list of the means [x,y] coordinates of each cluster in the plane (i.e. their centre)
+        A list of the means [x,y] coordinates of each cluster in the plane
+        i.e. their centre)
     cov_matrices:
         A list of the covariance matrices of the clusters
 
     Returns
     -------
     data
-        A dict whose keys are the cluster labels, and values are a matrix of the with the x and y coordinates as its rows.
+        A dict whose keys are the cluster labels, and values are a matrix of
+        the with the x and y coordinates as its rows.
 
     TODO
         Output data as Pandas DataFrame?
 
     """
     args_in = [len(means), len(cov_matrices), len(n_points)]
-    assert all(
-        item == n_clusters for item in args_in), "Insufficient data provided for specified number of clusters"
+    assert all(item == n_clusters for item in args_in),\
+            "Insufficient data provided for specified number of clusters"
 
     data = {}
     for i in range(n_clusters):
@@ -405,7 +428,6 @@ def gaussian_2Dclusters(n_clusters: int,
 
 
 def plot_cluster_data(data):
-
     """
     Creates a scatterplot of the input data specified
     """
@@ -414,12 +436,16 @@ def plot_cluster_data(data):
     plt.scatter(data_matr[:, 0], data_matr[:, 1])
     plt.show()
 
-### ANALYTIC FORMULAE ###
+
+#############################################################################
+# ANALYTIC FORMULAE
+#############################################################################
 
 
 def ring_of_disagrees(n: int) -> PauliSum:
     """
-    Builds the cost Hamiltonian for the "Ring of Disagrees" described in the original QAOA paper (https://arxiv.org/abs/1411.4028),
+    Builds the cost Hamiltonian for the "Ring of Disagrees" described in the
+    original QAOA paper (https://arxiv.org/abs/1411.4028),
     for the specified number of vertices n.
 
     Parameters
@@ -429,7 +455,7 @@ def ring_of_disagrees(n: int) -> PauliSum:
 
     Returns
     -------
-    hamiltonian:
+    PauliSum:
         The cost Hamiltonian representing the ring, as a PauliSum object.
 
     """
@@ -441,7 +467,10 @@ def ring_of_disagrees(n: int) -> PauliSum:
 
     return PauliSum(hamiltonian)
 
-### OTHER MISCELLANEOUS ###
+
+##########################################################################
+# OTHER MISCELLANEOUS
+##########################################################################
 
 
 def prepare_classical_state(reg, state: List) -> Program:
@@ -464,7 +493,8 @@ def prepare_classical_state(reg, state: List) -> Program:
 
     p = Program()
     for qubit, s in zip(reg, state):
-        # if int(s) == 0 we don't need to add any gates, since the qubit is in state 0 by default
+        # if int(s) == 0 we don't need to add any gates, since the qubit is in
+        # state 0 by default
         if int(s) == 1:
             p.inst(X(qubit))
     return p
@@ -472,8 +502,8 @@ def prepare_classical_state(reg, state: List) -> Program:
 
 def return_lowest_state(probs):
     """
-    Returns the lowest energy state of a QAOA run from the list of probabilities
-    returned by pyQuil's Wavefunction.probabilities()method.
+    Returns the lowest energy state of a QAOA run from the list of
+    probabilities returned by pyQuil's Wavefunction.probabilities()method.
 
     Parameters
     ----------
@@ -482,8 +512,9 @@ def return_lowest_state(probs):
 
     Returns
     -------
-    lowest:
-        A little endian list of binary integers indicating the lowest energy state of the wavefunction.
+    int:
+        A little endian list of binary integers indicating the lowest energy
+        state of the wavefunction.
     """
 
     index_max = max(range(len(probs)), key=probs.__getitem__)
@@ -494,19 +525,17 @@ def return_lowest_state(probs):
 
 def evaluate_lowest_state(lowest, true):
     """
-    Prints informative statements comparing QAOA's returned bit string to the true
-    cluster values.
+    Prints informative statements comparing QAOA's returned bit string to the
+    true cluster values.
 
     Parameters
     ----------
     lowest:
-        A little-endian list of binary integers representing the lowest energy state of the wavefunction
+        A little-endian list of binary integers representing the lowest energy
+        state of the wavefunction
     true:
-        A little-endian list of binary integers representing the true solution to the MAXCUT clustering problem.
-
-    Returns
-    -------
-    Nothing
+        A little-endian list of binary integers representing the true solution
+        to the MAXCUT clustering problem.
     """
     print('True Labels of samples:', true)
     print('Lowest QAOA State:', lowest)
@@ -531,7 +560,7 @@ def plot_amplitudes(amplitudes: Union[np.array, list],
     ax: matplotlib axes object
         The canvas to draw on
     """
-    if ax == None:
+    if ax is None:
         fig, ax = plt.subplots()
     # normalizing energies
     energies = np.array(energies)
@@ -550,9 +579,6 @@ def plot_amplitudes(amplitudes: Union[np.array, list],
     ax.bar(y_pos + width, -energies, width, label="-Energy")
     ax.set_xticks(y_pos + width / 2, minor=False)
     ax.set_xticklabels(labels, minor=False)
-    #    plt.ylabel("Amplitude")
     ax.set_xlabel("State")
     ax.grid(linestyle='--')
     ax.legend()
-    #    plt.show()
-
