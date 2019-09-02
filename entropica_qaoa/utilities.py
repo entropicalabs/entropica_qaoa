@@ -25,7 +25,7 @@ import networkx as nx
 
 import matplotlib.pyplot as plt
 
-from pyquil import Program
+from pyquil import Program, QubitPlaceholder
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
 from scipy.spatial import distance
@@ -444,7 +444,8 @@ def ring_of_disagrees(n: int) -> PauliSum:
 ### OTHER MISCELLANEOUS ###
 
 
-def prepare_classical_state(reg: List, state: List) -> Program:
+def prepare_classical_state(reg: List[Union[int, QubitPlaceholder]],
+                            state: List[bool]) -> Program:
     """
     Prepare a custom classical state for all qubits in the specified register reg.
 
