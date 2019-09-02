@@ -155,46 +155,46 @@ def random_k_regular_graph(degree: int,
                            seed: int = None,
                            weighted: bool = False,
                            biases: bool =False) -> nx.Graph:
-    
+
     """
     Produces a random graph with specified number of nodes, each having degree k.
-    
+
     Parameters
     ----------
     degree:
-        Desired degree for the nodes   
+        Desired degree for the nodes
     nodes:
-        Total number of nodes in the graph    
+        Total number of nodes in the graph
     seed:
-        A seed for the random number generator    
+        A seed for the random number generator
     weighted:
-        Whether the edge weights should be uniform or different. If false, all weights are set to 1. 
-        If true, the weight is set to a random number drawn from the uniform distribution in the interval 0 to 1.    
+        Whether the edge weights should be uniform or different. If false, all weights are set to 1.
+        If true, the weight is set to a random number drawn from the uniform distribution in the interval 0 to 1.
     biases:
         Whether or not the graph nodes should be assigned a weight.
         If true, the weight is set to a random number drawn from the uniform distribution in the interval 0 to 1.
-        
+
     Returns
     -------
     G
         A graph with the properties as specified.
-    
+
     """
-    
+
     G = nx.random_regular_graph(degree,nodes,seed)
-    
+
     for edge in G.edges():
-        
+
         if not weighted:
             G[edge[0]][edge[1]]['weight'] = 1
         else:
             G[edge[0]][edge[1]]['weight'] = np.random.rand()
-    
+
     if biases:
-        
+
         for node in G.nodes():
             G[node]['weight'] = np.random.rand()
-   
+
     return G
 
 def hamiltonian_from_graph(G: nx.Graph) -> PauliSum:
@@ -254,28 +254,28 @@ def graph_from_hyperparams(nqubits: int,
                            biases: List[float],
                            pairs: List[int],
                            couplings: List[float]) -> nx.Graph:
-    
+
     """
     Builds a networkx graph from the specified QAOA hyperparameters
-    
+
     Parameters
     ----------
     nqubits:
-        The number of qubits (graph nodes)   
+        The number of qubits (graph nodes)
     singles:
-        The qubits that have a bias term (node weight)    
+        The qubits that have a bias term (node weight)
     biases:
-        The values of the single-qubit biases (i.e. the node weight values)       
+        The values of the single-qubit biases (i.e. the node weight values)
     pairs:
-        The qubit pairs that are coupled (i.e. the nodes conected by an edge)   
+        The qubit pairs that are coupled (i.e. the nodes conected by an edge)
     couplings:
         The strength of the coupling between the qubit pairs (i.e. the edge weights)
-        
+
     Returns
     -------
     G:
         Networkx graph with the specified properties
-    
+
     """
 
     G = nx.Graph()
@@ -334,7 +334,7 @@ def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     return PauliSum(pauli_list)
 
 
-def distances_dataset(data: Union[np.array,pd.DataFrame,Dict], 
+def distances_dataset(data: Union[np.array,pd.DataFrame,Dict],
                       metric='euclidean') -> Union[np.array,pd.DataFrame]:
     """
     Computes the distance between data points in a specified dataset, according to the specified metric (default is Euclidean).
@@ -342,7 +342,7 @@ def distances_dataset(data: Union[np.array,pd.DataFrame,Dict],
     Parameters
     ----------
     data:
-        The user's dataset, either as an array, dictionary, or a Pandas DataFrame. 
+        The user's dataset, either as an array, dictionary, or a Pandas DataFrame.
 
     Returns
     -------
@@ -444,19 +444,22 @@ def ring_of_disagrees(n: int) -> PauliSum:
 ### OTHER MISCELLANEOUS ###
 
 
-def prepare_classical_state(reg, state: List) -> Program:
+def prepare_classical_state(reg: List, state: List) -> Program:
     """
     Prepare a custom classical state for all qubits in the specified register reg.
 
     Parameters
     ----------
-    state :
-       A list of 0s and 1s which represent the starting state of the register, bit-wise.
+    reg:
+        Register to apply the state preparation circuit on. E.g. a list of
+        qubits
+    state:
+        A list of 0s and 1s which represent the starting state of the register, bit-wise.
 
     Returns
     -------
     Program
-       Quil Program with a circuit in an initial classical state.
+        Quil Program with a circuit in an initial classical state.
     """
 
     if len(reg) != len(state):
