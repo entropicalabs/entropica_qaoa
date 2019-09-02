@@ -17,29 +17,47 @@ help:
 
 # compile the notebooks
 
-html: build/html/VQEDemo.html build/html/QAOAParameterDemo.html build/html/AdvancedQAOAParameterDemo.html build/html/UtilitiesDemo.html build/html/QAOAWorkflowDemo.html
+# Catch-all target: route all unknown targets to Sphinx using the new
+# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+# %: Makefile
+# 	$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+
+html: source/notebooks/VQEDemo.rst source/notebooks/QAOAParameterDemo.rst\
+	  source/notebooks/AdvancedQAOAParameterDemo.rst\
+ 	  source/notebooks/UtilitiesDemo.rst source/notebooks/QAOAWorkflowDemo.rst
 	sphinx-build -M html source build
 
 
-build/html/VQEDemo.html: ../examples/VQEDemo.ipynb
-	jupyter nbconvert --to html ../examples/VQEDemo.ipynb --output-dir=./build/html/
+source/notebooks/VQEDemo.rst: ../examples/VQEDemo.ipynb
+	jupyter nbconvert \
+	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
+	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
+	--to rst ../examples/VQEDemo.ipynb --output-dir=./source/notebooks/
 
-build/html/QAOAParameterDemo.html: ../examples/QAOAParameterDemo.ipynb
-	jupyter nbconvert --to html ../examples/QAOAParameterDemo.ipynb --output-dir=./build/html/
+source/notebooks/QAOAParameterDemo.rst: ../examples/QAOAParameterDemo.ipynb
+	jupyter nbconvert \
+	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
+	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
+	--to rst ../examples/QAOAParameterDemo.ipynb --output-dir=./source/notebooks/
 
-build/html/AdvancedQAOAParameterDemo.html: ../examples/AdvancedQAOAParameterDemo.ipynb
-	jupyter nbconvert --to html ../examples/AdvancedQAOAParameterDemo.ipynb --output-dir=./build/html/
+source/notebooks/AdvancedQAOAParameterDemo.rst: ../examples/AdvancedQAOAParameterDemo.ipynb
+	jupyter nbconvert \
+	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
+	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
+	--to rst ../examples/AdvancedQAOAParameterDemo.ipynb --output-dir=./source/notebooks/
 
-build/html/QAOAWorkflowDemo.html: ../examples/QAOAWorkflowDemo.ipynb
-	jupyter nbconvert --to html ../examples/QAOAWorkflowDemo.ipynb --output-dir=./build/html/
+source/notebooks/QAOAWorkflowDemo.rst: ../examples/QAOAWorkflowDemo.ipynb
+	jupyter nbconvert \
+	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
+	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
+	--to rst ../examples/QAOAWorkflowDemo.ipynb --output-dir=./source/notebooks/
 
-build/html/UtilitiesDemo.html: ../examples/UtilitiesDemo.ipynb
-	jupyter nbconvert --to html ../examples/UtilitiesDemo.ipynb --output-dir=./build/html/
+source/notebooks/UtilitiesDemo.rst: ../examples/UtilitiesDemo.ipynb
+	jupyter nbconvert \
+	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
+	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
+	--to rst ../examples/UtilitiesDemo.ipynb --output-dir=./source/notebooks/
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-# %: Makefile build/html/VQEDemo.ipynb
-# 	$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-
-# build/html/VQEDemo.html: ../examples/VQEDemo.ipynb
-#	jupyter nbconvert --to html ../examples/VQEDemo.ipynb --output-dir=./build/html/
+clean:
+	sphinx-build -M clean source build
