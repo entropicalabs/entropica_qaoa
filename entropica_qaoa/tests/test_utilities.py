@@ -12,8 +12,8 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
 
 from entropica_qaoa.utilities import (random_hamiltonian,
-                                     distances_dataset,
-                                     gaussian_2Dclusters)
+                                      distances_dataset,
+                                      gaussian_2Dclusters)
 
 
 def test_random_hamiltonian():

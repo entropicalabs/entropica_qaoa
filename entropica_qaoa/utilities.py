@@ -25,7 +25,8 @@ import networkx as nx
 
 import matplotlib.pyplot as plt
 
-from pyquil import Program, QubitPlaceholder
+from pyquil import Program
+from pyquil.quil import QubitPlaceholder
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
 from scipy.spatial import distance
@@ -474,7 +475,7 @@ def prepare_classical_state(reg: List[Union[int, QubitPlaceholder]],
     return p
 
 
-def return_lowest_state(probs):
+def max_probability_bitstring(probs):
     """
     Returns the lowest energy state of a QAOA run from the list of probabilities
     returned by pyQuil's Wavefunction.probabilities()method.
@@ -496,40 +497,40 @@ def return_lowest_state(probs):
     return [int(item) for item in string]
 
 
-def evaluate_lowest_state(lowest, true):
+def evaluate_state(state, true_labels):
     """
     Prints informative statements comparing QAOA's returned bit string to the true
     cluster values.
 
     Parameters
     ----------
-    lowest:
+    state:
         A little-endian list of binary integers representing the lowest energy state of the wavefunction
-    true:
+    true_labels:
         A little-endian list of binary integers representing the true solution to the MAXCUT clustering problem.
 
     Returns
     -------
     Nothing
     """
-    print('True Labels of samples:', true)
-    print('Lowest QAOA State:', lowest)
-    acc = accuracy_score(lowest, true)
+    print('True Labels of samples:', true_labels)
+    print('Lowest QAOA State:', state)
+    acc = accuracy_score(state, true_labels)
     print('Accuracy of Original State:', acc * 100, '%')
-    final_c = [0 if item == 1 else 1 for item in lowest]
-    acc_c = accuracy_score(final_c, true)
+    final_c = [0 if item == 1 else 1 for item in state]
+    acc_c = accuracy_score(final_c, true_labels)
     print('Accuracy of Complement State:', acc_c * 100, '%')
 
 
-def plot_amplitudes(amplitudes: Union[np.array, list],
-                    energies: Union[np.array, list],
-                    ax=None):
+def plot_probabilities(probabilities: Union[np.array, list],
+                       energies: Union[np.array, list],
+                       ax=None):
     """Makes a nice plot of the probabilities for each state and its energy
 
     Parameters
     ----------
-    amplitudes:
-        The probabilites to find the state
+    probabilities:
+        The probabilites to find the state. Can be calculated via wavefunction.probabilities()
     energies:
         The energy of that state
     ax: matplotlib axes object
@@ -546,10 +547,10 @@ def plot_amplitudes(amplitudes: Union[np.array, list],
 
     # create labels
     labels = [r'$\left|' +
-              format_strings[nqubits].format(i) + r'\right>$' for i in range(len(amplitudes))]
-    y_pos = np.arange(len(amplitudes))
+              format_strings[nqubits].format(i) + r'\right>$' for i in range(len(probabilities))]
+    y_pos = np.arange(len(probabilities))
     width = 0.35
-    ax.bar(y_pos, amplitudes**2, width, label=r'$|Amplitude|^2$')
+    ax.bar(y_pos, probabilities ** 2, width, label=r'$|Amplitude|^2$')
 
     ax.bar(y_pos + width, -energies, width, label="-Energy")
     ax.set_xticks(y_pos + width / 2, minor=False)
