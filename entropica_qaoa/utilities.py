@@ -192,7 +192,8 @@ def random_k_regular_graph(degree: int,
         A graph with the properties as specified.
 
     """
-
+    
+    np.random.seed(seed=seed)
     G = nx.random_regular_graph(degree, nodes, seed)
 
     for edge in G.edges():
