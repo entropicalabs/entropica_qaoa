@@ -26,6 +26,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 from pyquil import Program
+from pyquil.quil import QubitPlaceholder
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
 from scipy.spatial import distance
@@ -165,6 +166,7 @@ def random_k_regular_graph(degree: int,
                            seed: int = None,
                            weighted: bool = False,
                            biases: bool = False) -> nx.Graph:
+    
     """
     Produces a random graph with specified number of nodes, each having degree k.
 
@@ -177,8 +179,8 @@ def random_k_regular_graph(degree: int,
     seed:
         A seed for the random number generator
     weighted:
-        Whether the edge weights should be uniform or different. If false, all
-        weights are set to 1.
+        Whether the edge weights should be uniform or different. If false, all weights are set to 1. 
+        If true, the weight is set to a random number drawn from the uniform distribution in the interval 0 to 1.    
         If true, the weight is set to a random number drawn from the uniform
         distribution in the interval 0 to 1.
     biases:
@@ -197,12 +199,14 @@ def random_k_regular_graph(degree: int,
     G = nx.random_regular_graph(degree, nodes, seed)
 
     for edge in G.edges():
+        
         if not weighted:
             G[edge[0]][edge[1]]['weight'] = 1
         else:
             G[edge[0]][edge[1]]['weight'] = np.random.rand()
 
     if biases:
+        
         for node in G.nodes():
             G.node[node]['weight'] = np.random.rand()
 
@@ -267,6 +271,7 @@ def graph_from_hyperparams(nqubits: int,
                            biases: List[float],
                            pairs: List[int],
                            couplings: List[float]) -> nx.Graph:
+    
     """
     Builds a networkx graph from the specified QAOA hyperparameters
 
@@ -472,19 +477,23 @@ def ring_of_disagrees(n: int) -> PauliSum:
 ##########################################################################
 
 
-def prepare_classical_state(reg, state: List) -> Program:
+def prepare_classical_state(reg: List[Union[int, QubitPlaceholder]],
+                            state: List[bool]) -> Program:
     """
     Prepare a custom classical state for all qubits in the specified register reg.
 
     Parameters
     ----------
-    state :
-       A list of 0s and 1s which represent the starting state of the register, bit-wise.
+    reg:
+        Register to apply the state preparation circuit on. E.g. a list of
+        qubits
+    state:
+        A list of 0s and 1s which represent the starting state of the register, bit-wise.
 
     Returns
     -------
     Program
-       Quil Program with a circuit in an initial classical state.
+        Quil Program with a circuit in an initial classical state.
     """
 
     if len(reg) != len(state):
@@ -499,7 +508,7 @@ def prepare_classical_state(reg, state: List) -> Program:
     return p
 
 
-def return_lowest_state(probs):
+def max_probability_bitstring(probs):
     """
     Returns the lowest energy state of a QAOA run from the list of
     probabilities returned by pyQuil's Wavefunction.probabilities()method.
@@ -522,38 +531,37 @@ def return_lowest_state(probs):
     return [int(item) for item in string]
 
 
-def evaluate_lowest_state(lowest, true):
+def evaluate_state(state, true_labels):
     """
     Prints informative statements comparing QAOA's returned bit string to the
     true cluster values.
 
     Parameters
     ----------
-    lowest:
+    state:
         A little-endian list of binary integers representing the lowest energy
         state of the wavefunction
-    true:
         A little-endian list of binary integers representing the true solution
         to the MAXCUT clustering problem.
     """
-    print('True Labels of samples:', true)
-    print('Lowest QAOA State:', lowest)
-    acc = accuracy_score(lowest, true)
+    print('True Labels of samples:', true_labels)
+    print('Lowest QAOA State:', state)
+    acc = accuracy_score(state, true_labels)
     print('Accuracy of Original State:', acc * 100, '%')
-    final_c = [0 if item == 1 else 1 for item in lowest]
-    acc_c = accuracy_score(final_c, true)
+    final_c = [0 if item == 1 else 1 for item in state]
+    acc_c = accuracy_score(final_c, true_labels)
     print('Accuracy of Complement State:', acc_c * 100, '%')
 
 
-def plot_amplitudes(amplitudes: Union[np.array, list],
-                    energies: Union[np.array, list],
-                    ax=None):
+def plot_probabilities(probabilities: Union[np.array, list],
+                       energies: Union[np.array, list],
+                       ax=None):
     """Makes a nice plot of the probabilities for each state and its energy
 
     Parameters
     ----------
-    amplitudes:
-        The probabilites to find the state
+    probabilities:
+        The probabilites to find the state. Can be calculated via wavefunction.probabilities()
     energies:
         The energy of that state
     ax: matplotlib axes object
@@ -570,10 +578,10 @@ def plot_amplitudes(amplitudes: Union[np.array, list],
 
     # create labels
     labels = [r'$\left|' +
-              format_strings[nqubits].format(i) + r'\right>$' for i in range(len(amplitudes))]
-    y_pos = np.arange(len(amplitudes))
+              format_strings[nqubits].format(i) + r'\right>$' for i in range(len(probabilities))]
+    y_pos = np.arange(len(probabilities))
     width = 0.35
-    ax.bar(y_pos, amplitudes**2, width, label=r'$|Amplitude|^2$')
+    ax.bar(y_pos, probabilities ** 2, width, label=r'$|Amplitude|^2$')
 
     ax.bar(y_pos + width, -energies, width, label="-Energy")
     ax.set_xticks(y_pos + width / 2, minor=False)
