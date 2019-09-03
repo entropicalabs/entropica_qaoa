@@ -74,6 +74,7 @@ Contents
    notebooks/UtilitiesDemo
    notebooks/VQEDemo
    notebooks/AdvancedQAOAParameterDemo
+   notebooks/QAOAClusteringDemo
 
 
 .. toctree::

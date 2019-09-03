@@ -25,7 +25,8 @@ help:
 
 html: source/notebooks/VQEDemo.rst source/notebooks/QAOAParameterDemo.rst\
 	  source/notebooks/AdvancedQAOAParameterDemo.rst\
- 	  source/notebooks/UtilitiesDemo.rst source/notebooks/QAOAWorkflowDemo.rst
+ 	  source/notebooks/UtilitiesDemo.rst source/notebooks/QAOAWorkflowDemo.rst\
+ 	  source/notebooks/QAOAClusteringDemo.rst
 	sphinx-build -M html source build
 
 
@@ -35,7 +36,8 @@ source/notebooks/VQEDemo.rst: ../examples/VQEDemo.ipynb
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
 	--to rst ../examples/VQEDemo.ipynb --output-dir=./source/notebooks/
 
-source/notebooks/QAOAParameterDemo.rst: ../examples/QAOAParameterDemo.ipynb
+source/notebooks/QAOAParameterDemo.rst: ../examples/QAOAParameterDemo.ipynb\
+
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
@@ -58,6 +60,13 @@ source/notebooks/UtilitiesDemo.rst: ../examples/UtilitiesDemo.ipynb
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
 	--to rst ../examples/UtilitiesDemo.ipynb --output-dir=./source/notebooks/
+
+source/notebooks/QAOAClusteringDemo.rst: ../examples/QAOAClusteringDemo.ipynb
+	jupyter nbconvert \
+	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
+	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
+	--to rst ../examples/QAOAClusteringDemo.ipynb --output-dir=./source/notebooks/
+
 
 clean:
 	sphinx-build -M clean source build
