@@ -23,36 +23,37 @@ help:
 # 	$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 
-html: VQEDemo.rst QAOAParameterDemo.rst AdvancedQAOAParameterDemo.rst\
- 	  UtilitiesDemo.rst QAOAWorkflowDemo.rst
+html: source/notebooks/VQEDemo.rst source/notebooks/QAOAParameterDemo.rst\
+	  source/notebooks/AdvancedQAOAParameterDemo.rst\
+ 	  source/notebooks/UtilitiesDemo.rst source/notebooks/QAOAWorkflowDemo.rst
 	sphinx-build -M html source build
 
 
-VQEDemo.rst: ../examples/VQEDemo.ipynb
+source/notebooks/VQEDemo.rst: ../examples/VQEDemo.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
 	--to rst ../examples/VQEDemo.ipynb --output-dir=./source/notebooks/
 
-QAOAParameterDemo.rst: ../examples/QAOAParameterDemo.ipynb
+source/notebooks/QAOAParameterDemo.rst: ../examples/QAOAParameterDemo.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
 	--to rst ../examples/QAOAParameterDemo.ipynb --output-dir=./source/notebooks/
 
-AdvancedQAOAParameterDemo.rst: ../examples/AdvancedQAOAParameterDemo.ipynb
+source/notebooks/AdvancedQAOAParameterDemo.rst: ../examples/AdvancedQAOAParameterDemo.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
 	--to rst ../examples/AdvancedQAOAParameterDemo.ipynb --output-dir=./source/notebooks/
 
-QAOAWorkflowDemo.rst: ../examples/QAOAWorkflowDemo.ipynb
+source/notebooks/QAOAWorkflowDemo.rst: ../examples/QAOAWorkflowDemo.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
 	--to rst ../examples/QAOAWorkflowDemo.ipynb --output-dir=./source/notebooks/
 
-UtilitiesDemo.rst: ../examples/UtilitiesDemo.ipynb
+source/notebooks/UtilitiesDemo.rst: ../examples/UtilitiesDemo.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
