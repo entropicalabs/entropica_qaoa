@@ -60,12 +60,12 @@ Frequently asked Questions
 
         \gamma_i = 2 \sum_{k=0}^{q-1} u_k
                     \sin \left[
-                            (2k - 1) k \frac{\pi}{2p}
+                            (i + 1) \left(k+\frac{1}{2}\right) \frac{\pi}{p}
                          \right]
 
         \beta_i = 2 \sum_{k=0}^{q-1} v_k
                     \cos \left[
-                            (2k - 1) k \frac{\pi}{2p}
+                            (2k - 1) i \frac{\pi}{2p}
                          \right].
 
     Simply, because it is default choice of ``scipy.fftpack.dct`` or
