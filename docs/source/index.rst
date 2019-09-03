@@ -70,12 +70,12 @@ Contents
    :maxdepth: 3
    :caption: The Demo Notebooks
 
-   notebooks/QAOAWorkflowDemo
-   notebooks/QAOAParameterDemo
-   notebooks/UtilitiesDemo
-   notebooks/VQEDemo
-   notebooks/AdvancedQAOAParameterDemo
-   notebooks/QAOAClusteringDemo
+   notebooks/1_AnExampleWorkflow
+   notebooks/2_ParameterClasses
+   notebooks/3_AdvancedParameterClasses
+   notebooks/4_CostFuntionsAndVQE
+   notebooks/5_QAOAUtilities
+   notebooks/6_ClusteringWithQAOA
 
 
 .. toctree::

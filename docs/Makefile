@@ -23,49 +23,51 @@ help:
 # 	$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 
-html: source/notebooks/VQEDemo.rst source/notebooks/QAOAParameterDemo.rst\
-	  source/notebooks/AdvancedQAOAParameterDemo.rst\
- 	  source/notebooks/UtilitiesDemo.rst source/notebooks/QAOAWorkflowDemo.rst\
- 	  source/notebooks/QAOAClusteringDemo.rst
+html: source/notebooks/4_CostFunctionsAndVQE.rst\
+	  source/notebooks/2_ParameterClasses.rst\
+	  source/notebooks/3_AdvancedParameterClasses.rst\
+ 	  source/notebooks/5_QAOAUtilities.rst\
+ 	  source/notebooks/1_AnExampleWorkflow.rst\
+ 	  source/notebooks/6_ClusteringWithQAOA.rst
 	sphinx-build -M html source build
 
 
-source/notebooks/VQEDemo.rst: ../examples/VQEDemo.ipynb
+source/notebooks/4_CostFunctionsAndVQE.rst: ../examples/4_CostFunctionsAndVQE.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
-	--to rst ../examples/VQEDemo.ipynb --output-dir=./source/notebooks/
+	--to rst ../examples/4_CostFunctionsAndVQE.ipynb --output-dir=./source/notebooks/
 
-source/notebooks/QAOAParameterDemo.rst: ../examples/QAOAParameterDemo.ipynb\
+source/notebooks/2_ParameterClasses.rst: ../examples/2_ParameterClasses.ipynb\
 
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
-	--to rst ../examples/QAOAParameterDemo.ipynb --output-dir=./source/notebooks/
+	--to rst ../examples/2_ParameterClasses.ipynb --output-dir=./source/notebooks/
 
-source/notebooks/AdvancedQAOAParameterDemo.rst: ../examples/AdvancedQAOAParameterDemo.ipynb
+source/notebooks/3_AdvancedParameterClasses.rst: ../examples/3_AdvancedParameterClasses.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
-	--to rst ../examples/AdvancedQAOAParameterDemo.ipynb --output-dir=./source/notebooks/
+	--to rst ../examples/3_AdvancedParameterClasses.ipynb --output-dir=./source/notebooks/
 
-source/notebooks/QAOAWorkflowDemo.rst: ../examples/QAOAWorkflowDemo.ipynb
+source/notebooks/1_AnExampleWorkflow.rst: ../examples/1_AnExampleWorkflow.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
-	--to rst ../examples/QAOAWorkflowDemo.ipynb --output-dir=./source/notebooks/
+	--to rst ../examples/1_AnExampleWorkflow.ipynb --output-dir=./source/notebooks/
 
-source/notebooks/UtilitiesDemo.rst: ../examples/UtilitiesDemo.ipynb
+source/notebooks/5_QAOAUtilities.rst: ../examples/5_QAOAUtilities.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
-	--to rst ../examples/UtilitiesDemo.ipynb --output-dir=./source/notebooks/
+	--to rst ../examples/5_QAOAUtilities.ipynb --output-dir=./source/notebooks/
 
-source/notebooks/QAOAClusteringDemo.rst: ../examples/QAOAClusteringDemo.ipynb
+source/notebooks/6_ClusteringWithQAOA.rst: ../examples/6_ClusteringWithQAOA.ipynb
 	jupyter nbconvert \
 	--TagRemovePreprocessor.remove_input_tags='{"hide_input", "hide_all"}' \
 	--TagRemovePreprocessor.remove_all_outputs_tags='{"hide_output", "hide_all"}' \
-	--to rst ../examples/QAOAClusteringDemo.ipynb --output-dir=./source/notebooks/
+	--to rst ../examples/6_ClusteringWithQAOA.ipynb --output-dir=./source/notebooks/
 
 
 clean:
