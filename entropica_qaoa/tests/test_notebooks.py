@@ -5,16 +5,15 @@ to a python script via nbconvert and then running the resulting .py file.
 
 import subprocess
 import pytest
-
+import importlib
 import os
 import sys
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../../')
 
-@pytest.mark.notebook
-def test_VQEDemo():
-    name = "../examples/VQEDemo.ipynb"
-    command = f"jupyter nbconvert --to script {name}"
+
+def notebook_test_function(name):
+    command = f"jupyter nbconvert --to script {name} --output ../examples/converted"
 
     print(f"Converting {name} to a python script")
     ret_code = subprocess.call(command.split(" "), stderr=None, stdout=None)
@@ -22,12 +21,44 @@ def test_VQEDemo():
     if ret_code is not 0:
         print(f"The command '{command}' failed. "
               "Run it manually, to see what went wrong.")
-    import examples.VQEDemo
+    import examples.converted
+    importlib.reload(examples.converted)
+
+
+@pytest.mark.notebook
+def test_1_AnExampleWorkflow():
+    notebook_test_function("../examples/1_AnExampleWorkflow.ipynb")
+
+
+@pytest.mark.notebook
+def test_2_ParameterClasses():
+    notebook_test_function("../examples/2_ParameterClasses.ipynb")
+
+
+@pytest.mark.notebook
+def test_3_AdvancedParameterClasses():
+    notebook_test_function("../examples/3_AdvancedParameterClasses.ipynb")
+
+
+@pytest.mark.notebook
+def test_4_CostFunctionsAndVQE():
+    notebook_test_function("../examples/4_CostFunctionsAndVQE.ipynb")
+
+
+@pytest.mark.notebook
+def test_5_QAOAUtilities():
+    notebook_test_function("../examples/5_QAOAUtilities.ipynb")
+
+
+@pytest.mark.notebook
+def test_6_ClusteringWithQAOA():
+    notebook_test_function("../examples/6_ClusteringWithQAOA.ipynb")
+
 
 
 # @pytest.mark.notebook
-# def test_MathIntuition_notebook():
-#     name = "../examples/The_Mathematical_Intuition_of_QAOA.ipynb"
+# def test_1_AnExampleWorkflow():
+#     name = "../examples/1_AnExampleWorkflow.ipynb"
 #     command = f"jupyter nbconvert --to script {name}"
 
 #     print(f"Converting {name} to a python script")
@@ -36,12 +67,12 @@ def test_VQEDemo():
 #     if ret_code is not 0:
 #         print(f"The command '{command}' failed. "
 #               "Run it manually, to see what went wrong.")
-#     import examples.The_Mathematical_Intuition_of_QAOA
+#     import examples.1_AnExampleWorkflow
 
 
 # @pytest.mark.notebook
-# def test_LandscapesDemo_notebook():
-#     name = "../examples/LandscapesDemo.ipynb"
+# def test_6_ClusteringWithQAOA():
+#     name = "../examples/6_ClusteringWithQAOA.ipynb"
 #     command = f"jupyter nbconvert --to script {name}"
 
 #     print(f"Converting {name} to a python script")
@@ -50,12 +81,12 @@ def test_VQEDemo():
 #     if ret_code is not 0:
 #         print(f"The command '{command}' failed. "
 #               "Run it manually, to see what went wrong.")
-#     import examples.LandscapesDemo
+#     import examples.6_ClusteringWithQAOA
 
 
 # @pytest.mark.notebook
-# def test_QAOAClusteringDemo_notebook():
-#     name = "../examples/QAOAClusteringDemo.ipynb"
+# def test_2_ParameterClasses():
+#     name = "../examples/2_ParameterClasses.ipynb"
 #     command = f"jupyter nbconvert --to script {name}"
 
 #     print(f"Converting {name} to a python script")
@@ -64,26 +95,12 @@ def test_VQEDemo():
 #     if ret_code is not 0:
 #         print(f"The command '{command}' failed. "
 #               "Run it manually, to see what went wrong.")
-#     import examples.QAOAClusteringDemo
-
-
-@pytest.mark.notebook
-def test_QAOAParameterDemo():
-    name = "../examples/QAOAParameterDemo.ipynb"
-    command = f"jupyter nbconvert --to script {name}"
-
-    print(f"Converting {name} to a python script")
-    ret_code = subprocess.call(command.split(" "), stderr=None, stdout=None)
-
-    if ret_code is not 0:
-        print(f"The command '{command}' failed. "
-              "Run it manually, to see what went wrong.")
-    import examples.QAOAParameterDemo
+#     import examples.2_ParameterClasses
 
 
 # @pytest.mark.notebook
-# def test_AdvancedQAOAParameterDemo():
-#     name = "../examples/AdvancedQAOAParameterDemo.ipynb"
+# def test_5_CostFunctionAndVQE():
+#     name = "../examples/5_CostFunctionAndVQE.ipynb"
 #     command = f"jupyter nbconvert --to script {name}"
 
 #     print(f"Converting {name} to a python script")
@@ -92,32 +109,32 @@ def test_QAOAParameterDemo():
 #     if ret_code is not 0:
 #         print(f"The command '{command}' failed. "
 #               "Run it manually, to see what went wrong.")
-#     import examples.AdvancedQAOAParameterDemo
+#     import examples.5_CostFunctionAndVQE
 
 
-@pytest.mark.notebook
-def test_QAOAWorkflowDemo():
-    name = "../examples/QAOAWorkflowDemo.ipynb"
-    command = f"jupyter nbconvert --to script {name}"
+# @pytest.mark.notebook
+# def test_3_AdvancedParameterClasses():
+#     name = "../examples/3_AdvancedParameterClasses.ipynb"
+#     command = f"jupyter nbconvert --to script {name}"
 
-    print(f"Converting {name} to a python script")
-    ret_code = subprocess.call(command.split(" "), stderr=None, stdout=None)
+#     print(f"Converting {name} to a python script")
+#     ret_code = subprocess.call(command.split(" "), stderr=None, stdout=None)
 
-    if ret_code is not 0:
-        print(f"The command '{command}' failed. "
-              "Run it manually, to see what went wrong.")
-    import examples.QAOAWorkflowDemo
+#     if ret_code is not 0:
+#         print(f"The command '{command}' failed. "
+#               "Run it manually, to see what went wrong.")
+#     import examples.3_AdvancedParameterClasses
 
 
-@pytest.mark.notebook
-def test_UtilitiesDemo():
-    name = "../examples/UtilitiesDemo.ipynb"
-    command = f"jupyter nbconvert --to script {name}"
+# @pytest.mark.notebook
+# def test_4_CostFunctionsAndVQE():
+#     name = "../examples/4_CostFunctionsAndVQE.ipynb"
+#     command = f"jupyter nbconvert --to script {name}"
 
-    print(f"Converting {name} to a python script")
-    ret_code = subprocess.call(command.split(" "), stderr=None, stdout=None)
+#     print(f"Converting {name} to a python script")
+#     ret_code = subprocess.call(command.split(" "), stderr=None, stdout=None)
 
-    if ret_code is not 0:
-        print(f"The command '{command}' failed. "
-              "Run it manually, to see what went wrong.")
-    import examples.UtilitiesDemo
+#     if ret_code is not 0:
+#         print(f"The command '{command}' failed. "
+#               "Run it manually, to see what went wrong.")
+#     import examples.4_CostFunctionsAndVQE
