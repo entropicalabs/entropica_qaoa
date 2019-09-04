@@ -192,6 +192,9 @@ def graph_from_hamiltonian(hamiltonian: PauliSum) -> nx.Graph:
 
         qubits = term.get_qubits()
 
+        if len(qubits) == 0:
+            # Term is proportional to identity - doesn't act on any qubits
+            continue
         if len(qubits) == 1:
             hyperparams['singles'] += qubits
             hyperparams['biases'] += [term.coefficient.real]
@@ -361,7 +364,6 @@ def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     for i in range(m):
         for j in range(n):
             if i < j:
-                print(dist)
                 term = PauliTerm('Z', i, dist[i][j]) * PauliTerm('Z', j)
                 pauli_list.append(term)
 
@@ -457,7 +459,7 @@ def plot_cluster_data(data):
 
 
 #############################################################################
-# ANALYTIC FORMULAE
+# ANALYTIC & KNOWN FORMULAE
 #############################################################################
 
 
@@ -482,7 +484,9 @@ def ring_of_disagrees(n: int) -> PauliSum:
     hamiltonian = []
     for i in range(n - 1):
         hamiltonian.append(PauliTerm("Z", i, 0.5) * PauliTerm("Z", i + 1))
+        hamiltonian.append(PauliTerm("I",i,-0.5))
     hamiltonian.append(PauliTerm("Z", n - 1, 0.5) * PauliTerm("Z", 0))
+    hamiltonian.append(PauliTerm("I",n-1,-0.5))
 
     return PauliSum(hamiltonian)
 
