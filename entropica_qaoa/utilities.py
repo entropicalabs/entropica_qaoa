@@ -586,17 +586,17 @@ def plot_probabilities(probabilities: Union[np.array, list],
     energies = np.array(energies)
     energies /= max(abs(energies))
 
-    format_strings = ('{0:00b}', '{0:01b}', '{0:02b}', '{0:03b}', '{0:04b}', '{0:05b}')
     nqubits = int(np.log2(len(energies)))
-
+    format_strings = '{0:0' + str(nqubits) + 'b}'
+    
     # create labels
     labels = [r'$\left|' +
-              format_strings[nqubits].format(i) + r'\right>$' for i in range(len(probabilities))]
+              format_strings.format(i) + r'\right>$' for i in range(len(probabilities))]
     y_pos = np.arange(len(probabilities))
     width = 0.35
-    ax.bar(y_pos, probabilities ** 2, width, label=r'$|Amplitude|^2$')
+    ax.bar(y_pos, probabilities, width, label=r'Probability')
 
-    ax.bar(y_pos + width, -energies, width, label="-Energy")
+    ax.bar(y_pos + width, -energies, width, label="-1 x Energy")
     ax.set_xticks(y_pos + width / 2, minor=False)
     ax.set_xticklabels(labels, minor=False)
     ax.set_xlabel("State")
