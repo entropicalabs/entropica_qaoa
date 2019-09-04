@@ -2,7 +2,9 @@
 A package implementing the quantum approximate optimisation algorithm (QAOA), providing a number of different features, parametrisations, and utility functions. 
 
 ## Documentation
-The documentation can be installed and built by following these two steps:
+The documentation can be found [here](https://docs.entropicalabs.io/qaoa/).
+
+Alternatively you can compile it yourself by following the instructions below:
 
 **Install the Prerequisites**
 ```bash

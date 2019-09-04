@@ -6,9 +6,25 @@
 Welcome to Entropica QAOA's documentation!
 ==========================================
 
-This is the Entropica QAOA package. It is very good and modular. If you see
-this message in the final version, we really messed up on our checks.
+Entropica QAOA is a modular QAOA package built on top of Rigetti's
+`Forest SDK <https://www.rigetti.com/forest>`_. It enables researchers and
+interested students to quickly run their own QAOA instances and easily replace
+any component with your own code. You don't like the standard parametrisation
+of the QAOA circuit? Use any of our other parametrisations or write your own.
+You want to see what happens, if you start in different initial states? Run
+your own state preparation program. You wan't to see, how different optimisers
+are with noise estimates of expectation values? We can efficiently simulate sampling noise.
 
+Features
+--------
+ - Full native support for Rigettis QVM and QPU's. Run your experiments on
+   real Quantum Computers!
+ - Extensive iPython Notebooks that explain the usage of Entropica QAOA in
+   detail.
+ - Multiple parametrisations for QAOA.
+ - NetworkX integration for the treatment of graph theoretic problems.
+ - Modular code base that allows the user to customise parts he wants to change
+   while being provided with sensible defaults for the other parts.
 
 Installation
 ------------
@@ -47,13 +63,13 @@ You can now import this package as you would any conda- or pip-installed library
 First Steps
 -----------
 
-In _First steps: An example workflow_ we show you the basic usage of
+In *First steps: An example workflow* we show you the basic usage of
 EntropicaQAOA.
 More advanced examples on working with different parametrizations are found in
-_Working with the Parameter classes_ and the more advanced features of the cost
-functions are explained in _Cost function features and VQE_. To learn, how to
+*Working with the Parameter classes* and the more advanced features of the cost
+functions are explained in *Cost function features and VQE*. To learn, how to
 create problem instances faster and convert between different formats you can
-read _QAOA utilities_.
+read *QAOA utilities*.
 
 If you are not content just reading above linked notebooks you can also download them from our github page at `<https://github.com/entropicalabs/entropica_qaoa/tree/master/examples>`_ .
 
@@ -73,7 +89,7 @@ Contents
    notebooks/1_AnExampleWorkflow
    notebooks/2_ParameterClasses
    notebooks/3_AdvancedParameterClasses
-   notebooks/4_CostFuntionsAndVQE
+   notebooks/4_CostFunctionsAndVQE
    notebooks/5_QAOAUtilities
    notebooks/6_ClusteringWithQAOA
 
