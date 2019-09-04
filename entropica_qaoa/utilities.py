@@ -297,7 +297,7 @@ def random_k_regular_graph(degree: int,
     return G
 
 
-def plot_graph(G):
+def plot_graph(G, ax=None):
     """
     Plots a networkx graph.
 
@@ -305,13 +305,15 @@ def plot_graph(G):
     ----------
     G:
         The networkx graph of interest.
+    ax: Matplotlib axes object
+        Defaults to None. Matplotlib axes to plot on.
     """
 
     weights = np.real([*nx.get_edge_attributes(G, 'weight').values()])
     pos = nx.shell_layout(G)
 
     nx.draw(G, pos, node_color='#A0CBE2', with_labels=True, edge_color=weights,
-            width=4, edge_cmap=plt.cm.Blues)
+            width=4, edge_cmap=plt.cm.Blues, ax=ax)
     plt.show()
 
 
