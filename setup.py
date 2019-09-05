@@ -31,7 +31,7 @@ setup(
     author_email="janlukas@entropicalabs.com, ewan@entropicalabs.com",
     url="https://docs.entropicalabs.io/qaoa/",
     packages=find_packages(),
-    install_requires=['numpy >= 1.7', 'scipy >= 0.9', 'pyquil >= 2.0',
+    install_requires=['scipy >= 0.9', 'pyquil >= 2.0',
                       'custom_inherit >= 2.0', 'pandas >= 0.25',
                       'matplotlib >= 3.0']
 )
