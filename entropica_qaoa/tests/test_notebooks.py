@@ -6,10 +6,6 @@ to a python script via nbconvert and then running the resulting .py file.
 import subprocess
 import pytest
 import importlib
-import os
-import sys
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../../')
 
 
 def notebook_test_function(name):

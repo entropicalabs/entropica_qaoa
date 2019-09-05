@@ -1,12 +1,6 @@
 """
 Test some of the functions together
 """
-
-import os
-import sys
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../')
-
 import numpy as np
 import networkx as nx
 

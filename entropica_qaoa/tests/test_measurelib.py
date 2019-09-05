@@ -1,7 +1,6 @@
-import sys, os
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../')
-
+"""
+Test functionality in entropica_qaoa.vqe.measurelib
+"""
 import numpy as np
 
 from pyquil.paulis import PauliSum, PauliTerm
