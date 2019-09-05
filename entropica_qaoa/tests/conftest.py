@@ -1,5 +1,9 @@
 import pytest
 
+import sys, os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../../')
+
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -15,9 +19,6 @@ def pytest_collection_modifyitems(config, items):
     skip_slow = pytest.mark.skip(reason="need --runslow option to run")
     skip_nbs = pytest.mark.skip(reason="need --notebooks option to run")
     skip_default = pytest.mark.skip(reason="Added --notebooks or --runslow option")
-
-    no_flags = not config.getoption("--notebooks")\
-        and not config.getoption("--runslow")
 
     if config.getoption("--all"):
         return
@@ -36,18 +37,3 @@ def pytest_collection_modifyitems(config, items):
                 item.add_marker(skip_nbs)
             elif "slow" in item.keywords:
                 item.add_marker(skip_slow)
-
-        # if "slow" in item.keywords and not config.getoption("--runslow"):
-        #     item.add_marker(skip_slow)
-
-        # elif "notebooks" in item.keywords\
-        #         and not config.getoption("--notebooks"):
-        #     item.add_marker(skip_nbs)
-
-        # elif not config.getoption("--notebooks") and not config.getoption("--runslow"):
-
-
-        # if "slow" in item.keywords and not config.getoption("--runslow"):
-        #     item.add_marker(skip_slow)
-        # elif "notebook" in item.keywords and not config.getoption("--notebooks"):
-        #     item.add_marker(skip_nbs)

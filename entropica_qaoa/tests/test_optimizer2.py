@@ -2,16 +2,11 @@
 Test the optimizer implementation
 """
 
-import os
-import sys
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../')
-
 import numpy as np
 import scipy.optimize
 
 from pyquil.paulis import PauliSum, PauliTerm
-from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
+from pyquil.api import WavefunctionSimulator, local_qvm
 from pyquil.quil import Program
 from pyquil.gates import RX, CNOT
 

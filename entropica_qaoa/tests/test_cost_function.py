@@ -1,13 +1,6 @@
 """
 Tests for all functions in cost_function.py
-TODO Fix the relative import hack in the first few lines
 """
-
-import sys
-import os
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../')
-
 import numpy as np
 
 from pyquil.quil import (QubitPlaceholder, address_qubits,

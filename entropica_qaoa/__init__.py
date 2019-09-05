@@ -1,0 +1,1 @@
+name = "entropica_qaoa"

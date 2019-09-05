@@ -33,8 +33,6 @@ from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
 from scipy.spatial import distance
 
-from sklearn.metrics import accuracy_score
-
 #############################################################################
 # METHODS FOR CREATING HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO
 #############################################################################
@@ -560,15 +558,15 @@ def evaluate_state(state, true_labels):
     state:
         A little-endian list of binary integers representing the lowest energy
         state of the wavefunction
+    true_labels:
         A little-endian list of binary integers representing the true solution
         to the MAXCUT clustering problem.
     """
     print('True Labels of samples:', true_labels)
     print('Lowest QAOA State:', state)
-    acc = accuracy_score(state, true_labels)
+    acc = [a == b for a, b in zip(state, true_labels)].count(True) / len(state)
     print('Accuracy of Original State:', acc * 100, '%')
-    final_c = [0 if item == 1 else 1 for item in state]
-    acc_c = accuracy_score(final_c, true_labels)
+    acc_c = 100 - acc
     print('Accuracy of Complement State:', acc_c * 100, '%')
 
 
@@ -594,7 +592,7 @@ def plot_probabilities(probabilities: Union[np.array, list],
 
     nqubits = int(np.log2(len(energies)))
     format_strings = '{0:0' + str(nqubits) + 'b}'
-    
+
     # create labels
     labels = [r'$\left|' +
               format_strings.format(i) + r'\right>$' for i in range(len(probabilities))]
