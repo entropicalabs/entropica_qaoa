@@ -323,7 +323,7 @@ def plot_graph(G, ax=None):
 #############################################################################
 
 
-def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
+def hamiltonian_from_distances(dist, biases=None) -> PauliSum:
     """
     Generates a Hamiltonian from a distance matrix and a numpy array of single
     qubit bias terms where the i'th indexed value of in biases is applied to
@@ -332,7 +332,7 @@ def hamiltonian_from_distance_matrix(dist, biases=None) -> PauliSum:
     Parameters
     ----------
     dist:
-        A 2-dimensional square matrix where entries in row i, column j
+        A 2-dimensional square matrix or Pandas DataFrame, where entries in row i, column j
         represent the distance between node i and node j. Assumed to be
         symmetric
     biases:
@@ -566,7 +566,7 @@ def evaluate_state(state, true_labels):
     print('Lowest QAOA State:', state)
     acc = [a == b for a, b in zip(state, true_labels)].count(True) / len(state)
     print('Accuracy of Original State:', acc * 100, '%')
-    acc_c = 100 - acc
+    acc_c = 1 - acc
     print('Accuracy of Complement State:', acc_c * 100, '%')
 
 
