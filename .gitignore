@@ -1,11 +1,10 @@
-# IPython Notebooks 
+# IPython Notebooks
 ###################
 *.ipynb_checkpoints
 
 #compiled stuff
 ###############
 *.pyc
-*.html
 
 # orig files
 ###########
@@ -14,10 +13,18 @@
 # Distribution / packaging
 ##########################
 eggs/
-docs/build
+build/
+dist/
 *.egg-info/
 *.egg
 .eggs/
+
+# compiled docs
+# #############
+docs/source/notebooks
+docs/source/changelog.rst
+docs/build
+*.html
 
 # latex stuff
 # ##########
@@ -49,3 +56,4 @@ node_modules/*
 Package_Scheme.pptx
 examples/*.py
 Untitled.ipynb
+.gitattributes
