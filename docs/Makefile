@@ -28,8 +28,13 @@ html: source/notebooks/4_CostFunctionsAndVQE.rst\
 	  source/notebooks/3_AdvancedParameterClasses.rst\
  	  source/notebooks/5_QAOAUtilities.rst\
  	  source/notebooks/1_AnExampleWorkflow.rst\
- 	  source/notebooks/6_ClusteringWithQAOA.rst
+ 	  source/notebooks/6_ClusteringWithQAOA.rst\
+ 	  source/changelog.rst
 	sphinx-build -M html source build
+
+
+source/changelog.rst: ../CHANGELOG.md
+	pandoc --from markdown --to rst -o source/changelog.rst ../CHANGELOG.md
 
 
 source/notebooks/4_CostFunctionsAndVQE.rst: ../examples/4_CostFunctionsAndVQE.ipynb

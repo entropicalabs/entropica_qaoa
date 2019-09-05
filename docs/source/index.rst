@@ -81,6 +81,7 @@ Contents
    :maxdepth: 3
 
    faq
+   changelog
 
 .. toctree::
    :maxdepth: 3
