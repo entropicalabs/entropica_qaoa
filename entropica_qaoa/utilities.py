@@ -548,10 +548,10 @@ def max_probability_bitstring(probs):
     return [int(item) for item in string]
 
 
-def evaluate_state(state, true_labels):
+def cluster_accuracy(state, true_labels):
     """
-    Prints informative statements comparing QAOA's returned bit string to the
-    true cluster values.
+    Prints informative statements comparing QAOA's returned bit string for MaxCut to the
+    true (known) cluster labels.
 
     Parameters
     ----------
