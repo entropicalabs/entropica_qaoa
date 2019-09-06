@@ -1,6 +1,7 @@
-import sys, os
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../')
+"""
+Test the conversion functions in
+entropica_qaoa.qaoa.parameters._parameter_conversions
+"""
 
 from pytest import raises
 import numpy as np

@@ -1,7 +1,6 @@
-import sys, os
-import math
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../')
+"""
+Test the core functionality in entropica_qaoa.qaoa.parameters
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -380,18 +379,18 @@ def test_extended_get_constraints():
 
     actual_constraints = params.get_constraints()
 
-    expected_constraints = [(0, 2 * math.pi), (0, 2 * math.pi),
-                            (0, 2 * math.pi), (0, 2 * math.pi),
-                            (0, 2 * math.pi), (0, 2 * math.pi),
-                            (0, 2 * math.pi), (0, 2 * math.pi),
-                            (0, 2 * math.pi / weights[0]),
-                            (0, 2 * math.pi / weights[1]),
-                            (0, 2 * math.pi / weights[2]),
-                            (0, 2 * math.pi / weights[3]),
-                            (0, 2 * math.pi / weights[0]),
-                            (0, 2 * math.pi / weights[1]),
-                            (0, 2 * math.pi / weights[2]),
-                            (0, 2 * math.pi / weights[3])]
+    expected_constraints = [(0, 2 * np.pi), (0, 2 * np.pi),
+                            (0, 2 * np.pi), (0, 2 * np.pi),
+                            (0, 2 * np.pi), (0, 2 * np.pi),
+                            (0, 2 * np.pi), (0, 2 * np.pi),
+                            (0, 2 * np.pi / weights[0]),
+                            (0, 2 * np.pi / weights[1]),
+                            (0, 2 * np.pi / weights[2]),
+                            (0, 2 * np.pi / weights[3]),
+                            (0, 2 * np.pi / weights[0]),
+                            (0, 2 * np.pi / weights[1]),
+                            (0, 2 * np.pi / weights[2]),
+                            (0, 2 * np.pi / weights[3])]
 
     assert(np.allclose(expected_constraints, actual_constraints))
 

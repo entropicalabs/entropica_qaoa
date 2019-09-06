@@ -32,8 +32,8 @@ from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
 
 from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnQVM,
-                                           PrepareAndMeasureOnWFSim,
-                                           LogEntry)
+                                              PrepareAndMeasureOnWFSim,
+                                              LogEntry)
 from entropica_qaoa.qaoa.parameters import AbstractParams
 
 

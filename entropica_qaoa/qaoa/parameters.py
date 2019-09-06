@@ -1289,18 +1289,17 @@ class FourierParams(AbstractParams):
         return self
 
     def plot(self, ax=None, **kwargs):
-        warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
-                      "interested in v, u you can access them via "
-                      "params.v, params.u")
+        warnings.warn("Plotting the gammas and x_rotation_angles through DCT "
+                      "and DST. If you are interested in v, u you can access "
+                      "them via params.v, params.u")
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_iterable_empty(self.gammas_pairs):
-            ax.plot(self.gammas,
-                    label="gammas", marker="v", ls="", **kwargs)
+        ax.plot(dct(self.v, n=self.n_steps),
+                label="betas", marker="s", ls="", **kwargs)
+        ax.plot(dst(self.u, n=self.n_steps),
+                label="gammas", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
-        # ax.grid(linestyle='--')
         ax.legend()
 
 
@@ -1487,21 +1486,22 @@ class FourierWithBiasParams(AbstractParams):
         return self
 
     def plot(self, ax=None, **kwargs):
-        warnings.warn("Plotting the gammas and x_rotation_angles through DCT and DST. If you are "
-                      "interested in v, u_singles and u_pairs you can access them via "
-                      "params.v, params.u_singles, params.u_pairs")
+        warnings.warn("Plotting the gammas and x_rotation_angles through DCT "
+                      "and DST. If you are interested in v, u_singles and "
+                      "u_pairs you can access them via params.v, "
+                      "params.u_singles, params.u_pairs")
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_iterable_empty(self.gammas_singles):
-            ax.plot(self.gammas_singles,
+        ax.plot(dct(self.v, n=self.n_steps),
+                label="betas", marker="s", ls="", **kwargs)
+        if not _is_iterable_empty(self.u_singles):
+            ax.plot(dst(self.u_singles, n=self.n_steps),
                     label="gammas_singles", marker="^", ls="", **kwargs)
-        if not _is_iterable_empty(self.gammas_pairs):
-            ax.plot(self.gammas_pairs,
+        if not _is_iterable_empty(self.u_pairs):
+            ax.plot(dst(self.u_pairs, n=self.n_steps),
                     label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
-        # ax.grid(linestyle='--')
         ax.legend()
 
 
@@ -1697,12 +1697,13 @@ class FourierExtendedParams(AbstractParams):
         if ax is None:
             fig, ax = plt.subplots()
 
-        ax.plot(self.betas, label="betas", marker="s", ls="", **kwargs)
-        if not _is_iterable_empty(self.gammas_singles):
-            ax.plot(self.gammas_singles,
+        ax.plot(dct(self.v, n=self.n_steps, axis=0),
+                label="betas", marker="s", ls="", **kwargs)
+        if not _is_iterable_empty(self.u_singles):
+            ax.plot(dst(self.u_singles, n=self.n_steps),
                     label="gammas_singles", marker="^", ls="", **kwargs)
-        if not _is_iterable_empty(self.gammas_pairs):
-            ax.plot(self.gammas_pairs,
+        if not _is_iterable_empty(self.u_pairs):
+            ax.plot(dst(self.u_pairs, n=self.n_steps),
                     label="gammas_pairs", marker="v", ls="", **kwargs)
         ax.set_xlabel("timestep")
         ax.legend()
