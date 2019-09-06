@@ -1,9 +1,9 @@
 QAOA cost functions
 ===================
 
-Like with VQE we also provide two different cost functions for QAOA that
-derive from their VQE counterparts. One for the Wavefunction Simulator and one
-for the QVM that can also be run on Rigettis QPU.
+As with VQE, we also provide two different cost functions for QAOA that
+derive from their VQE counterparts: one for the WavefunctionSimulator, and one
+for the QVM that can also be run on Rigetti's QPU.
 
 On the Wavefunction Simulator
 -----------------------------

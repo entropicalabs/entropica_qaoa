@@ -13,8 +13,7 @@
 #   limitations under the License.
 
 """
-Utilty and convenience functions for a number of QAOA applications.
-See the demo notebook UtilitiesDemo.ipynb for examples on usage of the methods herein.
+Utility and convenience functions for a number of QAOA applications.
 """
 
 from typing import Union, List, Dict, Iterable, Tuple

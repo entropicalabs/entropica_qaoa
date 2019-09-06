@@ -22,6 +22,7 @@ dist/
 # editors
 #########
 *.swp
+*.save
 
 # compiled docs
 # #############

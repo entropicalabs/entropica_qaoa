@@ -3,21 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Entropica QAOA's documentation!
+Welcome to EntropicaQAOA's documentation!
 ==========================================
 
-Entropica QAOA is a modular QAOA package built on top of Rigetti's
+EntropicaQAOA is a modular QAOA package built on top of Rigetti's
 `Forest SDK <https://www.rigetti.com/forest>`_. It enables users to quickly run their own QAOA instances and easily replace
 any component with their own custom code.
 
 Features
 --------
- - Full native support for `Rigettis QVM and QPU's <https://www.rigetti.com/qpu>`_. Run your experiments on real Quantum Computers!
- - Extensive examples explaining the usage of Entropica QAOA in
+ - Full native support for `Rigetti's QVM and QPUs <https://www.rigetti.com/qpu>`_. Run your experiments on real Quantum Computers!
+ - Extensive examples explaining the usage of EntropicaQAOA in
    detail.
  - Multiple parametrisations for QAOA.
  - `NetworkX <https://networkx.github.io/>`_ integration for the treatment of
-   graph theoretic problems, and Pandas <https://pandas.pydata.org/> integration for data importing.
+   graph theoretic problems, and `Pandas <https://pandas.pydata.org/>`_ integration for data importing.
  - Modular code base that allows the user to customise and modify different components.
 
 
@@ -38,7 +38,7 @@ and if you have it already installed upgraded via
 
    pip install --upgrade entropica_qaoa
 
-If you want to run the Demo Notebooks you will additionally need `scikit-learn` and `scikit-optimize` which can also be installed using pip:
+If you want to run the Demo Notebooks, you will additionally need `scikit-learn` and `scikit-optimize`, which can also be installed using pip:
 
 .. code-block:: bash
 
@@ -48,15 +48,14 @@ If you want to run the Demo Notebooks you will additionally need `scikit-learn` 
 First Steps
 -----------
 
-In *First steps: An example workflow* we show you the basic usage of
+In :ref:`1-AnExampleWorkflow` we show you the basic usage of
 EntropicaQAOA.
 More advanced examples on working with different parametrizations are found in
-*Working with the Parameter classes* and the more advanced features of the cost
-functions are explained in *Cost function features and VQE*. To learn, how to
-create problem instances faster and convert between different formats you can
-read *QAOA utilities*.
+:ref:`2-ParameterClasses`, and the more advanced features of the cost
+functions are explained in :ref:`4-CostFunctionsAndVQE`. To learn how to conveniently
+create QAOA problem instances, and convert between different formats, refer to :ref:`5-QAOAUtilities`.
 
-If you are not content just reading above linked notebooks you can also download them from our github page at `<https://github.com/entropicalabs/entropica_qaoa/tree/master/examples>`_ .
+The documentation can also downloaded as Jupyter notebooks from our `GitHub page <https://github.com/entropicalabs/entropica_qaoa/tree/master/examples>`_ .
 
 
 Contents
