@@ -42,10 +42,10 @@ def test_PrepareAndMeasureOnWFSim():
                                            sim,
                                            scalar_cost_function=False,
                                            enable_logging=True)
-        out = cost_fn([np.pi, np.pi / 2], nshots=100)
-        print(cost_fn.log)
-        assert np.allclose(cost_fn.log[0].fun, (-1.0, 0.1))
-        assert np.allclose(out, (-1, 0.1))
+        out = cost_fn([np.pi, np.pi / 2])
+        print(cost_fn.log[0].fun)
+        assert np.allclose(cost_fn.log[0].fun, (-1.0, 0.0))
+        assert np.allclose(out, (-1, 0.0))
 
 
 def test_PrepareAndMeasureOnWFSim_QubitPlaceholders():
@@ -67,9 +67,9 @@ def test_PrepareAndMeasureOnWFSim_QubitPlaceholders():
                                            qubit_mapping=qubit_mapping,
                                            scalar_cost_function=False,
                                            )
-        out = cost_fn([np.pi, np.pi / 2], nshots=100)
-        assert np.allclose(cost_fn.log[0].fun, (-1.0, 0.1))
-        assert np.allclose(out, (-1, 0.1))
+        out = cost_fn([np.pi, np.pi / 2])
+        assert np.allclose(cost_fn.log[0].fun, (-1.0, 0.0))
+        assert np.allclose(out, (-1, 0.0))
 
 
 def test_PrepareAndMeasureOnQVM():

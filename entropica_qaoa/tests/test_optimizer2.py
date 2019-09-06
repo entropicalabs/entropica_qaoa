@@ -42,8 +42,7 @@ def test_vqe_on_WFSim():
                                         hamiltonian=hamiltonian,
                                         sim=sim,
                                         scalar_cost_function=True,
-                                        nshots=1,
-                                        noisy=False)
+                                        nshots=0)
 
     with local_qvm():
         out = scipy.optimize.minimize(cost_fun, p0, tol=1e-3, method="Cobyla")
@@ -64,9 +63,7 @@ def test_qaoa_on_WFSim():
     cost_fun = QAOACostFunctionOnWFSim(hamiltonian=hamiltonian,
                                        params=params,
                                        sim=sim,
-                                       scalar_cost_function=True,
-                                       nshots=1,
-                                       noisy=False)
+                                       scalar_cost_function=True)
 
     with local_qvm():
         out = scipy.optimize.minimize(cost_fun, p0, tol=1e-3, method="Cobyla")

@@ -46,9 +46,7 @@ def test_vqe_on_WFSim():
                                         make_memory_map=lambda p: {"params": p},
                                         hamiltonian=hamiltonian,
                                         sim=sim,
-                                        scalar_cost_function=True,
-                                        nshots=100,
-                                        noisy=False)
+                                        scalar_cost_function=True)
 
     with local_qvm():
         out = minimize(cost_fun, p0, tol=1e-3, method="COBYLA")

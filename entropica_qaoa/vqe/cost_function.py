@@ -16,7 +16,6 @@
 Different cost functions for VQE and one abstract template.
 """
 from typing import Callable, Iterable, Union, List, Dict, Tuple
-import warnings
 import numpy as np
 from collections import namedtuple
 from copy import deepcopy
@@ -24,8 +23,7 @@ from copy import deepcopy
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
 from pyquil.wavefunction import Wavefunction
-from pyquil.api._wavefunction_simulator import WavefunctionSimulator
-from pyquil.api._quantum_computer import QuantumComputer
+from pyquil.api import WavefunctionSimulator, QuantumComputer, get_qc
 
 from entropica_qaoa.vqe.measurelib import (append_measure_register,
                                            commuting_decomposition,
@@ -47,7 +45,7 @@ class AbstractCostFunction():
         but the ``nshots`` argument in ``__init__`` has to be given.
     nshots:
         Optional.  Has to be given, if ``scalar_cost_function``
-        is ``True``
+        is ``False``
         Number of shots to take for cost function evaluation.
     enable_logging:
         If true, a log is created which contains the parameter and function
@@ -58,7 +56,7 @@ class AbstractCostFunction():
 
     def __init__(self,
                  scalar_cost_function: bool = True,
-                 nshots: int = None,
+                 nshots: int = 0,
                  enable_logging: bool = False):
         """The constructor. See class docstring"""
         raise NotImplementedError()
@@ -75,8 +73,7 @@ class AbstractCostFunction():
             where `n` is the number of different parameters.
         nshots:
             Number of shots to take to estimate ``cost_function(params)``
-            Has no effect, if ``__init__()`` was called with
-            ``scalar_cost_function=True``
+            Overrides whatever was passed in ``__init__``
 
         Returns
         -------
@@ -103,18 +100,14 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         The hamiltonian with respect to which to measure the energy.
     sim:
         A WavefunctionSimulator instance to get the wavefunction from.
+        Automatically created, if None is passed.
     scalar_cost_function:
-        If False: __call__ has signature
-        ``(x: array, nshots: int) -> (exp_val: float, std_dev: float)``
-        If True: __call__ has signature ``(x: array) -> (exp_val: float)``
-        i.e. it takes no argument ``nshots`` and only returns the expectation
-        value
+        If True: __call__ returns only the expectation value
+        If False: __call__ returns a tuple (exp_val, std_dev)
         Defaults to True.
     nshots:
-        If ``scalar_cost_function=True`` is passed ``nshots`` has to be
-        specified here.
-    noisy:
-        Add simulated noise to the energy? (the default is False)
+        Number of shots to assume to simulate the sampling noise. 0
+        corresponds to no sampling noise added and is the default.
     enable_logging:
         If true, a log is created which contains the parameter and function
         values at each function call. It is a list of namedtuples of the form
@@ -122,38 +115,15 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
     qubit_mapping:
         A mapping to fix QubitPlaceholders to physical qubits. E.g.
         pyquil.quil.get_default_qubit_mapping(program) gives you on.
-
-    Notes
-    -----
-    How to use the argument ``scalar_cost_function``:
-    The constructor call to `PrepareAndMeasureOnWFSim` (or analogously
-    `PrepareAndMeasureOnQVM`, `QAOACostFunctionOnWFSim`,
-    `QAOACostFunctionOnQVM`)  turns from
-
-    >>> cost_fun = PrepareAndMeasureOnWFSim(...,
-                            scalar_cost_function=True,...)
-
-    into
-
-    >>> cost_fun = PrepareAndMeasureOnWFSim(..., scalar_cost_function=True,
-                                                 nshots=<nshots>, ...)
-
-    or if you want to return the standard deviation and vary `nshots` during
-    the VQE run you have to do
-
-    >>> cost_fun = PrepareAndMeasureOnWFSim(...,
-                        scalar_cost_function=False,...)
-
     """
 
     def __init__(self,
                  prepare_ansatz: Program,
                  make_memory_map: Callable[[np.array], Dict],
                  hamiltonian: Union[PauliSum, np.array],
-                 sim: WavefunctionSimulator,
+                 sim: WavefunctionSimulator = None,
                  scalar_cost_function: bool = True,
-                 nshots: int = None,
-                 noisy: bool = False,
+                 nshots: int = 0,
                  enable_logging: bool = False,
                  qubit_mapping: Dict[QubitPlaceholder,
                                      Union[Qubit, int]] = None):
@@ -161,15 +131,10 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         self.scalar = scalar_cost_function
         self.nshots = nshots
         self.make_memory_map = make_memory_map
-        self.noisy = noisy
-        self.sim = sim  # TODO start own simulator, if None is passed
 
-        if self.scalar and self.nshots is None:
-            if self.noisy:
-                raise ValueError("If `scalar_cost_function=True` and "
-                                 "`noisy=True` `nshots` has to be specified")
-            else:
-                self.nshots = 1  #doesn't really matter what number we put here
+        if sim is None:
+            sim = WavefunctionSimulator()
+        self.sim = sim
 
         # TODO automatically generate Qubit mapping, if None is passed?
         # TODO ask Rigetti to implement "<" between qubits?
@@ -211,7 +176,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         params:
             Parameters of the state preparation circuit.
         nshots:
-            Number of shots to take to estimate the energy (the default is 1000).
+            Overrides nshots from __init__ if passed
 
         Returns
         -------
@@ -220,20 +185,19 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             deviation estimate based on the samples.
         """
         if nshots is None:
-            if self.scalar:
-                nshots = self.nshots
-            else:
-                raise ValueError("nshots cannot be None")
+            nshots = self.nshots
 
         memory_map = self.make_memory_map(params)
         wf = self.sim.wavefunction(self.prepare_ansatz, memory_map=memory_map)
         wf = wf.amplitudes
         E = (wf.conj()@self.ham@wf).real
-        sigma_E = np.sqrt((wf.conj()@self.ham_squared@wf - E**2).real / nshots)
+        if nshots:
+            sigma_E = np.sqrt(
+                (wf.conj()@self.ham_squared@wf - E**2).real / nshots)
+        else:
+            sigma_E = 0
 
-        # add simulated noise, if wanted
-        if self.noisy:
-            E += np.random.randn() * sigma_E
+        E += np.random.randn() * sigma_E
         out = (float(E), float(sigma_E))  # Todo:Why the float casting?
 
         # Append function value and params to the log.
@@ -246,9 +210,8 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         # and return the expectation value or (exp_val, std_dev)
         if self.scalar:
-            return out[0]
-        else:
-            return out
+            return E
+        return out
 
     def get_wavefunction(self,
                          params: Union[List, np.ndarray]) -> Wavefunction:
@@ -286,17 +249,15 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
     hamiltonian:
         The hamiltonian
     qvm:
-        Connection the QC to run the program on.
+        Connection the QC to run the program on OR a name string like expected
+        by ``pyquil.api.get_qc``
     scalar_cost_function:
-        If False: __call__ has signature
-        ``(x: array, nshots: int) -> (exp_val: float, std_dev: float)``
-        If True: __call__ has signature ``(x: array) -> (exp_val: float)``
-        i.e. it takes no argument ``nshots`` and only returns the expectation
-        value
+        If True: __call__ returns only the expectation value
+        If False: __call__ returns a tuple (exp_val, std_dev)
         Defaults to True.
     nshots:
-        If ``scalar_cost_function=True`` is passed ``nshots`` has to be
-        specified here.
+        Fixed multiple of ``base_numshots`` for each estimation of the
+        expectation value. Defaults to 1
     base_numshots:
         numshots multiplier to compile into the binary. The argument nshots of
          __call__ is then a multplier of this.
@@ -313,21 +274,20 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                  prepare_ansatz: Program,
                  make_memory_map: Callable[[Iterable], dict],
                  hamiltonian: PauliSum,
-                 qvm: QuantumComputer,
+                 qvm: Union[QuantumComputer, str],
                  scalar_cost_function: bool = True,
-                 nshots: int = None,
+                 nshots: int = 1,
                  base_numshots: int = 100,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None,
                  enable_logging: bool = False):
 
         self.scalar = scalar_cost_function
         self.nshots = nshots
-        self.qvm = qvm
         self.make_memory_map = make_memory_map
 
-        if self.scalar and self.nshots is None:
-            raise ValueError("If scalar_cost_function is set, nshots has to "
-                             "be specified")
+        if isinstance(qvm, str):
+            qvm = get_qc(qvm)
+        self.qvm = qvm
 
         if qubit_mapping is not None:
             prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
@@ -357,8 +317,8 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         ----------
         param params:
             the parameters to run the state preparation circuit with
-        param N:
-            Number of times to run exe
+        param nshots:
+            Overrides nshots in __init__ if passed
 
         Returns
         -------
@@ -367,10 +327,7 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
             deviation estimate based on the samples.
         """
         if nshots is None:
-            if self.scalar:
-                nshots = self.nshots
-            else:
-                raise ValueError("nshots cannot be None")
+            nshots = self.nshots
 
         memory_map = self.make_memory_map(params)
 
