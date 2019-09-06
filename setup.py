@@ -18,12 +18,20 @@ except ImportError:
     from distutils.core import setup
 
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name="entropica_qaoa",
-    version="0.1",
+    version="1.0",
     description="Entropica Labs QAOA package",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Entropica Labs: Jan Lukas Bosse, Ewan Munro",
+    author_email="janlukas@entropicalabs.com, ewan@entropicalabs.com",
+    url="https://docs.entropicalabs.io/qaoa/",
     packages=find_packages(),
-    install_requires=['numpy >= 1.7', 'scipy >= 0.9',
-                      'scikit-learn >= 0.16', 'numexpr >= 2.5']
+    install_requires=['scipy >= 0.9', 'pyquil >= 2.0',
+                      'custom_inherit >= 2.0', 'pandas >= 0.25',
+                      'matplotlib >= 3.0']
 )

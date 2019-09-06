@@ -1,11 +1,6 @@
 """
 Test that all the components of qaoa play nicely together
 """
-import os
-import sys
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../')
-
 import pytest
 import numpy as np
 from scipy.optimize import minimize

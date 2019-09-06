@@ -6,53 +6,57 @@
 Welcome to Entropica QAOA's documentation!
 ==========================================
 
-This is the Entropica QAOA package. It is very good and modular. If you see
-this message in the final version, we really messed up on our checks.
+Entropica QAOA is a modular QAOA package built on top of Rigetti's
+`Forest SDK <https://www.rigetti.com/forest>`_. It enables researchers and
+interested students to quickly run their own QAOA instances and easily replace
+any component with your own code.
+
+Features
+--------
+ - Full native support for `Rigettis QVM and QPU's <https://www.rigetti.com/qpu>`_. Run your experiments on real Quantum Computers!
+ - Extensive iPython Notebooks that explain the usage of Entropica QAOA in
+   detail.
+ - Multiple parametrisations for QAOA.
+ - `NetworkX <https://networkx.github.io/>`_ integration for the treatment of
+   graph theoretic problems.
+ - Modular code base that allows the user to customise parts he wants to change
+   while being provided with sensible defaults for the other parts.
 
 
 Installation
 ------------
 
-If you don't have them already, install first Rigetti's pyQquil package and their QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation here: http://docs.rigetti.com/en/stable/start.html
+If you don't have them already, install first Rigetti's pyQquil package and their QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation `here <http://docs.rigetti.com/en/stable/start.html>`_.
 
-Installation of the `entropica_qaoa` package can be performed in a few simple steps.
+In a Python3.6+ virtual environment you can install the `entropica_qaoa`  package using `pip <https://pip.pypa.io/en/stable/quickstart/>`_
 
-1. Open terminal and enter the site-packages folder of your preferred Python environment.
+.. code-block:: bash
 
-   For those with Anaconda installed, the command looks like:
+   pip install entropica_qaoa
 
-   .. code-block:: bash
+and if you have it already installed upgraded via
 
-      cd /anaconda3/envs/<my-env>/lib/pythonX.Y/site-packages/
+.. code-block:: bash
 
-   For those unsure of the location of their site-packages folder, you can simply run ``bash pip show <package name>`` and your terminal will display the directory location of your python packages.
+   pip install --upgrade entropica_qaoa
 
+If you want to run the Demo Notebooks you will additionally need `scikit-learn` and `scikit-optimize` which can also be installed using pip:
 
-2. Clone the repository into your site-packages folder, into a directory called entropica_qaoa:
+.. code-block:: bash
 
-   .. code-block:: bash
-
-      git clone https://github.com/entropicalabs/entropica_qaoa entropica_qaoa
-
-3. Install the package using pip:
-
-   .. code-block:: bash
-
-      pip install entropica_qaoa
-
-
-You can now import this package as you would any conda- or pip-installed library!
+   pip install scikit-learn && pip install scikit-optimize
 
 
 First Steps
 -----------
 
-In <qaoa-workflow-notebook> we show you the basic usage of EntropicaQAOA.
+In *First steps: An example workflow* we show you the basic usage of
+EntropicaQAOA.
 More advanced examples on working with different parametrizations are found in
-<qaoa-parameter-demo> and the more advanced features of the cost
-functions are explained in <cost-functions-demo>. To learn, how to create
-problem instances faster and convert between different formats you can read
-<utilities-demo>.
+*Working with the Parameter classes* and the more advanced features of the cost
+functions are explained in *Cost function features and VQE*. To learn, how to
+create problem instances faster and convert between different formats you can
+read *QAOA utilities*.
 
 If you are not content just reading above linked notebooks you can also download them from our github page at `<https://github.com/entropicalabs/entropica_qaoa/tree/master/examples>`_ .
 
@@ -64,16 +68,18 @@ Contents
    :maxdepth: 3
 
    faq
+   changelog
 
 .. toctree::
    :maxdepth: 3
    :caption: The Demo Notebooks
 
-   notebooks/QAOAWorkflowDemo
-   notebooks/QAOAParameterDemo
-   notebooks/UtilitiesDemo
-   notebooks/VQEDemo
-   notebooks/AdvancedQAOAParameterDemo
+   notebooks/1_AnExampleWorkflow
+   notebooks/2_ParameterClasses
+   notebooks/3_AdvancedParameterClasses
+   notebooks/4_CostFunctionsAndVQE
+   notebooks/5_QAOAUtilities
+   notebooks/6_ClusteringWithQAOA
 
 
 .. toctree::
