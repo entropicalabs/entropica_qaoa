@@ -7,20 +7,18 @@ Welcome to Entropica QAOA's documentation!
 ==========================================
 
 Entropica QAOA is a modular QAOA package built on top of Rigetti's
-`Forest SDK <https://www.rigetti.com/forest>`_. It enables researchers and
-interested students to quickly run their own QAOA instances and easily replace
-any component with your own code.
+`Forest SDK <https://www.rigetti.com/forest>`_. It enables users to quickly run their own QAOA instances and easily replace
+any component with their own custom code.
 
 Features
 --------
  - Full native support for `Rigettis QVM and QPU's <https://www.rigetti.com/qpu>`_. Run your experiments on real Quantum Computers!
- - Extensive iPython Notebooks that explain the usage of Entropica QAOA in
+ - Extensive examples explaining the usage of Entropica QAOA in
    detail.
  - Multiple parametrisations for QAOA.
  - `NetworkX <https://networkx.github.io/>`_ integration for the treatment of
-   graph theoretic problems.
- - Modular code base that allows the user to customise parts he wants to change
-   while being provided with sensible defaults for the other parts.
+   graph theoretic problems, and Pandas <https://pandas.pydata.org/> integration for data importing.
+ - Modular code base that allows the user to customise and modify different components.
 
 
 Installation
@@ -67,19 +65,15 @@ Contents
 .. toctree::
    :maxdepth: 3
 
-   faq
-   changelog
-
-.. toctree::
-   :maxdepth: 3
-   :caption: The Demo Notebooks
-
    notebooks/1_AnExampleWorkflow
    notebooks/2_ParameterClasses
    notebooks/3_AdvancedParameterClasses
    notebooks/4_CostFunctionsAndVQE
    notebooks/5_QAOAUtilities
    notebooks/6_ClusteringWithQAOA
+
+   faq
+   changelog
 
 
 .. toctree::

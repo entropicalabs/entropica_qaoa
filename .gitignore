@@ -19,6 +19,10 @@ dist/
 *.egg
 .eggs/
 
+# editors
+#########
+*.swp
+
 # compiled docs
 # #############
 docs/source/notebooks
