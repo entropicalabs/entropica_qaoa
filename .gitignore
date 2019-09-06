@@ -57,3 +57,4 @@ Package_Scheme.pptx
 examples/*.py
 Untitled.ipynb
 .gitattributes
+entropica_qaoa/tests/converted.py

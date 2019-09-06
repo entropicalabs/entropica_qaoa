@@ -7,9 +7,13 @@ import subprocess
 import pytest
 import importlib
 
+import sys, os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../')
+
 
 def notebook_test_function(name):
-    command = f"jupyter nbconvert --to script {name} --output ../examples/converted"
+    command = f"jupyter nbconvert --to script {name} --output ../entropica_qaoa/tests/converted"
 
     print(f"Converting {name} to a python script")
     ret_code = subprocess.call(command.split(" "), stderr=None, stdout=None)
@@ -17,8 +21,8 @@ def notebook_test_function(name):
     if ret_code is not 0:
         print(f"The command '{command}' failed. "
               "Run it manually, to see what went wrong.")
-    import examples.converted
-    importlib.reload(examples.converted)
+    import converted
+    importlib.reload(converted)
 
 
 @pytest.mark.notebook

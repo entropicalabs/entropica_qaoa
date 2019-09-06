@@ -17,7 +17,7 @@ from entropica_qaoa.utilities import (random_hamiltonian,
                                       hamiltonian_from_graph,
                                       random_k_regular_graph,
                                       plot_graph,
-                                      hamiltonian_from_distance_matrix)
+                                      hamiltonian_from_distances)
 
 
 q1, q2 = QubitPlaceholder(), QubitPlaceholder()
@@ -81,9 +81,9 @@ def test_random_k_regular_graph_and_plot_graph():
     plot_graph(G)
 
 
-def test_hamiltonian_from_distance_matrix():
+def test_hamiltonian_from_distances():
     dist = np.array([[0, 1, 2], [1, 0, 1], [2, 1, 0]])
-    ham1 = hamiltonian_from_distance_matrix(
+    ham1 = hamiltonian_from_distances(
             dist, biases={i: i+1 for i in range(3)})
     single_terms = 1 * sZ(0), 2 * sZ(1), 3 * sZ(2)
     coupling_terms = 1 * sZ(0) * sZ(1), 1*sZ(1) * sZ(2), 2 * sZ(0) * sZ(2)
