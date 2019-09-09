@@ -36,7 +36,7 @@ To upgrade,
 pip install --upgrade entropica_qaoa
 ```
 
-If you want to run the Demo Notebooks, you will additionally need to install `scikit-learn` and `scikit-optimize`, which can also be installed using pip:
+If you want to run the Demo Notebooks, you will additionally need to install `scikit-learn` and `scikit-optimize`, which can be done as follows:
 
 ```bash
 pip install scikit-learn && pip install scikit-optimize
@@ -44,12 +44,10 @@ pip install scikit-learn && pip install scikit-optimize
 
 ### Testing
 
-All tests are located in `entropica_qaoa/tests/`. To run them you will need to install [pytest](https://docs.pytest.org/en/latest/). To run all tests, including the notebook tests, you will$
-
-To speed up the testing, we have tagged tests that require more computational time (~ 5 mins or so)  with `runslow`, and the tests of the notebooks with `notebooks`. This means that a bare $
+All tests are located in `entropica_qaoa/tests/`. To run them you will need to install [pytest](https://docs.pytest.org/en/latest/). To speed up the testing, we have tagged tests that require more computational time (~ 5 mins or so)  with `runslow`, and the tests of the notebooks with `notebooks`. This means that a bare $
 
  - `pytest` runs the default tests, and skips both the longer tests that need heavier simulations, as well as tests of the Notebooks in the `examples` directory.
- - `pytest --runslow`runs the the tests that require longer time.                              
+ - `pytest --runslow` runs the the tests that require longer time.                              
  - `pytest --notebooks` runs the Notebook tests. To achieve this, the notebooks are
     converted to python scripts, and then executed. Should any errors occur, this means that the line numbers given in the error
     messages refer to the lines in `<TheNotebook>.py`, and not in
@@ -58,7 +56,7 @@ To speed up the testing, we have tagged tests that require more computational ti
 
 ## Development and Contributing
 
-This project is hosted at [github](https://github.com/entropicalabs/entropica_qaoa), and can be cloned using
+This project is hosted on [GitHub](https://github.com/entropicalabs/entropica_qaoa), and can be cloned using
 
 ```bash
 git clone https://github.com/entropicalabs/entropica_qaoa.git
