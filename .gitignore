@@ -15,6 +15,7 @@
 eggs/
 build/
 dist/
+docs/dist/qaoa
 *.egg-info/
 *.egg
 .eggs/
@@ -63,3 +64,6 @@ examples/*.py
 Untitled.ipynb
 .gitattributes
 entropica_qaoa/tests/converted.py
+
+# Local Netlify folder
+.netlify
