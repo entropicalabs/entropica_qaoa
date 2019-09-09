@@ -5,9 +5,7 @@ A package implementing the Quantum Approximate Optimisation Algorithm (QAOA), pr
 
 ## Documentation
 
-The documentation can be found [here](https://docs.entropicalabs.io/qaoa/).
-
-Alternatively you can compile it yourself by following the instructions below:
+The documentation for EntropicaQAOA can be found [here](https://docs.entropicalabs.io/qaoa/). Alternatively, it can be complied locally as follows:
 
 **Install the Prerequisites**
 ```bash
@@ -25,52 +23,46 @@ The compiled HTML version of the documentation is then found in
 
 ## Installation
 
-If you don't have them already, install first Rigetti's pyQquil package and their QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation here: http://docs.rigetti.com/en/stable/start.html.
+We assume that the user has already installed Rigetti's pyQuil package, as well as the Rigetti QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation [here] (#http://docs.rigetti.com/en/stable/start.html).
 
-In a Python3.6+ virtual environment you can install the `entropica_qaoa`  package using [pip](#https://pip.pypa.io/en/stable/quickstart/)
+You can install the `entropica_qaoa` package using [pip](#https://pip.pypa.io/en/stable/quickstart/):
 
 ```bash
 pip install entropica_qaoa
 ```
-and if you have it already installed upgraded via
+To upgrade, 
 
 ```bash
 pip install --upgrade entropica_qaoa
 ```
 
-If you want to run the Demo Notebooks you will additionally need `scikit-learn` and `scikit-optimize` which can also be installed using pip:
+If you want to run the Demo Notebooks, you will additionally need to install `scikit-learn` and `scikit-optimize`, which can also be installed using pip:
 
 ```bash
 pip install scikit-learn && pip install scikit-optimize
 ```
 
+### Testing
+
+All tests are located in `entropica_qaoa/tests/`. To run them you will need to install [pytest](https://docs.pytest.org/en/latest/). To run all tests, including the notebook tests, you will$
+
+To speed up the testing, we have tagged tests that require more computational time (~ 5 mins or so)  with `runslow`, and the tests of the notebooks with `notebooks`. This means that a bare $
+
+ - `pytest` runs the default tests, and skips both the longer tests that need heavier simulations, as well as tests of the Notebooks in the `examples` directory.
+ - `pytest --runslow`runs the the tests that require longer time.                              
+ - `pytest --notebooks` runs the Notebook tests. To achieve this, the notebooks are
+    converted to python scripts, and then executed. Should any errors occur, this means that the line numbers given in the error
+    messages refer to the lines in `<TheNotebook>.py`, and not in
+    `<TheNotebook>.ipynb`.
+ - `pytest --all` runs all of the above tests.   
 
 ## Development and Contributing
 
-This project is hosted at [github](https://github.com/entropicalabs/entropica_qaoa) and can be cloned using
+This project is hosted at [github](https://github.com/entropicalabs/entropica_qaoa), and can be cloned using
 
 ```bash
 git clone https://github.com/entropicalabs/entropica_qaoa.git
 ```
 
-If you have feature requests or already implemented them, feel free to open an issue or send us a pull request.
+If you have feature requests, or have already implemented them, feel free to open an issue or send us a pull request.
 
-### Testing
-
-All tests are located in `entropica_qaoa/tests/`. To run them you will need [pytest](https://docs.pytest.org/en/latest/) installed. To run all tests, including the notebook tests, you will additionally need to have [nbconvert](https://github.com/jupyter/nbconvert) and [scikit-learn](https://scikit-learn.org/stable/) and [scikit-optimize](https://scikit-optimize.github.io/) installed.
-
-To speed up the testing, we have tagged tests that take a lot of time with `runslow` and the tests of the notebooks with `notebooks`. This means that a bare ```pytest``` doesn't run those tests. More below.
-
- - `pytest` runs the default tests and skips longer tests that need heavy simulations and tests of the Notebooks in `examples/`
- - `pytest --runslow` the tests with heavy simulations. I didn't fix the seed for the
-   random generator yet, so sometimes the test doesn't even work.... If it takes longer than
-   5 Minutes just kill the tests and restart it.
- - `pytest --notebooks` runs the Notebook tests. To achieve this, the notebooks are
-    converted to python scripts which are then executed. So the line numbers in the error
-    messages refer to the lines in `<TheNotebook>.py` and not in
-    `<TheNotebook>.ipynb`.
- - `pytest --all` runs all of the above tests. Ideally all of them pass, before you do a
-    `git push`
- - If you need more infos than `pytest` give you be default: Use the toggle
-    `pytest (options) -s` to get all output.
- - With `pytest tests/<testfile>` single tests can be run to check single modules.
