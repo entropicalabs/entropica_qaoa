@@ -28,12 +28,12 @@ We assume that the user has already installed Rigetti's pyQuil package, as well 
 You can install the `entropica_qaoa` package using [pip](#https://pip.pypa.io/en/stable/quickstart/):
 
 ```bash
-pip install entropica_qaoa
+pip install entropica-qaoa
 ```
 To upgrade to the latest version: 
 
 ```bash
-pip install --upgrade entropica_qaoa
+pip install --upgrade entropica-qaoa
 ```
 
 If you want to run the Demo Notebooks, you will additionally need to install `scikit-learn` and `scikit-optimize`, which can be done as follows:
