@@ -67,6 +67,8 @@ and evaluate its expectation value with respect to the wavefunction produced by 
 and initialise the parameter values by analogy to a quantum annealing process with a linear schedule function. These features are explained in depth in other sections of 
 the documentation. 
 
+Before running the code, make sure you open the Rigetti QVM and Quil compiler in separate terminal windows using the commands ``qvm -S`` and ``quilc -S``.
+
 .. code-block:: python
 
    # pyquil imports
@@ -107,7 +109,7 @@ The documentation can also downloaded as Jupyter notebooks from our `GitHub page
 Contributing and feedback
 -------------------------
 
-If you have feature requests, or have already implemented them, feel free to open an issue or send us a pull request. 
+If you find any bugs or errors, or have feature requests (or have already implemented them yourself), feel free to open an issue or send us a pull request on `GitHub <https://github.com/entropicalabs/entropica_qaoa>`_ . 
 
 We are always interested to hear about projects built with EntropicaQAOA. If you have an application you'd like to tell us about, drop us an email at devteam@entropicalabs.com. 
 
