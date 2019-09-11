@@ -115,20 +115,26 @@ We are always interested to hear about projects built with EntropicaQAOA. If you
 License
 -------
 
-EntropicaQAOA is released under the Apache License, Version 2.0.
+EntropicaQAOA is released open source under the Apache License, Version 2.0.
 
 Contents
 ========
 
 .. toctree::
    :maxdepth: 3
+   :caption: Tutorials
 
+   tutorials_overview
    notebooks/1_AnExampleWorkflow
    notebooks/2_ParameterClasses
    notebooks/3_AdvancedParameterClasses
    notebooks/4_CostFunctionsAndVQE
    notebooks/5_QAOAUtilities
    notebooks/6_ClusteringWithQAOA
+
+.. toctree::
+   :maxdepth: 3
+   :caption: General Reference
 
    faq
    changelog

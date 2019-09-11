@@ -308,78 +308,78 @@ three generations.
       </thead>
       <tbody>
         <tr>
-          <th>99</th>
-          <td>Kingler</td>
-          <td>Water</td>
-          <td>NaN</td>
-          <td>475</td>
-          <td>55</td>
-          <td>130</td>
-          <td>115</td>
-          <td>50</td>
-          <td>50</td>
-          <td>75</td>
-          <td>1</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>87</th>
-          <td>Dewgong</td>
-          <td>Water</td>
-          <td>Ice</td>
-          <td>475</td>
-          <td>90</td>
-          <td>70</td>
-          <td>80</td>
-          <td>70</td>
-          <td>95</td>
-          <td>70</td>
-          <td>1</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>330</th>
-          <td>Flygon</td>
+          <th>232</th>
+          <td>Donphan</td>
           <td>Ground</td>
-          <td>Dragon</td>
-          <td>520</td>
-          <td>80</td>
-          <td>100</td>
-          <td>80</td>
-          <td>80</td>
-          <td>80</td>
-          <td>100</td>
+          <td>NaN</td>
+          <td>500</td>
+          <td>90</td>
+          <td>120</td>
+          <td>120</td>
+          <td>60</td>
+          <td>60</td>
+          <td>50</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>202</th>
+          <td>Wobbuffet</td>
+          <td>Psychic</td>
+          <td>NaN</td>
+          <td>405</td>
+          <td>190</td>
+          <td>33</td>
+          <td>58</td>
+          <td>33</td>
+          <td>58</td>
+          <td>33</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>261</th>
+          <td>Poochyena</td>
+          <td>Dark</td>
+          <td>NaN</td>
+          <td>220</td>
+          <td>35</td>
+          <td>55</td>
+          <td>35</td>
+          <td>30</td>
+          <td>30</td>
+          <td>35</td>
           <td>3</td>
           <td>False</td>
         </tr>
         <tr>
-          <th>271</th>
-          <td>Lombre</td>
-          <td>Water</td>
-          <td>Grass</td>
-          <td>340</td>
-          <td>60</td>
-          <td>50</td>
-          <td>50</td>
-          <td>60</td>
+          <th>148</th>
+          <td>Dragonair</td>
+          <td>Dragon</td>
+          <td>NaN</td>
+          <td>420</td>
+          <td>61</td>
+          <td>84</td>
+          <td>65</td>
           <td>70</td>
-          <td>50</td>
-          <td>3</td>
+          <td>70</td>
+          <td>70</td>
+          <td>1</td>
           <td>False</td>
         </tr>
         <tr>
-          <th>149</th>
-          <td>Dragonite</td>
-          <td>Dragon</td>
-          <td>Flying</td>
-          <td>600</td>
-          <td>91</td>
-          <td>134</td>
-          <td>95</td>
-          <td>100</td>
-          <td>100</td>
+          <th>365</th>
+          <td>Walrein</td>
+          <td>Ice</td>
+          <td>Water</td>
+          <td>530</td>
+          <td>110</td>
           <td>80</td>
-          <td>1</td>
+          <td>90</td>
+          <td>95</td>
+          <td>90</td>
+          <td>65</td>
+          <td>3</td>
           <td>False</td>
         </tr>
       </tbody>
@@ -468,14 +468,14 @@ clustering of the data.
       </thead>
       <tbody>
         <tr>
-          <th>379</th>
+          <th>146</th>
           <td>580</td>
-          <td>80</td>
-          <td>75</td>
-          <td>150</td>
-          <td>75</td>
-          <td>150</td>
-          <td>50</td>
+          <td>90</td>
+          <td>100</td>
+          <td>90</td>
+          <td>125</td>
+          <td>85</td>
+          <td>90</td>
         </tr>
         <tr>
           <th>378</th>
@@ -488,14 +488,14 @@ clustering of the data.
           <td>50</td>
         </tr>
         <tr>
-          <th>382</th>
-          <td>670</td>
-          <td>100</td>
-          <td>100</td>
+          <th>249</th>
+          <td>680</td>
+          <td>106</td>
           <td>90</td>
-          <td>150</td>
-          <td>140</td>
+          <td>130</td>
           <td>90</td>
+          <td>154</td>
+          <td>110</td>
         </tr>
         <tr>
           <th>383</th>
@@ -508,14 +508,14 @@ clustering of the data.
           <td>90</td>
         </tr>
         <tr>
-          <th>385</th>
+          <th>381</th>
           <td>600</td>
-          <td>100</td>
-          <td>100</td>
-          <td>100</td>
-          <td>100</td>
-          <td>100</td>
-          <td>100</td>
+          <td>80</td>
+          <td>90</td>
+          <td>80</td>
+          <td>130</td>
+          <td>110</td>
+          <td>110</td>
         </tr>
       </tbody>
     </table>
@@ -542,6 +542,9 @@ possible.
 
 .. figure:: imgs/maxcut.png
    :alt: Title
+
+   A depiction of the maxcut problem, displaying a cut which separates
+   white and black vertices.
 
 *A depiction of the maxcut problem, displaying a cut which separates
 white and black vertices. Image
@@ -596,11 +599,11 @@ desired matrix of pairwise distances.
       <thead>
         <tr style="text-align: right;">
           <th>ID</th>
-          <th>379</th>
+          <th>146</th>
           <th>378</th>
-          <th>382</th>
+          <th>249</th>
           <th>383</th>
-          <th>385</th>
+          <th>381</th>
         </tr>
         <tr>
           <th>ID</th>
@@ -613,43 +616,43 @@ desired matrix of pairwise distances.
       </thead>
       <tbody>
         <tr>
-          <th>379</th>
+          <th>146</th>
           <td>0.000000</td>
-          <td>79.056942</td>
-          <td>141.598023</td>
-          <td>141.598023</td>
-          <td>97.724101</td>
+          <td>134.721936</td>
+          <td>135.432640</td>
+          <td>117.686023</td>
+          <td>41.833001</td>
         </tr>
         <tr>
           <th>378</th>
-          <td>79.056942</td>
+          <td>134.721936</td>
           <td>0.000000</td>
-          <td>137.113092</td>
+          <td>137.811465</td>
           <td>183.847763</td>
-          <td>125.698051</td>
+          <td>122.474487</td>
         </tr>
         <tr>
-          <th>382</th>
-          <td>141.598023</td>
-          <td>137.113092</td>
+          <th>249</th>
+          <td>135.432640</td>
+          <td>137.811465</td>
           <td>0.000000</td>
-          <td>100.000000</td>
-          <td>95.916630</td>
+          <td>91.825922</td>
+          <td>114.507642</td>
         </tr>
         <tr>
           <th>383</th>
-          <td>141.598023</td>
+          <td>117.686023</td>
           <td>183.847763</td>
-          <td>100.000000</td>
+          <td>91.825922</td>
           <td>0.000000</td>
-          <td>95.916630</td>
+          <td>119.163753</td>
         </tr>
         <tr>
-          <th>385</th>
-          <td>97.724101</td>
-          <td>125.698051</td>
-          <td>95.916630</td>
-          <td>95.916630</td>
+          <th>381</th>
+          <td>41.833001</td>
+          <td>122.474487</td>
+          <td>114.507642</td>
+          <td>119.163753</td>
           <td>0.000000</td>
         </tr>
       </tbody>
@@ -716,18 +719,18 @@ desired matrix of pairwise distances.
       </thead>
       <tbody>
         <tr>
-          <th>379</th>
-          <td>Registeel</td>
-          <td>Steel</td>
-          <td>NaN</td>
+          <th>146</th>
+          <td>Moltres</td>
+          <td>Fire</td>
+          <td>Flying</td>
           <td>580</td>
-          <td>80</td>
-          <td>75</td>
-          <td>150</td>
-          <td>75</td>
-          <td>150</td>
-          <td>50</td>
-          <td>3</td>
+          <td>90</td>
+          <td>100</td>
+          <td>90</td>
+          <td>125</td>
+          <td>85</td>
+          <td>90</td>
+          <td>1</td>
           <td>True</td>
         </tr>
         <tr>
@@ -746,18 +749,18 @@ desired matrix of pairwise distances.
           <td>True</td>
         </tr>
         <tr>
-          <th>382</th>
-          <td>Kyogre</td>
-          <td>Water</td>
-          <td>NaN</td>
-          <td>670</td>
-          <td>100</td>
-          <td>100</td>
+          <th>249</th>
+          <td>Lugia</td>
+          <td>Psychic</td>
+          <td>Flying</td>
+          <td>680</td>
+          <td>106</td>
           <td>90</td>
-          <td>150</td>
-          <td>140</td>
+          <td>130</td>
           <td>90</td>
-          <td>3</td>
+          <td>154</td>
+          <td>110</td>
+          <td>2</td>
           <td>True</td>
         </tr>
         <tr>
@@ -776,17 +779,17 @@ desired matrix of pairwise distances.
           <td>True</td>
         </tr>
         <tr>
-          <th>385</th>
-          <td>Jirachi</td>
-          <td>Steel</td>
+          <th>381</th>
+          <td>Latios</td>
+          <td>Dragon</td>
           <td>Psychic</td>
           <td>600</td>
-          <td>100</td>
-          <td>100</td>
-          <td>100</td>
-          <td>100</td>
-          <td>100</td>
-          <td>100</td>
+          <td>80</td>
+          <td>90</td>
+          <td>80</td>
+          <td>130</td>
+          <td>110</td>
+          <td>110</td>
           <td>3</td>
           <td>True</td>
         </tr>
@@ -858,7 +861,7 @@ Below we show some basic functionality of the ``PauliTerm`` object.
 
 .. parsed-literal::
 
-    Distance between samples 3 and 6: 154.919
+    Distance between samples 3 and 6: 203.593
 
 
 To create the quadratic term we multiply two Paulis together. Each
@@ -876,7 +879,7 @@ of one factor, and make the other ‘1.0’.
 
 .. parsed-literal::
 
-    (154.91933384829667+0j)*Z3*Z6
+    (203.59273071502332+0j)*Z3*Z6
 
 
 Feel free to play with the coefficient number of ``term2`` to see how it
@@ -891,18 +894,11 @@ have found their way into the printed output. Including :math:`i` and
 :math:`j` in each ``PauliTerm`` tells pyQuil which samples or **qubits**
 the operation is applied to. That’s right, in the QAOA setup we consider
 each datapoint to be mapped to a qubit. Thus, the above printed
-statement actually means:
-
-::
-
-   Apply a penalty of 186.548 should sample 3 and sample 6 be in the same class. 
-
-Or in a more quantum-intuitive sense:
-
-::
-
-   Apply a penalty of 186.548 should qubit 3 and qubit 6 both be found to be in the same
-   spin state (spin up or spin down). 
+statement actually means *“apply a penalty of :math:`Q` should sample 3
+and sample 6 be in the same class”*, where :math:`Q` is the coefficient
+of the operator product Z3*Z6. Said in a more quantum-intuitive sense:
+*“Apply a penalty of :math:`Q` should qubit 3 and qubit 6 both be found
+in the same spin state (spin up or spin down)”*.
 
 Thus, as QAOA tries to minimize the cost function, sample 3 and 6 will
 only appear in the same class if this configuration is optimal. The
@@ -926,7 +922,7 @@ qubits. We can readily achieve this using the utility function
 
 .. parsed-literal::
 
-    (108.62780491200216+0j)*Z0*Z1 + (132.664991614216+0j)*Z0*Z2 + (156.20499351813308+0j)*Z0*Z3 + (113.80685392365436+0j)*Z0*Z4 + (254.3619468395381+0j)*Z0*Z5 + (121.03718436910205+0j)*Z0*Z6 + (360+0j)*Z0*Z7 + (195.56073225471417+0j)*Z0*Z8 + (176.0681686165901+0j)*Z0*Z9 + (152.31546211727817+0j)*Z1*Z2 + (220.90722034374522+0j)*Z1*Z3 + (121.45781160551181+0j)*Z1*Z4 + (291.547594742265+0j)*Z1*Z5 + (174.64249196572982+0j)*Z1*Z6 + (402.74061131204536+0j)*Z1*Z7 + (251.32449144482516+0j)*Z1*Z8 + (226.71568097509268+0j)*Z1*Z9 + (137.11309200802089+0j)*Z2*Z3 + (93.552124508212+0j)*Z2*Z4 + (341.76014981270123+0j)*Z2*Z5 + (194.42222095223582+0j)*Z2*Z6 + (463.6809247747852+0j)*Z2*Z7 + (292.27384419410504+0j)*Z2*Z8 + (263.6285265292814+0j)*Z2*Z9 + (200.47942537826668+0j)*Z3*Z4 + (262.10684844162313+0j)*Z3*Z5 + (154.91933384829667+0j)*Z3*Z6 + (384.3175770115127+0j)*Z3*Z7 + (218+0j)*Z3*Z8 + (191.57244060668017+0j)*Z3*Z9 + (360.211049247521+0j)*Z4*Z5 + (220.39056241137007+0j)*Z4*Z6 + (470.7780793537439+0j)*Z4*Z7 + (305.52904935537634+0j)*Z4*Z8 + (275.0854412723436+0j)*Z4*Z9 + (171.46428199482247+0j)*Z5*Z6 + (141.06735979665885+0j)*Z5*Z7 + (71.16178749862878+0j)*Z5*Z8 + (104.64224768228175+0j)*Z5*Z9 + (280.6243040080456+0j)*Z6*Z7 + (122.12288892750614+0j)*Z6*Z8 + (134.90737563232042+0j)*Z6*Z9 + (177.3527558286028+0j)*Z7*Z8 + (220.45407685048602+0j)*Z7*Z9 + (71.09149034870488+0j)*Z8*Z9
+    (134.7219358530748+0j)*Z0*Z1 + (135.43264008354853+0j)*Z0*Z2 + (117.6860229593982+0j)*Z0*Z3 + (41.83300132670378+0j)*Z0*Z4 + (71.79136438319027+0j)*Z0*Z5 + (92.73618495495704+0j)*Z0*Z6 + (156.8438714135812+0j)*Z0*Z7 + (182.75666882497066+0j)*Z0*Z8 + (363.86810797320504+0j)*Z0*Z9 + (137.81146541561773+0j)*Z1*Z2 + (183.84776310850236+0j)*Z1*Z3 + (122.47448713915891+0j)*Z1*Z4 + (116.72189169131899+0j)*Z1*Z5 + (164.46884203398528+0j)*Z1*Z6 + (213.89249636207438+0j)*Z1*Z7 + (227.92542640082962+0j)*Z1*Z8 + (381.7066936798463+0j)*Z1*Z9 + (91.82592226599198+0j)*Z2*Z3 + (114.50764166639709+0j)*Z2*Z4 + (166.21672599350524+0j)*Z2*Z5 + (214.15415008820165+0j)*Z2*Z6 + (273.09705234586477+0j)*Z2*Z7 + (292.4414471308744+0j)*Z2*Z8 + (468.4356946262742+0j)*Z2*Z9 + (119.16375287812986+0j)*Z3*Z4 + (163.47476869535555+0j)*Z3*Z5 + (203.59273071502332+0j)*Z3*Z6 + (257.390753524675+0j)*Z3*Z7 + (270.4625667259704+0j)*Z3*Z8 + (463.6809247747852+0j)*Z3*Z9 + (91.78235124467012+0j)*Z4*Z5 + (111.57956802210698+0j)*Z4*Z6 + (182.07141456033125+0j)*Z4*Z7 + (212.4852936087578+0j)*Z4*Z8 + (384.1874542459709+0j)*Z4*Z9 + (70.73895673530957+0j)*Z5*Z6 + (113.02212172844747+0j)*Z5*Z7 + (129.89996150884727+0j)*Z5*Z8 + (308.22718893699175+0j)*Z5*Z9 + (90.55385138137417+0j)*Z6*Z7 + (120.20815280171308+0j)*Z6*Z8 + (278.8368698719737+0j)*Z6*Z9 + (62.44997998398398+0j)*Z7*Z8 + (217.83020910791964+0j)*Z7*Z9 + (202.73134932713293+0j)*Z8*Z9
 
 
 The above exercise brings up an important limitation to our present QAOA
@@ -976,10 +972,10 @@ thus will take longer to converge.
 To instantiate this parameter class, we need to pass in three separate
 lists of angles. - :math:`\vec{\beta}`: every timestep requires
 :math:`n_{qubits}` beta rotations. Thus there are
-:math:`n_{qubits}\times timestep` beta values. -
+:math:`n_{qubits}\times timesteps` beta values. -
 :math:`\vec{\gamma}_{pairs}`: there is a gamma rotation for every
 two-qubit interaction. A simple way to come up with this number is to
-measure the length of your hamiltonian subtracted by the number of
+measure the length of your Hamiltonian, subtracted by the number of
 single qubit bias terms in place. - :math:`\vec{\gamma}_{singles}`:
 there is a gamma single rotation for each bias term included in the
 hamiltonian.
@@ -1002,7 +998,8 @@ Before starting the simulator, make sure you are running Rigetti’s QVM
 and Quil Compiler by running ``qvm -S`` and ``quilc -S`` in two open and
 disposable terminals
 
-**First QAOA Run: 3 Timesteps, 500 Iterations**
+Let’s begin by running QAOA with :math:`p=3` timesteps, and a maximum of
+500 optimiser Iterations.
 
 .. code:: ipython3
 
@@ -1024,7 +1021,7 @@ disposable terminals
 .. parsed-literal::
 
     Run complete!
-     Runtime: 51.531
+     Runtime: 49.818
 
 
 .. code:: ipython3
@@ -1041,7 +1038,7 @@ disposable terminals
 .. parsed-literal::
 
     True Labels of samples: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
-    Lowest QAOA State: [1, 0, 0, 1, 0, 1, 1, 1, 1, 0]
+    Lowest QAOA State: [0, 1, 0, 0, 1, 0, 1, 1, 1, 1]
     Accuracy of Original State: 30.0 %
     Accuracy of Complement State: 70.0 %
 
@@ -1061,7 +1058,7 @@ converged. For the full message, run:
 
 .. parsed-literal::
 
-    Cost Function Value: -351.1896781527745
+    Cost Function Value: -345.484138357191
     Converged?: Maximum number of function evaluations has been exceeded.
 
 
@@ -1080,6 +1077,8 @@ wrapping our QAOA runs in a function and increase the QAOA parameter
         
         return cost_function.get_wavefunction(params.raw()), res
 
+The cell below will take a couple of minutes to run:
+
 .. code:: ipython3
 
     t0 = time.time()
@@ -1090,7 +1089,7 @@ wrapping our QAOA runs in a function and increase the QAOA parameter
 .. parsed-literal::
 
     Run complete
-     Runtime: 154.294
+     Runtime: 149.628
 
 
 .. code:: ipython3
@@ -1109,10 +1108,10 @@ wrapping our QAOA runs in a function and increase the QAOA parameter
 .. parsed-literal::
 
     True Labels of samples: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
-    Lowest QAOA State: [0, 1, 0, 0, 0, 1, 1, 1, 1, 1]
-    Accuracy of Original State: 10.0 %
-    Accuracy of Complement State: 90.0 %
-    Cost Function Value: -620.791868409397
+    Lowest QAOA State: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+    Accuracy of Original State: 100.0 %
+    Accuracy of Complement State: 0.0 %
+    Cost Function Value: -525.9198833293702
     Converged?: Maximum number of function evaluations has been exceeded.
 
 
