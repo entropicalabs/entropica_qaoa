@@ -31,13 +31,13 @@ You can install EntropicaQAOA using `pip <https://pip.pypa.io/en/stable/quicksta
 
 .. code-block:: bash
 
-   pip install entropica_qaoa
+   pip install entropica-qaoa
 
 To upgrade to the latest version:
 
 .. code-block:: bash
 
-   pip install --upgrade entropica_qaoa
+   pip install --upgrade entropica-qaoa
 
 If you want to run the Demo Notebooks, you will additionally need to install `scikit-learn` and `scikit-optimize`:
 
@@ -55,7 +55,7 @@ then move into the ``entropica_qaoa`` directory, and run pip:
 
 .. code-block:: bash
 
-   cd entropica_qaoa
+   cd entropica-qaoa
    pip install -e
 
 
