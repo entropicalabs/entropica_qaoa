@@ -5,9 +5,9 @@ The tutorials in the following sections illustrate the key features of Entropica
 
 :ref:`1-AnExampleWorkflow` provides a quickstart introduction to some of the main features of the package, in the context of a typical QAOA workflow. Expert users may wish to begin here and refer to the other sections as needed.
 
-:ref:`2-ParameterClasses` provides a comprehensive introduction to the different built-in QAOA parametrisations, one of the main features of the package. It focuses in particular on the `Standard` and `Extended` parameter classes. The former is the conventional parametrisation, with one angle for each of the mixer and cost Hamiltonians at each timestep. The latter allows all terms to have its own tunable parameter at every time step. This section also describes in detail different options for initialising parameters, and converting between classes. 
+:ref:`2-ParameterClasses` provides a comprehensive introduction to the different built-in QAOA parametrisations, one of the main features of the package. It focuses in particular on the ``Standard`` and ``Extended`` parameter classes. The former is the conventional parametrisation, with one angle for each of the mixer and cost Hamiltonians at each timestep. The latter allows all terms to have its own tunable parameter at every time step. This section also describes in detail different options for initialising parameters, and converting between classes. 
 
-:ref:`3-AdvancedParameterClasses` provides details of two additional parametrisation classes - `Annealing` and `Fourier` - which may be of interest for different purposes.
+:ref:`3-AdvancedParameterClasses` provides details of two additional parametrisation classes - ``Annealing`` and ``Fourier`` - which may be of interest for different purposes.
 
 :ref:`4-CostFunctionsAndVQE` shows how we can use the package for more general variational quantum eigensolver (VQE) problems. It also demonstrates a number of workflow tools, including optimiser logging functions, and utilties that assist in accounting for measurement statistics when working on the wavefunction simulator. In addition, thi section also provides an example of how to run a computation on the real QPU (as well as the QVM).
 
