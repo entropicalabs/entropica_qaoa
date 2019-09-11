@@ -14,7 +14,7 @@
 ##########################
 eggs/
 build/
-dist/
+/dist/
 *.egg-info/
 *.egg
 .eggs/
