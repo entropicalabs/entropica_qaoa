@@ -30,7 +30,7 @@ You can install the `entropica_qaoa` package using [pip](#https://pip.pypa.io/en
 ```bash
 pip install entropica_qaoa
 ```
-To upgrade, 
+To upgrade to the latest version: 
 
 ```bash
 pip install --upgrade entropica_qaoa
@@ -44,19 +44,19 @@ pip install scikit-learn && pip install scikit-optimize
 
 ### Testing
 
-All tests are located in `entropica_qaoa/tests/`. To run them you will need to install [pytest](https://docs.pytest.org/en/latest/). To speed up the testing, we have tagged tests that require more computational time (~ 5 mins or so)  with `runslow`, and the tests of the notebooks with `notebooks`. This means that a bare $
+All software tests are located in `entropica_qaoa/tests/`. To run them you will need to install [pytest](https://docs.pytest.org/en/latest/). To speed up the testing, we have tagged tests that require more computational time (~ 5 mins or so)  with `runslow`, and the tests of the notebooks with `notebooks`. This means that a bare $
 
  - `pytest` runs the default tests, and skips both the longer tests that need heavier simulations, as well as tests of the Notebooks in the `examples` directory.
- - `pytest --runslow` runs the the tests that require longer time.                              
+ - `pytest --runslow` runs the the tests that require longer time.
  - `pytest --notebooks` runs the Notebook tests. To achieve this, the notebooks are
     converted to python scripts, and then executed. Should any errors occur, this means that the line numbers given in the error
     messages refer to the lines in `<TheNotebook>.py`, and not in
     `<TheNotebook>.ipynb`.
- - `pytest --all` runs all of the above tests.   
+ - `pytest --all` runs all of the above tests. 
 
 ## Development and Contributing
 
-This project is hosted on [GitHub](https://github.com/entropicalabs/entropica_qaoa), and can be cloned using
+This project is hosted on GitHub, and can be cloned as follows:
 
 ```bash
 git clone https://github.com/entropicalabs/entropica_qaoa.git
@@ -64,3 +64,4 @@ git clone https://github.com/entropicalabs/entropica_qaoa.git
 
 If you have feature requests, or have already implemented them, feel free to open an issue or send us a pull request.
 
+We are always interested to hear about interesting projects built with EntropicaQAOA. If you have an application you’d like to tell us about, drop us an email at devteam@entropicalabs.com.
