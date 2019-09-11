@@ -93,7 +93,10 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Implementation details and conventions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Implementation details and conventions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Reference</span></p>
@@ -170,7 +173,7 @@
   <div class="section" id="implementation-details-and-conventions">
 <span id="faq"></span><h1>Implementation details and conventions<a class="headerlink" href="#implementation-details-and-conventions" title="Permalink to this headline">¶</a></h1>
 <dl>
-<dt>Sign of the mixer Hamiltonian</dt><dd><p>In the original paper on QAOA [<a class="reference external" href="https://arxiv.org/abs/1411.4028">1</a>], Farhi <cite>et al</cite> use <span class="math notranslate nohighlight">\(\sum_i \hat{X}_i\)</span> as
+<dt>Sign of the mixer Hamiltonian</dt><dd><p>In the original paper on QAOA (<a class="reference external" href="#references">Ref 1</a>), Farhi <cite>et al</cite> use <span class="math notranslate nohighlight">\(\sum_i \hat{X}_i\)</span> as
 the mixer Hamiltonian, with the initial state being its maximum eigenstate <span class="math notranslate nohighlight">\(\left|+ \cdots +\right&gt;\)</span>.
 In EntropicaQAOA, we instead choose our mixer Hamiltonian to be <span class="math notranslate nohighlight">\(-\sum_i \hat{X}_i\)</span>, so that the initial state
 <span class="math notranslate nohighlight">\(\left|+ \cdots +\right&gt;\)</span> is now its minimum energy eigenstate. Conceptually this makes the analogy to adiabatic
@@ -209,7 +212,7 @@ transforms module <a class="reference external" href="https://docs.scipy.org/doc
                     (2k + 1)
                     i\frac{\pi}{2p}
                   \right]\end{aligned}\end{align} \]</div>
-<p>While these differ from the versions used in Ref [<a class="reference external" href="https://arxiv.org/abs/1812.01041">2</a>], this is merely a convention.</p>
+<p>While these differ from the versions used in <a class="reference external" href="#references">Ref 2</a>, this is merely a convention.</p>
 </dd>
 <dt>What is the difference between <code class="docutils literal notranslate"><span class="pre">base_numshots</span></code> and <code class="docutils literal notranslate"><span class="pre">n_shots</span></code> in <code class="docutils literal notranslate"><span class="pre">PrepareAndMeasureOnQVM</span></code> and <code class="docutils literal notranslate"><span class="pre">QAOACostFunctionOnQVM</span></code>?</dt><dd><p>The cost functions created by <code class="docutils literal notranslate"><span class="pre">PrepareAndMeasureOnQVM</span></code> and <code class="docutils literal notranslate"><span class="pre">QAOACostFunctionOnQVM</span></code> both make use of Quil’s
 <a class="reference external" href="http://docs.rigetti.com/en/latest/basics.html?programs#parametric-compilation">parametric program</a> functionality. This means that the circuit is
@@ -220,19 +223,19 @@ If running on the QVM, this means that the Wavefunction is calculated once, and 
 <p>Setting <code class="docutils literal notranslate"><span class="pre">n_shots</span> <span class="pre">=</span> <span class="pre">1</span></code> (the default value) effectively disables this functionality.</p>
 </dd>
 </dl>
-<p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id3"><span class="brackets">1</span></dt>
-<dd><ol class="upperalpha simple" start="5">
-<li><p>Farhi et al, <cite>A Quantum Approximate Optimization Algorithm</cite>, <a class="reference external" href="https://arxiv.org/abs/1411.4028">arXiv:1411.4028</a></p></li>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><ol class="upperalpha simple" start="5">
+<li><p>Farhi et al, <a class="reference external" href="https://arxiv.org/abs/1411.4028">A Quantum Approximate Optimization Algorithm</a></p></li>
 </ol>
-</dd>
-<dt class="label" id="id4"><span class="brackets">2</span></dt>
-<dd><ol class="upperalpha simple" start="12">
-<li><p>Zhou et al, <cite>Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices</cite>, <a class="reference external" href="https://arxiv.org/abs/1812.01041">arXiv:1812.01041</a></p></li>
+</li>
+<li><ol class="upperalpha simple" start="12">
+<li><p>Zhou et al, <a class="reference external" href="https://arxiv.org/abs/1812.01041">Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices</a></p></li>
 </ol>
-</dd>
-</dl>
+</li>
+</ol>
+</div>
 </div>
 
 
