@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>QAOA cost functions &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="QAOA Parametrisations" href="parameters.html" />
+    <link rel="prev" title="VQE cost functions" href="vqe_cost_function.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">QAOA cost functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#on-the-wavefunction-simulator">On the Wavefunction Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#on-the-qvm-qpu">On the QVM / QPU</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>QAOA cost functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/qaoa_cost_function.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="qaoa-cost-functions">
+<h1>QAOA cost functions<a class="headerlink" href="#qaoa-cost-functions" title="Permalink to this headline">¶</a></h1>
+<p>As with VQE, we also provide two different cost functions for QAOA that
+derive from their VQE counterparts: one for the WavefunctionSimulator, and one
+for the QVM that can also be run on Rigetti’s QPU.</p>
+<div class="section" id="on-the-wavefunction-simulator">
+<h2>On the Wavefunction Simulator<a class="headerlink" href="#on-the-wavefunction-simulator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="qaoa.cost_function.QAOACostFunctionOnWFSim">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.cost_function.</code><code class="sig-name descname">QAOACostFunctionOnWFSim</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">params</em>, <em class="sig-param">sim=None</em>, <em class="sig-param">scalar_cost_function=True</em>, <em class="sig-param">nshots=0</em>, <em class="sig-param">enable_logging=False</em>, <em class="sig-param">initial_state=None</em>, <em class="sig-param">qubit_mapping=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.cost_function.QAOACostFunctionOnWFSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>A cost function that inherits from PrepareAndMeasureOnWFSim and implements
+the specifics of QAOA</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – The cost hamiltonian</p></li>
+<li><p><strong>params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractParams</span></code>]) – Form of the QAOA parameters (with n_steps and type fixed for this instance)</p></li>
+<li><p><strong>sim</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">WavefunctionSimulator</span></code>]) – connection to the WavefunctionSimulator to run the simulation on
+Automatically creates one, if None is passed.</p></li>
+<li><p><strong>scalar_cost_function</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True: __call__ returns only the expectation value
+If False: __call__ returns a tuple (exp_val, std_dev)
+Defaults to True.</p></li>
+<li><p><strong>nshots</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of shots to assume to simulate the sampling noise. 0
+corresponds to no sampling noise added and is the default.</p></li>
+<li><p><strong>log</strong> – List to keep log of function calls</p></li>
+<li><p><strong>initial_state</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Program</span></code>]) – A Program to run for state preparation. Defaults to
+applying a Hadamard on each qubit (all plust state).</p></li>
+<li><p><strong>qubit_mapping</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">QubitPlaceholder</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Qubit</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]]) – A mapping to fix QubitPlaceholders to physical qubits. E.g.
+pyquil.quil.get_default_qubit_mapping(program) gives you on.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="qaoa.cost_function.QAOACostFunctionOnWFSim.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">nshots=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.cost_function.QAOACostFunctionOnWFSim.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cost function that computes &lt;psi|ham|psi&gt; with psi prepared with
+prepare_ansatz(params).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> – Parameters of the state preparation circuit.</p></li>
+<li><p><strong>nshots</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Overrides nshots from __init__ if passed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Either only the cost or a tuple of the cost and the standard
+deviation estimate based on the samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float or tuple (cost, cost_stdev)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.cost_function.QAOACostFunctionOnWFSim.get_wavefunction">
+<code class="sig-name descname">get_wavefunction</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.cost_function.QAOACostFunctionOnWFSim.get_wavefunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as __call__ but returns the wavefunction instead of cost</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – _Raw_(!) QAOA parameters for the state preparation. Can be obtained
+from Type[AbstractParams] objects via <code class="docutils literal notranslate"><span class="pre">.raw()</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The wavefunction prepared with raw QAOA parameters <code class="docutils literal notranslate"><span class="pre">params</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Wavefunction</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="on-the-qvm-qpu">
+<h2>On the QVM / QPU<a class="headerlink" href="#on-the-qvm-qpu" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="qaoa.cost_function.QAOACostFunctionOnQVM">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.cost_function.</code><code class="sig-name descname">QAOACostFunctionOnQVM</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">params</em>, <em class="sig-param">qvm</em>, <em class="sig-param">scalar_cost_function=True</em>, <em class="sig-param">nshots=1</em>, <em class="sig-param">base_numshots=100</em>, <em class="sig-param">enable_logging=False</em>, <em class="sig-param">initial_state=None</em>, <em class="sig-param">qubit_mapping=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.cost_function.QAOACostFunctionOnQVM" title="Permalink to this definition">¶</a></dt>
+<dd><p>A cost function that inherits from PrepareAndMeasureOnQVM and implements
+the specifics of QAOA</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – The cost hamiltonian</p></li>
+<li><p><strong>params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractParams</span></code>]) – Form of the QAOA parameters (with n_steps and type fixed for this
+instance)</p></li>
+<li><p><strong>qvm</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">QuantumComputer</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Connection the QC to run the program on OR a name string like expected
+by <code class="docutils literal notranslate"><span class="pre">pyquil.api.get_qc</span></code></p></li>
+<li><p><strong>scalar_cost_function</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True: __call__ returns only the expectation value
+If False: __call__ returns a tuple (exp_val, std_dev)
+Defaults to True.</p></li>
+<li><p><strong>nshots</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Fixed multiple of <code class="docutils literal notranslate"><span class="pre">base_numshots</span></code> for each estimation of the
+expectation value. Defaults to 1</p></li>
+<li><p><strong>base_numshots</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – <dl class="simple">
+<dt>numshots multiplier to compile into the binary. The argument nshots of</dt><dd><p>__call__ is then a multplier of this.</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>log</strong> – List to keep log of function calls</p></li>
+<li><p><strong>qubit_mapping</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">QubitPlaceholder</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Qubit</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]]) – A mapping to fix QubitPlaceholders to physical qubits. E.g.
+pyquil.quil.get_default_qubit_mapping(program) gives you on.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="qaoa.cost_function.QAOACostFunctionOnQVM.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">nshots=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.cost_function.QAOACostFunctionOnQVM.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>param</em>) – the parameters to run the state preparation circuit with</p></li>
+<li><p><strong>nshots</strong> (<em>param</em>) – Overrides nshots in __init__ if passed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Either only the cost or a tuple of the cost and the standard
+deviation estimate based on the samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float or tuple (cost, cost_stdev)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="parameters.html" class="btn btn-neutral float-right" title="QAOA Parametrisations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="vqe_cost_function.html" class="btn btn-neutral float-left" title="VQE cost functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

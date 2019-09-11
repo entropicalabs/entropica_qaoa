@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Implementation details and conventions &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="Solve the clustering problem using QAOA" href="notebooks/6_ClusteringWithQAOA.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Implementation details and conventions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/faq.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="implementation-details-and-conventions">
+<span id="faq"></span><h1>Implementation details and conventions<a class="headerlink" href="#implementation-details-and-conventions" title="Permalink to this headline">¶</a></h1>
+<dl>
+<dt>Sign of the mixer Hamiltonian</dt><dd><p>In the original paper on QAOA [<a class="reference external" href="https://arxiv.org/abs/1411.4028">1</a>], Farhi <cite>et al</cite> use <span class="math notranslate nohighlight">\(\sum_i \hat{X}_i\)</span> as
+the mixer Hamiltonian, with the initial state being its maximum eigenstate <span class="math notranslate nohighlight">\(\left|+ \cdots +\right&gt;\)</span>.
+In EntropicaQAOA, we instead choose our mixer Hamiltonian to be <span class="math notranslate nohighlight">\(-\sum_i \hat{X}_i\)</span>, so that the initial state
+<span class="math notranslate nohighlight">\(\left|+ \cdots +\right&gt;\)</span> is now its minimum energy eigenstate. Conceptually this makes the analogy to adiabatic
+computing clear, since we seek to transform from the ground state of the mixer Hamiltonian to the ground state of the cost Hamiltonian.</p>
+</dd>
+<dt>Implementation of circuit rotation angles</dt><dd><p>In quantum mechanics, the basic time evolution operator is <span class="math notranslate nohighlight">\(\exp(-iHt)\)</span> for a Hamiltonian <cite>H</cite> and total
+evolution time <cite>t</cite>. Generically, in the QAOA mixer Hamiltonian, the operator <span class="math notranslate nohighlight">\(-X\)</span> is to be applied for a total time
+<span class="math notranslate nohighlight">\(\beta\)</span>, which is one of the parameters we seek to optimise. We therefore need to implement the time evolution
+<span class="math notranslate nohighlight">\(\exp(i\beta X)\)</span>, which can be achieved using the RX(<span class="math notranslate nohighlight">\(\theta\)</span>) operator if we set <span class="math notranslate nohighlight">\(\theta = -2\beta\)</span>.</p>
+<p>Similarly, the cost Hamiltonian operator <span class="math notranslate nohighlight">\(\exp(-i\gamma hZ)\)</span> can be implemented via an RZ(<span class="math notranslate nohighlight">\(\theta\)</span>) rotation, setting
+<span class="math notranslate nohighlight">\(\theta = 2\gamma h\)</span>. In the functions <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function._qaoa_cost_ham_rotation</span></code> and <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function._qaoa_mixing_ham_rotation</span></code>, you can verify these details.</p>
+</dd>
+<dt>Where does the factor <code class="docutils literal notranslate"><span class="pre">0.7</span> <span class="pre">*</span> <span class="pre">n_steps</span></code> in the <code class="docutils literal notranslate"><span class="pre">linear_ramp_from_hamiltonian()</span></code> method come from?</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">.linear_ramp_from_hamiltonian()</span></code> parameters are inspired by analogy between
+QAOA and a discretised adiabatic annealing process. If we pick a linear ramp annealing schedule, i.e. <span class="math notranslate nohighlight">\(s(t) = \frac{t}{\tau}\)</span>, where <span class="math notranslate nohighlight">\(\tau\)</span> is the total
+annealing time, we need to specify two numbers: the total annealing time <span class="math notranslate nohighlight">\(\tau\)</span> and the step width
+<span class="math notranslate nohighlight">\(\Delta t\)</span>. Equivalently, we can also specify the total annealing time <span class="math notranslate nohighlight">\(\tau\)</span> together with
+the number of steps <span class="math notranslate nohighlight">\(n_{\textrm{steps}}\)</span>, which is also called <cite>p</cite> in the
+context of QAOA. A good discretised annealing schedule has to strike a
+balance between a long annealing time <span class="math notranslate nohighlight">\(\tau\)</span> and a small step width
+<span class="math notranslate nohighlight">\(\Delta t = \frac{\tau}{n_{\textrm{steps}}}\)</span>. We have found in numerical
+experiments that <span class="math notranslate nohighlight">\(\Delta t = 0.7 = \frac{\tau}{n_{\textrm{steps}}}\)</span> strikes a reasonably good balance
+for many problem classes and instances, at least for the small system sizes one can feasibly simulate.
+For larger systems or smaller energy gaps, it might be neccesary to choose smaller values of <span class="math notranslate nohighlight">\(\Delta t\)</span></p>
+</dd>
+<dt>Discrete sine and cosine transforms for the <cite>FourierParams`</cite> class</dt><dd><p>In converting between the <span class="math notranslate nohighlight">\(\beta\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> parameters of the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> class, and the <cite>u</cite> and <cite>v</cite> parameters of the
+<code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> class, we use the type II versions of the discrete sine and cosine transformations. These are included in Scipy’s fast Fourier
+transforms module <a class="reference external" href="https://docs.scipy.org/doc/scipy-0.14.0/reference/fftpack.html">fftpack</a>. With the conventions used therein, in EntropicaQAOA the transformations are then given by:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\gamma_i = 2 \sum_{k=0}^{q-1} u_k
+              \sin\left[
+                     (k + 1/2)
+                     (i+1)
+                     \frac{\pi}{p}
+                  \right]\\\beta_i = 2 \sum_{k=0}^{q-1} v_k
+              \cos\left[
+                    (2k + 1)
+                    i\frac{\pi}{2p}
+                  \right]\end{aligned}\end{align} \]</div>
+<p>While these differ from the versions used in Ref [<a class="reference external" href="https://arxiv.org/abs/1812.01041">2</a>], this is merely a convention.</p>
+</dd>
+<dt>What is the difference between <code class="docutils literal notranslate"><span class="pre">base_numshots</span></code> and <code class="docutils literal notranslate"><span class="pre">n_shots</span></code> in <code class="docutils literal notranslate"><span class="pre">PrepareAndMeasureOnQVM</span></code> and <code class="docutils literal notranslate"><span class="pre">QAOACostFunctionOnQVM</span></code>?</dt><dd><p>The cost functions created by <code class="docutils literal notranslate"><span class="pre">PrepareAndMeasureOnQVM</span></code> and <code class="docutils literal notranslate"><span class="pre">QAOACostFunctionOnQVM</span></code> both make use of Quil’s
+<a class="reference external" href="http://docs.rigetti.com/en/latest/basics.html?programs#parametric-compilation">parametric program</a> functionality. This means that the circuit is
+compiled once, before the optimisation starts, and then only the variable parameters are changed by the optimiser. Currently, the number of
+circuit repetitions can only be set once before compilation, via the command <a class="reference external" href="http://docs.rigetti.com/en/latest/apidocs/autogen/pyquil.quil.Program.wrap_in_numshots_loop.html">Program.wrap_in_numshots_loop(base_numshots)</a>.
+If running on the QVM, this means that the Wavefunction is calculated once, and <code class="docutils literal notranslate"><span class="pre">base_numshots</span></code> samples are taken from it. Of course, on the QPU itself the same program has to be run <cite>base_numshots</cite> times.</p>
+<p>Now in collecting statistics, we may want to understand how the number of samples we take affects quantities like expectation values and standard deviations. In Quil’s parametric program framework, if we want to look at how statistics change if (say) we double the number of samples, we would need to recompile the program, since the number of samples to be taken is hard-coded. By introducing <code class="docutils literal notranslate"><span class="pre">base_numshots</span></code>, we can compile the circuit once with a given number of samples to be taken, and simply run the program twice (setting <code class="docutils literal notranslate"><span class="pre">n_shots</span> <span class="pre">=</span> <span class="pre">2</span></code>) to obtain double the number of samples, without the need to re-compile. A further conceivable use case for <code class="docutils literal notranslate"><span class="pre">base_numshots</span></code> is in dynamically modifying the number of samples taken during an optimisation process, depending on (say) the observed sample standard deviation for some specific set of parameters.</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">n_shots</span> <span class="pre">=</span> <span class="pre">1</span></code> (the default value) effectively disables this functionality.</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets">1</span></dt>
+<dd><ol class="upperalpha simple" start="5">
+<li><p>Farhi et al, <cite>A Quantum Approximate Optimization Algorithm</cite>, <a class="reference external" href="https://arxiv.org/abs/1411.4028">arXiv:1411.4028</a></p></li>
+</ol>
+</dd>
+<dt class="label" id="id4"><span class="brackets">2</span></dt>
+<dd><ol class="upperalpha simple" start="12">
+<li><p>Zhou et al, <cite>Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices</cite>, <a class="reference external" href="https://arxiv.org/abs/1812.01041">arXiv:1812.01041</a></p></li>
+</ol>
+</dd>
+</dl>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="changelog.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="notebooks/6_ClusteringWithQAOA.html" class="btn btn-neutral float-left" title="Solve the clustering problem using QAOA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

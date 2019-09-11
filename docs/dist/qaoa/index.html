@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Welcome to EntropicaQAOA’s documentation! &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="First steps: An example workflow" href="notebooks/1_AnExampleWorkflow.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> Entropica QAOA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Welcome to EntropicaQAOA’s documentation!</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-entropicaqaoa-s-documentation">
+<h1>Welcome to EntropicaQAOA’s documentation!<a class="headerlink" href="#welcome-to-entropicaqaoa-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>EntropicaQAOA is a modular QAOA package built on top of Rigetti’s
+<a class="reference external" href="https://www.rigetti.com/forest">Forest SDK</a>. It enables users to quickly run their own QAOA instances and easily replace
+any component with their own custom code.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Full native support for <a class="reference external" href="https://www.rigetti.com/qpu">Rigetti’s QVM and QPUs</a>. Run your experiments on real Quantum Computers!</p></li>
+<li><p>Extensive examples explaining the usage of EntropicaQAOA in
+detail.</p></li>
+<li><p>Multiple parametrisations for QAOA.</p></li>
+<li><p><a class="reference external" href="https://networkx.github.io/">NetworkX</a> integration for the treatment of
+graph theoretic problems, and <a class="reference external" href="https://pandas.pydata.org/">Pandas</a> integration for data importing.</p></li>
+<li><p>Modular code base that allows the user to customise and modify different components.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>If you don’t have them already, install first Rigetti’s pyQquil package and their QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation <a class="reference external" href="http://docs.rigetti.com/en/stable/start.html">here</a>.</p>
+<p>In a Python3.6+ virtual environment you can install the <cite>entropica_qaoa</cite>  package using <a class="reference external" href="https://pip.pypa.io/en/stable/quickstart/">pip</a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install entropica_qaoa
+</pre></div>
+</div>
+<p>and if you have it already installed upgraded via</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --upgrade entropica_qaoa
+</pre></div>
+</div>
+<p>If you want to run the Demo Notebooks, you will additionally need <cite>scikit-learn</cite> and <cite>scikit-optimize</cite>, which can also be installed using pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install scikit-learn <span class="o">&amp;&amp;</span> pip install scikit-optimize
+</pre></div>
+</div>
+</div>
+<div class="section" id="first-steps">
+<h2>First Steps<a class="headerlink" href="#first-steps" title="Permalink to this headline">¶</a></h2>
+<p>In <a class="reference internal" href="notebooks/1_AnExampleWorkflow.html#anexampleworkflow"><span class="std std-ref">First steps: An example workflow</span></a> we show you the basic usage of
+EntropicaQAOA.
+More advanced examples on working with different parametrizations are found in
+<a class="reference internal" href="notebooks/2_ParameterClasses.html#parameterclasses"><span class="std std-ref">Working with the Parameter classes</span></a>, and the more advanced features of the cost
+functions are explained in <a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#costfunctionsandvqe"><span class="std std-ref">Cost function features and VQE</span></a>. To learn how to conveniently
+create QAOA problem instances, and convert between different formats, refer to <a class="reference internal" href="notebooks/5_QAOAUtilities.html#qaoautilities"><span class="std std-ref">Utility functions for QAOA</span></a>.</p>
+<p>The documentation can also downloaded as Jupyter notebooks from our <a class="reference external" href="https://github.com/entropicalabs/entropica_qaoa/tree/master/examples">GitHub page</a> .</p>
+</div>
+</div>
+<div class="section" id="contents">
+<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html#creating-a-problem-instance">Creating a problem instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html#specifying-the-parameters">Specifying the parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html#creating-the-cost-function">Creating the cost function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html#optimising-the-parameters">Optimising the parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html#an-alternative-parametrisation">An alternative parametrisation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_ParameterClasses.html">Working with the Parameter classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/2_ParameterClasses.html#creating-the-problem-hamiltonian-and-setting-up-hyperparameters">Creating the problem Hamiltonian and setting up <em>hyperparameters</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/2_ParameterClasses.html#qaoa-variable-parameter-classes">QAOA variable parameter classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/2_ParameterClasses.html#parameter-creation-and-conversion-routines">Parameter creation and conversion routines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#building-parameters-from-the-abstractparams-class">Building parameters from the <code class="docutils literal notranslate"><span class="pre">AbstractParams</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#building-parameters-directly">Building parameters directly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#using-empty">Using .empty()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#linear-ramp-from-hamiltonian-parametrisation">“Linear ramp from Hamiltonian” parametrisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#converting-between-parametrisations">Converting between parametrisations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/2_ParameterClasses.html#working-with-parametrisations">Working with parametrisations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#parameters-under-the-hood">Parameters under the hood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#modifying-parameters">Modifying parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#erroneous-parameter-catching">Erroneous parameter catching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#iterating-over-parameter-ranges">Iterating over parameter ranges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/2_ParameterClasses.html#parameter-iterator-use-case-landscape-sweeps">Parameter iterator use case: Landscape sweeps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/2_ParameterClasses.html#footnotes">Footnotes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/2_ParameterClasses.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html#the-annealing-parameter-class">The <code class="docutils literal notranslate"><span class="pre">Annealing</span></code> parameter class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html#the-fourier-parameter-class">The <code class="docutils literal notranslate"><span class="pre">Fourier</span></code> parameter class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html#parameter-constraints-with-extendedparams">Parameter constraints with <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#short-intro-the-variational-quantum-eigensolver-vqe">Short Intro: The Variational Quantum Eigensolver (VQE)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#setting-up-the-problem">Setting up the problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#simulating-sampling-noise">Simulating sampling noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#getting-the-measurement-variance">Getting the measurement variance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#logging-of-the-optimisation-process">Logging of the optimisation process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#running-on-the-qvm-or-qpu">Running on the QVM or QPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#using-other-optimisers">Using other optimisers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#towards-qaoa">Towards QAOA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#appendix-simulated-measurement-noise-statistics-implementation-details">Appendix: Simulated measurement noise - statistics implementation details</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#hamiltonians-and-graphs">Hamiltonians and graphs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#hyperparameters-to-hamiltonian">Hyperparameters to Hamiltonian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#random-hamiltonian">Random Hamiltonian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#hamiltonians-to-graphs">Hamiltonians to Graphs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#graphs-to-hamiltonians">Graphs to Hamiltonians</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#hyperparameters-to-graphs">Hyperparameters to Graphs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#random-regular-graphs">Random, regular Graphs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#hamiltonians-and-data">Hamiltonians and data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#cluster-generation-and-distance-calculations">Cluster generation and distance calculations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#distance-datasets-to-hamiltonians">Distance datasets to Hamiltonians</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#example-1-using-qaoa-to-solve-maxcut-for-the-clustering-problem">Example 1: Using QAOA to solve MaxCut for the clustering problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#example-2-ring-of-disagrees">Example 2: Ring of disagrees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#more-miscellaneous-utilities">More miscellaneous utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#different-initial-states-for-qaoa">Different initial states for QAOA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#get-the-bitstring-corresponding-to-the-maximum-probability-state">Get the bitstring corresponding to the maximum probability state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#accuracy-scores-for-qaoa">Accuracy scores for QAOA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#get-nice-plots-of-probabilties">Get nice plots of probabilties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#variational-hybrid-algorithms">Variational Hybrid Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#the-maxcut-problem">The Maxcut Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#from-maxcut-to-qubo">From Maxcut to QUBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#from-qubo-to-a-hamiltonian">From QUBO to a Hamiltonian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#minimize-the-hamiltonian-with-qaoa">Minimize the Hamiltonian with QAOA</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#v1-1-in-development">v1.1 (in development)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#announcements">Announcements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#v1-0">v1.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#improvements-and-changes">Improvements and Changes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">VQE cost functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vqe_cost_function.html#on-the-wavefunction-simulator">On the Wavefunction Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vqe_cost_function.html#on-the-qvm-qpu">On the QVM / QPU</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">QAOA cost functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qaoa_cost_function.html#on-the-wavefunction-simulator">On the Wavefunction Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qaoa_cost_function.html#on-the-qvm-qpu">On the QVM / QPU</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">QAOA Parametrisations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#standard-parameters">Standard Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#fourier-parameters">Fourier Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#annealing-parameters">Annealing Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#parameter-iterators">Parameter Iterators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">Measurement utilities</a></li>
+</ul>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="notebooks/1_AnExampleWorkflow.html" class="btn btn-neutral float-right" title="First steps: An example workflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

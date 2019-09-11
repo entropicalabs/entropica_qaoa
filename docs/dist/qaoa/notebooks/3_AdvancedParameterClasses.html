@@ -1,0 +1,620 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Advanced QAOA parameter classes &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Cost function features and VQE" href="4_CostFunctionsAndVQE.html" />
+    <link rel="prev" title="Working with the Parameter classes" href="2_ParameterClasses.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced QAOA parameter classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-annealing-parameter-class">The <code class="docutils literal notranslate"><span class="pre">Annealing</span></code> parameter class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-fourier-parameter-class">The <code class="docutils literal notranslate"><span class="pre">Fourier</span></code> parameter class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-constraints-with-extendedparams">Parameter constraints with <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Advanced QAOA parameter classes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/3_AdvancedParameterClasses.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="advanced-qaoa-parameter-classes">
+<span id="advancedparameterclasses"></span><h1>Advanced QAOA parameter classes<a class="headerlink" href="#advanced-qaoa-parameter-classes" title="Permalink to this headline">¶</a></h1>
+<p>Here we illustrate the use of the <code class="docutils literal notranslate"><span class="pre">Annealing</span></code> and <code class="docutils literal notranslate"><span class="pre">Fourier</span></code>
+parameter classes included in the EntropicaQAOA. We also show how to
+obtain constraints on parameters in the <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> class, which
+may be useful for using certain classical optimisers within QAOA.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import the standard modules from python</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+
+<span class="c1"># import the neccesary pyquil modules</span>
+<span class="kn">from</span> <span class="nn">pyquil.api</span> <span class="kn">import</span> <span class="n">local_qvm</span><span class="p">,</span> <span class="n">WavefunctionSimulator</span>
+<span class="kn">from</span> <span class="nn">pyquil.paulis</span> <span class="kn">import</span> <span class="n">PauliSum</span><span class="p">,</span> <span class="n">PauliTerm</span>
+<span class="kn">from</span> <span class="nn">pyquil.unitary_tools</span> <span class="kn">import</span> <span class="n">lifted_pauli</span>
+
+<span class="c1"># import the QAOAParameters classes</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.parameters</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AbstractParams</span><span class="p">,</span> <span class="n">AnnealingParams</span><span class="p">,</span> <span class="n">StandardParams</span><span class="p">,</span>
+                                            <span class="n">FourierParams</span><span class="p">,</span> <span class="n">ExtendedParams</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.cost_function</span> <span class="kn">import</span> <span class="n">QAOACostFunctionOnWFSim</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.utilities</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># turn off matplotlib warnings associated with networkx</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set up the WavefunctionSimulator object</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">WavefunctionSimulator</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="section" id="the-annealing-parameter-class">
+<h2>The <code class="docutils literal notranslate"><span class="pre">Annealing</span></code> parameter class<a class="headerlink" href="#the-annealing-parameter-class" title="Permalink to this headline">¶</a></h2>
+<p>In quantum annealing, we start in the ground state of a <em>mixer</em> (or
+<em>reference</em>) Hamiltonian <span class="math notranslate nohighlight">\(H_M\)</span>, and gradually transform to the
+ground state of a <em>cost</em> Hamiltonian <span class="math notranslate nohighlight">\(H_C\)</span>, according to some
+annealing schedule function <span class="math notranslate nohighlight">\(s(t)\)</span>, where <span class="math notranslate nohighlight">\(t\)</span> denotes time.
+If it were possible to perform the transformation infintessimally
+slowly, we would be guaranteed to arrive at the exact ground state of
+the cost Hamiltonian. In practice, the transformation is performed over
+some finite time, and we hope to prepare the ground state of <span class="math notranslate nohighlight">\(H_C\)</span>
+with some acceptably high probability.</p>
+<p>At any time <span class="math notranslate nohighlight">\(t\)</span> during the procedure, the instantaneous
+Hamiltonian is given by</p>
+<div class="math notranslate nohighlight">
+\[H(t) = \left(1 - s(t)\right)H_M + s(t)H_C\]</div>
+<p>where <span class="math notranslate nohighlight">\(s(0) = 0\)</span>, and <span class="math notranslate nohighlight">\(s(t = T) = 1\)</span>, and <span class="math notranslate nohighlight">\(T\)</span> is the
+total annealing time. We see that the strengths with which <span class="math notranslate nohighlight">\(H_M\)</span>
+and <span class="math notranslate nohighlight">\(H_C\)</span> act at a given time are related: the mixer is applied
+with a weight <span class="math notranslate nohighlight">\((1 - s(t))\)</span>, and the cost Hamiltonian with weight
+<span class="math notranslate nohighlight">\(s(t)\)</span>. It is common to view the QAOA as a form of discretised
+annealing, where the procedure is performed in a fixed number of steps
+<span class="math notranslate nohighlight">\(p\)</span>. However, the coefficients of the mixer and cost Hamiltonians
+need not be related in the simple way that they are in a conventional
+annealing schedule.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code> parameter class illustrates what is perhaps the
+first conceptual step from annealing, towards the more conventionally
+used parametrisations of QAOA. Using <code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code>, we prepare an
+output quantum state with a circuit described by the unitary operator</p>
+<div class="math notranslate nohighlight">
+\[U = \exp\left(-i(1-s(t_p)) H_M \Delta t\right)\exp\left(-i s(t_p) H_C \Delta t\right) \cdots \exp\left(-i(1-s(t_1))H_M \Delta t\right) \exp\left(-i s(t_1) H_C \Delta t\right)\]</div>
+<p>Here, we have a fixed temporal step of size <span class="math notranslate nohighlight">\(\Delta t\)</span>, and we
+need to specify what the values of the annealing schedule function
+should be at the different timesteps. That is, we need to provide a list
+of the values of <span class="math notranslate nohighlight">\(s(t_i\)</span>) for <span class="math notranslate nohighlight">\(i = 1,..,p\)</span>.</p>
+<p>Here we illustrate the use of the <code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code> class, whose value
+we envisage primarily as a didactic or research tool. Specifically,
+let’s compare the annealing parametrisation with the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>
+parametrisation.</p>
+<p>First, we set up the Hamiltonian as usual.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a hamiltonian on 3 qubits with 2 coupling terms and 1 bias term</span>
+<span class="n">Term1</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)</span><span class="o">*</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Term2</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span><span class="o">*</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Term3</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">hamiltonian</span> <span class="o">=</span> <span class="n">PauliSum</span><span class="p">([</span><span class="n">Term1</span><span class="p">,</span><span class="n">Term2</span><span class="p">,</span><span class="n">Term3</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;hamiltonian =&quot;</span><span class="p">,</span> <span class="n">hamiltonian</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hamiltonian</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.7</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.2</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span>
+</pre></div>
+</div>
+<p>We’ll use the <code class="docutils literal notranslate"><span class="pre">linear_ramp_from_hamiltonian</span></code> method to determine the
+values of the function <span class="math notranslate nohighlight">\(s\)</span> at the different timesteps.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">linear_annealing_params</span> <span class="o">=</span> <span class="n">AnnealingParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">linear_annealing_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">schedule</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span> <span class="mf">0.3</span> <span class="mf">0.5</span> <span class="mf">0.7</span> <span class="mf">0.9</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now let’s optimise the cost function and examine the corresponing output
+parameters.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set up the cost function</span>
+<span class="n">cost_anneal</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span>
+                                      <span class="n">params</span><span class="o">=</span><span class="n">linear_annealing_params</span><span class="p">,)</span>
+
+<span class="c1"># and optimize the parameters</span>
+<span class="n">res_anneal</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_anneal</span><span class="p">,</span> <span class="n">linear_annealing_params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Cobyla&quot;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;expectation value = &quot;</span><span class="p">,</span> <span class="n">res_anneal</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+
+<span class="n">linear_annealing_params</span><span class="o">.</span><span class="n">update_from_raw</span><span class="p">(</span><span class="n">res_anneal</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="n">linear_annealing_params</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">expectation</span> <span class="n">value</span> <span class="o">=</span>  <span class="o">-</span><span class="mf">1.9930051867998464</span>
+</pre></div>
+</div>
+<img alt="../_images/3_AdvancedParameterClasses_8_1.png" src="../_images/3_AdvancedParameterClasses_8_1.png" />
+<p>Now let’s solve the same problem using <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">standard_params</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+
+<span class="n">cost_standard</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span>
+                                        <span class="n">params</span><span class="o">=</span><span class="n">standard_params</span><span class="p">)</span>
+
+<span class="n">res_std</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_standard</span><span class="p">,</span> <span class="n">standard_params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Cobyla&quot;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;expectation value = &quot;</span><span class="p">,</span> <span class="n">res_std</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+<span class="n">standard_params</span><span class="o">.</span><span class="n">update_from_raw</span><span class="p">(</span><span class="n">res_std</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="n">standard_params</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">expectation</span> <span class="n">value</span> <span class="o">=</span>  <span class="o">-</span><span class="mf">2.2897466431591567</span>
+</pre></div>
+</div>
+<img alt="../_images/3_AdvancedParameterClasses_10_1.png" src="../_images/3_AdvancedParameterClasses_10_1.png" />
+<p>Observe that, at least for this simple problem, the expectation values
+obtained are reasonably similar, yet we use half the number of
+parameters in <code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code> as <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>.</p>
+<p>In the optimal <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>, we see a general downward (upward)
+trend in the betas (gammas), which is conistent with the annealing
+picture that the mixer Hamiltonian is gradually turned off, and the cost
+Hamiltonian is gradually turned on.</p>
+<p>Following <a class="reference external" href="#references">Ref 1</a>, we can attempt to make a connection
+between the two pictures, by interpreting the sum of all the <code class="docutils literal notranslate"><span class="pre">betas</span></code>
+and <code class="docutils literal notranslate"><span class="pre">gammas</span></code> as a total annealing time. We can then define the
+corresponding annealing schedule function value at each time as</p>
+<div class="math notranslate nohighlight">
+\[s(t_i) = \frac{|\gamma_i|}{|\beta_i| + |\gamma_i|}\]</div>
+<p>When we plot this function, we see a similar behaviour to that of the
+optimal annealing schedule we found above.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">opt_betas</span> <span class="o">=</span> <span class="n">standard_params</span><span class="o">.</span><span class="n">betas</span>
+<span class="n">opt_gammas</span> <span class="o">=</span> <span class="n">standard_params</span><span class="o">.</span><span class="n">gammas</span>
+<span class="n">hybrid_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">opt_gammas</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">opt_gammas</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">opt_betas</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">),</span><span class="n">hybrid_params</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Timesteps&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$s(t_i)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/3_AdvancedParameterClasses_12_0.png" src="../_images/3_AdvancedParameterClasses_12_0.png" />
+</div>
+<div class="section" id="the-fourier-parameter-class">
+<h2>The <code class="docutils literal notranslate"><span class="pre">Fourier</span></code> parameter class<a class="headerlink" href="#the-fourier-parameter-class" title="Permalink to this headline">¶</a></h2>
+<p>This parameter class originated from attempts to find heuristic ways of
+reducing the number of parameters required to perform QAOA. Based on
+empirical observations in patterns of the optimal QAOA angles, Zhuo et
+al (see <a class="reference external" href="#references">Ref 1</a>) proposed considering the discrete
+Fourier transforms of <code class="docutils literal notranslate"><span class="pre">betas</span></code> and <code class="docutils literal notranslate"><span class="pre">gammas</span></code> as an alternative, more
+economical parametrisation.</p>
+<p>The basic idea kicks off from the conventional QAOA parametrisation,
+i.e. what we call the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> class. Here, at each iteration
+in QAOA we have one angle for all of the mixer Hamiltonian terms, and
+one angle for all of the cost Hamiltonian terms. That is, the
+<code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> parametrisation requires the specification of
+<span class="math notranslate nohighlight">\(2p\)</span> numbers, a <code class="docutils literal notranslate"><span class="pre">beta</span></code> and a <code class="docutils literal notranslate"><span class="pre">gamma</span></code> for each timestep.</p>
+<p>In the Fourier representation, we switch instead to a set of <span class="math notranslate nohighlight">\(2q\)</span>
+parameters, denoted <span class="math notranslate nohighlight">\(\vec{v}\)</span> and <span class="math notranslate nohighlight">\(\vec{u}\)</span>, which are
+related to <span class="math notranslate nohighlight">\(\vec{\beta}\)</span> and <span class="math notranslate nohighlight">\(\vec{\gamma}\)</span> by</p>
+<div class="math notranslate nohighlight">
+\[\beta_i^{(p)} = \sum_{k=0}^{q-1} v_k \cos\left[(2k+1)i\frac{\pi}{2p}\right]\]</div>
+<div class="math notranslate nohighlight">
+\[\gamma_i^{(p)} = \sum_{k=0}^{q-1} u_k \sin\left[(k+1/2)(i+1)\frac{\pi}{p}\right]\]</div>
+<p>where <span class="math notranslate nohighlight">\(i = 1,...,p\)</span>. The insight of Zhou et al is that the optimal
+parameters found are often empirically seen to be smoothly varying
+functions for certain problems (such as the one in the section above on
+annealing), and that it should then be possible to use a reduced
+parameter set consisting of only the lowest <span class="math notranslate nohighlight">\(q\)</span> frequency
+components of those functions. Clearly, for <span class="math notranslate nohighlight">\(q\geq p\)</span> we have the
+full expressivity of the original parameter set (i.e. the
+<span class="math notranslate nohighlight">\(\beta\)</span>s and <span class="math notranslate nohighlight">\(\gamma\)</span>s). In this parametrisation, for
+fixed <span class="math notranslate nohighlight">\(q\)</span>, the optimisation problem therefore becomes that of
+finding the optimal Fourier components <span class="math notranslate nohighlight">\(v_k\)</span> and <span class="math notranslate nohighlight">\(u_k\)</span>.</p>
+<p>In <a class="reference external" href="#references">Ref 1</a>, the authors show that certain variants of
+this basic Fourier parametrisation can perform significantly better than
+a randomised brute force search through parameter space, for MaxCut
+problems on 3-regular and 4-regular graphs. Here, we will compare
+<code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> and <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> for different instances of a
+relatively small problem.</p>
+<p>We will consider 3-regular graphs on 8 nodes, and use the
+<code class="docutils literal notranslate"><span class="pre">linear_ramp_from_hamiltonian</span></code> method to generate intial parameters
+for each of the two classes. We generate a random problem instance, and
+find the optimial ground state energy returned using the two
+parametrisations. We then compute the relative error of each from the
+true ground state energy.</p>
+<p>First we define a convenience function for the following computations:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">randgraph_fourier_std</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">p_fourier</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">p_standard</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produce a k-regular graph on the specified number of nodes, where k is given by the input variable &#39;degree&#39;.</span>
+<span class="sd">    The graph edges are random and weighted.</span>
+
+<span class="sd">    Runs QAOA on the graph using:</span>
+<span class="sd">     - FourierParams with the specified number of steps p_fourier and frequency components p.</span>
+<span class="sd">     - StandardParams with number of steps p_standard.</span>
+
+<span class="sd">    Returns the optimal cost function values obtained by each method, as well as its exact minimum value</span>
+<span class="sd">    (found by diagonalising the Hamiltonian).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Generate a random graph</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">random_k_regular_graph</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">weighted</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">hamiltonian</span> <span class="o">=</span> <span class="n">hamiltonian_from_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+    <span class="c1"># Get ground state energy</span>
+    <span class="n">hamiltonian_matrix</span> <span class="o">=</span> <span class="n">lifted_pauli</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">hamiltonian</span><span class="o">.</span><span class="n">get_qubits</span><span class="p">())</span>
+    <span class="n">ground_energy</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">hamiltonian_matrix</span><span class="p">))</span>
+
+    <span class="c1"># Define Fourier params and run optimisation</span>
+    <span class="n">fourier_params</span> <span class="o">=</span> <span class="n">FourierParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">p_fourier</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+    <span class="n">cost_fourier</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">fourier_params</span><span class="p">,</span> <span class="n">sim</span><span class="o">=</span><span class="n">sim</span><span class="p">)</span>
+    <span class="n">res_fourier</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_fourier</span><span class="p">,</span> <span class="n">fourier_params</span><span class="o">.</span><span class="n">raw</span><span class="p">())</span>
+
+    <span class="c1"># Define Standard params and run optimisation</span>
+    <span class="n">std_params</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">p_standard</span><span class="p">)</span>
+    <span class="n">cost_std</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">std_params</span><span class="p">,</span> <span class="n">sim</span><span class="o">=</span><span class="n">sim</span><span class="p">)</span>
+    <span class="n">res_std</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_std</span><span class="p">,</span> <span class="n">std_params</span><span class="o">.</span><span class="n">raw</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">res_fourier</span><span class="p">,</span> <span class="n">res_std</span><span class="p">,</span> <span class="n">ground_energy</span><span class="p">,</span> <span class="n">hamiltonian</span>
+</pre></div>
+</div>
+<p>We’ll start by setting <span class="math notranslate nohighlight">\(p=q\)</span>, where in principle the
+<code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> and the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> have equal expressivity.
+For convenience, we will show the results from only one randomly
+generated sample graph. However, we would encourage users to run the
+code for a larger number of samples, with different graph degrees, to
+investigate the applicability of the conclusions more generally.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p_fourier</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">p_standard</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">q</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">samples</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># E.g., with samples = 20, this cell should take around 5 minutes to run on a standard laptop.</span>
+
+<span class="n">err_fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+<span class="n">err_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+
+    <span class="n">res_fourier</span><span class="p">,</span> <span class="n">res_std</span><span class="p">,</span> <span class="n">ground_energy</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">randgraph_fourier_std</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">p_fourier</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">p_standard</span><span class="p">)</span>
+
+    <span class="c1"># Compute relative error</span>
+    <span class="n">err_fourier</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">((</span><span class="n">res_fourier</span><span class="o">.</span><span class="n">fun</span> <span class="o">-</span> <span class="n">ground_energy</span><span class="p">)</span><span class="o">/</span><span class="n">ground_energy</span><span class="p">)</span>
+    <span class="n">err_std</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">((</span><span class="n">res_std</span><span class="o">.</span><span class="n">fun</span> <span class="o">-</span> <span class="n">ground_energy</span><span class="p">)</span><span class="o">/</span><span class="n">ground_energy</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Mean error using FourierParams: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err_fourier</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Mean error using StandardParams: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err_std</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Mean</span> <span class="n">error</span> <span class="n">using</span> <span class="n">FourierParams</span><span class="p">:</span>  <span class="mf">0.18370841536494362</span>
+<span class="n">Mean</span> <span class="n">error</span> <span class="n">using</span> <span class="n">StandardParams</span><span class="p">:</span>  <span class="mf">0.18370841536513308</span>
+</pre></div>
+</div>
+<p>As expected for the case <span class="math notranslate nohighlight">\(q=p\)</span> - where <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> and
+<code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> have identical expressivity - we find that the two
+methods give very similar results. To begin to appreciate the benefits
+of the Fourier parametrisation, let’s compare the case <span class="math notranslate nohighlight">\(p=2\)</span> using
+<code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> with the case <span class="math notranslate nohighlight">\(q = 2, p=3\)</span> using
+<code class="docutils literal notranslate"><span class="pre">FourierParams</span></code>. Here, we are optimising over the same total number of
+parameters, however the <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> ought to be capturing features
+of a more expressive circuit.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p_fourier</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">p_standard</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">q</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">samples</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">err_fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+<span class="n">err_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+
+    <span class="n">res_fourier</span><span class="p">,</span> <span class="n">res_std</span><span class="p">,</span> <span class="n">ground_energy</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">randgraph_fourier_std</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">p_fourier</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">p_standard</span><span class="p">)</span>
+
+    <span class="c1"># Compute relative error</span>
+    <span class="n">err_fourier</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">((</span><span class="n">res_fourier</span><span class="o">.</span><span class="n">fun</span> <span class="o">-</span> <span class="n">ground_energy</span><span class="p">)</span><span class="o">/</span><span class="n">ground_energy</span><span class="p">)</span>
+    <span class="n">err_std</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">((</span><span class="n">res_std</span><span class="o">.</span><span class="n">fun</span> <span class="o">-</span> <span class="n">ground_energy</span><span class="p">)</span><span class="o">/</span><span class="n">ground_energy</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Mean error using FourierParams: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err_fourier</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Mean error using StandardParams: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err_std</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Mean</span> <span class="n">error</span> <span class="n">using</span> <span class="n">FourierParams</span><span class="p">:</span>  <span class="mf">0.23198193683947826</span>
+<span class="n">Mean</span> <span class="n">error</span> <span class="n">using</span> <span class="n">StandardParams</span><span class="p">:</span>  <span class="mf">0.33932093016612397</span>
+</pre></div>
+</div>
+<p>We see that the Fourier parametrisation returns a more accurate cost
+function value. Let’s go one step further and try the case <span class="math notranslate nohighlight">\(p=1\)</span>
+with <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>, and <span class="math notranslate nohighlight">\(q = 1, p=3\)</span> with <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p_fourier</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">p_standard</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">q</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">samples</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">err_fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+<span class="n">err_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+
+    <span class="n">res_fourier</span><span class="p">,</span> <span class="n">res_std</span><span class="p">,</span> <span class="n">ground_energy</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">randgraph_fourier_std</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">p_fourier</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">p_standard</span><span class="p">)</span>
+
+    <span class="c1"># Compute relative error</span>
+    <span class="n">err_fourier</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">((</span><span class="n">res_fourier</span><span class="o">.</span><span class="n">fun</span> <span class="o">-</span> <span class="n">ground_energy</span><span class="p">)</span><span class="o">/</span><span class="n">ground_energy</span><span class="p">)</span>
+    <span class="n">err_std</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">((</span><span class="n">res_std</span><span class="o">.</span><span class="n">fun</span> <span class="o">-</span> <span class="n">ground_energy</span><span class="p">)</span><span class="o">/</span><span class="n">ground_energy</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Mean error using FourierParams: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err_fourier</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Mean error using StandardParams: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err_std</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Mean</span> <span class="n">error</span> <span class="n">using</span> <span class="n">FourierParams</span><span class="p">:</span>  <span class="mf">0.18631352493142636</span>
+<span class="n">Mean</span> <span class="n">error</span> <span class="n">using</span> <span class="n">StandardParams</span><span class="p">:</span>  <span class="mf">0.4620316863312574</span>
+</pre></div>
+</div>
+<p>In this case, we find an even greater separation in accuracy between the
+two methods, as intuitively expected.</p>
+<p>While we have studied only small and relatively simple problems in the
+above examples, the results suggest that the economy of the <code class="docutils literal notranslate"><span class="pre">Fourier</span></code>
+parametrisation may be worth further investigation.</p>
+</div>
+<div class="section" id="parameter-constraints-with-extendedparams">
+<h2>Parameter constraints with <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code><a class="headerlink" href="#parameter-constraints-with-extendedparams" title="Permalink to this headline">¶</a></h2>
+<p>Certain classical optimisers that may be of interest for QAOA require a
+set of constraints on the parameters to be explicitly specified. To be
+able to use these methods in practice with QAOA, we therefore need a way
+of obtaining these constraints. The <code class="docutils literal notranslate"><span class="pre">get_constraints</span></code> method does this
+for the <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> class.</p>
+<p>To understand the origin of constraints on the angles, let us first
+consider the application of the mixer Hamiltonian. Using
+<code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code>, at any given step in the QAOA circuit the action of
+the mixer is described by the unitary operator</p>
+<div class="math notranslate nohighlight">
+\[U\left(\vec{\beta}\right) = \exp(i\beta_nX_n)...\exp(i\beta_2X_2)\exp(i\beta_1X_1)\]</div>
+<p>Since the eigenvalues of the <span class="math notranslate nohighlight">\(X\)</span> operator are just <span class="math notranslate nohighlight">\(\pm 1\)</span>,
+by periodicity we can constrain all of the angles
+<span class="math notranslate nohighlight">\(\beta_1,...,\beta_n\)</span> to the range <span class="math notranslate nohighlight">\([0, 2\pi]\)</span>. Similarly,
+the action of single-qubit bias terms in the cost function Hamiltonian
+corresponds to an operator of the form</p>
+<div class="math notranslate nohighlight">
+\[U\left(\vec{\gamma_s}\right) = \exp(-i\gamma_{n}h_nZ_n)...\exp(-i\gamma_{2}h_2Z_2)\exp(-i\gamma_{1}h_1Z_1)\]</div>
+<p>Again, since each term is periodic, the corresponding constraints become
+<span class="math notranslate nohighlight">\(\gamma_{j} \in [0,2\pi/h_j]\)</span>, for <span class="math notranslate nohighlight">\(j = 1,...,n\)</span>. By similar
+reasoning, the constraints on the coefficients of the qubit pair terms
+in the Hamiltonian are <span class="math notranslate nohighlight">\(\Gamma_{jk} \in [0,2\pi/h_{jk}]\)</span>.</p>
+<p>Consider again the Hamiltonian we used in the section on annealing
+above.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Term1</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)</span><span class="o">*</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Term2</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span><span class="o">*</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Term3</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">hamiltonian</span> <span class="o">=</span> <span class="n">PauliSum</span><span class="p">([</span><span class="n">Term1</span><span class="p">,</span><span class="n">Term2</span><span class="p">,</span><span class="n">Term3</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;hamiltonian =&quot;</span><span class="p">,</span> <span class="n">hamiltonian</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hamiltonian</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.7</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.2</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span>
+</pre></div>
+</div>
+<p>Let’s set up a set of <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ext_params</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">hamiltonian</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Calling the <code class="docutils literal notranslate"><span class="pre">get_constraints()</span></code> method will now return a single list
+of the constraints on all of the parameters. The ordering coincides with
+that of the <code class="docutils literal notranslate"><span class="pre">raw()</span></code> method, allowing both the parameter initial values
+and the corresponding constraints to be easily passed to the optimiser.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">ext_params</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">6.283185307179586</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">6.283185307179586</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">6.283185307179586</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.566370614359172</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">8.975979010256552</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">5.235987755982989</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>L. Zhou et al, <a class="reference external" href="https://arxiv.org/abs/1812.01041">Quantum Approximate Optimization Algorithm:
+Performance, Mechanism, and Implementation on Near-Term
+Devices</a></p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="4_CostFunctionsAndVQE.html" class="btn btn-neutral float-right" title="Cost function features and VQE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="2_ParameterClasses.html" class="btn btn-neutral float-left" title="Working with the Parameter classes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

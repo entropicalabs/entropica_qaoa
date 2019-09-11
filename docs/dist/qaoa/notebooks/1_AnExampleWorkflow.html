@@ -1,0 +1,611 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>First steps: An example workflow &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Working with the Parameter classes" href="2_ParameterClasses.html" />
+    <link rel="prev" title="Welcome to EntropicaQAOA’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">First steps: An example workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-problem-instance">Creating a problem instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#specifying-the-parameters">Specifying the parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-the-cost-function">Creating the cost function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optimising-the-parameters">Optimising the parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#an-alternative-parametrisation">An alternative parametrisation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>First steps: An example workflow</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/1_AnExampleWorkflow.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="first-steps-an-example-workflow">
+<span id="anexampleworkflow"></span><h1>First steps: An example workflow<a class="headerlink" href="#first-steps-an-example-workflow" title="Permalink to this headline">¶</a></h1>
+<p>This section provides a walkthrough of a simple example workflow, and is
+intended as a quick introduction to the functionalities of the
+EntropicaQAOA package. More elaborate examples are provided in other
+sections of the documentation.</p>
+<p>When running the code in any of these documentation files, you will need
+to start Rigetti’s Wavefunction Simulator and the Quil Compiler by
+typing <code class="docutils literal notranslate"><span class="pre">qvm</span> <span class="pre">-S</span></code> and <code class="docutils literal notranslate"><span class="pre">quilc</span> <span class="pre">-S</span></code> in two open and disposable terminal
+windows. Assuming you have previously installed the Forest SDK, the
+Quantum Virtual Machine will then open in the background. More
+information on installing and running the QVM can be found in Rigetti’s
+<a class="reference external" href="http://docs.rigetti.com/en/stable/start.html">Forest documentation</a>.</p>
+<p>To begin, we import all the neccesary bits and pieces:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The usual combination of numpy, matplotlib and scipy.optimize.minimize</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+
+<span class="c1"># The neccesary pyquil modules</span>
+<span class="kn">from</span> <span class="nn">pyquil.api</span> <span class="kn">import</span> <span class="n">local_qvm</span><span class="p">,</span> <span class="n">WavefunctionSimulator</span>
+<span class="kn">from</span> <span class="nn">pyquil.paulis</span> <span class="kn">import</span> <span class="n">PauliSum</span><span class="p">,</span> <span class="n">PauliTerm</span>
+<span class="kn">from</span> <span class="nn">pyquil.unitary_tools</span> <span class="kn">import</span> <span class="n">lifted_pauli</span>
+
+<span class="c1"># The QAOAParameters that we want to demo</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.parameters</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AbstractParams</span><span class="p">,</span>
+                                            <span class="n">StandardParams</span><span class="p">,</span>
+                                            <span class="n">ExtendedParams</span><span class="p">,</span>
+                                            <span class="n">QAOAParameterIterator</span><span class="p">)</span>
+
+<span class="c1"># import VQE and cost function modules</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.cost_function</span> <span class="kn">import</span> <span class="n">QAOACostFunctionOnQVM</span><span class="p">,</span> <span class="n">QAOACostFunctionOnWFSim</span>
+
+<span class="c1"># import utilities for conversion between graphs and hamiltonians</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.utilities</span> <span class="kn">import</span> <span class="p">(</span><span class="n">hamiltonian_from_graph</span><span class="p">,</span>
+                                      <span class="n">random_k_regular_graph</span><span class="p">,</span>
+                                      <span class="n">plot_graph</span><span class="p">,</span>
+                                      <span class="n">plot_probabilities</span><span class="p">)</span>
+
+<span class="c1"># supress warnings from networkx</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="creating-a-problem-instance">
+<h2>Creating a problem instance<a class="headerlink" href="#creating-a-problem-instance" title="Permalink to this headline">¶</a></h2>
+<p>We begin by setting up a simple problem instance. We will demonstrate
+how to use QAOA to solve the MaxCut problem on a graph with three nodes
+and weighted edges. We can create the graph as follows:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph</span> <span class="o">=</span> <span class="n">random_k_regular_graph</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">weighted</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">biases</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">plot_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/1_AnExampleWorkflow_5_0.png" src="../_images/1_AnExampleWorkflow_5_0.png" />
+<p>The function <code class="docutils literal notranslate"><span class="pre">random_k_regular_graph</span></code> is one of several utility
+methods we provide. This also illustrates how EntropicaQAOA directly
+integrates functionality from the <code class="docutils literal notranslate"><span class="pre">NetworkX</span></code> package for graph
+analysis. For more information on NetworkX, refer to its documentation
+<a class="reference external" href="https://networkx.github.io/documentation/stable/">here</a>.</p>
+<p>To solve the MaxCut problem for this graph using QAOA, we have to
+translate the graph to a Hamiltonian, which corresponds to the cost
+function. We can readily achieve this conversion using the
+<code class="docutils literal notranslate"><span class="pre">hamiltonian_from_graph</span></code> method:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hamiltonian</span> <span class="o">=</span> <span class="n">hamiltonian_from_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mf">0.5986584841970366</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.15601864044243652</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.15599452033620265</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.3745401188473625</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.9507143064099162</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.7319939418114051</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z2</span>
+</pre></div>
+</div>
+<p><strong>Further documentation</strong></p>
+<p>More information on the creation of hamiltonians and graphs is provided
+in <a class="reference internal" href="#anexampleworkflow"><span class="std std-ref">First steps: An example workflow</span></a>.</p>
+</div>
+<div class="section" id="specifying-the-parameters">
+<h2>Specifying the parameters<a class="headerlink" href="#specifying-the-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Having established the problem Hamiltonian, we next set up our chosen
+circuit parametrisation. There are a range of different choices
+available in EntropicaQAOA, which are demonstrated in detail in
+<a class="reference internal" href="2_ParameterClasses.html#parameterclasses"><span class="std std-ref">Working with the Parameter classes</span></a> and <a class="reference internal" href="3_AdvancedParameterClasses.html#advancedparameterclasses"><span class="std std-ref">Advanced QAOA parameter classes</span></a>.</p>
+<p>For this Notebook we will use the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> parametrisation. As
+the name suggests, this corresponds to the most commonly used
+parametrisation, and is the one originally introduced by Farhi et al in
+<a class="reference external" href="#references">Ref 1</a>. Here, the mixer and cost Hamiltonians each have
+one angle per timestep, giving a total of <span class="math notranslate nohighlight">\(2p\)</span> parameters to
+optimise over.</p>
+<p>In this example, we will choose <span class="math notranslate nohighlight">\(p=2\)</span>, and initalise the angles
+<code class="docutils literal notranslate"><span class="pre">gammas</span></code> and <code class="docutils literal notranslate"><span class="pre">betas</span></code> with simple (but uninspired!) values. Besides
+the initial values of these angles, we must also provide the problem
+<em>hyperparameters</em>, which, unlike the <code class="docutils literal notranslate"><span class="pre">gammas</span></code> and <code class="docutils literal notranslate"><span class="pre">betas</span></code>, are
+unchanged throughout the optimisation procedure. The hyperparameters
+here are the Hamiltonian, and the number of timesteps <span class="math notranslate nohighlight">\(p\)</span>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">timesteps</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># this is the usual QAOA p parameter</span>
+<span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+
+<span class="c1"># Specify some angles. We have p=2, so we need two betas and two gammas</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+<span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">gammas</span><span class="p">)</span>
+
+<span class="n">standard_params</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">standard_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span> <span class="mf">0.6</span><span class="p">]</span>
+    <span class="n">gammas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.4</span> <span class="mf">0.5</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Further documentation</strong></p>
+<p>To learn all about the different parametrisations, the various ways to
+create parameter objects automatically, and how to manipulate them,
+refer to <a class="reference internal" href="2_ParameterClasses.html#parameterclasses"><span class="std std-ref">Working with the Parameter classes</span></a></p>
+</div>
+<div class="section" id="creating-the-cost-function">
+<h2>Creating the cost function<a class="headerlink" href="#creating-the-cost-function" title="Permalink to this headline">¶</a></h2>
+<p>With the problem and our parametrisation now defined, we next create a
+cost function that we can pass to a minimiser of our choice
+(e.g. <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code>). To work seamlessly with most typical
+optimisers, this cost function needs to take in an array of values (the
+initial values of the parameters we want to optimise), and output a
+single number (the corresponding value of the objective function). We
+provide two such classes of cost functions for the QAOA:
+<code class="docutils literal notranslate"><span class="pre">QAOACostFunctionOnWFSim</span></code>, which is used with the Wavefunction
+Simulator; and <code class="docutils literal notranslate"><span class="pre">QAOACostFunctionOnQVM</span></code>, which is used with a QVM or
+QPU. For the purposes of this example we will use the Wavefunction
+Simulator, since it is faster and returns exact expectation values (as
+opposed to sampled estimates of it).</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set up the cost function</span>
+<span class="n">cost_function</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">standard_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Implementation note and further documentation</strong></p>
+<p>It may seem somewhat unconventional that one should need to specify
+parameters (such as <code class="docutils literal notranslate"><span class="pre">standard_params</span></code> above) to construct a cost
+function. However, this design choice simplifies the conversion of the
+input variable parameters to the actual rotation angles that are
+executed in the quantum circuit. Moreover, one is unlikely to be working
+with a cost function object in isolation: for optimisation, a set of
+parameters is always created at the same time to pass into the cost
+function.</p>
+<p>Note also that it is not necessary to actually specify values for the
+angles, as we have done above. We provide several methods for
+automatically setting up parameter values, as demonstrated in
+<a class="reference internal" href="2_ParameterClasses.html#parameterclasses"><span class="std std-ref">Working with the Parameter classes</span></a>.</p>
+<p>In <a class="reference internal" href="4_CostFunctionsAndVQE.html#costfunctionsandvqe"><span class="std std-ref">Cost function features and VQE</span></a> we demonstrate the usage of
+<code class="docutils literal notranslate"><span class="pre">QAOACostFunctionOnQVM</span></code>. This also showcases more advanced usages of
+the cost functions, including how to make logs of the function calls,
+and how to introduce fake sampling noise for more realistic simulations
+of QAOA.</p>
+</div>
+<div class="section" id="optimising-the-parameters">
+<h2>Optimising the parameters<a class="headerlink" href="#optimising-the-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have a cost function and some initial parameters, we can use
+a minimiser of our choice – in this case <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> –
+to optimise the parameters:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="n">standard_params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+               <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">},</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Cobyla&quot;</span><span class="p">)</span>
+<span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">fun</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.1381074861256129</span>
+  <span class="n">maxcv</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="n">message</span><span class="p">:</span> <span class="s1">&#39;Optimization terminated successfully.&#39;</span>
+   <span class="n">nfev</span><span class="p">:</span> <span class="mi">80</span>
+ <span class="n">status</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">success</span><span class="p">:</span> <span class="kc">True</span>
+      <span class="n">x</span><span class="p">:</span> <span class="n">array</span><span class="p">([</span><span class="mf">0.5075231</span> <span class="p">,</span> <span class="mf">0.2640147</span> <span class="p">,</span> <span class="mf">0.41118043</span><span class="p">,</span> <span class="mf">0.85510375</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>We can check this against the exact value by finding the lowest
+eigenvalue of <code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ham_matrix</span> <span class="o">=</span> <span class="n">lifted_pauli</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">hamiltonian</span><span class="o">.</span><span class="n">get_qubits</span><span class="p">())</span>
+<span class="n">eigs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">ham_matrix</span><span class="p">)</span>
+<span class="nb">min</span><span class="p">(</span><span class="n">eigs</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="o">-</span><span class="mf">1.9068507336772291</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Evidently, we have not found the ground state exactly. We can examine
+the probability of measuring each energy eigenstate, along with the
+corresponding energies, as follows:</p>
+<ul class="simple">
+<li><p>Obtain the output wavefunction using
+<code class="docutils literal notranslate"><span class="pre">cost_function.get_wavefunction()</span></code></p></li>
+<li><p>Generate a bar plot to compare the energies of each of the states and
+their respective probabilities. We do this using the
+<code class="docutils literal notranslate"><span class="pre">.plot_probabilities()</span></code> method, contained in
+<code class="docutils literal notranslate"><span class="pre">entropica_qaoa.utilities</span></code>. This produces a plot of the negative of
+each energy (i.e. each energy multiplied by <span class="math notranslate nohighlight">\(-1\)</span>), side by side
+with the probability. States with large values of
+<span class="math notranslate nohighlight">\(-1\times Energy\)</span> should therefore coincide with large
+probabilities.</p></li>
+</ul>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">probabilities</span> <span class="o">=</span> <span class="n">cost_function</span><span class="o">.</span><span class="n">get_wavefunction</span><span class="p">(</span><span class="n">standard_params</span><span class="o">.</span><span class="n">raw</span><span class="p">())</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span>
+<span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">ham_matrix</span><span class="p">)</span>
+
+<span class="n">plot_probabilities</span><span class="p">(</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">energies</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/1_AnExampleWorkflow_20_0.png" src="../_images/1_AnExampleWorkflow_20_0.png" />
+<p>Evidently the state with the lowest energy (largest negative energy)
+corresponds to the state with the largest measurement probability,
+however there is still some contribution from sub-optimal solutions. To
+do better, we can try increasing the number of timesteps to <span class="math notranslate nohighlight">\(p=3\)</span>:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up some values for the angles with p = 3</span>
+<span class="n">betas</span>          <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">]</span>
+<span class="n">gammas_singles</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+<span class="n">gammas_pairs</span>   <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">gammas_singles</span><span class="p">,</span> <span class="n">gammas_pairs</span><span class="p">)</span>
+
+<span class="n">standard_params_p3</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="p">([</span><span class="n">hamiltonian</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="n">parameters</span><span class="p">)</span>
+
+<span class="n">cost_function</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">standard_params_p3</span><span class="p">)</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="n">standard_params_p3</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+                      <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">},</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Cobyla&quot;</span><span class="p">)</span>
+<span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">fun</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.314786957284364</span>
+  <span class="n">maxcv</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="n">message</span><span class="p">:</span> <span class="s1">&#39;Optimization terminated successfully.&#39;</span>
+   <span class="n">nfev</span><span class="p">:</span> <span class="mi">158</span>
+ <span class="n">status</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">success</span><span class="p">:</span> <span class="kc">True</span>
+      <span class="n">x</span><span class="p">:</span> <span class="n">array</span><span class="p">([</span><span class="mf">0.56818343</span><span class="p">,</span> <span class="mf">0.50366739</span><span class="p">,</span> <span class="mf">0.28841164</span><span class="p">,</span> <span class="mf">0.45952564</span><span class="p">,</span> <span class="mf">0.84483075</span><span class="p">,</span>
+      <span class="mf">0.88324141</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This is an improvement, but still not the actual ground state. The
+following section gives a brief introduction to the use of an alternate
+parametrisation, <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code>, in which every single term in the
+cost and mixer Hamiltonians have their own correspoding angle. Since
+this is parametrisation is more expressive, it may be expected to give
+better results (although clearly the optimisation is then performed in a
+higher dimensional space, which will affect the scalability of the
+method).</p>
+</div>
+<div class="section" id="an-alternative-parametrisation">
+<h2>An alternative parametrisation<a class="headerlink" href="#an-alternative-parametrisation" title="Permalink to this headline">¶</a></h2>
+<p>Here we will set up <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> directly from our existing set of
+<code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>, making use of EntropicaQAOA’s aptly named parameter
+conversion method <code class="docutils literal notranslate"><span class="pre">.from_other_parameters()</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extended_params_p3</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="o">.</span><span class="n">from_other_parameters</span><span class="p">(</span><span class="n">standard_params_p3</span><span class="p">)</span>
+
+<span class="n">cost_function</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">extended_params_p3</span><span class="p">)</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="n">extended_params_p3</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+                      <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">},</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Cobyla&quot;</span><span class="p">)</span>
+<span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">fun</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.8970669808663276</span>
+  <span class="n">maxcv</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="n">message</span><span class="p">:</span> <span class="s1">&#39;Maximum number of function evaluations has been exceeded.&#39;</span>
+   <span class="n">nfev</span><span class="p">:</span> <span class="mi">500</span>
+ <span class="n">status</span><span class="p">:</span> <span class="mi">2</span>
+<span class="n">success</span><span class="p">:</span> <span class="kc">False</span>
+      <span class="n">x</span><span class="p">:</span> <span class="n">array</span><span class="p">([</span> <span class="mf">0.33606758</span><span class="p">,</span>  <span class="mf">0.10134483</span><span class="p">,</span>  <span class="mf">0.92856431</span><span class="p">,</span>  <span class="mf">0.71982022</span><span class="p">,</span>  <span class="mf">0.50953751</span><span class="p">,</span>
+       <span class="mf">0.95264686</span><span class="p">,</span>  <span class="mf">0.26597692</span><span class="p">,</span>  <span class="mf">0.33826225</span><span class="p">,</span>  <span class="mf">0.65283808</span><span class="p">,</span>  <span class="mf">0.47696191</span><span class="p">,</span>
+       <span class="mf">2.09234295</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.11489466</span><span class="p">,</span>  <span class="mf">0.96109444</span><span class="p">,</span>  <span class="mf">2.42346351</span><span class="p">,</span>  <span class="mf">0.17229808</span><span class="p">,</span>
+       <span class="mf">0.67969652</span><span class="p">,</span>  <span class="mf">2.19743182</span><span class="p">,</span>  <span class="mf">2.12489277</span><span class="p">,</span>  <span class="mf">0.27564749</span><span class="p">,</span>  <span class="mf">0.48927321</span><span class="p">,</span>
+       <span class="mf">0.47138807</span><span class="p">,</span>  <span class="mf">0.98226176</span><span class="p">,</span>  <span class="mf">0.75037525</span><span class="p">,</span>  <span class="mf">0.63263085</span><span class="p">,</span>  <span class="mf">0.70727788</span><span class="p">,</span>
+       <span class="mf">0.85679038</span><span class="p">,</span>  <span class="mf">0.60966477</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Clearly now we have found a much better ground state energy. The result
+attribute <code class="docutils literal notranslate"><span class="pre">x</span></code> is a list of the optimal circuit parameters that have
+been found. We can disentangle this into the <code class="docutils literal notranslate"><span class="pre">betas</span></code> and <code class="docutils literal notranslate"><span class="pre">gammas</span></code> of
+our QAOA parameterisation by using the <code class="docutils literal notranslate"><span class="pre">.update_from_raw()</span></code> method:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extended_params_p3</span><span class="o">.</span><span class="n">update_from_raw</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+<span class="n">extended_params_p3</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.33606758</span> <span class="mf">0.10134483</span> <span class="mf">0.92856431</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.71982022</span> <span class="mf">0.50953751</span> <span class="mf">0.95264686</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.26597692</span> <span class="mf">0.33826225</span> <span class="mf">0.65283808</span><span class="p">]]</span>
+    <span class="n">gammas_singles</span><span class="p">:</span> <span class="p">[[</span> <span class="mf">0.47696191</span>  <span class="mf">2.09234295</span> <span class="o">-</span><span class="mf">0.11489466</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.96109444</span>  <span class="mf">2.42346351</span>  <span class="mf">0.17229808</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.67969652</span>  <span class="mf">2.19743182</span>  <span class="mf">2.12489277</span><span class="p">]]</span>
+    <span class="n">gammas_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.27564749</span> <span class="mf">0.48927321</span> <span class="mf">0.47138807</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.98226176</span> <span class="mf">0.75037525</span> <span class="mf">0.63263085</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.70727788</span> <span class="mf">0.85679038</span> <span class="mf">0.60966477</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Now that we have the optimal angles, we can prepare the corresponding
+state and sample from it to obtain the most probable bitstring.</p>
+<p>In this notebook we are using the wavefunction simulator, which allows
+us to ‘cheat’ and easily obtain any observable quantity without the need
+to sample. We use the <code class="docutils literal notranslate"><span class="pre">get_wavefunction</span></code> method of the
+<code class="docutils literal notranslate"><span class="pre">cost_function</span></code> to obtain the wavefunction, then compute the
+corresponding probabilities, and plot a bar graph of the outcomes:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">opt_wfn</span> <span class="o">=</span> <span class="n">cost_function</span><span class="o">.</span><span class="n">get_wavefunction</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">opt_wfn</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="o">-</span><span class="mf">0.00716914</span><span class="o">+</span><span class="mf">0.0018323639</span><span class="n">j</span><span class="p">)</span><span class="o">|</span><span class="mi">000</span><span class="o">&gt;</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.0063983618</span><span class="o">+</span><span class="mf">0.0119885383</span><span class="n">j</span><span class="p">)</span><span class="o">|</span><span class="mi">001</span><span class="o">&gt;</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.0007095101</span><span class="o">-</span><span class="mf">0.0008425164</span><span class="n">j</span><span class="p">)</span><span class="o">|</span><span class="mi">010</span><span class="o">&gt;</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.1794862787</span><span class="o">+</span><span class="mf">0.9796596921</span><span class="n">j</span><span class="p">)</span><span class="o">|</span><span class="mi">011</span><span class="o">&gt;</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.065484157</span><span class="o">+</span><span class="mf">0.0103568406</span><span class="n">j</span><span class="p">)</span><span class="o">|</span><span class="mi">100</span><span class="o">&gt;</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.0403429137</span><span class="o">+</span><span class="mf">0.041279573</span><span class="n">j</span><span class="p">)</span><span class="o">|</span><span class="mi">101</span><span class="o">&gt;</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.0047927286</span><span class="o">+</span><span class="mf">0.0007375605</span><span class="n">j</span><span class="p">)</span><span class="o">|</span><span class="mi">110</span><span class="o">&gt;</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.007280748</span><span class="o">+</span><span class="mf">0.0027231625</span><span class="n">j</span><span class="p">)</span><span class="o">|</span><span class="mi">111</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">probs</span> <span class="o">=</span> <span class="n">opt_wfn</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span>
+<span class="n">probs</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([</span><span class="mf">5.47541258e-05</span><span class="p">,</span> <span class="mf">1.84664083e-04</span><span class="p">,</span> <span class="mf">1.21323848e-06</span><span class="p">,</span> <span class="mf">9.91948437e-01</span><span class="p">,</span>
+       <span class="mf">4.39543897e-03</span><span class="p">,</span> <span class="mf">3.33155383e-03</span><span class="p">,</span> <span class="mf">2.35142433e-05</span><span class="p">,</span> <span class="mf">6.04249059e-05</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;$\left|{0:03b}\right&gt;$&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="n">probs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="n">labels</span><span class="p">);</span>
+</pre></div>
+</div>
+<img alt="../_images/1_AnExampleWorkflow_31_0.png" src="../_images/1_AnExampleWorkflow_31_0.png" />
+<p>The QAOA has determined that the bitstring 011 (the number 3 in decimal)
+is the minimum energy solution with essentially unit probability. Let’s
+check this is consistent with the real answer:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">ham_matrix</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">array</span><span class="p">([</span> <span class="mf">2.96792001</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.87990581</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span>  <span class="mf">0.44281461</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.90685073</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">0.70948553</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.75445412</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.30661516</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span>  <span class="mf">1.14657672</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">]),</span>
+ <span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">1.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">1.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">1.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">1.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">1.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">1.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">,</span> <span class="mf">1.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">]]))</span>
+</pre></div>
+</div>
+<p>The lowest energy solution does indeed correspond to the eigenvector
+<span class="math notranslate nohighlight">\((0,0,0,1,0,0,0,0)\)</span>, i.e. the <span class="math notranslate nohighlight">\(|011\rangle\)</span> component.</p>
+<p>Suppose that we return to the original Hamiltonian, but instead we
+remove the single-qubit bias terms. Let’s run the computation again and
+see what result we find. This time we’ll set up <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> using
+the <code class="docutils literal notranslate"><span class="pre">.empty()</span></code> method, which means we don’t need to explicitly provide
+initial values for the <code class="docutils literal notranslate"><span class="pre">gammas</span></code> and <code class="docutils literal notranslate"><span class="pre">betas</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">term1</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)</span> <span class="o">*</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">term2</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span> <span class="o">*</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">hamiltonian_unbiased</span> <span class="o">=</span> <span class="n">PauliSum</span><span class="p">([</span><span class="n">term1</span><span class="p">,</span> <span class="n">term2</span><span class="p">])</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">params_unbiased</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">hamiltonian_unbiased</span><span class="p">,</span><span class="n">n_steps</span><span class="p">))</span>
+
+<span class="n">cost_function_unbiased</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian_unbiased</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params_unbiased</span><span class="p">)</span>
+
+<span class="n">res_unbiased</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_function_unbiased</span><span class="p">,</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">params_unbiased</span><span class="p">)),</span>
+                        <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;maxiter&quot;</span><span class="p">:</span><span class="mi">500</span><span class="p">},</span>
+                        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Cobyla&quot;</span><span class="p">)</span>
+
+<span class="n">opt_wfn_unbiased</span> <span class="o">=</span> <span class="n">cost_function_unbiased</span><span class="o">.</span><span class="n">get_wavefunction</span><span class="p">(</span><span class="n">res_unbiased</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="n">probs_unbiased</span> <span class="o">=</span> <span class="n">opt_wfn_unbiased</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span>
+
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;$\left|{0:03b}\right&gt;$&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="n">probs_unbiased</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="n">labels</span><span class="p">);</span>
+</pre></div>
+</div>
+<img alt="../_images/1_AnExampleWorkflow_35_0.png" src="../_images/1_AnExampleWorkflow_35_0.png" />
+<p>Now the probabilities are completely symmetric under a bit flip on all
+qubits - there is no bias term in the Hamiltonian to force a given qubit
+into state <span class="math notranslate nohighlight">\(|0\rangle\)</span> or <span class="math notranslate nohighlight">\(|1\rangle\)</span>, and the eigenspectrum
+of the cost function Hamiltonian is “doubly degenerate”, i.e. the energy
+eigenstates fall into pairs, where the corresponding eigenstates are
+related to one another by a bit flip on all qubits.</p>
+<p><strong>Further documentation</strong></p>
+<p>Further information and examples of setting up the different types of
+parameters may be found in <a class="reference internal" href="2_ParameterClasses.html#parameterclasses"><span class="std std-ref">Working with the Parameter classes</span></a> and
+<a class="reference internal" href="3_AdvancedParameterClasses.html#advancedparameterclasses"><span class="std std-ref">Advanced QAOA parameter classes</span></a>.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>E. Farhi et al, <a class="reference external" href="https://arxiv.org/abs/1411.4028">A Quantum Approximate Optimization
+Algorithm</a></p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="2_ParameterClasses.html" class="btn btn-neutral float-right" title="Working with the Parameter classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to EntropicaQAOA’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
