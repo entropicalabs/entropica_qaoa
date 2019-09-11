@@ -4,7 +4,7 @@ Implementation details and conventions
 ======================================
 
 Sign of the mixer Hamiltonian
-    In the original paper on QAOA [`1 <https://arxiv.org/abs/1411.4028>`_], Farhi `et al` use :math:`\sum_i \hat{X}_i` as
+    In the original paper on QAOA (`Ref 1 <#references>`__), Farhi `et al` use :math:`\sum_i \hat{X}_i` as
     the mixer Hamiltonian, with the initial state being its maximum eigenstate :math:`\left|+ \cdots +\right>`. 
     In EntropicaQAOA, we instead choose our mixer Hamiltonian to be :math:`-\sum_i \hat{X}_i`, so that the initial state 
     :math:`\left|+ \cdots +\right>` is now its minimum energy eigenstate. Conceptually this makes the analogy to adiabatic
@@ -52,7 +52,7 @@ Discrete sine and cosine transforms for the ``FourierParams`` class
 		            i\frac{\pi}{2p}
 		          \right]
  
-    While these differ from the versions used in Ref [`2 <https://arxiv.org/abs/1812.01041>`_], this is merely a convention.
+    While these differ from the versions used in `Ref 2 <#references>`__, this is merely a convention.
 
 What is the difference between ``base_numshots`` and ``n_shots`` in ``PrepareAndMeasureOnQVM`` and ``QAOACostFunctionOnQVM``?
     The cost functions created by ``PrepareAndMeasureOnQVM`` and ``QAOACostFunctionOnQVM`` both make use of Quil's
@@ -65,7 +65,8 @@ What is the difference between ``base_numshots`` and ``n_shots`` in ``PrepareAnd
 
     Setting ``n_shots = 1`` (the default value) effectively disables this functionality.
 
-.. rubric:: References
+References
+----------
 
-.. [1] E. Farhi et al, `A Quantum Approximate Optimization Algorithm`, `arXiv:1411.4028 <https://arxiv.org/abs/1411.4028>`_
-.. [2] L. Zhou et al, `Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices`, `arXiv:1812.01041 <https://arxiv.org/abs/1812.01041>`_ 
+1. E. Farhi et al, `A Quantum Approximate Optimization Algorithm <https://arxiv.org/abs/1411.4028>`__
+2. L. Zhou et al, `Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices <https://arxiv.org/abs/1812.01041>`__ 
