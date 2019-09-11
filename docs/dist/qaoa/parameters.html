@@ -57,6 +57,9 @@
           
 
           
+            
+            <img src="_static/ELlogo_small.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
@@ -172,21 +175,16 @@
             
   <div class="section" id="qaoa-parametrisations">
 <h1>QAOA Parametrisations<a class="headerlink" href="#qaoa-parametrisations" title="Permalink to this headline">¶</a></h1>
-<p>We (currently) offer 7 different parametrisations for QAOA, which can be found in
+<p>We currently offer 7 different parametrisations for QAOA, which can be found in
 the <code class="docutils literal notranslate"><span class="pre">entropica_qaoa.qaoa.parameters</span></code> module. They fall broadly into three categories: The <code class="docutils literal notranslate"><span class="pre">Standard</span></code> classes are parametrisations that have the
 <span class="math notranslate nohighlight">\(\gamma\)</span> ‘s and <span class="math notranslate nohighlight">\(\beta\)</span> ‘s as free parameters, as defined in the
 seminal paper by Farhi <cite>et al</cite> in
 <a class="reference external" href="https://arxiv.org/abs/1411.4028">A Quantum Approximate Optimization Algorithm</a>.
 The <code class="docutils literal notranslate"><span class="pre">Fourier</span></code> classes have the discrete cosine and sine transforms of the <span class="math notranslate nohighlight">\(\gamma\)</span> ‘s respective <span class="math notranslate nohighlight">\(\beta\)</span>’s as free parameters, as proposed by
-Zhou et al. in
-<a class="reference external" href="https://arxiv.org/abs/1812.01041">Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices</a>.
+Zhou et al. in <a class="reference external" href="https://arxiv.org/abs/1812.01041">Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices</a>.
 Finally, the <code class="docutils literal notranslate"><span class="pre">Annealing</span></code> class is based on the idea of QAOA being a form of discretised, adiabatic annealing. Here the function values <span class="math notranslate nohighlight">\(s(t_i)\)</span>
 at equally spaced times <span class="math notranslate nohighlight">\(t_i\)</span> are the free parameters.</p>
-<dl class="simple">
-<dt>Except for the <cite>Annealing</cite> parameters, each class also comes in three levels of detail: <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> and <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> offer the <span class="math notranslate nohighlight">\(\gamma\)</span> ‘s and <span class="math notranslate nohighlight">\(\beta\)</span> ‘s as proposed in above papers.</dt><dd><p><code class="docutils literal notranslate"><span class="pre">StandardWithBiasParams</span></code> and <code class="docutils literal notranslate"><span class="pre">FourierWithBiasParams</span></code> allow for extra <span class="math notranslate nohighlight">\(\gamma\)</span> ‘s for possible single-qubit bias terms, resp. their discrete sine transform. Lastly,</p>
-</dd>
-</dl>
-<p><code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> and <code class="docutils literal notranslate"><span class="pre">FourierExtendedParams</span></code> offer full control by having a seperate set of rotation angles for each term in the cost and mixer Hamiltonians, respective having a seperate set of Fourier coefficients for each term.</p>
+<p>Except for the <code class="docutils literal notranslate"><span class="pre">Annealing</span></code> parameters, each class also comes in three levels of detail: <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> and <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> offer the <span class="math notranslate nohighlight">\(\gamma\)</span> ‘s and <span class="math notranslate nohighlight">\(\beta\)</span>’s as proposed in above papers. <code class="docutils literal notranslate"><span class="pre">StandardWithBiasParams</span></code> and <code class="docutils literal notranslate"><span class="pre">FourierWithBiasParams</span></code> allow for extra <span class="math notranslate nohighlight">\(\gamma\)</span>’s for possible single-qubit bias terms, resp. their discrete sine transform. Lastly, <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> and <code class="docutils literal notranslate"><span class="pre">FourierExtendedParams</span></code> offer full control by having a seperate set of rotation angles for each term in the cost and mixer Hamiltonians, respective having a seperate set of Fourier coefficients for each term.</p>
 <p>You can always convert parametrisations with fewer degrees of freedom to ones with more using the <code class="docutils literal notranslate"><span class="pre">.from_other_parameters()</span></code> classmethod. The full type
 tree is shown below, where the arrows mark possible conversions:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">ExtendedParams</span>   <span class="o">&lt;---------</span> <span class="n">FourierExtendedParams</span>

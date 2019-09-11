@@ -66,12 +66,16 @@ first conceptual step from annealing, towards the more conventionally
 used parametrisations of QAOA. Using ``AnnealingParams``, we prepare an
 output quantum state with a circuit described by the unitary operator
 
-.. math:: U = \exp\left(-i(1-s(t_p)) H_M \Delta t\right)\exp\left(-i s(t_p) H_C \Delta t\right) \cdots \exp\left(-i(1-s(t_1))H_M \Delta t\right) \exp\left(-i s(t_1) H_C \Delta t\right)
+.. math:: U = \mathcal{T}\left(\Pi_{j=1}^p \exp\left[-i(1-s(t_j)) H_M \Delta t\right]\exp\left[-i s(t_j) H_C \Delta t\right]\right),
+
+where the object :math:`\mathcal{T}` tells us to correctly order the
+terms, increasing from :math:`j=1` to :math:`j=p` from right to left in
+the product.
 
 Here, we have a fixed temporal step of size :math:`\Delta t`, and we
 need to specify what the values of the annealing schedule function
 should be at the different timesteps. That is, we need to provide a list
-of the values of :math:`s(t_i`) for :math:`i = 1,..,p`.
+of the values of :math:`s(t_j`) for :math:`j = 1,..,p`.
 
 Here we illustrate the use of the ``AnnealingParams`` class, whose value
 we envisage primarily as a didactic or research tool. Specifically,

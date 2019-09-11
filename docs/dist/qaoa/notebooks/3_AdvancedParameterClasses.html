@@ -57,6 +57,9 @@
           
 
           
+            
+            <img src="../_static/ELlogo_small.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
@@ -229,11 +232,14 @@ first conceptual step from annealing, towards the more conventionally
 used parametrisations of QAOA. Using <code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code>, we prepare an
 output quantum state with a circuit described by the unitary operator</p>
 <div class="math notranslate nohighlight">
-\[U = \exp\left(-i(1-s(t_p)) H_M \Delta t\right)\exp\left(-i s(t_p) H_C \Delta t\right) \cdots \exp\left(-i(1-s(t_1))H_M \Delta t\right) \exp\left(-i s(t_1) H_C \Delta t\right)\]</div>
+\[U = \mathcal{T}\left(\Pi_{j=1}^p \exp\left[-i(1-s(t_j)) H_M \Delta t\right]\exp\left[-i s(t_j) H_C \Delta t\right]\right),\]</div>
+<p>where the object <span class="math notranslate nohighlight">\(\mathcal{T}\)</span> tells us to correctly order the
+terms, increasing from <span class="math notranslate nohighlight">\(j=1\)</span> to <span class="math notranslate nohighlight">\(j=p\)</span> from right to left in
+the product.</p>
 <p>Here, we have a fixed temporal step of size <span class="math notranslate nohighlight">\(\Delta t\)</span>, and we
 need to specify what the values of the annealing schedule function
 should be at the different timesteps. That is, we need to provide a list
-of the values of <span class="math notranslate nohighlight">\(s(t_i\)</span>) for <span class="math notranslate nohighlight">\(i = 1,..,p\)</span>.</p>
+of the values of <span class="math notranslate nohighlight">\(s(t_j\)</span>) for <span class="math notranslate nohighlight">\(j = 1,..,p\)</span>.</p>
 <p>Here we illustrate the use of the <code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code> class, whose value
 we envisage primarily as a didactic or research tool. Specifically,
 let’s compare the annealing parametrisation with the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>

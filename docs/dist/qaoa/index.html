@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to EntropicaQAOA’s documentation! &mdash; Entropica QAOA  documentation</title>
+  <title>Welcome to EntropicaQAOA &mdash; Entropica QAOA  documentation</title>
   
 
   
@@ -55,6 +55,9 @@
             <a href="#" class="icon icon-home"> Entropica QAOA
           
 
+          
+            
+            <img src="_static/ELlogo_small.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -144,7 +147,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Welcome to EntropicaQAOA’s documentation!</li>
+      <li>Welcome to EntropicaQAOA</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -163,50 +166,100 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-entropicaqaoa-s-documentation">
-<h1>Welcome to EntropicaQAOA’s documentation!<a class="headerlink" href="#welcome-to-entropicaqaoa-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>EntropicaQAOA is a modular QAOA package built on top of Rigetti’s
-<a class="reference external" href="https://www.rigetti.com/forest">Forest SDK</a>. It enables users to quickly run their own QAOA instances and easily replace
-any component with their own custom code.</p>
+  <div class="section" id="welcome-to-entropicaqaoa">
+<h1>Welcome to EntropicaQAOA<a class="headerlink" href="#welcome-to-entropicaqaoa" title="Permalink to this headline">¶</a></h1>
+<p>EntropicaQAOA is a modular package for the quantum approximate optimisation algorithm (QAOA) built on top of Rigetti’s
+<a class="reference external" href="https://www.rigetti.com/forest">Forest SDK</a>.</p>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li><p>Full native support for <a class="reference external" href="https://www.rigetti.com/qpu">Rigetti’s QVM and QPUs</a>. Run your experiments on real Quantum Computers!</p></li>
-<li><p>Extensive examples explaining the usage of EntropicaQAOA in
-detail.</p></li>
-<li><p>Multiple parametrisations for QAOA.</p></li>
+<li><p>Multiple built-in parametrisations for QAOA.</p></li>
 <li><p><a class="reference external" href="https://networkx.github.io/">NetworkX</a> integration for the treatment of
 graph theoretic problems, and <a class="reference external" href="https://pandas.pydata.org/">Pandas</a> integration for data importing.</p></li>
+<li><p>Convenient optimiser logging tools.</p></li>
+<li><p>Ability to run more general parametric circuits using the VQE library.</p></li>
+<li><p>Full native support for <a class="reference external" href="https://www.rigetti.com/qpu">Rigetti’s QVM and QPUs</a>. Run your experiments on real Quantum Computers!</p></li>
 <li><p>Modular code base that allows the user to customise and modify different components.</p></li>
+<li><p>Extensive examples explaining the usage of EntropicaQAOA in detail.</p></li>
 </ul>
 </div></blockquote>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>If you don’t have them already, install first Rigetti’s pyQquil package and their QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation <a class="reference external" href="http://docs.rigetti.com/en/stable/start.html">here</a>.</p>
-<p>In a Python3.6+ virtual environment you can install the <cite>entropica_qaoa</cite>  package using <a class="reference external" href="https://pip.pypa.io/en/stable/quickstart/">pip</a></p>
+<p>If you don’t have them already, you should first install Rigetti’s pyQuil package, as well as their QVM and Quil Compiler. For instructions on how to do so, see Rigetti’s documentation <a class="reference external" href="http://docs.rigetti.com/en/stable/start.html">here</a>.</p>
+<p>You can install EntropicaQAOA using <a class="reference external" href="https://pip.pypa.io/en/stable/quickstart/">pip</a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install entropica_qaoa
 </pre></div>
 </div>
-<p>and if you have it already installed upgraded via</p>
+<p>To upgrade to the latest version:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --upgrade entropica_qaoa
 </pre></div>
 </div>
-<p>If you want to run the Demo Notebooks, you will additionally need <cite>scikit-learn</cite> and <cite>scikit-optimize</cite>, which can also be installed using pip:</p>
+<p>If you want to run the Demo Notebooks, you will additionally need to install <cite>scikit-learn</cite> and <cite>scikit-optimize</cite>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install scikit-learn <span class="o">&amp;&amp;</span> pip install scikit-optimize
 </pre></div>
 </div>
+<p>You can also install EntropicaQAOA directly from GitHub. In your desired local directory, first clone the repository</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/entropicalabs/entropica_qaoa.git
+</pre></div>
 </div>
-<div class="section" id="first-steps">
-<h2>First Steps<a class="headerlink" href="#first-steps" title="Permalink to this headline">¶</a></h2>
-<p>In <a class="reference internal" href="notebooks/1_AnExampleWorkflow.html#anexampleworkflow"><span class="std std-ref">First steps: An example workflow</span></a> we show you the basic usage of
-EntropicaQAOA.
-More advanced examples on working with different parametrizations are found in
-<a class="reference internal" href="notebooks/2_ParameterClasses.html#parameterclasses"><span class="std std-ref">Working with the Parameter classes</span></a>, and the more advanced features of the cost
-functions are explained in <a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html#costfunctionsandvqe"><span class="std std-ref">Cost function features and VQE</span></a>. To learn how to conveniently
-create QAOA problem instances, and convert between different formats, refer to <a class="reference internal" href="notebooks/5_QAOAUtilities.html#qaoautilities"><span class="std std-ref">Utility functions for QAOA</span></a>.</p>
+<p>then move into the <code class="docutils literal notranslate"><span class="pre">entropica_qaoa</span></code> directory, and run pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> entropica_qaoa
+pip install -e
+</pre></div>
+</div>
+</div>
+<div class="section" id="testing-the-installation">
+<h2>Testing the installation<a class="headerlink" href="#testing-the-installation" title="Permalink to this headline">¶</a></h2>
+<p>Run the following short code to verify that EntropicaQAOA has been successfully installed. Here, we create a simple Hamiltonian
+and evaluate its expectation value with respect to the wavefunction produced by a QAOA circuit. We choose the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> parametrisation,
+and initialise the parameter values by analogy to a quantum annealing process with a linear schedule function. These features are explained in depth in other sections of
+the documentation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># pyquil imports</span>
+<span class="kn">from</span> <span class="nn">pyquil</span> <span class="kn">import</span> <span class="n">Program</span>
+<span class="kn">from</span> <span class="nn">pyquil.api</span> <span class="kn">import</span> <span class="n">WavefunctionSimulator</span>
+<span class="kn">from</span> <span class="nn">pyquil.paulis</span> <span class="kn">import</span> <span class="n">PauliSum</span><span class="p">,</span> <span class="n">PauliTerm</span>
+
+<span class="c1"># EntropicaQAOA imports</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.parameters</span> <span class="kn">import</span> <span class="n">StandardParams</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.cost_function</span> <span class="kn">import</span> <span class="n">QAOACostFunctionOnWFSim</span>
+
+<span class="c1"># create a hamiltonian on 3 qubits with 2 coupling terms and 1 bias term</span>
+<span class="n">Term1</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)</span><span class="o">*</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Term2</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span><span class="o">*</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Term3</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ham</span> <span class="o">=</span> <span class="n">PauliSum</span><span class="p">([</span><span class="n">Term1</span><span class="p">,</span><span class="n">Term2</span><span class="p">,</span><span class="n">Term3</span><span class="p">])</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># QAOA p parameter (number of timesteps)</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="c1"># initialise a set of StandardParams</span>
+
+<span class="c1"># Build the cost function and compute its value with the circuit parameters initialised above</span>
+<span class="n">cost_fun</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">params</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">cost_fun</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">raw</span><span class="p">())</span>
+<span class="k">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You should find the value of <code class="docutils literal notranslate"><span class="pre">res</span></code> to be -1.4664694.</p>
+<p>If you installed directly from GitHub, you can also run the full set of software tests. To do so, you will need to install <a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a>. To speed up the testing, we have tagged tests that require more computational time (~ 5 mins or so)  with <cite>runslow</cite>, and the tests of the notebooks with <cite>notebooks</cite>. The commands are as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> runs the default tests, and skips both the longer tests that need heavier simulations, as well as tests of the Notebooks in the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--runslow</span></code> runs the the tests that require longer time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--notebooks</span></code> runs the Notebook tests. To achieve this, the notebooks are converted to python scripts, and then executed. Should any errors occur, this means that the line numbers given in the error  messages refer to the lines in <cite>&lt;TheNotebook&gt;.py</cite>, and not in <cite>&lt;TheNotebook&gt;.ipynb</cite>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--all</span></code> runs all of the above tests.</p></li>
+</ul>
+</div></blockquote>
 <p>The documentation can also downloaded as Jupyter notebooks from our <a class="reference external" href="https://github.com/entropicalabs/entropica_qaoa/tree/master/examples">GitHub page</a> .</p>
+</div>
+<div class="section" id="contributing-and-feedback">
+<h2>Contributing and feedback<a class="headerlink" href="#contributing-and-feedback" title="Permalink to this headline">¶</a></h2>
+<p>If you have feature requests, or have already implemented them, feel free to open an issue or send us a pull request.</p>
+<p>We are always interested to hear about projects built with EntropicaQAOA. If you have an application you’d like to tell us about, drop us an email at <a class="reference external" href="mailto:devteam&#37;&#52;&#48;entropicalabs&#46;com">devteam<span>&#64;</span>entropicalabs<span>&#46;</span>com</a>.</p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>EntropicaQAOA is released under the Apache License, Version 2.0.</p>
 </div>
 </div>
 <div class="section" id="contents">
@@ -301,10 +354,6 @@ create QAOA problem instances, and convert between different formats, refer to <
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details and conventions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#v1-1-in-development">v1.1 (in development)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog.html#announcements">Announcements</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#v1-0">v1.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html#improvements-and-changes">Improvements and Changes</a></li>
 </ul>

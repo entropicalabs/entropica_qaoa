@@ -57,6 +57,9 @@
           
 
           
+            
+            <img src="_static/ELlogo_small.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
@@ -192,7 +195,7 @@ experiments that <span class="math notranslate nohighlight">\(\Delta t = 0.7 = \
 for many problem classes and instances, at least for the small system sizes one can feasibly simulate.
 For larger systems or smaller energy gaps, it might be neccesary to choose smaller values of <span class="math notranslate nohighlight">\(\Delta t\)</span></p>
 </dd>
-<dt>Discrete sine and cosine transforms for the <cite>FourierParams`</cite> class</dt><dd><p>In converting between the <span class="math notranslate nohighlight">\(\beta\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> parameters of the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> class, and the <cite>u</cite> and <cite>v</cite> parameters of the
+<dt>Discrete sine and cosine transforms for the <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> class</dt><dd><p>In converting between the <span class="math notranslate nohighlight">\(\beta\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> parameters of the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> class, and the <cite>u</cite> and <cite>v</cite> parameters of the
 <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> class, we use the type II versions of the discrete sine and cosine transformations. These are included in Scipy’s fast Fourier
 transforms module <a class="reference external" href="https://docs.scipy.org/doc/scipy-0.14.0/reference/fftpack.html">fftpack</a>. With the conventions used therein, in EntropicaQAOA the transformations are then given by:</p>
 <div class="math notranslate nohighlight">

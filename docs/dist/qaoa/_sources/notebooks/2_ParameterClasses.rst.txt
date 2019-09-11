@@ -380,7 +380,7 @@ reference, we reproduce the corresponding code snippet from
    gammas_singles = np.array([dt * t / time for t in times])
    gammas_pairs = np.array([dt * t / time for t in times])
 
-Let’s set up parameters for the case ``n_steps`` (i.e. :math:`p`) = 2,
+Let’s set up parameters for the case ``n_steps`` (i.e. :math:`p`) = 2,
 with the Hamiltonian from above.
 
 .. code:: ipython3
@@ -442,9 +442,9 @@ therefore the value we have chosen to implement.
 Converting between parametrisations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We also provide methods allowing parameters belonging to one class
-(e.g. ``StandardParams``) to be converted to parameters of another class
-(e.g. ``ExtendedParams``). For instance, let’s convert the ``Standard``
+We also provide methods allowing parameters belonging to one class (e.g.
+``StandardParams``) to be converted to parameters of another class (e.g.
+``ExtendedParams``). For instance, let’s convert the ``Standard``
 parameters we created in the previous section (from the ``linear_ramp``
 method) to a set of corresponding ``Extended`` parameters.
 

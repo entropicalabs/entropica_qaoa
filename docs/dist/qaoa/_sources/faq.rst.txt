@@ -32,7 +32,7 @@ Where does the factor ``0.7 * n_steps`` in the ``linear_ramp_from_hamiltonian()`
     for many problem classes and instances, at least for the small system sizes one can feasibly simulate.
     For larger systems or smaller energy gaps, it might be neccesary to choose smaller values of :math:`\Delta t`
 
-Discrete sine and cosine transforms for the `FourierParams`` class
+Discrete sine and cosine transforms for the ``FourierParams`` class
     In converting between the :math:`\beta` and :math:`\gamma` parameters of the ``StandardParams`` class, and the `u` and `v` parameters of the 
     ``FourierParams`` class, we use the type II versions of the discrete sine and cosine transformations. These are included in Scipy's fast Fourier 
     transforms module `fftpack <https://docs.scipy.org/doc/scipy-0.14.0/reference/fftpack.html>`_. With the conventions used therein, in EntropicaQAOA the transformations are then given by:

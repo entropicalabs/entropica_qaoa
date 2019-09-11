@@ -151,8 +151,8 @@ Creating the cost function
 --------------------------
 
 With the problem and our parametrisation now defined, we next create a
-cost function that we can pass to a minimiser of our choice
-(e.g. ``scipy.optimize.minimize``). To work seamlessly with most typical
+cost function that we can pass to a minimiser of our choice (e.g.
+``scipy.optimize.minimize``). To work seamlessly with most typical
 optimisers, this cost function needs to take in an array of values (the
 initial values of the parameters we want to optimise), and output a
 single number (the corresponding value of the objective function). We

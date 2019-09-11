@@ -543,9 +543,6 @@ possible.
 .. figure:: imgs/maxcut.png
    :alt: Title
 
-   A depiction of the maxcut problem, displaying a cut which separates
-   white and black vertices.
-
 *A depiction of the maxcut problem, displaying a cut which separates
 white and black vertices. Image
 credit:*\ `Wikipedia <https://en.wikipedia.org/wiki/Maximum_cut#/media/File:Max-cut.svg>`__

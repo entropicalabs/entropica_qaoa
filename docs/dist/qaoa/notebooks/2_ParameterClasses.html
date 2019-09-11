@@ -57,6 +57,9 @@
           
 
           
+            
+            <img src="../_static/ELlogo_small.png" class="logo" alt="Logo"/>
+          
           </a>
 
           
@@ -497,7 +500,7 @@ reference, we reproduce the corresponding code snippet from
 <span class="n">gammas_pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dt</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">time</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>Let’s set up parameters for the case <code class="docutils literal notranslate"><span class="pre">n_steps</span></code> (i.e. <span class="math notranslate nohighlight">\(p\)</span>) = 2,
+<p>Let’s set up parameters for the case <code class="docutils literal notranslate"><span class="pre">n_steps</span></code> (i.e. <span class="math notranslate nohighlight">\(p\)</span>) = 2,
 with the Hamiltonian from above.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">T</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># total time T of the annealing schedule</span>
@@ -548,9 +551,9 @@ therefore the value we have chosen to implement.</p>
 </div>
 <div class="section" id="converting-between-parametrisations">
 <h3>Converting between parametrisations<a class="headerlink" href="#converting-between-parametrisations" title="Permalink to this headline">¶</a></h3>
-<p>We also provide methods allowing parameters belonging to one class
-(e.g. <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>) to be converted to parameters of another class
-(e.g. <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code>). For instance, let’s convert the <code class="docutils literal notranslate"><span class="pre">Standard</span></code>
+<p>We also provide methods allowing parameters belonging to one class (e.g.
+<code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>) to be converted to parameters of another class (e.g.
+<code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code>). For instance, let’s convert the <code class="docutils literal notranslate"><span class="pre">Standard</span></code>
 parameters we created in the previous section (from the <code class="docutils literal notranslate"><span class="pre">linear_ramp</span></code>
 method) to a set of corresponding <code class="docutils literal notranslate"><span class="pre">Extended</span></code> parameters.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extended_from_std</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="o">.</span><span class="n">from_other_parameters</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
