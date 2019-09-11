@@ -54,7 +54,7 @@ All software tests are located in `entropica_qaoa/tests/`. To run them you will 
     `<TheNotebook>.ipynb`.
  - `pytest --all` runs all of the above tests. 
 
-## Development and Contributing
+## Contributing and feedback
 
 This project is hosted on GitHub, and can be cloned as follows:
 
