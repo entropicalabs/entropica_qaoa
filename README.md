@@ -64,4 +64,4 @@ git clone https://github.com/entropicalabs/entropica_qaoa.git
 
 If you have feature requests, or have already implemented them, feel free to open an issue or send us a pull request.
 
-We are always interested to hear about interesting projects built with EntropicaQAOA. If you have an application you’d like to tell us about, drop us an email at devteam@entropicalabs.com.
+We are always interested to hear about projects built with EntropicaQAOA. If you have an application you’d like to tell us about, drop us an email at devteam@entropicalabs.com.
