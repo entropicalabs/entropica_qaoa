@@ -417,12 +417,6 @@ In a similar way, we obtain ``gammas`` :math:`= [0.125, 0.375]` from the
 fact that the coefficient of the cost Hamiltonian in the annealing
 process is :math:`s(t)`.
 
-In the case of the ``ExtendedParams`` class, we follow a similar logic,
-however in computing the ``gammas_singles`` and ``gammas_pairs``, we
-also take account of the individual Hamiltonian coefficients - i.e. the
-``single_qubit_coeffs`` and ``pair_qubit_coeffs`` - in determining the
-angles.
-
 In this example, we explicitly passed in a total annealing time
 :math:`T` as an argument to the method. As an important point, if the
 total annealing time is very large compared to the number of steps

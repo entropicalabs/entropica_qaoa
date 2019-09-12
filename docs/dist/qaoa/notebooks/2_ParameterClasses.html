@@ -534,11 +534,6 @@ obtain here are
 In a similar way, we obtain <code class="docutils literal notranslate"><span class="pre">gammas</span></code> <span class="math notranslate nohighlight">\(= [0.125, 0.375]\)</span> from the
 fact that the coefficient of the cost Hamiltonian in the annealing
 process is <span class="math notranslate nohighlight">\(s(t)\)</span>.</p>
-<p>In the case of the <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> class, we follow a similar logic,
-however in computing the <code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code> and <code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code>, we
-also take account of the individual Hamiltonian coefficients - i.e. the
-<code class="docutils literal notranslate"><span class="pre">single_qubit_coeffs</span></code> and <code class="docutils literal notranslate"><span class="pre">pair_qubit_coeffs</span></code> - in determining the
-angles.</p>
 <p>In this example, we explicitly passed in a total annealing time
 <span class="math notranslate nohighlight">\(T\)</span> as an argument to the method. As an important point, if the
 total annealing time is very large compared to the number of steps
