@@ -109,7 +109,7 @@ The documentation can also downloaded as Jupyter notebooks from our `GitHub page
 Contributing and feedback
 -------------------------
 
-If you find any bugs or errors, or have feature requests (or have already implemented them yourself), feel free to open an issue or send us a pull request on `GitHub <https://github.com/entropicalabs/entropica_qaoa>`_ . 
+If you find any bugs or errors, have feature requests, or code you would like to contribute, feel free to open an issue or send us a pull request on `GitHub <https://github.com/entropicalabs/entropica_qaoa>`_ . 
 
 We are always interested to hear about projects built with EntropicaQAOA. If you have an application you'd like to tell us about, drop us an email at devteam@entropicalabs.com. 
 
