@@ -42,6 +42,12 @@ If you want to run the Demo Notebooks, you will additionally need to install `sc
 pip install scikit-learn && pip install scikit-optimize
 ```
 
+Alternatively, you can clone directly from GitHub:
+
+```bash
+git clone https://github.com/entropicalabs/entropica_qaoa.git
+```
+
 ### Testing
 
 All software tests are located in `entropica_qaoa/tests/`. To run them you will need to install [pytest](https://docs.pytest.org/en/latest/). To speed up the testing, we have tagged tests that require more computational time (~ 5 mins or so)  with `runslow`, and the tests of the notebooks with `notebooks`. This means that a bare $
@@ -56,12 +62,6 @@ All software tests are located in `entropica_qaoa/tests/`. To run them you will 
 
 ## Contributing and feedback
 
-This project is hosted on GitHub, and can be cloned as follows:
-
-```bash
-git clone https://github.com/entropicalabs/entropica_qaoa.git
-```
-
-If you have feature requests, or have already implemented them, feel free to open an issue or send us a pull request.
+If you find any bugs or errors, have feature requests, or code you would like to contribute, feel free to open an issue or send us a pull request on GitHub .
 
 We are always interested to hear about projects built with EntropicaQAOA. If you have an application you’d like to tell us about, drop us an email at devteam@entropicalabs.com.
