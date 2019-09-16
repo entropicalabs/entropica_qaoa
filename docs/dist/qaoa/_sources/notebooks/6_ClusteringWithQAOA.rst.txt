@@ -1,0 +1,1120 @@
+.. _6-ClusteringWithQAOA:
+
+Solve the clustering problem using QAOA
+=======================================
+
+**Author: Cooper Midroni** cooper@entropicalabs.com
+
+In this notebook we demonstrate a start-to-finish project workflow for
+using Quantum Approximate Optimization Algorithm to cluster a simple
+dataset. Along the way, we will explain the major concepts of QAOA and
+build intuition as to how QAOA can be used to solve clustering problems.
+This notebook will steer away from heavy mathematical explanations in
+favor of a higher level view of the algorithm’s core components. It is
+mainly geared towards users that don’t have physics background but come
+from computer science.
+
+Variational Hybrid Algorithms
+-----------------------------
+
+We often take for granted the many decades of progress that lead to
+today’s widespread use of classical computers. As memory and compute
+power become ever cheapened by Moore’s Law, the pressure to find optimal
+resource allocations for algorithms shrinks away. However, with quantum
+computers in their early stages, they still feel this daunting
+requirement. In response to this, a family of algorithms known as
+*variational hybrid quantum-classical algorithms* was created, with the
+notion that quantum resources can be made more useful when partnered
+with classical routines. The Quantum Approximate Optimization Algorithm
+(QAOA), belongs to the family of variatonal hybrid algorithms.
+
+We can infer a lot from merely unpacking this name. The presence of
+‘*variational*’ tells us these algorithms will follow an iterative
+approach, while ‘*hybrid*’ tells us they will leverage the use of both
+quantum and classical computers. In fact, this describes the main flow
+of the algorithm, with all that needs be answered is *when* does this
+iteration stop and *what* information is passed between devices.
+
+|A visual representation of a generic variational hybrid
+quantum-classical algorithm.| *A visual representation of a generic
+variational hybrid quantum-classical algorithm.*
+
+To answer the question of *what*, we note that the main goal of QAOA is
+optimize a set of **parameters**, which we denote as
+:math:`\vec{\gamma}` and :math:`\vec{\beta}`. You’ll notice that these
+symbols are vectors, as such they are :math:`n-`\ length. We discuss
+later what aspects of our problem decide the value of :math:`n` in the
+second notebook.
+
+:math:`\vec{\gamma}` and :math:`\vec{\beta}` parameterize a **cost
+function** which is evaluated with our **Quantum Circuit** to produce a
+cost value. This output value is input to the optimizer, and is used to
+determine whether the nudging of our parameters is in a direction of
+lower cost. We will sometimes call the cost value an **expectation
+value**, represented by :math:`\langle\psi|Cost|\psi\rangle`, which is
+the expected value of the cost function :math:`Cost` over the **wave
+function** :math:`\psi`. If you were caught off guard by the term ‘wave
+function’, then it is equally as effective to think of
+:math:`\langle\psi|Cost|\psi\rangle` as the notion of cost as in the
+more traditional machine learning sense. The **Classical Optimizer**
+will return updated parameters to the quantum circuit for re-evaluation,
+and the cycle repeats.
+
+*When* does this algorithm stop? Well, once a stopping criterion is met
+of course. This criterion is often a pre-defined maximum number of
+iterations, or occurs after a repeat number of evaluations land within
+the same threshold of convergence (a tolerance for the cost value in
+which we consider numbers within an :math:`\epsilon-`\ window the same).
+Once this criterion is met, the **optimized parameters** are returned
+and used to define the solution.
+
+|A visual representation of QAOA in the format of a variational hybrid
+algorithm.| *A visual representation of QAOA in the format of a
+variational hybrid algorithm.*
+
+The above description should leave you with many questions. - How does
+the above process solve a clustering problem? - How exactly do
+:math:`\vec{\gamma}` and :math:`\vec{\beta}` define the solution? - How
+do we define a meaningful cost function for our problem? - What in the
+world is a wave function?
+
+We hope to answer these and more. For now, if you feel comfortable with
+the critical vocabulary of QAOA (the bolded words), then you’ll be well
+prepared for the explanations below. \**\* ### Data Preparation Now
+let’s get to the fun part! We will import our data and define the
+problem setting as a highly manicured example for this clustering demo.
+
+The dataset we will be using is the **Pokemon dataset**, which can be
+found on
+`Github <https://gist.github.com/armgilles/194bcff35001e7eb53a2a8b441e8b2c6>`__.
+In our journey to Catch ’Em All, we will attempt to cluster Pokemon into
+Legendary and non-Legendary classes.
+
+**Import Libraries**
+
+.. |A visual representation of a generic variational hybrid quantum-classical algorithm.| image:: imgs/general_variational.png
+.. |A visual representation of QAOA in the format of a variational hybrid algorithm.| image:: imgs/variational.png
+
+.. code:: ipython3
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+**Import Data**
+
+.. code:: ipython3
+
+    df = pd.read_csv('./data/pokemon.csv')
+    df = df.set_index('#') #index pokemon by their ID number
+    df = df.rename_axis('ID') #rename axis to 'ID' instead of '#'
+    df = df.loc[~df.index.duplicated(keep='first')] #drop duplicates
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Name</th>
+          <th>Type 1</th>
+          <th>Type 2</th>
+          <th>Total</th>
+          <th>HP</th>
+          <th>Attack</th>
+          <th>Defense</th>
+          <th>Sp. Atk</th>
+          <th>Sp. Def</th>
+          <th>Speed</th>
+          <th>Generation</th>
+          <th>Legendary</th>
+        </tr>
+        <tr>
+          <th>ID</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>1</th>
+          <td>Bulbasaur</td>
+          <td>Grass</td>
+          <td>Poison</td>
+          <td>318</td>
+          <td>45</td>
+          <td>49</td>
+          <td>49</td>
+          <td>65</td>
+          <td>65</td>
+          <td>45</td>
+          <td>1</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>Ivysaur</td>
+          <td>Grass</td>
+          <td>Poison</td>
+          <td>405</td>
+          <td>60</td>
+          <td>62</td>
+          <td>63</td>
+          <td>80</td>
+          <td>80</td>
+          <td>60</td>
+          <td>1</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>Venusaur</td>
+          <td>Grass</td>
+          <td>Poison</td>
+          <td>525</td>
+          <td>80</td>
+          <td>82</td>
+          <td>83</td>
+          <td>100</td>
+          <td>100</td>
+          <td>80</td>
+          <td>1</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>Charmander</td>
+          <td>Fire</td>
+          <td>NaN</td>
+          <td>309</td>
+          <td>39</td>
+          <td>52</td>
+          <td>43</td>
+          <td>60</td>
+          <td>50</td>
+          <td>65</td>
+          <td>1</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>Charmeleon</td>
+          <td>Fire</td>
+          <td>NaN</td>
+          <td>405</td>
+          <td>58</td>
+          <td>64</td>
+          <td>58</td>
+          <td>80</td>
+          <td>65</td>
+          <td>80</td>
+          <td>1</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+To avoid the many bells and whistles of later iterations of Pokemon
+games, we’ll stick to our roots and only consider Pokemon from the first
+three generations.
+
+.. code:: ipython3
+
+    df = df.loc[df['Generation']<=3]
+    df.sample(frac=1).head() #sample the whole dataset (frac=1) to shuffle the arrangement
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Name</th>
+          <th>Type 1</th>
+          <th>Type 2</th>
+          <th>Total</th>
+          <th>HP</th>
+          <th>Attack</th>
+          <th>Defense</th>
+          <th>Sp. Atk</th>
+          <th>Sp. Def</th>
+          <th>Speed</th>
+          <th>Generation</th>
+          <th>Legendary</th>
+        </tr>
+        <tr>
+          <th>ID</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>232</th>
+          <td>Donphan</td>
+          <td>Ground</td>
+          <td>NaN</td>
+          <td>500</td>
+          <td>90</td>
+          <td>120</td>
+          <td>120</td>
+          <td>60</td>
+          <td>60</td>
+          <td>50</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>202</th>
+          <td>Wobbuffet</td>
+          <td>Psychic</td>
+          <td>NaN</td>
+          <td>405</td>
+          <td>190</td>
+          <td>33</td>
+          <td>58</td>
+          <td>33</td>
+          <td>58</td>
+          <td>33</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>261</th>
+          <td>Poochyena</td>
+          <td>Dark</td>
+          <td>NaN</td>
+          <td>220</td>
+          <td>35</td>
+          <td>55</td>
+          <td>35</td>
+          <td>30</td>
+          <td>30</td>
+          <td>35</td>
+          <td>3</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>148</th>
+          <td>Dragonair</td>
+          <td>Dragon</td>
+          <td>NaN</td>
+          <td>420</td>
+          <td>61</td>
+          <td>84</td>
+          <td>65</td>
+          <td>70</td>
+          <td>70</td>
+          <td>70</td>
+          <td>1</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>365</th>
+          <td>Walrein</td>
+          <td>Ice</td>
+          <td>Water</td>
+          <td>530</td>
+          <td>110</td>
+          <td>80</td>
+          <td>90</td>
+          <td>95</td>
+          <td>90</td>
+          <td>65</td>
+          <td>3</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    print('Percent of Non-Legendary Pokemon: %.2f' %((df.Legendary.count()-df.Legendary.sum())/df.Legendary.count()))
+    print('Percent of Legendary Pokemon: %.2f' %((df.Legendary.sum())/df.Legendary.count()))
+
+
+.. parsed-literal::
+
+    Percent of Non-Legendary Pokemon: 0.95
+    Percent of Legendary Pokemon: 0.05
+
+
+We can see that the classes are quite unevenly distributed. To remedy
+this, we will randomly select 5 Legendary and 5 Non-Legendary Pokemon to
+act as our samples to be clustered.
+
+.. code:: ipython3
+
+    legendary = df.loc[df['Legendary'] == True].sample(5)
+    non_legendary = df.loc[df['Legendary'] == False].sample(5)
+    pokemon = pd.concat([legendary,non_legendary])
+
+To further simplify the problem, and not worry about the encoding of
+categorical data, we will only consider numerical values in our
+clustering of the data.
+
+.. code:: ipython3
+
+    numerical_columns = ['Total','HP','Attack','Defense','Sp. Atk','Sp. Def','Speed']
+
+.. code:: ipython3
+
+    labels = pokemon['Legendary']
+    data = pokemon[numerical_columns].copy()
+    data.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Total</th>
+          <th>HP</th>
+          <th>Attack</th>
+          <th>Defense</th>
+          <th>Sp. Atk</th>
+          <th>Sp. Def</th>
+          <th>Speed</th>
+        </tr>
+        <tr>
+          <th>ID</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>146</th>
+          <td>580</td>
+          <td>90</td>
+          <td>100</td>
+          <td>90</td>
+          <td>125</td>
+          <td>85</td>
+          <td>90</td>
+        </tr>
+        <tr>
+          <th>378</th>
+          <td>580</td>
+          <td>80</td>
+          <td>50</td>
+          <td>100</td>
+          <td>100</td>
+          <td>200</td>
+          <td>50</td>
+        </tr>
+        <tr>
+          <th>249</th>
+          <td>680</td>
+          <td>106</td>
+          <td>90</td>
+          <td>130</td>
+          <td>90</td>
+          <td>154</td>
+          <td>110</td>
+        </tr>
+        <tr>
+          <th>383</th>
+          <td>670</td>
+          <td>100</td>
+          <td>150</td>
+          <td>140</td>
+          <td>100</td>
+          <td>90</td>
+          <td>90</td>
+        </tr>
+        <tr>
+          <th>381</th>
+          <td>600</td>
+          <td>80</td>
+          <td>90</td>
+          <td>80</td>
+          <td>130</td>
+          <td>110</td>
+          <td>110</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+We now have a dataset which is ready to be processed, but we may not be
+exactly clear on what to do with it. For that we must further understand
+how the QAOA process detailed above is actually used to solve a
+clustering problem.
+
+The Maxcut Problem
+------------------
+
+As laid out by `Rigetti’s paper on
+QAOA <https://arxiv.org/pdf/1712.05771.pdf>`__, there are a number of
+important steps that we must follow to map the problem of clustering
+into a format which QAOA can process. Broadly speaking, QAOA solves the
+**MAXCUT** problem, in which a graph of :math:`n` vertices is separated
+into two complementary subsets, :math:`S` and :math:`S^{c}`, such that
+the number of edges between :math:`S` and :math:`S^{c}` is as large as
+possible.
+
+.. figure:: imgs/maxcut.png
+   :alt: Title
+
+   A depiction of the maxcut problem, displaying a cut which separates
+   white and black vertices.
+
+*A depiction of the maxcut problem, displaying a cut which separates
+white and black vertices. Image
+credit:*\ `Wikipedia <https://en.wikipedia.org/wiki/Maximum_cut#/media/File:Max-cut.svg>`__
+
+This problem can be made more sophisticated by adding numerical values
+as weights to the edges, such that the best solution maximizes the sum
+of weights which separate :math:`S` and :math:`S^{c}`. This is precisely
+the approach we take in using MAXCUT to cluster our data.
+
+We allow the weights associated to each edge to be some notion of
+distance between points. In this way, the sets dictated by our optimal
+cut, :math:`S` and :math:`S^{c}`, separate the data into binary clusters
+which are maximally distant (and hence, maximally dissimilar) from one
+another.
+
+From our current understanding, we can already begin to formulate some
+first steps in preparing our data to fit this frameowrk.
+
+We can use the ``distances_dataset`` function from
+``entropica_qaoa.utilities`` to easily turn this set of points into the
+desired matrix of pairwise distances.
+
+.. code:: ipython3
+
+    from entropica_qaoa.utilities import distances_dataset
+    
+    dist = pd.DataFrame(distances_dataset(data.values),
+                           index=data.index,columns=data.index)
+    dist.iloc[0:5, 0:5]
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th>ID</th>
+          <th>146</th>
+          <th>378</th>
+          <th>249</th>
+          <th>383</th>
+          <th>381</th>
+        </tr>
+        <tr>
+          <th>ID</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>146</th>
+          <td>0.000000</td>
+          <td>134.721936</td>
+          <td>135.432640</td>
+          <td>117.686023</td>
+          <td>41.833001</td>
+        </tr>
+        <tr>
+          <th>378</th>
+          <td>134.721936</td>
+          <td>0.000000</td>
+          <td>137.811465</td>
+          <td>183.847763</td>
+          <td>122.474487</td>
+        </tr>
+        <tr>
+          <th>249</th>
+          <td>135.432640</td>
+          <td>137.811465</td>
+          <td>0.000000</td>
+          <td>91.825922</td>
+          <td>114.507642</td>
+        </tr>
+        <tr>
+          <th>383</th>
+          <td>117.686023</td>
+          <td>183.847763</td>
+          <td>91.825922</td>
+          <td>0.000000</td>
+          <td>119.163753</td>
+        </tr>
+        <tr>
+          <th>381</th>
+          <td>41.833001</td>
+          <td>122.474487</td>
+          <td>114.507642</td>
+          <td>119.163753</td>
+          <td>0.000000</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df.loc[dist.index].head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Name</th>
+          <th>Type 1</th>
+          <th>Type 2</th>
+          <th>Total</th>
+          <th>HP</th>
+          <th>Attack</th>
+          <th>Defense</th>
+          <th>Sp. Atk</th>
+          <th>Sp. Def</th>
+          <th>Speed</th>
+          <th>Generation</th>
+          <th>Legendary</th>
+        </tr>
+        <tr>
+          <th>ID</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>146</th>
+          <td>Moltres</td>
+          <td>Fire</td>
+          <td>Flying</td>
+          <td>580</td>
+          <td>90</td>
+          <td>100</td>
+          <td>90</td>
+          <td>125</td>
+          <td>85</td>
+          <td>90</td>
+          <td>1</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>378</th>
+          <td>Regice</td>
+          <td>Ice</td>
+          <td>NaN</td>
+          <td>580</td>
+          <td>80</td>
+          <td>50</td>
+          <td>100</td>
+          <td>100</td>
+          <td>200</td>
+          <td>50</td>
+          <td>3</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>249</th>
+          <td>Lugia</td>
+          <td>Psychic</td>
+          <td>Flying</td>
+          <td>680</td>
+          <td>106</td>
+          <td>90</td>
+          <td>130</td>
+          <td>90</td>
+          <td>154</td>
+          <td>110</td>
+          <td>2</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>383</th>
+          <td>Groudon</td>
+          <td>Ground</td>
+          <td>NaN</td>
+          <td>670</td>
+          <td>100</td>
+          <td>150</td>
+          <td>140</td>
+          <td>100</td>
+          <td>90</td>
+          <td>90</td>
+          <td>3</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>381</th>
+          <td>Latios</td>
+          <td>Dragon</td>
+          <td>Psychic</td>
+          <td>600</td>
+          <td>80</td>
+          <td>90</td>
+          <td>80</td>
+          <td>130</td>
+          <td>110</td>
+          <td>110</td>
+          <td>3</td>
+          <td>True</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+From Maxcut to QUBO
+-------------------
+
+With an understanding of the Maxcut structure which produces our
+clustered output, we ask ourselves how we can turn what is effectively a
+graph problem into the setting of an optimization problem. The answer is
+to map our Maxcut interpretation into a **Quadratic Unconstrainted
+Binary Optimization**
+(`QUBO <https://en.wikipedia.org/wiki/Quadratic_unconstrained_binary_optimization>`__)
+problem. QUBO problems attempt to minimize a quadratic polynomial with
+binary variables. Luckily, MAXCUT already has a well-known QUBO cost
+function. This cost function is sophisticated enough to allow for our
+pairwise distanes to be meaningfully included, as well as to allow for
+the inclusion of bias terms on individual samples.
+
+.. math::
+
+
+   Cost=-\sum_{\langle i j\rangle} J_{i j} \sigma_{i} \sigma_{j}-\mu \sum_{j} h_{j} \sigma_{j}
+
+To explain the notation: - :math:`\sigma_{i}` is the cluster class (-1
+or 1) of sample :math:`i` - :math:`J_{i j}` is the distance between
+sample :math:`i` and sample :math:`j` - :math:`h_{j}` is a bias term on
+sample :math:`j` - :math:`\mu` is a universal weight applied to all bias
+terms
+
+By convention, a negative sign is applied to the cost function, as
+above. In quantum mechanics we would denote thie function as
+:math:`H(\sigma)`. The symbol :math:`H` stands for *Hamiltonian*, which
+is an operator which acts as a sum of the energies of the system. For
+the scope of this notebook, thinking of :math:`Cost` as any traditional
+cost function which we want to minimize will serve us equally as
+valuable.
+
+From QUBO to a Hamiltonian
+--------------------------
+
+Now we must use our data to create the cost function defined above. To
+make a Hamiltonian that is recognizable by pyQuil, we must use the
+pyQuil ``PauliTerm`` object.
+
+.. code:: ipython3
+
+    from pyquil.api import WavefunctionSimulator
+    from pyquil.paulis import PauliSum, PauliTerm
+
+A ``PauliTerm`` object can be quadratic or of order one. In the case of
+it being quadratic, it represents the relationship between any two
+samples of data. An order one ``PauliTerm`` would be an implementation
+of a bias term - a cost constraint which only affects one variable.
+Below we show some basic functionality of the ``PauliTerm`` object.
+
+.. code:: ipython3
+
+    #Constructing a quadratic PauliTerm
+    i = 3
+    j = 6
+    print('Distance between samples %d and %d: %.3f' %(i,j,dist.values[i][j]))
+
+
+.. parsed-literal::
+
+    Distance between samples 3 and 6: 203.593
+
+
+To create the quadratic term we multiply two Paulis together. Each
+``PauliTerm`` has an accompanying coefficient which is also multiplied.
+For simplicity’s sake, we include the pairwise distance as a coefficient
+of one factor, and make the other ‘1.0’.
+
+.. code:: ipython3
+
+    term1 = PauliTerm("Z",i,dist.values[i][j])
+    term2 = PauliTerm("Z",j,1.0) 
+    term = term1*term2
+    print(term)
+
+
+.. parsed-literal::
+
+    (203.59273071502332+0j)*Z3*Z6
+
+
+Feel free to play with the coefficient number of ``term2`` to see how it
+affects the output of the cell.
+
+For those new to quantum computing, you’re likely wondering what the
+purpose of the letter ‘Z’ is. It indicates that this ``PauliTerm`` is a
+Z operator.
+
+You may also note that our sample numbers, :math:`i=3` and :math:`j=6`,
+have found their way into the printed output. Including :math:`i` and
+:math:`j` in each ``PauliTerm`` tells pyQuil which samples or **qubits**
+the operation is applied to. That’s right, in the QAOA setup we consider
+each datapoint to be mapped to a qubit. Thus, the above printed
+statement actually means *“apply a penalty of :math:`Q` should sample 3
+and sample 6 be in the same class”*, where :math:`Q` is the coefficient
+of the operator product Z3*Z6. Said in a more quantum-intuitive sense:
+*“Apply a penalty of :math:`Q` should qubit 3 and qubit 6 both be found
+in the same spin state (spin up or spin down)”*.
+
+Thus, as QAOA tries to minimize the cost function, sample 3 and 6 will
+only appear in the same class if this configuration is optimal. The
+choice of our weights as the distances between the samples implies, that
+in a “good” configuration samples that lie far apart will end up in
+different classes.
+
+We can see now that to make the Hamiltonian for our system we must
+iterate over each distance in our distance matrix, and assign it within
+a ``PauliTerm`` as the interaction strength between the appropriate
+qubits. We can readily achieve this using the utility function
+``hamiltonian_from_distances``.
+
+.. code:: ipython3
+
+    from entropica_qaoa.utilities import hamiltonian_from_distances
+    
+    hamiltonian = hamiltonian_from_distances(dist)
+    print(hamiltonian)
+
+
+.. parsed-literal::
+
+    (134.7219358530748+0j)*Z0*Z1 + (135.43264008354853+0j)*Z0*Z2 + (117.6860229593982+0j)*Z0*Z3 + (41.83300132670378+0j)*Z0*Z4 + (71.79136438319027+0j)*Z0*Z5 + (92.73618495495704+0j)*Z0*Z6 + (156.8438714135812+0j)*Z0*Z7 + (182.75666882497066+0j)*Z0*Z8 + (363.86810797320504+0j)*Z0*Z9 + (137.81146541561773+0j)*Z1*Z2 + (183.84776310850236+0j)*Z1*Z3 + (122.47448713915891+0j)*Z1*Z4 + (116.72189169131899+0j)*Z1*Z5 + (164.46884203398528+0j)*Z1*Z6 + (213.89249636207438+0j)*Z1*Z7 + (227.92542640082962+0j)*Z1*Z8 + (381.7066936798463+0j)*Z1*Z9 + (91.82592226599198+0j)*Z2*Z3 + (114.50764166639709+0j)*Z2*Z4 + (166.21672599350524+0j)*Z2*Z5 + (214.15415008820165+0j)*Z2*Z6 + (273.09705234586477+0j)*Z2*Z7 + (292.4414471308744+0j)*Z2*Z8 + (468.4356946262742+0j)*Z2*Z9 + (119.16375287812986+0j)*Z3*Z4 + (163.47476869535555+0j)*Z3*Z5 + (203.59273071502332+0j)*Z3*Z6 + (257.390753524675+0j)*Z3*Z7 + (270.4625667259704+0j)*Z3*Z8 + (463.6809247747852+0j)*Z3*Z9 + (91.78235124467012+0j)*Z4*Z5 + (111.57956802210698+0j)*Z4*Z6 + (182.07141456033125+0j)*Z4*Z7 + (212.4852936087578+0j)*Z4*Z8 + (384.1874542459709+0j)*Z4*Z9 + (70.73895673530957+0j)*Z5*Z6 + (113.02212172844747+0j)*Z5*Z7 + (129.89996150884727+0j)*Z5*Z8 + (308.22718893699175+0j)*Z5*Z9 + (90.55385138137417+0j)*Z6*Z7 + (120.20815280171308+0j)*Z6*Z8 + (278.8368698719737+0j)*Z6*Z9 + (62.44997998398398+0j)*Z7*Z8 + (217.83020910791964+0j)*Z7*Z9 + (202.73134932713293+0j)*Z8*Z9
+
+
+The above exercise brings up an important limitation to our present QAOA
+approach. The number of datapoints we are able to use is limited by the
+number of qubits we have available.
+
+Minimize the Hamiltonian with QAOA
+----------------------------------
+
+Now that we have mapped the clustering problem to a Hamiltonian it is
+time to find the spin class assignments/spin configuration that
+minimizes our cost function. We do this using the QAOA algorithm. First
+we need to import the neccesary bits and pieces:
+
+.. code:: ipython3
+
+    # import the neccesary pyquil modules
+    from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnQVM, QAOACostFunctionOnWFSim
+    
+    # import QAOAParameters 
+    from entropica_qaoa.qaoa.parameters import ExtendedParams
+    
+    # import an optimizer
+    from scipy.optimize import minimize
+    
+    #Some utilities for time tracking and measuring our outcomes.
+    import time
+    from math import log
+    from entropica_qaoa.utilities import cluster_accuracy, max_probability_bitstring
+
+Now we can set up the *hyperparameters* (problem parameters that remain
+fixed for this problem instance):
+
+.. code:: ipython3
+
+    timesteps = 3 # The QAOA p parameter
+    iters = 500 # Number of classical optimiser iterations
+    n_qubits = 10 #this number might be defined before your dataset - should equal the number of data points
+    #The hamiltonian is also a hyperparameter
+
+And of course also the parameters need to be chosen. In this QAOA run,
+we will use ``ExtendedParameters``. This parameter class provides the
+most degrees of freedom for our optimizer to explore the energy
+landscape. Conversely, it also has the most parameters to optimize and
+thus will take longer to converge.
+
+To instantiate this parameter class, we need to pass in three separate
+lists of angles. - :math:`\vec{\beta}`: every timestep requires
+:math:`n_{qubits}` beta rotations. Thus there are
+:math:`n_{qubits}\times timesteps` beta values. -
+:math:`\vec{\gamma}_{pairs}`: there is a gamma rotation for every
+two-qubit interaction. A simple way to come up with this number is to
+measure the length of your Hamiltonian, subtracted by the number of
+single qubit bias terms in place. - :math:`\vec{\gamma}_{singles}`:
+there is a gamma single rotation for each bias term included in the
+hamiltonian.
+
+We randomly generate these lists as their initial starting states are
+somewhat redunant. They will be optimized over 100s of iterations!
+
+.. code:: ipython3
+
+    betas = [round(val,1) for val in np.random.rand(timesteps*n_qubits)]
+    gammas_singles = [round(val,1) for val in np.random.rand(0)] #we don't want any bias terms
+    gammas_pairs = [round(val,1) for val in np.random.rand(timesteps*len(hamiltonian))]
+    
+    hyperparameters = (hamiltonian, timesteps)
+    parameters = (betas, gammas_singles, gammas_pairs)
+    
+    params = ExtendedParams(hyperparameters, parameters)
+
+Before starting the simulator, make sure you are running Rigetti’s QVM
+and Quil Compiler by running ``qvm -S`` and ``quilc -S`` in two open and
+disposable terminals
+
+Let’s begin by running QAOA with :math:`p=3` timesteps, and a maximum of
+500 optimiser Iterations.
+
+.. code:: ipython3
+
+    # Set up the WavefunctionSimulator from pyQuil
+    sim = WavefunctionSimulator()
+    cost_function = QAOACostFunctionOnWFSim(hamiltonian,
+                                            params=params,
+                                            sim=sim,
+                                            enable_logging=True)
+
+.. code:: ipython3
+
+    t0 = time.time()
+    res = minimize(cost_function, params.raw(), tol=1e-3, method='Cobyla',
+                   options={"maxiter": iters})
+    print('Run complete!\n','Runtime:','{:.3f}'.format(time.time()-t0))
+
+
+.. parsed-literal::
+
+    Run complete!
+     Runtime: 49.818
+
+
+.. code:: ipython3
+
+    wave_func = cost_function.get_wavefunction(params.raw())
+    lowest = max_probability_bitstring(wave_func.probabilities())
+
+.. code:: ipython3
+
+    true_clusters = [1 if val else 0 for val in labels] 
+    acc = cluster_accuracy(lowest,true_clusters)
+
+
+.. parsed-literal::
+
+    True Labels of samples: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+    Lowest QAOA State: [0, 1, 0, 0, 1, 0, 1, 1, 1, 1]
+    Accuracy of Original State: 30.0 %
+    Accuracy of Complement State: 70.0 %
+
+
+We can analyze the optimizer to see whether or not our QAOA run
+converged. For the full message, run:
+
+.. code:: python
+
+   print(res)
+
+.. code:: ipython3
+
+    print('Cost Function Value:', res.fun)
+    print('Converged?:',res.message)
+
+
+.. parsed-literal::
+
+    Cost Function Value: -345.484138357191
+    Converged?: Maximum number of function evaluations has been exceeded.
+
+
+We can see we did not converge. Let’s tighten up our operations by
+wrapping our QAOA runs in a function and increase the QAOA parameter
+:math:`p`.
+
+.. code:: ipython3
+
+    def run_qaoa(hamiltonian, params, timesteps, max_iters, init_state=None): 
+        cost_function = QAOACostFunctionOnWFSim(hamiltonian,
+                                                params=params,
+                                                initial_state=init_state)
+        res = minimize(cost_function, params.raw(), tol=1e-3, method='Cobyla',
+                              options={"maxiter" : max_iters})
+        
+        return cost_function.get_wavefunction(params.raw()), res
+
+The cell below will take a couple of minutes to run:
+
+.. code:: ipython3
+
+    t0 = time.time()
+    wave_func, res = run_qaoa(hamiltonian, params, timesteps=3, max_iters=1500)
+    print('Run complete\n','Runtime:','{:.3f}'.format(time.time()-t0))
+
+
+.. parsed-literal::
+
+    Run complete
+     Runtime: 149.628
+
+
+.. code:: ipython3
+
+    lowest = max_probability_bitstring(wave_func.probabilities())
+
+.. code:: ipython3
+
+    true_clusters = [1 if val else 0 for val in labels] 
+    acc = cluster_accuracy(lowest,true_clusters)
+    
+    print('Cost Function Value:', res.fun)
+    print('Converged?:',res.message)
+
+
+.. parsed-literal::
+
+    True Labels of samples: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+    Lowest QAOA State: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+    Accuracy of Original State: 100.0 %
+    Accuracy of Complement State: 0.0 %
+    Cost Function Value: -525.9198833293702
+    Converged?: Maximum number of function evaluations has been exceeded.
+
+
+You should typically find that increasing the number of allowed
+iterations gives a more accurate answer. The precise numbers will depend
+on which Pokemons are randomly selected at the beginning.

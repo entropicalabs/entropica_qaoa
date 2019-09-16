@@ -1,0 +1,975 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Working with the Parameter classes &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Advanced QAOA parameter classes" href="3_AdvancedParameterClasses.html" />
+    <link rel="prev" title="First steps: An example workflow" href="1_AnExampleWorkflow.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+            
+            <img src="../_static/ELlogo_small.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials_overview.html">Overview of tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Working with the Parameter classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-the-problem-hamiltonian-and-setting-up-hyperparameters">Creating the problem Hamiltonian and setting up <em>hyperparameters</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#qaoa-variable-parameter-classes">QAOA variable parameter classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-creation-and-conversion-routines">Parameter creation and conversion routines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#building-parameters-from-the-abstractparams-class">Building parameters from the <code class="docutils literal notranslate"><span class="pre">AbstractParams</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-parameters-directly">Building parameters directly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-empty">Using .empty()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linear-ramp-from-hamiltonian-parametrisation">“Linear ramp from Hamiltonian” parametrisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#converting-between-parametrisations">Converting between parametrisations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-parametrisations">Working with parametrisations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#parameters-under-the-hood">Parameters under the hood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modifying-parameters">Modifying parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#erroneous-parameter-catching">Erroneous parameter catching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#iterating-over-parameter-ranges">Iterating over parameter ranges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parameter-iterator-use-case-landscape-sweeps">Parameter iterator use case: Landscape sweeps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#footnotes">Footnotes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+</ul>
+<p class="caption"><span class="caption-text">General Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Working with the Parameter classes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/2_ParameterClasses.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="working-with-the-parameter-classes">
+<span id="parameterclasses"></span><h1>Working with the Parameter classes<a class="headerlink" href="#working-with-the-parameter-classes" title="Permalink to this headline">¶</a></h1>
+<p>Here we illustrate the use of the various QAOA parameter classes in the
+EntropicaQAOA package.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import the standard modules from python</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="c1"># import the neccesary pyquil modules</span>
+<span class="kn">from</span> <span class="nn">pyquil.paulis</span> <span class="kn">import</span> <span class="n">PauliSum</span><span class="p">,</span> <span class="n">PauliTerm</span>
+
+<span class="c1"># import the QAOAParameters classes and cost functions</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.cost_function</span> <span class="kn">import</span> <span class="n">QAOACostFunctionOnWFSim</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.parameters</span> <span class="kn">import</span> <span class="n">AbstractParams</span><span class="p">,</span> <span class="n">ExtendedParams</span><span class="p">,</span> <span class="n">StandardParams</span><span class="p">,</span> <span class="n">QAOAParameterIterator</span>
+</pre></div>
+</div>
+<div class="section" id="creating-the-problem-hamiltonian-and-setting-up-hyperparameters">
+<h2>Creating the problem Hamiltonian and setting up <em>hyperparameters</em><a class="headerlink" href="#creating-the-problem-hamiltonian-and-setting-up-hyperparameters" title="Permalink to this headline">¶</a></h2>
+<p>In general, the QAOA consists of two different types of parameters,
+which we will refer to as <em>hyperparameters</em> and <em>variable parameters</em>.
+This section covers the hyperparameters, while the section below focuses
+on the variable parameters. The hyperparameters are those parameters
+that remain fixed throughout our computation, while the variable
+parameters are those that we modify in seeking the optimial problem
+solution.</p>
+<p>In the simplest implementation of QAOA, the hyperparameters may in turn
+be divided into two sets (see <a class="reference external" href="#footnotes">Footnote 1</a> for a third
+example of hyperparameters):</p>
+<ol class="arabic simple">
+<li><p>Those originating from the cost Hamiltonian:</p></li>
+</ol>
+<ul class="simple">
+<li><p>the qubit register (the qubits to be used in the algorithm);</p></li>
+<li><p>the qubits with a bias term (their own <span class="math notranslate nohighlight">\(Z\)</span> term in the
+Hamiltonian), and the corresponding coefficients;</p></li>
+<li><p>the qubit pairs that interact (through a <span class="math notranslate nohighlight">\(ZZ\)</span> term in the
+Hamiltonian), along with the corresponding ‘coupling’ coefficients.</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>The number of QAOA steps we wish to perform, frequently referred to
+as the QAOA ‘<span class="math notranslate nohighlight">\(p\)</span>’ parameter.</p></li>
+</ol>
+<p>In EntropicaQAOA, there are several ways of creating the problem
+Hamiltonian of interest. Ultimately, it should be in the form of a
+Pyquil <code class="docutils literal notranslate"><span class="pre">PauliSum</span></code> object: see <a class="reference external" href="http://docs.rigetti.com/en/stable/apidocs/pauli.html#">Rigetti’s
+documentation</a>
+on the <code class="docutils literal notranslate"><span class="pre">PauliSum</span></code> and <code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> classes for more information on
+working with these.</p>
+<p>For example, let’s create the simple Hamiltonian</p>
+<div class="math notranslate nohighlight">
+\[H = 0.7Z_0Z_1 + 1.2Z_0Z_2 -0.5Z_0\]</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> and <code class="docutils literal notranslate"><span class="pre">PauliSum</span></code> directly, this can be implemented
+as follows.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a hamiltonian on 3 qubits with 2 coupling terms and 1 bias term</span>
+<span class="n">Term1</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)</span><span class="o">*</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Term2</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span><span class="o">*</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Term3</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">hamiltonian</span> <span class="o">=</span> <span class="n">PauliSum</span><span class="p">([</span><span class="n">Term1</span><span class="p">,</span><span class="n">Term2</span><span class="p">,</span><span class="n">Term3</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;hamiltonian =&quot;</span><span class="p">,</span> <span class="n">hamiltonian</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hamiltonian</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.7</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.2</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="qaoa-variable-parameter-classes">
+<h2>QAOA variable parameter classes<a class="headerlink" href="#qaoa-variable-parameter-classes" title="Permalink to this headline">¶</a></h2>
+<p>Having specified the problem Hamiltonian, we next move on to defining
+the QAOA parameters we want to use in our quantum circuit.</p>
+<p>For a general variational quantum algorithm such as VQE, to fully define
+a problem we must specify a circuit ansatz (a sequence of gates to be
+performed) and a corresponding parametrisation (how the parameters over
+which we intend to optimise are related to the sequence of gates). In
+QAOA, the circuit ansatz is fixed to be the alternate application of the
+mixer operator (also referred to as the <em>driver</em> or <em>reference</em>
+operator) and the cost operator (sometimes also referred to as the
+<em>phase separation</em> operator). The goal is then to find the parameters
+that optimise the cost function when evaluated with resepct to the
+quantum state produced by the circuit.</p>
+<p>We have a considerable degree of flexibility in choosing how to
+parametrise a QAOA problem. We can choose a smaller set of parameters,
+where the optimisation landscape has lower dimension at the expense of
+reduced expressivity. Or, we can choose a larger set, where we can
+generate a wider set of quantum states with lower circuit depth, but the
+corresponding optimisation landscape has a higher dimension. The larger
+the set of parameters we have to optimise over, the more difficult it
+can become to find the optimal solution.</p>
+<p>The variable parameters are those we wish to optimise, which in turn
+depend on the specific parametrisation for the circuit we have chosen.</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> class implements the original and conventional
+form of the QAOA, as described in <a class="reference external" href="#references">Ref 1</a>. In time
+step <span class="math notranslate nohighlight">\(q\)</span> of the algorithm, the mixer and cost Hamiltonians are
+applied with coefficients <span class="math notranslate nohighlight">\(\beta^{(q)}\)</span> and
+<span class="math notranslate nohighlight">\(\gamma^{(q)}\)</span>, respectively, giving a total of <span class="math notranslate nohighlight">\(2p\)</span>
+parameters over which we need to optimise. For example for a depth-2
+(<span class="math notranslate nohighlight">\(p=2\)</span>) circuit, the unitary operator corresponding to the QAOA
+circuit would take the form</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[U(\beta_1,\beta_2,\gamma_1,\gamma_2) = \exp\left(-i\beta^{(2)} H_{M}\right)\exp\left(-i\gamma^{(2)} H_{C}\right)\exp\left(-i\beta^{(1)} H_{M}\right)\exp\left(-i\gamma^{(1)} H_{C}\right)\]</div>
+<p>where the mixer Hamiltonian is given by <span class="math notranslate nohighlight">\(H_M = -\sum_j X_j\)</span>, and
+the cost Hamiltonian is given by
+<span class="math notranslate nohighlight">\(H_C = \sum_j h_j Z_j + (1/2)\sum_{j,k} g_{j,k} Z_jZ_k\)</span>.</p>
+<ul>
+<li><p>For the <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> class, each operator in both the cost and
+mixer Hamiltonians has its own angle, so that the set of variable
+parameters are:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mbox{betas} = \{\beta_0^{(1)},...,\beta_{n-1}^{(1)},\beta_0^{(2)},...,\beta_{n-1}^{(2)},...,\beta_0^{(p)},...,\beta_{n-1}^{(p)}\}\)</span>,
+where <span class="math notranslate nohighlight">\(\beta_i^{(q)}\)</span> denotes the mixer Hamiltonian angle
+for qubit <span class="math notranslate nohighlight">\(i\)</span> in the QAOA step <span class="math notranslate nohighlight">\(q\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mbox{gammas_singles} = \left\{ \{\gamma_s^{(1)}\}, \{\gamma_s^{(2)}\},...,\{\gamma_s^{(p)}\} \right\}\)</span>,
+where where <span class="math notranslate nohighlight">\(s\)</span> is the set of qubits with bias terms in the
+cost Hamiltonian, and <span class="math notranslate nohighlight">\(\{\gamma_s^{(q)}\}\)</span> denotes the set
+of angles corresponding to those bias terms in QAOA step
+<span class="math notranslate nohighlight">\(q\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mbox{gammas_pairs} = \left\{ \{\Gamma_{\Pi}^{(1)}\}, \{\Gamma_{\Pi}^{(2)}\},...,\{\Gamma_{\Pi}^{(p)}\} \right\}\)</span>,
+where where <span class="math notranslate nohighlight">\(\Pi\)</span> is the set of qubits with bias terms in
+the cost Hamiltonian, and <span class="math notranslate nohighlight">\(\{\Gamma_{\Pi}^{(q)}\}\)</span> denotes
+the set of angles corresponding to those bias terms in QAOA step
+<span class="math notranslate nohighlight">\(q\)</span>.</p></li>
+</ul>
+<p>For instance, for a depth-2 circuit the corresponding unitary
+operator would then become:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}U\left(\vec{\beta},\vec{\gamma},\vec{\Gamma}\right) = \exp\left(i\sum_{j}\beta_{j}^{(2)}X_j\right)\exp\left(-i\sum_{j\in s} \gamma_{j}^{(2)}h_{j}Z_j - (i/2)\sum_{j,k \in \Pi}\Gamma_{jk}^{(2)}g_{jk}Z_jZ_k\right) \\
+\qquad\qquad\times\exp\left(i\sum_{j}\beta_{j}^{(1)}X_j\right)\exp\left(-i\sum_{j\in s} \gamma_{j}^{(1)}h_{j}Z_j - (i/2)\sum_{j,k \in \Pi}\Gamma_{jk}^{(1)}g_{jk}Z_jZ_k\right)\end{split}\]</div>
+</li>
+</ul>
+<p>We currently provide two additional parameter classes that may be of
+interest, either for didactic or practical purposes.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code>: basically a discretised form of quantum
+annealing, with a schedule function <span class="math notranslate nohighlight">\(s(t)\)</span>; the coefficient of
+the mixer Hamiltonian is <span class="math notranslate nohighlight">\((1 - s(t))\)</span>, and the coefficient of
+the cost Hamiltonian is <span class="math notranslate nohighlight">\(s(t)\)</span>. Unlike QAOA, therefore, the
+coefficients of the two Hamiltonians are necessarily related to one
+another.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FourierParams</span></code>: a heuristic parametrisation proposed by Zhou et al
+in reference <a class="reference external" href="#references">Ref 2</a>. The idea is that the optimal
+<span class="math notranslate nohighlight">\(\beta\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> parameters sometimes empirically
+appear to be described by relatively smooth functions, meaning that
+one can consider working instead with the Fourier decompositions of
+those functions. By keeping only a fixed number of low-frequency
+Fourier components, the parameter space over which one must optimise
+can be significantly reduced.</p></li>
+</ul>
+<p>The use of these latter two parameter classes is demonstrated in the
+separate notebook <a class="reference internal" href="3_AdvancedParameterClasses.html#advancedparameterclasses"><span class="std std-ref">Advanced QAOA parameter classes</span></a>.</p>
+</div>
+<div class="section" id="parameter-creation-and-conversion-routines">
+<h2>Parameter creation and conversion routines<a class="headerlink" href="#parameter-creation-and-conversion-routines" title="Permalink to this headline">¶</a></h2>
+<p>This section demonstrates the different methods available for setting up
+parameters in EntropicaQAOA. Depending on the situation at hand, one
+method may be preferable to another.</p>
+<div class="section" id="building-parameters-from-the-abstractparams-class">
+<h3>Building parameters from the <code class="docutils literal notranslate"><span class="pre">AbstractParams</span></code> class<a class="headerlink" href="#building-parameters-from-the-abstractparams-class" title="Permalink to this headline">¶</a></h3>
+<p>All of the QAOA parameter classes listed above are descendants of the
+parent class <code class="docutils literal notranslate"><span class="pre">AbstractParams</span></code>. An object belonging to this class is
+characterised by the problem hyperparameters. We create such an object
+as follows:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">abstract_params</span> <span class="o">=</span> <span class="n">AbstractParams</span><span class="p">([</span><span class="n">hamiltonian</span><span class="p">,</span><span class="n">p</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">abstract_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">single_qubit_coeffs</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+    <span class="n">pair_qubit_coeffs</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.7</span> <span class="mf">1.2</span><span class="p">]</span>
+    <span class="n">n_steps</span><span class="p">:</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>Subsequently, we can initalise any of the sets of variable parameters
+described above by making use of the <code class="docutils literal notranslate"><span class="pre">AbstractParams</span></code> object. For
+example, let’s set up <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> using the <code class="docutils literal notranslate"><span class="pre">AbstractParams</span></code> we
+have just defined. To do this, we call the <code class="docutils literal notranslate"><span class="pre">.from_AbstractParameters</span></code>
+method.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify some angles</span>
+<span class="n">betas</span>          <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]]</span>
+<span class="n">gammas_singles</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]]</span>
+<span class="n">gammas_pairs</span>   <span class="o">=</span> <span class="p">[[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]]</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">gammas_singles</span><span class="p">,</span> <span class="n">gammas_pairs</span><span class="p">)</span>
+
+<span class="n">extended_params</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="o">.</span><span class="n">from_AbstractParameters</span><span class="p">(</span><span class="n">abstract_params</span><span class="p">,</span><span class="n">parameters</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">extended_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.</span>  <span class="mf">0.1</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.2</span> <span class="mf">1.2</span><span class="p">]]</span>
+    <span class="n">gammas_singles</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.</span> <span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]]</span>
+    <span class="n">gammas_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.1</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span> <span class="mf">1.2</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>One benefit of this method is that it allows multiple different
+parametrisations to be set up from the same underlying set of
+<code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code>.</p>
+</div>
+<div class="section" id="building-parameters-directly">
+<h3>Building parameters directly<a class="headerlink" href="#building-parameters-directly" title="Permalink to this headline">¶</a></h3>
+<p>We can also create <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> directly, without first setting up
+<code class="docutils literal notranslate"><span class="pre">AbstractParams</span></code>. For the case considered above, we would simply do
+the following:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extended_direct</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="p">([</span><span class="n">hamiltonian</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">parameters</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">extended_direct</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.</span>  <span class="mf">0.1</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.2</span> <span class="mf">1.2</span><span class="p">]]</span>
+    <span class="n">gammas_singles</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.</span> <span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]]</span>
+    <span class="n">gammas_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.1</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span> <span class="mf">1.2</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>We can set up an object of any of the other parameter classes
+analogously to the case we have illustrated above for
+<code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code>, either directly, or through <code class="docutils literal notranslate"><span class="pre">AbstractParams</span></code>.</p>
+<p>In a standard workflow, with the parameters in hand, we would then pass
+them to a <code class="docutils literal notranslate"><span class="pre">cost_function</span></code> object, built with one of the classes
+<code class="docutils literal notranslate"><span class="pre">QAOACostFunctionOnQVM</span></code> or with <code class="docutils literal notranslate"><span class="pre">QAOACostFunctionOnWFSim</span></code>. To do so,
+we first arrange the <code class="docutils literal notranslate"><span class="pre">params</span></code> in a single <em>raw</em> list of parameters in
+the form [<code class="docutils literal notranslate"><span class="pre">betas</span></code>,<code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code>,<code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code>]:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extended_direct_raw</span> <span class="o">=</span> <span class="n">extended_direct</span><span class="o">.</span><span class="n">raw</span><span class="p">()</span>
+<span class="n">extended_direct_raw</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Further examples of the use of cost function objects and optimisers are
+given in the <a class="reference internal" href="1_AnExampleWorkflow.html#anexampleworkflow"><span class="std std-ref">First steps: An example workflow</span></a> notebook.</p>
+</div>
+<div class="section" id="using-empty">
+<h3>Using .empty()<a class="headerlink" href="#using-empty" title="Permalink to this headline">¶</a></h3>
+<p>Both of the methods above require us to explicitly specify a set of
+angles at the time of instantiation. However, in some cases it may not
+be possible or convenient to do so. In these instances, we can instead
+make use of the <code class="docutils literal notranslate"><span class="pre">.empty()</span></code> method, in which we need only specify the
+problem hyperparameters. A set of variable parameters is then created
+under the hood using Numpy’s <code class="docutils literal notranslate"><span class="pre">empty</span></code> method: the shape of the
+resulting arrays is consistent with the hyperparameters specified.</p>
+<p>For example, using the Hamiltonian we created
+<a class="reference external" href="#hyperparameters">above</a>, let’s set up <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> for a
+circuit of depth <span class="math notranslate nohighlight">\(p=4\)</span>, without explicitly committing ourselves to
+particular values for the angles.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extended_empty</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">extended_empty</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.</span>  <span class="mf">0.1</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.2</span> <span class="mf">1.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.</span>  <span class="mf">0.5</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.3</span> <span class="mf">0.2</span> <span class="mf">1.2</span><span class="p">]]</span>
+    <span class="n">gammas_singles</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.2</span><span class="p">]]</span>
+    <span class="n">gammas_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mf">6.91997069e-310</span> <span class="mf">6.91997069e-310</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.00000000e+000</span> <span class="mf">0.00000000e+000</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.00000000e+000</span> <span class="mf">0.00000000e+000</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.00000000e+000</span> <span class="mf">0.00000000e+000</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>We see that arrays of the correct shape have been created for <code class="docutils literal notranslate"><span class="pre">betas</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code>, and <code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code>. (Note that the actual values
+contained in these arrays correspond to whatever happens to be in the
+memory location used by Numpy. If a memory location we have previously
+used is being recycled, the numbers may appear familiar. Otherwise, they
+may be some general floating point number).</p>
+</div>
+<div class="section" id="linear-ramp-from-hamiltonian-parametrisation">
+<h3>“Linear ramp from Hamiltonian” parametrisation<a class="headerlink" href="#linear-ramp-from-hamiltonian-parametrisation" title="Permalink to this headline">¶</a></h3>
+<p>For all parameter classes, we also provide the
+<code class="docutils literal notranslate"><span class="pre">.linear_ramp_from_hamiltonian()</span></code> method. This automatically
+determines a set of <code class="docutils literal notranslate"><span class="pre">betas</span></code>, <code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code>, and <code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code>
+by analogy to a quantum annealing schedule, as we now explain.</p>
+<p>As usual, we specify the desired number of circuit iterations <span class="math notranslate nohighlight">\(p\)</span>
+we wish to perform. If we were to view this QAOA circuit as a
+discretised quantum annealing procedure over a total time <span class="math notranslate nohighlight">\(T\)</span>, we
+would need to specify <span class="math notranslate nohighlight">\(p\)</span> values for the annealing schedule
+function <span class="math notranslate nohighlight">\(s(t)\)</span> - one for each timestep. See the
+<a class="reference internal" href="3_AdvancedParameterClasses.html#advancedparameterclasses"><span class="std std-ref">Advanced QAOA parameter classes</span></a> for a more detailed explanation of
+quantum annealing, and the meaning of the function <span class="math notranslate nohighlight">\(s(t)\)</span>.</p>
+<p>If we choose the annealing schedule <span class="math notranslate nohighlight">\(s(t)\)</span> to be a linear function
+of <span class="math notranslate nohighlight">\(t\)</span>, then the <code class="docutils literal notranslate"><span class="pre">betas</span></code> will linearly decrease from 0 to
+<span class="math notranslate nohighlight">\(T\)</span>, while the <code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code> and <code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code> (which, in
+annealing, are not distinguished as separate parameters) will linearly
+increase. The <code class="docutils literal notranslate"><span class="pre">.linear_ramp_from_hamiltonian()</span></code> method simply assumes
+that we are performing a discretised form of quantum annealing, with a
+linear schedule function <span class="math notranslate nohighlight">\(s(t) \propto t\)</span>, with the slope
+dependent on the number of steps <span class="math notranslate nohighlight">\(p\)</span>.</p>
+<p>Let’s look at a specific example with the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> class. For
+reference, we reproduce the corresponding code snippet from
+<code class="docutils literal notranslate"><span class="pre">qaoa.parameters.py</span></code> here.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create evenly spaced n_steps at the centers of n_steps intervals</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">time</span> <span class="o">/</span> <span class="n">n_steps</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">time</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">n_steps</span><span class="p">),</span> <span class="n">time</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="n">n_steps</span><span class="p">),</span> <span class="n">n_steps</span><span class="p">)</span>
+
+<span class="c1"># fill betas, gammas_singles and gammas_pairs</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">t</span> <span class="o">/</span> <span class="n">time</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">])</span>
+<span class="n">gammas_singles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dt</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">time</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">])</span>
+<span class="n">gammas_pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dt</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">time</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Let’s set up parameters for the case <code class="docutils literal notranslate"><span class="pre">n_steps</span></code> (i.e. <span class="math notranslate nohighlight">\(p\)</span>) = 2,
+with the Hamiltonian from above.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># total time T of the annealing schedule</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.375</span> <span class="mf">0.125</span><span class="p">]</span>
+    <span class="n">gammas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.375</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>As expected for <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>, we get one value for each of
+<code class="docutils literal notranslate"><span class="pre">betas</span></code> and <code class="docutils literal notranslate"><span class="pre">gammas</span></code> for each timestep up to our specified value of
+<span class="math notranslate nohighlight">\(p\)</span>. The timestep length (the duration of each pulse in the
+circuit) is <span class="math notranslate nohighlight">\(dt = 0.5\)</span>, and the times at which we apply them are
+<code class="docutils literal notranslate"><span class="pre">times</span></code> = 0.25 and 0.75 here.</p>
+<p>In the annealing Hamiltonian, in our convention the coefficient of the
+mixer Hamiltonian is <span class="math notranslate nohighlight">\((1 - s(t))\)</span>, hence the angles <code class="docutils literal notranslate"><span class="pre">beta</span></code> we
+obtain here are
+<span class="math notranslate nohighlight">\([0.5\times (1 - 0.25), 0.5\times (1 - 0.75)] = [0.375, 0.125]\)</span>.
+In a similar way, we obtain <code class="docutils literal notranslate"><span class="pre">gammas</span></code> <span class="math notranslate nohighlight">\(= [0.125, 0.375]\)</span> from the
+fact that the coefficient of the cost Hamiltonian in the annealing
+process is <span class="math notranslate nohighlight">\(s(t)\)</span>.</p>
+<p>In this example, we explicitly passed in a total annealing time
+<span class="math notranslate nohighlight">\(T\)</span> as an argument to the method. As an important point, if the
+total annealing time is very large compared to the number of steps
+<span class="math notranslate nohighlight">\(p\)</span>, then the QAOA will not perform well, since it would deviate
+far from the very notion of an adiabatic path between the ground states
+of the mixer and cost Hamiltonians. Likewise, a short total annealing
+time would correspond to a rapidly executed schedule, which is also
+likely to perform poorly.</p>
+<p>If the user does not pass a value for <code class="docutils literal notranslate"><span class="pre">time</span></code> to the
+<code class="docutils literal notranslate"><span class="pre">.linear_ramp_from_hamiltonian</span></code> method, a value is determined
+automatically from the number of steps <span class="math notranslate nohighlight">\(p\)</span> specified. Empirically,
+we have found that a value <span class="math notranslate nohighlight">\(T = 0.7\times p\)</span> appears to strike a
+reasonable balance between the two extremes described above, and this is
+therefore the value we have chosen to implement.</p>
+</div>
+<div class="section" id="converting-between-parametrisations">
+<h3>Converting between parametrisations<a class="headerlink" href="#converting-between-parametrisations" title="Permalink to this headline">¶</a></h3>
+<p>We also provide methods allowing parameters belonging to one class (e.g.
+<code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>) to be converted to parameters of another class (e.g.
+<code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code>). For instance, let’s convert the <code class="docutils literal notranslate"><span class="pre">Standard</span></code>
+parameters we created in the previous section (from the <code class="docutils literal notranslate"><span class="pre">linear_ramp</span></code>
+method) to a set of corresponding <code class="docutils literal notranslate"><span class="pre">Extended</span></code> parameters.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extended_from_std</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="o">.</span><span class="n">from_other_parameters</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="n">extended_from_std</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.375</span> <span class="mf">0.375</span> <span class="mf">0.375</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.125</span> <span class="mf">0.125</span><span class="p">]]</span>
+    <span class="n">gammas_singles</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.125</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.375</span><span class="p">]]</span>
+    <span class="n">gammas_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.125</span> <span class="mf">0.125</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.375</span> <span class="mf">0.375</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">betas</span></code>, <code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code>, and <code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code> have been
+created from the angles contained in the original set of <code class="docutils literal notranslate"><span class="pre">Standard</span></code>
+parameters (<code class="docutils literal notranslate"><span class="pre">params</span></code>).</p>
+<p>Note that such conversion schemes cannot be implemented between any
+arbitrary pair of parameter classes. For instance, the conversion from
+<code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> to <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> is ill-defined: if we try to do
+this, we get an error message, as shown in this code snippet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>standard_from_extended = StandardParams.from_other_parameters(extended_from_std)
+
+(Suppressed Traceback)
+
+TypeError: Conversion from &lt;class &#39;entropica_qaoa.qaoa.parameters.ExtendedParams&#39;&gt;
+    to &lt;class &#39;entropica_qaoa.qaoa.parameters.StandardParams&#39;&gt; not supported.
+</pre></div>
+</div>
+<p>The general scheme of allowed parameter conversions is illustrated in
+the following figure:</p>
+<div class="figure align-default" id="id1">
+<img alt="Title" src="../_images/ParamConversionsQAOA.png" />
+<p class="caption"><span class="caption-text">QAOA Parameter class type tree</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="working-with-parametrisations">
+<h2>Working with parametrisations<a class="headerlink" href="#working-with-parametrisations" title="Permalink to this headline">¶</a></h2>
+<p>This section provides more detail on the way parameters may be used, and
+how they work internally.</p>
+<div class="section" id="parameters-under-the-hood">
+<h3>Parameters under the hood<a class="headerlink" href="#parameters-under-the-hood" title="Permalink to this headline">¶</a></h3>
+<p>When we printed out the parameters in the examples above, we obtained a
+list of the angles, and the qubits or qubit pairs to which they
+correspond. We can also have a look at the <em>internal</em>
+<code class="docutils literal notranslate"><span class="pre">x_rotation_angles</span></code>, <code class="docutils literal notranslate"><span class="pre">z_rotation_angles</span></code> and <code class="docutils literal notranslate"><span class="pre">zz_rotation_angles</span></code>,
+which are automatically calculated under the hood. These are the
+rotation angles for the different Pauli operators in the actual
+execution of the quantum circuit: they are determined by products of the
+variable parameters (<code class="docutils literal notranslate"><span class="pre">betas</span></code>, <code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code>, <code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code>)
+and the coefficients in the Hamiltonian itself (<code class="docutils literal notranslate"><span class="pre">single_qubit_coeffs</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pair_qubit_coeffs</span></code>).</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> x_rotation_angles:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">extended_direct</span><span class="o">.</span><span class="n">x_rotation_angles</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> z_rotation_angles:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">extended_direct</span><span class="o">.</span><span class="n">z_rotation_angles</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> zz_rotation_angles:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">extended_direct</span><span class="o">.</span><span class="n">zz_rotation_angles</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x_rotation_angles</span><span class="p">:</span>
+<span class="p">[[</span><span class="mf">0.</span>  <span class="mf">0.1</span> <span class="mf">0.3</span><span class="p">]</span>
+<span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.2</span> <span class="mf">1.2</span><span class="p">]]</span>
+
+<span class="n">z_rotation_angles</span><span class="p">:</span>
+<span class="p">[[</span><span class="o">-</span><span class="mf">0.</span>  <span class="p">]</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">0.25</span><span class="p">]]</span>
+
+<span class="n">zz_rotation_angles</span><span class="p">:</span>
+<span class="p">[[</span><span class="mf">0.07</span> <span class="mf">0.36</span><span class="p">]</span>
+<span class="p">[</span><span class="mf">0.14</span> <span class="mf">1.44</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="modifying-parameters">
+<h3>Modifying parameters<a class="headerlink" href="#modifying-parameters" title="Permalink to this headline">¶</a></h3>
+<p>We may wish to modify the parameters that have been set up, before
+running QAOA with them. The two ways we can do this are to modify the
+<code class="docutils literal notranslate"><span class="pre">params</span></code> or the <code class="docutils literal notranslate"><span class="pre">raw_params</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Current params and under-the-hood equivalents</span>
+<span class="k">print</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> x_rotation_angles:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">x_rotation_angles</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> z_rotation_angles:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">z_rotation_angles</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> zz_rotation_angles:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">zz_rotation_angles</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.375</span> <span class="mf">0.125</span><span class="p">]</span>
+    <span class="n">gammas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.375</span><span class="p">]</span>
+
+
+ <span class="n">x_rotation_angles</span><span class="p">:</span>
+ <span class="p">[[</span><span class="mf">0.375</span> <span class="mf">0.375</span> <span class="mf">0.375</span><span class="p">]</span>
+ <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.125</span> <span class="mf">0.125</span><span class="p">]]</span>
+
+ <span class="n">z_rotation_angles</span><span class="p">:</span>
+ <span class="p">[[</span><span class="o">-</span><span class="mf">0.0625</span><span class="p">]</span>
+ <span class="p">[</span><span class="o">-</span><span class="mf">0.1875</span><span class="p">]]</span>
+
+ <span class="n">zz_rotation_angles</span><span class="p">:</span>
+ <span class="p">[[</span><span class="mf">0.0875</span> <span class="mf">0.15</span>  <span class="p">]</span>
+ <span class="p">[</span><span class="mf">0.2625</span> <span class="mf">0.45</span>  <span class="p">]]</span>
+</pre></div>
+</div>
+<p>Let’s modify the first <code class="docutils literal notranslate"><span class="pre">betas</span></code> parameter:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params</span><span class="o">.</span><span class="n">betas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+<span class="k">print</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> x_rotation_angles:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">x_rotation_angles</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> z_rotation_angles:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">z_rotation_angles</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> zz_rotation_angles:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">zz_rotation_angles</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.14159265</span> <span class="mf">0.125</span>     <span class="p">]</span>
+    <span class="n">gammas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.375</span><span class="p">]</span>
+
+
+ <span class="n">x_rotation_angles</span><span class="p">:</span>
+ <span class="p">[[</span><span class="mf">3.14159265</span> <span class="mf">3.14159265</span> <span class="mf">3.14159265</span><span class="p">]</span>
+ <span class="p">[</span><span class="mf">0.125</span>      <span class="mf">0.125</span>      <span class="mf">0.125</span>     <span class="p">]]</span>
+
+ <span class="n">z_rotation_angles</span><span class="p">:</span>
+ <span class="p">[[</span><span class="o">-</span><span class="mf">0.0625</span><span class="p">]</span>
+ <span class="p">[</span><span class="o">-</span><span class="mf">0.1875</span><span class="p">]]</span>
+
+ <span class="n">zz_rotation_angles</span><span class="p">:</span>
+ <span class="p">[[</span><span class="mf">0.0875</span> <span class="mf">0.15</span>  <span class="p">]</span>
+ <span class="p">[</span><span class="mf">0.2625</span> <span class="mf">0.45</span>  <span class="p">]]</span>
+</pre></div>
+</div>
+<p>If we know the index of the parameter(s) we wish to vary in the <code class="docutils literal notranslate"><span class="pre">raw</span></code>
+list, we can also modify them there.</p>
+</div>
+<div class="section" id="erroneous-parameter-catching">
+<h3>Erroneous parameter catching<a class="headerlink" href="#erroneous-parameter-catching" title="Permalink to this headline">¶</a></h3>
+<p>If the user accidentally enters a set of variable parameters that are
+inconsistent with the problem hyperparameters, the error is either
+automatically corrected, or flagged as an error for further
+investigation. For example, suppose we use <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> for a
+3-qubit problem with <span class="math notranslate nohighlight">\(p=2\)</span> timesteps. The shape of the <code class="docutils literal notranslate"><span class="pre">betas</span></code>
+array we input should be <span class="math notranslate nohighlight">\(2\times 3\)</span>, but what happens if we
+instead pass in an array of shape <span class="math notranslate nohighlight">\(1\times 6\)</span>?</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">betas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="c1"># Wrong shape, should be 2x3</span>
+<span class="n">gammas_singles</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span> <span class="c1"># Correct shape</span>
+<span class="n">gammas_pairs</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]]</span> <span class="c1"># Wrong shape, should be 2x2</span>
+
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">gammas_singles</span><span class="p">,</span> <span class="n">gammas_pairs</span><span class="p">)</span>
+
+<span class="n">extended_params_error</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="p">([</span><span class="n">hamiltonian</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">parameters</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">extended_params_error</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.14847342</span> <span class="mf">0.3263844</span>  <span class="mf">0.77025306</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4935528</span>  <span class="mf">0.22538528</span> <span class="mf">0.08746349</span><span class="p">]]</span>
+    <span class="n">gammas_singles</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]]</span>
+    <span class="n">gammas_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.5</span> <span class="mf">0.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.4</span> <span class="mf">0.2</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>The parameters have been reshaped into arrays of the correct dimensions,
+consistent with the hyperparameters. If, however, we pass in an array
+whose incorrect shape is likely to result from a more systematic error,
+this is flagged to the user.</p>
+<p>For example, if we try to run the following code</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">betas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="c1"># Wrong shape, should be 2x3</span>
+<span class="n">gammas_singles</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span> <span class="c1"># Correct shape</span>
+<span class="n">gammas_pairs</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]]</span> <span class="c1"># Likely to be a more systematic error on the user&#39;s part</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">gammas_singles</span><span class="p">,</span> <span class="n">gammas_pairs</span><span class="p">)</span>
+<span class="n">extended_params_error</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="p">([</span><span class="n">hamiltonian</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>we obtain the error message
+<code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">gammas_pairs</span> <span class="pre">must</span> <span class="pre">have</span> <span class="pre">shape</span> <span class="pre">(2,</span> <span class="pre">2)</span></code>.</p>
+</div>
+<div class="section" id="iterating-over-parameter-ranges">
+<h3>Iterating over parameter ranges<a class="headerlink" href="#iterating-over-parameter-ranges" title="Permalink to this headline">¶</a></h3>
+<p>We may sometimes want to investigate what happens if we vary one of the
+parameters over some specfied range, keeping all others fixed. The
+<code class="docutils literal notranslate"><span class="pre">QAOAParameterIterator</span></code> class gives a convenient way of doing this.</p>
+<p>For the parameters above, we could for example take one of the
+<code class="docutils literal notranslate"><span class="pre">gammas</span></code> to iterate over. Suppose we take the second one,
+<code class="docutils literal notranslate"><span class="pre">gammas[1]</span></code>, and we want to vary it in steps of size 1/3 between 0 and
+1:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">the_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.3334</span><span class="p">)</span>
+<span class="n">the_parameter</span> <span class="o">=</span> <span class="s2">&quot;gammas[1]&quot;</span>
+<span class="n">iterator</span><span class="o">=</span> <span class="n">QAOAParameterIterator</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">the_parameter</span><span class="p">,</span> <span class="n">the_range</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">the_range</span><span class="p">)),</span><span class="n">iterator</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Parameters at step&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Parameters</span> <span class="n">at</span> <span class="n">step0</span><span class="p">:</span>
+<span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.14159265</span> <span class="mf">0.125</span>     <span class="p">]</span>
+    <span class="n">gammas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.</span>   <span class="p">]</span>
+
+<span class="n">Parameters</span> <span class="n">at</span> <span class="n">step1</span><span class="p">:</span>
+<span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.14159265</span> <span class="mf">0.125</span>     <span class="p">]</span>
+    <span class="n">gammas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.125</span>  <span class="mf">0.3334</span><span class="p">]</span>
+
+<span class="n">Parameters</span> <span class="n">at</span> <span class="n">step2</span><span class="p">:</span>
+<span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.14159265</span> <span class="mf">0.125</span>     <span class="p">]</span>
+    <span class="n">gammas</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.125</span>  <span class="mf">0.6668</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>As expected, in the loop all parameters stay constant except for
+<code class="docutils literal notranslate"><span class="pre">gammas[1]</span></code> which went up in steps of thirds.</p>
+<p>Of course, we can also nest these iterators to sweep two-dimensional
+paramter landscapes. For instance, suppose we now sweep over parameter
+ranges for both <code class="docutils literal notranslate"><span class="pre">gammas[1]</span></code> and <code class="docutils literal notranslate"><span class="pre">betas[0]</span></code>:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">range1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">range2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">iterator1</span> <span class="o">=</span> <span class="n">QAOAParameterIterator</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s2">&quot;gammas[1]&quot;</span><span class="p">,</span> <span class="n">range1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">iterator1</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">QAOAParameterIterator</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="s2">&quot;betas[0]&quot;</span><span class="p">,</span> <span class="n">range2</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;betas =&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">betas</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;gammas =&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">gammas</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.</span>    <span class="mf">0.125</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.</span>   <span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.5</span>   <span class="mf">0.125</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.</span>   <span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.</span>    <span class="mf">0.125</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.5</span>  <span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.5</span>   <span class="mf">0.125</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.125</span> <span class="mf">0.5</span>  <span class="p">]</span>
+</pre></div>
+</div>
+<p>We can nest iterators arbitrarily, which allows for parameter sweeps and
+subsequent landscape analysis of any desired set of parameters. This
+functionality will be demoed in a separate notebook.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sweep over three parameters</span>
+
+<span class="n">iterator1</span> <span class="o">=</span> <span class="n">QAOAParameterIterator</span><span class="p">(</span><span class="n">params</span><span class="p">,</span><span class="s2">&quot;betas[0]&quot;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">p1</span> <span class="ow">in</span> <span class="n">iterator1</span><span class="p">:</span>
+    <span class="n">iterator2</span> <span class="o">=</span> <span class="n">QAOAParameterIterator</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="s2">&quot;betas[1]&quot;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">p2</span> <span class="ow">in</span> <span class="n">iterator2</span><span class="p">:</span>
+        <span class="n">iterator3</span> <span class="o">=</span> <span class="n">QAOAParameterIterator</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span><span class="s2">&quot;gammas[0]&quot;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">iterator3</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;betas =&quot;</span><span class="p">,</span> <span class="n">j</span><span class="o">.</span><span class="n">betas</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;gammas =&quot;</span><span class="p">,</span> <span class="n">j</span><span class="o">.</span><span class="n">gammas</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span> <span class="mf">0.</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span>  <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span> <span class="mf">0.</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span>  <span class="mf">0.5</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span>  <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span>  <span class="mf">0.5</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.</span> <span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span>  <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.</span> <span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.5</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span>  <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.5</span><span class="p">]</span> <span class="p">,</span> <span class="n">gammas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="mf">0.5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="parameter-iterator-use-case-landscape-sweeps">
+<h3>Parameter iterator use case: Landscape sweeps<a class="headerlink" href="#parameter-iterator-use-case-landscape-sweeps" title="Permalink to this headline">¶</a></h3>
+<p>This section shows how to use the <code class="docutils literal notranslate"><span class="pre">QAOAParameterIterator</span></code> class for
+analysis of the cost function landscape. Here, one or two parameters of
+interest are varied within some range of interest, while all others are
+kept fixed. We then compute the cost function value (and/or its standard
+deviation) within the specified domain.</p>
+<p>Let’s work with a simple 2-qubit problem, in the <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code>
+class, with <span class="math notranslate nohighlight">\(p=3\)</span> timesteps.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h_test</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">h_test</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)</span><span class="o">*</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">h_test</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">h_test</span> <span class="o">=</span> <span class="n">PauliSum</span><span class="p">(</span><span class="n">h_test</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We require 3x2 <code class="docutils literal notranslate"><span class="pre">betas</span></code> parameters, 3x1 <code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code> and 3x1
+<code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code> parameters, which we will initialise randomly:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">betas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">gammas_singles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">gammas_pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">betas</span><span class="p">,</span><span class="n">gammas_singles</span><span class="p">,</span><span class="n">gammas_pairs</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extendedparams</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="p">([</span><span class="n">h_test</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="n">parameters</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">extendedparams</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hyperparameters</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">qubits_singles</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">qubits_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+<span class="n">Parameters</span><span class="p">:</span>
+    <span class="n">betas</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.8977305</span>  <span class="mf">0.64438783</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.52453506</span> <span class="mf">0.57953221</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.68973134</span> <span class="mf">0.46763266</span><span class="p">]]</span>
+    <span class="n">gammas_singles</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.53866581</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.62619672</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.84929365</span><span class="p">]]</span>
+    <span class="n">gammas_pairs</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.63640435</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.58841693</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.18309801</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>We have a total of 12 parameters; as an example, let’s focus on how the
+cost function value changes when we vary the <code class="docutils literal notranslate"><span class="pre">beta</span></code> angle on the
+second qubit in the second QAOA step (p=2). This is the <code class="docutils literal notranslate"><span class="pre">[1][1]</span></code> entry
+in the <code class="docutils literal notranslate"><span class="pre">betas</span></code> list. We will vary its range from 0 to <span class="math notranslate nohighlight">\(2\pi\)</span>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">range_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">param_</span> <span class="o">=</span> <span class="s2">&quot;betas[1][1]&quot;</span>
+<span class="n">iterator</span> <span class="o">=</span> <span class="n">QAOAParameterIterator</span><span class="p">(</span><span class="n">extendedparams</span><span class="p">,</span> <span class="n">param_</span><span class="p">,</span> <span class="n">range_</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We will now compute the cost function value with all the different
+values of the specified parameter of interest.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cost_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">range_</span><span class="p">,)))</span>
+<span class="n">dev_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">range_</span><span class="p">,)))</span>
+<span class="n">ind</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">params</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">range_</span><span class="p">)),</span><span class="n">iterator</span><span class="p">):</span>
+
+    <span class="n">cost_function</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">h_test</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">cost_function</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">raw</span><span class="p">())</span>
+    <span class="n">cost_vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+</pre></div>
+</div>
+<p>Below we plot the energy landscape as a function of the parameter of
+interest in the specified range. A more thorough set of methods for
+visualising energy landscapes will be demonstrated in a separate
+notebook.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">range_</span><span class="p">,</span><span class="n">cost_vals</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;betas[1][1]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Energy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/2_ParameterClasses_57_0.png" src="../_images/2_ParameterClasses_57_0.png" />
+</div>
+</div>
+<div class="section" id="footnotes">
+<h2>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>There are other hyperparameters that we will not consider in this
+notebook. For example, here we have assumed that the mixer
+Hamiltonian is simply the sum of Pauli X operators on all qubits.
+However, one could clearly consider other types of mixers - see for
+example <a class="reference external" href="#references">Ref 3</a>.</p></li>
+</ol>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>E. Farhi et al, <a class="reference external" href="https://arxiv.org/abs/1411.4028">A Quantum Approximate Optimization
+Algorithm</a></p></li>
+<li><p>L. Zhou et al, <a class="reference external" href="https://arxiv.org/abs/1812.01041">Quantum Approximate Optimization Algorithm:
+Performance, Mechanism, and Implementation on Near-Term
+Devices</a></p></li>
+<li><p>Z. Wang et al, <a class="reference external" href="https://arxiv.org/pdf/1904.09314.pdf">XY-mixers: analytical and numerical results for
+QAOA</a></p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="3_AdvancedParameterClasses.html" class="btn btn-neutral float-right" title="Advanced QAOA parameter classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="1_AnExampleWorkflow.html" class="btn btn-neutral float-left" title="First steps: An example workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

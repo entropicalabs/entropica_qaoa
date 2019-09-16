@@ -13,9 +13,8 @@
 # Distribution / packaging
 ##########################
 eggs/
-build/
-dist/
-docs/dist/qaoa
+/build
+/dist
 *.egg-info/
 *.egg
 .eggs/
@@ -30,7 +29,6 @@ docs/dist/qaoa
 docs/source/notebooks
 docs/source/changelog.rst
 docs/build
-*.html
 
 # latex stuff
 # ##########
