@@ -454,14 +454,14 @@ class ExtendedParams(AbstractParams):
     Attributes
     ----------
     betas: np.array
-        2D array with the X-rotation angles. 1st index goes over n_steps and
-        the 2nd index over the qubits to apply X-rotations on.
+        2D array with the gammas from above for each timestep and qubit.
+        1st index goes over the timesteps, 2nd over the qubits.
     gammas_pairs: np.array
-        2D array with the ZZ-rotation angles. 1st index goes over the n_steps
-        and the 2nd index over the qubit pairs, to apply ZZ-rotations on.
+        2D array with the gammas_pairs from above for each timestep and coupled
+        pair. 1st index goes over timesteps, 2nd over pairs.
     gammas_singles: np.array
-        2D array with Z-rotation angles. 1st index goes over the n_steps
-        and the 2nd index over the qubit pairs, to apply Z-rotations on.
+        2D array with the gammas_singles from above for each timestep and bias
+        term. 1st index goes over timesteps, 2nd over bias terms.
     """
 
     def __init__(self,
