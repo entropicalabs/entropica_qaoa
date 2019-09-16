@@ -37,13 +37,13 @@ from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnQVM,
 from entropica_qaoa.qaoa.parameters import AbstractParams
 
 
-def _qaoa_mixing_ham_rotation(betas: MemoryReference,
+def _qaoa_mixing_ham_rotation(x_rotation_angles_reg: MemoryReference,
                               reg: Iterable) -> Program:
     """Produce parametric Quil-Code for the mixing hamiltonian rotation.
 
     Parameters
     ----------
-    betas:
+    x_rotation_angles_reg:
         Classic register to read the x_rotation_angles from.
     reg:
         The register to apply the X-rotations on.
@@ -54,28 +54,28 @@ def _qaoa_mixing_ham_rotation(betas: MemoryReference,
         Parametric Quil Program containing the X-Rotations.
 
     """
-    if len(reg) != betas.declared_size:
+    if len(reg) != x_rotation_angles_reg.declared_size:
         raise ValueError("x_rotation_angles must have the same length as reg")
 
     p = Program()
-    for beta, qubit in zip(betas, reg):
-        p.inst(RX(-2 * beta, qubit))
+    for x_angle, qubit in zip(x_rotation_angles_reg, reg):
+        p.inst(RX(-2 * x_angle, qubit))
     return p
 
 
-def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
+def _qaoa_cost_ham_rotation(zz_rotation_angles_reg: MemoryReference,
                             qubit_pairs: List,
-                            gammas_singles: MemoryReference,
+                            z_rotation_angles_reg: MemoryReference,
                             qubit_singles: List) -> Program:
     """Produce the Quil-Code for the cost-hamiltonian rotation.
 
     Parameters
     ----------
-    gammas_pairs:
+    zz_rotation_angles_reg:
         Classic register to read the zz_rotation_angles from.
     qubit_pairs:
         List of the Qubit pairs to apply rotations on.
-    gammas_singles:
+    z_rotation_angles_reg:
         Classic register to read the z_rotation_angles from.
     qubit_singles:
         List of the single qubits to apply rotations on.
@@ -88,19 +88,21 @@ def _qaoa_cost_ham_rotation(gammas_pairs: MemoryReference,
     """
     p = Program()
 
-    if len(qubit_pairs) != gammas_pairs.declared_size:
-        raise ValueError("zz_rotation_angles must have the same length as qubits_pairs")
+    if len(qubit_pairs) != zz_rotation_angles_reg.declared_size:
+        raise ValueError("zz_rotation_angles_reg must have the same length"
+                         " as qubits_pairs")
 
-    for gamma_pair, qubit_pair in zip(gammas_pairs, qubit_pairs):
-        p.inst(RZ(2 * gamma_pair, qubit_pair[0]))
-        p.inst(RZ(2 * gamma_pair, qubit_pair[1]))
-        p.inst(CPHASE(-4 * gamma_pair, qubit_pair[0], qubit_pair[1]))
+    for zz_angle, qubit_pair in zip(zz_rotation_angles_reg, qubit_pairs):
+        p.inst(RZ(2 * zz_angle, qubit_pair[0]))
+        p.inst(RZ(2 * zz_angle, qubit_pair[1]))
+        p.inst(CPHASE(-4 * zz_angle, qubit_pair[0], qubit_pair[1]))
 
-    if gammas_singles.declared_size != len(qubit_singles):
-        raise ValueError("z_rotation_angles must have the same length as qubit_singles")
+    if z_rotation_angles_reg.declared_size != len(qubit_singles):
+        raise ValueError("z_rotation_angles_reg must have the same length as"
+                         " qubit_singles")
 
-    for gamma_single, qubit in zip(gammas_singles, qubit_singles):
-        p.inst(RZ(2 * gamma_single, qubit))
+    for z_angle, qubit in zip(z_rotation_angles_reg, qubit_singles):
+        p.inst(RZ(2 * z_angle, qubit))
 
     return p
 
@@ -127,36 +129,36 @@ def _qaoa_annealing_program(params: Type[AbstractParams]) -> Program:
     # create list of memory references to store angles in.
     # Has to be so nasty, because aliased memories are not supported yet.
     # Also length 0 memory references crash the QVM
-    betas = []
-    gammas_singles = []
-    gammas_pairs = []
+    x_rotation_angles_reg = []
+    z_rotation_angles_reg = []
+    zz_rotation_angles_reg = []
     for i in range(n_steps):
         beta = p.declare('x_rotation_angles{}'.format(i),
                          memory_type='REAL',
                          memory_size=len(reg))
-        betas.append(beta)
+        x_rotation_angles_reg.append(beta)
         if not reg:  # remove length 0 references again
             p.pop()
 
         gamma_singles = p.declare('z_rotation_angles{}'.format(i),
                                   memory_type='REAL',
                                   memory_size=len(qubits_singles))
-        gammas_singles.append(gamma_singles)
+        z_rotation_angles_reg.append(gamma_singles)
         if not qubits_singles:   # remove length 0 references again
             p.pop()
 
         gamma_pairs = p.declare('zz_rotation_angles{}'.format(i),
                                 memory_type='REAL',
                                 memory_size=len(qubits_pairs))
-        gammas_pairs.append(gamma_pairs)
+        zz_rotation_angles_reg.append(gamma_pairs)
         if not qubits_pairs:  # remove length 0 references again
             p.pop()
 
     # apply cost and mixing hamiltonian alternating
     for i in range(n_steps):
-        p += _qaoa_cost_ham_rotation(gammas_pairs[i], qubits_pairs,
-                                     gammas_singles[i], qubits_singles)
-        p += _qaoa_mixing_ham_rotation(betas[i], reg)
+        p += _qaoa_cost_ham_rotation(zz_rotation_angles_reg[i], qubits_pairs,
+                                     z_rotation_angles_reg[i], qubits_singles)
+        p += _qaoa_mixing_ham_rotation(x_rotation_angles_reg[i], reg)
     return p
 
 
