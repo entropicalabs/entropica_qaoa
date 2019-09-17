@@ -9,7 +9,7 @@ The tutorials in the following sections illustrate the key features of Entropica
 
 :ref:`3-AdvancedParameterClasses` provides details of two additional parametrisation classes - ``Annealing`` and ``Fourier`` - which may be of interest for different purposes.
 
-:ref:`4-CostFunctionsAndVQE` shows how we can use the package for more general variational quantum eigensolver (VQE) problems. It also demonstrates a number of workflow tools, including optimiser logging functions, and utilties that assist in accounting for measurement statistics when working on the wavefunction simulator. In addition, thi section also provides an example of how to run a computation on the real QPU (as well as the QVM).
+:ref:`4-CostFunctionsAndVQE` shows how we can use the package for more general variational quantum eigensolver (VQE) problems. It also demonstrates a number of workflow tools, including optimiser logging functions, and utilties that assist in accounting for measurement statistics when working on the wavefunction simulator. In addition, this section also provides an example of how to run a computation on the real QPU (as well as the QVM).
 
 :ref:`5-QAOAUtilities` provides a walk-through of some of EntropicaQAOA's convenience methods for setting up QAOA problems directly from objects of popular libraries such as ``NetworkX`` or ``Pandas``.
 
