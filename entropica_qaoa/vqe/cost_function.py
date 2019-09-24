@@ -120,7 +120,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
     def __init__(self,
                  prepare_ansatz: Program,
                  make_memory_map: Callable[[np.array], Dict],
-                 hamiltonian: Union[PauliSum, np.array],
+                 hamiltonian: PauliSum,
                  sim: WavefunctionSimulator = None,
                  scalar_cost_function: bool = True,
                  nshots: int = 0,
@@ -139,28 +139,13 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # TODO automatically generate Qubit mapping, if None is passed?
         # TODO ask Rigetti to implement "<" between qubits?
         if qubit_mapping is not None:
-            if isinstance(next(iter(qubit_mapping.values())), Qubit):
-                int_mapping = dict(zip(qubit_mapping.keys(),
-                                       [q.index for q in qubit_mapping.values()]))
-            else:
-                int_mapping = qubit_mapping
             self.prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
+            self.ham = address_qubits_hamiltonian(hamiltonian, qubit_mapping)
         else:
-            int_mapping = None
             self.prepare_ansatz = prepare_ansatz
-
-        # TODO What if prepare_ansatz acts on more qubits than ham?
-        # then hamiltonian and wavefunction don't fit together...
-        if isinstance(hamiltonian, PauliSum):
-            self.ham = pauli_matrix(hamiltonian, int_mapping or {})
-            # self.ham = hamiltonian.matrix(int_mapping or {})
-        elif isinstance(hamiltonian, (np.matrix, np.ndarray)):
             self.ham = hamiltonian
-        else:
-            raise ValueError(
-                "hamiltonian has to be a PauliSum or numpy matrix")
 
-        self.ham_squared = self.ham@self.ham
+        self.ham_squared = self.ham * self.ham
 
         if enable_logging:
             self.log = []
@@ -188,17 +173,20 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             nshots = self.nshots
 
         memory_map = self.make_memory_map(params)
-        wf = self.sim.wavefunction(self.prepare_ansatz, memory_map=memory_map)
-        wf = wf.amplitudes
-        E = (wf.conj()@self.ham@wf).real
+        E = self.sim.expectation(self.prepare_ansatz, self.ham, memory_map)
+        E2 = self.sim.expectation(self.prepare_ansatz, self.ham_squared,
+                                  memory_map)
+        E, E2 = E.real, E2.real     # we sim.expectation returns complex
+                                    # numbers with imaginary part 0
+
         if nshots:
             sigma_E = np.sqrt(
-                (wf.conj()@self.ham_squared@wf - E**2).real / nshots)
+                (E2 - E**2).real / nshots)
         else:
             sigma_E = 0
 
         E += np.random.randn() * sigma_E
-        out = (float(E), float(sigma_E))  # Todo:Why the float casting?
+        out = (float(E), float(sigma_E))  # Todo: Why the float casting?
 
         # Append function value and params to the log.
         # deepcopy is needed, because x may be a mutable type.
@@ -355,8 +343,10 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
             return out
 
 
-def address_qubits_hamiltonian(hamiltonian: PauliSum,
-                               qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]) -> PauliSum:
+def address_qubits_hamiltonian(
+        hamiltonian: PauliSum,
+        qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]]
+        ) -> PauliSum:
     """Map Qubit Placeholders to ints in a PauliSum.
 
     Parameters
@@ -391,45 +381,3 @@ def address_qubits_hamiltonian(hamiltonian: PauliSum,
             ops.append((factor[1], qubit_mapping[factor[0]]))
         out += PauliTerm.from_list(ops, coeff)
     return out
-
-
-# Todo: Remove all of this, if we get PauliSum.matrix() into pyquil
-from pyquil.unitary_tools import lifted_pauli
-
-
-def pauli_matrix(pauli_sum: PauliSum, qubit_mapping: Dict ={}) -> np.array:
-    """Create the matrix representation of pauli_sum.
-
-    Parameters
-    ----------
-    qubit_mapping:
-        A dictionary-like object that maps from :py:class`QubitPlaceholder` to
-        :py:class:`int`
-
-    Returns
-    -------
-    np.matrix:
-        A matrix representing the PauliSum
-    """
-
-    # get unmapped Qubits and check that all QubitPlaceholders are mapped
-    unmapped_qubits = {*pauli_sum.get_qubits()} - qubit_mapping.keys()
-    if not all(isinstance(q, int) for q in unmapped_qubits):
-        raise ValueError("Not all QubitPlaceholders are mapped")
-
-    # invert qubit_mapping and assert its injectivity
-    inv_mapping = dict([v, k] for k, v in qubit_mapping.items())
-    if len(inv_mapping) is not len(qubit_mapping):
-        raise ValueError("qubit_mapping must be injective")
-
-    # add unmapped qubits to the inverse mapping, ensuring we don't have
-    # a list entry twice
-    for q in unmapped_qubits:
-        if q not in inv_mapping.keys():
-            inv_mapping[q] = q
-        else:
-            raise ValueError("qubit_mapping maps to qubit already in use")
-
-    qubit_list = [inv_mapping[k] for k in sorted(inv_mapping.keys())]
-    matrix = lifted_pauli(pauli_sum, qubit_list)
-    return matrix
