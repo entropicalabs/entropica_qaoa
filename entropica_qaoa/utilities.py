@@ -21,16 +21,16 @@ import random
 import itertools
 
 import numpy as np
+from scipy.spatial import distance
+import matplotlib.pyplot as plt
 import pandas as pd
 import networkx as nx
-
-import matplotlib.pyplot as plt
 
 from pyquil import Program
 from pyquil.quil import QubitPlaceholder
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
-from scipy.spatial import distance
+from pyquil.unitary_tools import lifted_pauli
 
 #############################################################################
 # METHODS FOR CREATING HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO
@@ -605,3 +605,41 @@ def plot_probabilities(probabilities: Union[np.array, list],
     ax.set_xlabel("State")
     ax.grid(linestyle='--')
     ax.legend()
+
+
+def pauli_matrix(pauli_sum: PauliSum, qubit_mapping: Dict ={}) -> np.array:
+    """Create the matrix representation of pauli_sum.
+
+    Parameters
+    ----------
+    qubit_mapping:
+        A dictionary-like object that maps from :py:class`QubitPlaceholder` to
+        :py:class:`int`
+
+    Returns
+    -------
+    np.matrix:
+        A matrix representing the PauliSum
+    """
+
+    # get unmapped Qubits and check that all QubitPlaceholders are mapped
+    unmapped_qubits = {*pauli_sum.get_qubits()} - qubit_mapping.keys()
+    if not all(isinstance(q, int) for q in unmapped_qubits):
+        raise ValueError("Not all QubitPlaceholders are mapped")
+
+    # invert qubit_mapping and assert its injectivity
+    inv_mapping = dict([v, k] for k, v in qubit_mapping.items())
+    if len(inv_mapping) is not len(qubit_mapping):
+        raise ValueError("qubit_mapping must be injective")
+
+    # add unmapped qubits to the inverse mapping, ensuring we don't have
+    # a list entry twice
+    for q in unmapped_qubits:
+        if q not in inv_mapping.keys():
+            inv_mapping[q] = q
+        else:
+            raise ValueError("qubit_mapping maps to qubit already in use")
+
+    qubit_list = [inv_mapping[k] for k in sorted(inv_mapping.keys())]
+    matrix = lifted_pauli(pauli_sum, qubit_list)
+    return matrix
