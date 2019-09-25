@@ -8,8 +8,8 @@ from pyquil.gates import RX, RY, H, CNOT
 from pyquil.quil import Program, QubitPlaceholder, MEASURE
 
 from entropica_qaoa.vqe.measurelib import (append_measure_register,
-                                        sampling_expectation_z_base,
-                                        sampling_expectation)
+                                           sampling_expectation_z_base,
+                                           sampling_expectation)
 
 
 # TODO make a more complicated test case and sure, that the test case is

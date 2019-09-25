@@ -17,15 +17,22 @@ Various convenience functions for measurements on a quantum computer or
 wavefunction simulator
 """
 
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Callable
 
 import numpy as np
 import networkx as nx
 import itertools
+import functools
 
 from pyquil.quil import MEASURE, Program, QubitPlaceholder
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import H, I, RX
+
+
+# ##########################################################################
+# Functions to calculate expectation values of PauliSums from bitstrings
+# created by a QPU or the QVM
+# ##########################################################################
 
 
 def append_measure_register(program: Program,
@@ -56,7 +63,6 @@ def append_measure_register(program: Program,
 
     if qubits is None:
         qubits = program.get_qubits()
-
 
     def _get_correct_gate(qubit: Union[int, QubitPlaceholder]) -> Program():
         """Correct base change gate on the qubit `qubit` given `ham`"""
@@ -152,6 +158,109 @@ def sampling_expectation(hamiltonians: List[PauliSum],
         var += s**2
 
     return (energies, np.sqrt(var))
+
+
+# ##########################################################################
+# Functions to calculate PauliSum expectation values from PauliSums
+# without having to create the full hamiltonian matrix
+# ##########################################################################
+
+H_mat = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
+RX_mat = np.array([[1, -1j], [-1j, 1]]) / np.sqrt(2)
+from string import ascii_letters
+
+
+def apply_H(qubit: int, n_qubits: int, wf: np.array) -> np.array:
+    """Apply a hadamard gate to wavefunction `wf` on the qubit `qubit`"""
+    wf = wf.reshape([2] * n_qubits)
+    einstring = "YZ," + ascii_letters[0:qubit]
+    einstring += "Z" + ascii_letters[qubit:n_qubits - 1]
+    einstring += "->" + ascii_letters[0:qubit] + "Y"
+    einstring += ascii_letters[qubit:n_qubits - 1]
+    out = np.einsum(einstring, H_mat, wf)
+    return out.reshape(-1)
+
+
+def apply_RX(qubit: int, n_qubits: int, wf: np.array) -> np.array:
+    """Apply a RX(pi/2) gate to wavefunction `wf` on the qubit `qubit`"""
+    wf = wf.reshape([2] * n_qubits)
+    einstring = "YZ," + ascii_letters[0:qubit]
+    einstring += "Z" + ascii_letters[qubit:n_qubits - 1]
+    einstring += "->" + ascii_letters[0:qubit] + "Y"
+    einstring += ascii_letters[qubit:n_qubits - 1]
+    out = np.einsum(einstring, RX_mat, wf)
+    return out.reshape(-1)
+
+
+def base_change_fun(ham: PauliSum, n_qubits: int) -> Callable:
+    """Create a function that changes the basis of its argument wavefunction
+    to the correct one for ham"""
+    def _base_change_fun(qubit):
+        for term in ham:
+            if term[qubit] == 'X':
+                return functools.partial(apply_H, qubit, n_qubits)
+            if term[qubit] == 'Y':
+                return functools.partial(apply_RX, qubit, n_qubits)
+            return None
+
+    funs = []
+    for qubit in ham.get_qubits():
+        next_fun = _base_change_fun(qubit)
+        if next_fun is not None:
+            funs.append(next_fun)
+
+    def out(wf):
+        return functools.reduce(lambda x, g: g(x), funs, wf)
+
+    return out
+
+
+def kron_diagonal(ham: PauliSum, n_qubits: int):
+    diag = np.zeros((2**n_qubits), dtype=complex)
+    for term in ham:
+        out = term.coefficient
+        for qubit in range(n_qubits):
+            if term[qubit] != 'I':
+                out = np.kron([1, -1], out)
+            else:
+                out = np.kron([1, 1], out)
+        diag += out
+
+    return diag
+
+
+def wavefunction_expectation(hams: List[np.array],
+                             base_changes: List[Callable],
+                             hams_squared: List[np.array],
+                             base_changes_squared: List[Callable],
+                             wf: np.array) -> float:
+    """Compute the expectation value of hams w.r.t wf
+
+    Parameters
+    ----------
+    hams:
+        A list of the diagonal values in the diagonal basis asfdl a dsf dfas
+    """
+
+    energy = 0
+    for ham, fun in zip(hams, base_changes):
+        wf_new = fun(wf)
+        probs = wf_new * wf_new.conj()
+        energy += float(probs@ham)
+
+    var = 0
+    for ham, fun in zip(hams_squared, base_changes_squared):
+        wf_new = fun(wf)
+        probs = wf_new * wf_new.conj()
+        var += float(probs@ham)
+
+    return (energy, np.sqrt(var))
+
+
+# ###########################################################################
+# Tools to decompose PauliSums into smaller PauliSums that can be measured
+# simultaneously
+# ###########################################################################
 
 
 def _PauliTerms_commute_trivially(term1: PauliTerm, term2: PauliTerm) -> bool:

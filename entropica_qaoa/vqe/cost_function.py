@@ -27,7 +27,10 @@ from pyquil.api import WavefunctionSimulator, QuantumComputer, get_qc
 
 from entropica_qaoa.vqe.measurelib import (append_measure_register,
                                            commuting_decomposition,
-                                           sampling_expectation)
+                                           sampling_expectation,
+                                           kron_diagonal,
+                                           base_change_fun,
+                                           wavefunction_expectation)
 
 
 LogEntry = namedtuple("LogEntry", ['x', 'fun'])
@@ -140,12 +143,21 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
         # TODO ask Rigetti to implement "<" between qubits?
         if qubit_mapping is not None:
             self.prepare_ansatz = address_qubits(prepare_ansatz, qubit_mapping)
-            self.ham = address_qubits_hamiltonian(hamiltonian, qubit_mapping)
+            ham = address_qubits_hamiltonian(hamiltonian, qubit_mapping)
         else:
             self.prepare_ansatz = prepare_ansatz
-            self.ham = hamiltonian
+            ham = hamiltonian
 
-        self.ham_squared = self.ham * self.ham
+        n_qubits = len(hamiltonian.get_qubits())
+        ham_squared = ham * ham
+        hams = commuting_decomposition(ham)
+        hams_squared = commuting_decomposition(ham_squared)
+        self.hams = [kron_diagonal(ham, n_qubits) for ham in hams]
+        self.hams_squared = [kron_diagonal(ham, n_qubits)
+                             for ham in hams_squared]
+        self.base_changes = [base_change_fun(ham, n_qubits) for ham in hams]
+        self.base_changes_squared = [base_change_fun(ham, n_qubits)
+                                     for ham in hams_squared]
 
         if enable_logging:
             self.log = []
@@ -173,11 +185,11 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             nshots = self.nshots
 
         memory_map = self.make_memory_map(params)
-        E = self.sim.expectation(self.prepare_ansatz, self.ham, memory_map)
-        E2 = self.sim.expectation(self.prepare_ansatz, self.ham_squared,
-                                  memory_map)
-        E, E2 = E.real, E2.real     # we sim.expectation returns complex
-                                    # numbers with imaginary part 0
+        wf = self.sim.wavefunction(self.prepare_ansatz, memory_map)
+        E, E2 = wavefunction_expectation(self.hams, self.base_changes,
+                                         self.hams_squared,
+                                         self.base_changes_squared,
+                                         wf.amplitudes)
 
         if nshots:
             sigma_E = np.sqrt(
