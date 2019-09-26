@@ -9,12 +9,22 @@ from pyquil.quil import Program, QubitPlaceholder, MEASURE
 
 from entropica_qaoa.vqe.measurelib import (append_measure_register,
                                            sampling_expectation_z_base,
-                                           sampling_expectation)
+                                           sampling_expectation,
+                                           commuting_decomposition)
+
+
+def test_commuting_decomposition():
+    term1 = PauliTerm("Z", 0) * PauliTerm("Z", 1)
+    term2 = PauliTerm("Z", 1) * PauliTerm("Z", 2)
+    term3 = PauliTerm("X", 0) * PauliTerm("Z", 2)
+    ham = PauliSum([term1, term2, term3])
+    hams = commuting_decomposition(ham)
+    assert hams == [PauliSum([term1, term2]), PauliSum([term3])]
 
 
 # TODO make a more complicated test case and sure, that the test case is
 # actually correct
-def test_sampling_expecattion_z_base():
+def test_sampling_expectation_z_base():
     bitstrings = np.array([[1,0], [0,1], [1,1], [1,1]])
     # ham = PauliSum.from_compact_str("1.0*Z0*Z1 + 0.5*Z0 + (-1)*Z1")
     term1 = PauliTerm("Z", 0) * PauliTerm("Z", 1)
@@ -22,7 +32,7 @@ def test_sampling_expecattion_z_base():
     term3 = PauliTerm("Z", 1, -1)
     ham = PauliSum([term1, term2, term3])
     out = sampling_expectation_z_base(ham, bitstrings)
-    assert np.allclose(out, (0.25, 0.946487243000456))
+    assert np.allclose(out, (0.25, 0.8958333333333334))
 
 
 # TODO A more elaborate test?
