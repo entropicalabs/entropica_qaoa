@@ -14,10 +14,37 @@
 
 """
 Various convenience functions for measurements on a quantum computer or
-wavefunction simulator
+wavefunction simulator.
+
+
+Some preliminary explanation
+============================
+
+Measuring the expectation value of a hamiltonian like
+
+.. math::
+
+    H = a Z_0 Z_1 + b Z_1 Z_2 + c X_0 X_1 + d X_1 + e X_2
+
+requires decomposing the hamiltonian into parts that commute with each other
+and then measuring them succesively. On a real QPU we need to do this,
+because physics don't allow us to measure non-commuting parts of a
+hamiltonian in one run. On the Wavefunction Simulator we need to do this,
+because translating :math:`\left<\psi | H | \psi\right>` naively to
+``wf.conj()@ham@wf.conj()`` results in huge and sparse matrices ``ham`` that
+take longer to generate, than it takes to calculate the wavefunction ``wf``.
+
+Even though :math:`Z_0 Z_1` and :math:`X_0 X_1` commute (go ahead and check
+it), we will measure them in separate runs, because measuring them
+simultaenously can't be done by simply measuring the qubits 0 and 1. We only
+attempt to measure Pauli products simultaneously that _commute trivially_.
+Two Pauli products commute trivially, if on each qubit both act with the same
+Pauli Operator, or if either one acts only with the identity. This implies in
+particular, that they can be measured without the need for ancilla qubits.
 """
 
 from typing import List, Union, Tuple, Callable
+from string import ascii_letters
 
 import numpy as np
 import networkx as nx
@@ -27,6 +54,51 @@ import functools
 from pyquil.quil import MEASURE, Program, QubitPlaceholder
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import H, I, RX
+
+
+# ###########################################################################
+# Tools to decompose PauliSums into smaller PauliSums that can be measured
+# simultaneously
+# ###########################################################################
+
+
+def _PauliTerms_commute_trivially(term1: PauliTerm, term2: PauliTerm) -> bool:
+    """Checks if two PauliTerms commute trivially.
+
+    Returns true, if on each qubit both terms have the same Pauli operator
+    or if one has only an identity gate
+    """
+    for factor in term1:
+        if factor[1] != term2[factor[0]] and not term2[factor[0]] == 'I':
+            return False
+    return True
+
+
+def commuting_decomposition(ham: PauliSum) -> List[PauliSum]:
+    """Decompose ham into a list of PauliSums with mutually commuting terms."""
+
+    # create the commutation graph of the hamiltonian
+    # connected edges don't commute
+    commutation_graph = nx.Graph()
+    for term in ham:
+        commutation_graph.add_node(term)
+
+    for (term1, term2) in itertools.combinations(ham, 2):
+        if not _PauliTerms_commute_trivially(term1, term2):
+            commutation_graph.add_edge(term1, term2)
+
+    # color the commutation graph. All terms with one color can be measured
+    # simultaneously
+    color_map = nx.algorithms.coloring.greedy_color(commutation_graph)
+
+    pauli_sum_list = [False] * (max(color_map.values()) + 1)
+    for term in color_map.keys():
+        if pauli_sum_list[color_map[term]] is False:
+            pauli_sum_list[color_map[term]] = PauliSum([term])
+        else:
+            pauli_sum_list[color_map[term]] += term
+
+    return pauli_sum_list
 
 
 # ##########################################################################
@@ -40,21 +112,22 @@ def append_measure_register(program: Program,
                             trials: int = 10,
                             ham: PauliSum = None) -> Program:
     """Creates readout register, MEASURE instructions for register and wraps
-    in trials trials.
+    in ``trials`` numshots.
 
     Parameters
     ----------
-    param qubits : list
+    param qubits:
         List of Qubits to measure. If None, program.get_qubits() is used
-    param trials : int
+    param trials:
         The number of trials to run.
-    param ham : PauliSum
+    param ham:
         Hamiltonian to whose basis we need to switch. All terms in it must
-        trivially commute!
+        trivially commute. No base change gates are applied, if ``None``
+        is passed.
 
     Returns
     -------
-    Program :
+    Program:
         program with the gate change and measure instructions appended
     """
     base_change_gates = {'X': lambda qubit: H(qubit),
@@ -96,19 +169,19 @@ def sampling_expectation_z_base(hamiltonian: PauliSum,
 
     Warning
     -------
-    This function assumes, that all terms in ``hamiltonian`` commute with each
-    other _and_ that the ``bitstrings`` were measured in the correct basis
+    This function assumes, that all terms in ``hamiltonian`` commute trivially
+    _and_ that the ``bitstrings`` were measured in their basis.
 
     Parameters
     ----------
-    param hamiltonian : PauliSum
+    param hamiltonian:
         The hamiltonian
-    param bitstrings : 2D arry or list
-        the measurement outcomes. Columns are outcomes for one qubit.
+    param bitstrings: 2D arry or list
+        The measurement outcomes. One column per qubit.
 
     Returns
     -------
-    tuple (expectation_value, standard_deviation)
+    tuple (expectation_value, variance/(n-1))
     """
 
     # this dictionary maps from qubit indices to indices of the bitstrings
@@ -124,8 +197,9 @@ def sampling_expectation_z_base(hamiltonian: PauliSum,
         for factor in term:
             sign += bitstrings[:, index_lut[factor[0]]]
         energies += term.coefficient.real * (-1)**sign
+
     return (np.mean(energies),
-            np.sqrt(np.var(energies)) / np.sqrt(bitstrings.shape[0] - 1))
+            np.var(energies) / (bitstrings.shape[0] - 1))
 
 
 def sampling_expectation(hamiltonians: List[PauliSum],
@@ -153,10 +227,10 @@ def sampling_expectation(hamiltonians: List[PauliSum],
     energies = 0
     var = 0
     for ham, bits in zip(hamiltonians, bitstrings):
-        e, s = sampling_expectation_z_base(ham, bits)
+        e, v = sampling_expectation_z_base(ham, bits)
         energies += e
-        var += s**2
-
+        var += v
+    print("\n")
     return (energies, np.sqrt(var))
 
 
@@ -167,7 +241,6 @@ def sampling_expectation(hamiltonians: List[PauliSum],
 
 H_mat = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
 RX_mat = np.array([[1, -1j], [-1j, 1]]) / np.sqrt(2)
-from string import ascii_letters
 
 
 def apply_H(qubit: int, n_qubits: int, wf: np.array) -> np.array:
@@ -193,8 +266,10 @@ def apply_RX(qubit: int, n_qubits: int, wf: np.array) -> np.array:
 
 
 def base_change_fun(ham: PauliSum, n_qubits: int) -> Callable:
-    """Create a function that changes the basis of its argument wavefunction
-    to the correct one for ham"""
+    """
+    Create a function that applies the correct base change for ``ham``
+    on a wavefunction on ``n_qubits`` qubits.
+    """
     def _base_change_fun(qubit):
         for term in ham:
             if term[qubit] == 'X':
@@ -215,7 +290,11 @@ def base_change_fun(ham: PauliSum, n_qubits: int) -> Callable:
     return out
 
 
-def kron_diagonal(ham: PauliSum, n_qubits: int):
+def kron_diagonal(ham: PauliSum, n_qubits: int) -> np.array:
+    """
+    Calculate the diagonal of the matrix representation of ``ham`` in its
+    eigenbasis when acting on ``n_qubits`` qubits.
+    """
     diag = np.zeros((2**n_qubits), dtype=complex)
     for term in ham:
         out = term.coefficient
@@ -233,13 +312,29 @@ def wavefunction_expectation(hams: List[np.array],
                              base_changes: List[Callable],
                              hams_squared: List[np.array],
                              base_changes_squared: List[Callable],
-                             wf: np.array) -> float:
-    """Compute the expectation value of hams w.r.t wf
+                             wf: np.array) -> Tuple[float, float]:
+    """Compute the exp. value and standard dev. of ``hams`` w.r.t ``wf``.
 
     Parameters
     ----------
     hams:
-        A list of the diagonal values in the diagonal basis asfdl a dsf dfas
+        A list of arrays of eigenvalues of the PauliSums in the
+        commuting decomposition of the original hamiltonian.
+    base_changes:
+        A list of functions that apply the neccesary base change
+        gates to the wavefunction
+    hams_squared:
+        The same as ``hams``, but for the square of ``ham``.
+    base_changes_squared:
+        The same as ``base_changes``, but for the square of ``ham``.
+    wf:
+        The wavefunction whose expectation value we want to know.
+
+    Returns
+    -------
+    Tuple[float, float]:
+        A tuple containing the expectation value of ``ham`` and the expectation
+        value of ``ham**2``.
     """
 
     energy = 0
@@ -248,55 +343,10 @@ def wavefunction_expectation(hams: List[np.array],
         probs = wf_new * wf_new.conj()
         energy += float(probs@ham)
 
-    var = 0
+    energy2 = 0
     for ham, fun in zip(hams_squared, base_changes_squared):
         wf_new = fun(wf)
         probs = wf_new * wf_new.conj()
-        var += float(probs@ham)
+        energy2 += float(probs@ham)
 
-    return (energy, np.sqrt(var))
-
-
-# ###########################################################################
-# Tools to decompose PauliSums into smaller PauliSums that can be measured
-# simultaneously
-# ###########################################################################
-
-
-def _PauliTerms_commute_trivially(term1: PauliTerm, term2: PauliTerm) -> bool:
-    """Checks if two PauliTerms commute trivially
-
-    Returns true, if on each qubit both terms have the same sigma matrix
-    or if one has only an identity gate
-    """
-    for factor in term1:
-        if factor[1] != term2[factor[0]] and not term2[factor[0]] == 'I':
-            return False
-    return True
-
-
-def commuting_decomposition(ham: PauliSum) -> List[PauliSum]:
-    """Decompose ham into a list of PauliSums with mutually commuting terms"""
-
-    # create the commutation graph of the hamiltonian
-    # connected edges don't commute
-    commutation_graph = nx.Graph()
-    for term in ham:
-        commutation_graph.add_node(term)
-
-    for (term1, term2) in itertools.combinations(ham, 2):
-        if not _PauliTerms_commute_trivially(term1, term2):
-            commutation_graph.add_edge(term1, term2)
-
-    # color the commutation graph. All terms with one color can be measured
-    # simultaneously
-    color_map = nx.algorithms.coloring.greedy_color(commutation_graph)
-
-    pauli_sum_list = [False] * (max(color_map.values()) + 1)
-    for term in color_map.keys():
-        if pauli_sum_list[color_map[term]] is False:
-            pauli_sum_list[color_map[term]] = PauliSum([term])
-        else:
-            pauli_sum_list[color_map[term]] += term
-
-    return pauli_sum_list
+    return (energy, energy2)

@@ -148,7 +148,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             self.prepare_ansatz = prepare_ansatz
             ham = hamiltonian
 
-        n_qubits = len(hamiltonian.get_qubits())
+        n_qubits = len(prepare_ansatz.get_qubits())
         ham_squared = ham * ham
         hams = commuting_decomposition(ham)
         hams_squared = commuting_decomposition(ham_squared)
