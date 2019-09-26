@@ -10,16 +10,17 @@ from pyquil.quil import Program, QubitPlaceholder, MEASURE
 from entropica_qaoa.vqe.measurelib import (append_measure_register,
                                            sampling_expectation_z_base,
                                            sampling_expectation,
-                                           commuting_decomposition)
+                                           commuting_decomposition,
+                                           base_change_fun)
 
 
 def test_commuting_decomposition():
     term1 = PauliTerm("Z", 0) * PauliTerm("Z", 1)
     term2 = PauliTerm("Z", 1) * PauliTerm("Z", 2)
-    term3 = PauliTerm("X", 0) * PauliTerm("Z", 2)
+    term3 = PauliTerm("X", 0) * PauliTerm("X", 2)
     ham = PauliSum([term1, term2, term3])
     hams = commuting_decomposition(ham)
-    assert hams == [PauliSum([term1, term2]), PauliSum([term3])]
+    assert hams == [ PauliSum([term3]), PauliSum([term1, term2])]
 
 
 # TODO make a more complicated test case and sure, that the test case is
@@ -59,3 +60,19 @@ def test_sampling_expectation():
     hams = [ham1, ham2]
     out = sampling_expectation(hams, bitstrings)
     assert np.allclose(out, (0.5, 1.3385315336840842))
+
+
+def test_base_change_fun():
+    term1 = PauliTerm("Z", 0) * PauliTerm("Z", 1)
+    term2 = PauliTerm("Z", 1) * PauliTerm("Z", 2)
+    term3 = PauliTerm("X", 0) * PauliTerm("X", 2)
+    ham = PauliSum([term1, term2, term3])
+    wf = np.array([0, 1, 2, 3, 4, 5, 6, 7])
+    wfs = []
+    wfs.append(np.array([5, -1, 9, -1, -4, 0, -4, 0]))
+    wfs.append(np.array([0, 1, 2, 3, 4, 5, 6, 7]))
+    hams = commuting_decomposition(ham)
+    for w, h in zip(wfs, hams):
+        fun = base_change_fun(h, 3)
+        assert np.allclose(fun(wf), w)
+
