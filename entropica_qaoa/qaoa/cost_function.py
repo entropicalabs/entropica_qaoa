@@ -269,7 +269,8 @@ class QAOACostFunctionOnWFSim(PrepareAndMeasureOnWFSim):
                          scalar_cost_function=scalar_cost_function,
                          nshots=nshots,
                          enable_logging=enable_logging,
-                         qubit_mapping=qubit_mapping)
+                         qubit_mapping=qubit_mapping,
+                         hamiltonian_is_diagonal=True)
 
     def __call__(self, params, nshots: int = None):
         self.params.update_from_raw(params)
@@ -360,7 +361,8 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
                          nshots=nshots,
                          base_numshots=base_numshots,
                          enable_logging=enable_logging,
-                         qubit_mapping=qubit_mapping)
+                         qubit_mapping=qubit_mapping,
+                         hamiltonian_is_diagonal=True)
 
     def __call__(self, params, nshots: int = None):
         self.params.update_from_raw(params)

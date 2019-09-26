@@ -19,6 +19,7 @@ from typing import Callable, Iterable, Union, List, Dict, Tuple
 import numpy as np
 from collections import namedtuple
 from copy import deepcopy
+import warnings
 
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.quil import Program, Qubit, QubitPlaceholder, address_qubits
@@ -118,6 +119,9 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
     qubit_mapping:
         A mapping to fix QubitPlaceholders to physical qubits. E.g.
         pyquil.quil.get_default_qubit_mapping(program) gives you on.
+    hamiltonian_is_diagonal:
+        Pass true, if the hamiltonian contains only Z terms and products
+        thereof. This speeds up __init__ considerably. Defaults to False.
     """
 
     def __init__(self,
@@ -129,7 +133,8 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
                  nshots: int = 0,
                  enable_logging: bool = False,
                  qubit_mapping: Dict[QubitPlaceholder,
-                                     Union[Qubit, int]] = None):
+                                     Union[Qubit, int]] = None,
+                 hamiltonian_is_diagonal: bool =False):
 
         self.scalar = scalar_cost_function
         self.nshots = nshots
@@ -149,9 +154,15 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             ham = hamiltonian
 
         n_qubits = len(prepare_ansatz.get_qubits())
-        ham_squared = ham * ham
-        hams = commuting_decomposition(ham)
-        hams_squared = commuting_decomposition(ham_squared)
+        with warnings.catch_warnings():   # suppress irrelevant warnings
+            warnings.simplefilter("ignore")
+            ham_squared = ham * ham
+        if not hamiltonian_is_diagonal:
+            hams = commuting_decomposition(ham)
+            hams_squared = commuting_decomposition(ham_squared)
+        else:
+            hams = [ham]
+            hams_squared = [ham_squared]
         self.hams = [kron_diagonal(ham, n_qubits) for ham in hams]
         self.hams_squared = [kron_diagonal(ham, n_qubits)
                              for ham in hams_squared]
@@ -279,7 +290,8 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
                  nshots: int = 1,
                  base_numshots: int = 100,
                  qubit_mapping: Dict[QubitPlaceholder, Union[Qubit, int]] = None,
-                 enable_logging: bool = False):
+                 enable_logging: bool = False,
+                 hamiltonian_is_diagonal: bool =False):
 
         self.scalar = scalar_cost_function
         self.nshots = nshots
@@ -295,7 +307,11 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         else:
             ham = hamiltonian
 
-        self.hams = commuting_decomposition(ham)
+        if not hamiltonian_is_diagonal:
+            self.hams = commuting_decomposition(ham)
+        else:
+            self.hams = [ham]
+
         self.exes = []
         for ham in self.hams:
             # need a different program for each of the self commuting hams
