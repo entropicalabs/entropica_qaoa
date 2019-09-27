@@ -116,9 +116,3 @@ def test_wavefunction_expectation():
     print(e1, s1)
     print(e2, s2)
     assert np.allclose((e1, s1), (e2, s2))
-
-
-test_wavefunction_expectation()
-
-
-

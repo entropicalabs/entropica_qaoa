@@ -43,7 +43,7 @@ Pauli Operator, or if either one acts only with the identity. This implies in
 particular, that they can be measured without the need for ancilla qubits.
 """
 
-from typing import List, Union, Tuple, Callable
+from typing import List, Union, Tuple, Callable, Set
 from string import ascii_letters
 
 import numpy as np
@@ -246,10 +246,10 @@ RX_mat = np.array([[1, -1j], [-1j, 1]]) / np.sqrt(2)
 def apply_H(qubit: int, n_qubits: int, wf: np.array) -> np.array:
     """Apply a hadamard gate to wavefunction `wf` on the qubit `qubit`"""
     wf = wf.reshape([2] * n_qubits)
-    einstring = "YZ," + ascii_letters[0:qubit]
-    einstring += "Z" + ascii_letters[qubit:n_qubits - 1]
-    einstring += "->" + ascii_letters[0:qubit] + "Y"
-    einstring += ascii_letters[qubit:n_qubits - 1]
+    einstring = "YZ," + ascii_letters[0:n_qubits - 1 - qubit]
+    einstring += "Z" + ascii_letters[n_qubits - 1 - qubit:n_qubits - 1]
+    einstring += "->" + ascii_letters[0:n_qubits - 1 - qubit] + "Y"
+    einstring += ascii_letters[n_qubits - 1 - qubit:n_qubits - 1]
     out = np.einsum(einstring, H_mat, wf)
     return out.reshape(-1)
 
@@ -257,23 +257,20 @@ def apply_H(qubit: int, n_qubits: int, wf: np.array) -> np.array:
 def apply_RX(qubit: int, n_qubits: int, wf: np.array) -> np.array:
     """Apply a RX(pi/2) gate to wavefunction `wf` on the qubit `qubit`"""
     wf = wf.reshape([2] * n_qubits)
-    einstring = "YZ," + ascii_letters[0:qubit]
-    einstring += "Z" + ascii_letters[qubit:n_qubits - 1]
-    einstring += "->" + ascii_letters[0:qubit] + "Y"
-    einstring += ascii_letters[qubit:n_qubits - 1]
+    einstring = "YZ," + ascii_letters[0:n_qubits - 1 - qubit]
+    einstring += "Z" + ascii_letters[n_qubits - 1 - qubit:n_qubits - 1]
+    einstring += "->" + ascii_letters[0:n_qubits - 1 - qubit] + "Y"
+    einstring += ascii_letters[n_qubits - 1 - qubit:n_qubits - 1]
     out = np.einsum(einstring, RX_mat, wf)
     return out.reshape(-1)
 
 
-def base_change_fun(ham: PauliSum,
-                    qubits: List[Union[int, QubitPlaceholder]]) -> Callable:
+def base_change_fun(ham: PauliSum, qubits: List[int]) -> Callable:
     """
     Create a function that applies the correct base change for ``ham``
     on a wavefunction on ``n_qubits`` qubits.
     """
     n_qubits = len(qubits)
-    qubits = qubits[::-1]  # because pyquil orders their tensor products
-                           # opposite to the canonical way.
 
     # returns the correct base change function for `qubit`.
     # Make this is a nextra function, because it allows better
@@ -306,7 +303,7 @@ def kron_eigs(ham: PauliSum, qubits: List[int]) -> np.array:
     """
     Calculate the eigenvalues of `ham` ordered as a tensorproduct
     on `qubits`. Each qubit should be acted on with the same operator
-    by each term or not at all. 
+    by each term or not at all.
     """
     diag = np.zeros((2**len(qubits)), dtype=complex)
     for term in ham:

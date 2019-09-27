@@ -11,7 +11,7 @@ from pyquil.gates import RX, CNOT, RY
 from pyquil.paulis import PauliSum, PauliTerm
 
 from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
-                                           PrepareAndMeasureOnQVM)
+                                              PrepareAndMeasureOnQVM)
 
 
 def test_PrepareAndMeasureOnWFSim():
