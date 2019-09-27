@@ -153,11 +153,11 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             self.prepare_ansatz = prepare_ansatz
             ham = hamiltonian
 
-        qubits = list(self.prepare_ansatz.get_qubits()) 
+        qubits = list(self.prepare_ansatz.get_qubits())
         with warnings.catch_warnings():   # supress commutation warnings
             warnings.simplefilter("ignore")
             ham_squared = ham * ham
-        # decompose the hamiltonian in simultaneously measurable parts  
+        # decompose the hamiltonian in simultaneously measurable parts
         if not hamiltonian_is_diagonal:
             hams = commuting_decomposition(ham)
             hams_squared = commuting_decomposition(ham_squared)
@@ -212,7 +212,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             sigma_E = 0
 
         E += np.random.randn() * sigma_E
-        out = (float(E), float(sigma_E))  # Todo: Why the float casting?
+        out = (E, sigma_E)  # Todo: Why the float casting?
 
         # Append function value and params to the log.
         # deepcopy is needed, because x may be a mutable type.
@@ -224,7 +224,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         # and return the expectation value or (exp_val, std_dev)
         if self.scalar:
-            return E
+            return float(E)
         return out
 
     def get_wavefunction(self,

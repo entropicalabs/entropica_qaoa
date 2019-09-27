@@ -230,7 +230,6 @@ def sampling_expectation(hamiltonians: List[PauliSum],
         e, v = sampling_expectation_z_base(ham, bits)
         energies += e
         var += v
-    print("\n")
     return (energies, np.sqrt(var))
 
 
@@ -305,7 +304,7 @@ def kron_eigs(ham: PauliSum, qubits: List[int]) -> np.array:
     on `qubits`. Each qubit should be acted on with the same operator
     by each term or not at all.
     """
-    diag = np.zeros((2**len(qubits)), dtype=complex)
+    diag = np.zeros((2**len(qubits)))
     for term in ham:
         out = term.coefficient.real
         for qubit in qubits:
