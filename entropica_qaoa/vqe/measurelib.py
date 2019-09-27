@@ -30,14 +30,14 @@ requires decomposing the hamiltonian into parts that commute with each other
 and then measuring them succesively. On a real QPU we need to do this,
 because physics don't allow us to measure non-commuting parts of a
 hamiltonian in one run. On the Wavefunction Simulator we need to do this,
-because translating :math:`\left<\psi | H | \psi\right>` naively to
+because translating :math:`\\left< \\psi | H | \\psi \\right>` naively to
 ``wf.conj()@ham@wf.conj()`` results in huge and sparse matrices ``ham`` that
 take longer to generate, than it takes to calculate the wavefunction ``wf``.
 
 Even though :math:`Z_0 Z_1` and :math:`X_0 X_1` commute (go ahead and check
 it), we will measure them in separate runs, because measuring them
 simultaenously can't be done by simply measuring the qubits 0 and 1. We only
-attempt to measure Pauli products simultaneously that _commute trivially_.
+attempt to measure Pauli products simultaneously that *commute trivially*.
 Two Pauli products commute trivially, if on each qubit both act with the same
 Pauli Operator, or if either one acts only with the identity. This implies in
 particular, that they can be measured without the need for ancilla qubits.
@@ -326,13 +326,13 @@ def wavefunction_expectation(hams_eigs: List[np.array],
 
     Parameters
     ----------
-    hams_eigs:
+    hams_eigs: List[np.array]
         A list of arrays of eigenvalues of the PauliSums in the
         commuting decomposition of the original hamiltonian.
     base_changes:
         A list of functions that apply the neccesary base change
         gates to the wavefunction
-    hams_squared_eigs:
+    hams_squared_eigs: List[np.array]
         The same as ``hams``, but for the square of ``ham``.
     base_changes_squared:
         The same as ``base_changes``, but for the square of ``ham``.
