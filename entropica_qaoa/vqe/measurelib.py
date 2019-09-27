@@ -88,7 +88,7 @@ def commuting_decomposition(ham: PauliSum) -> List[PauliSum]:
             commutation_graph.add_edge(term1, term2)
 
     # color the commutation graph. All terms with one color can be measured
-    # simultaneously
+    # simultaneously without the need of ancilla qubits
     color_map = nx.algorithms.coloring.greedy_color(commutation_graph)
 
     pauli_sum_list = [False] * (max(color_map.values()) + 1)
@@ -265,17 +265,29 @@ def apply_RX(qubit: int, n_qubits: int, wf: np.array) -> np.array:
     return out.reshape(-1)
 
 
-def base_change_fun(ham: PauliSum, n_qubits: int) -> Callable:
+def base_change_fun(ham: PauliSum,
+                    qubits: List[Union[int, QubitPlaceholder]]) -> Callable:
     """
     Create a function that applies the correct base change for ``ham``
     on a wavefunction on ``n_qubits`` qubits.
     """
+    n_qubits = len(qubits)
+    qubits = qubits[::-1]  # because pyquil orders their tensor products
+                           # opposite to the canonical way.
+
+    # returns the correct base change function for `qubit`.
+    # Make this is a nextra function, because it allows better
+    # control flow via `return`
     def _base_change_fun(qubit):
         for term in ham:
             if term[qubit] == 'X':
-                return functools.partial(apply_H, qubit, n_qubits)
+                return functools.partial(apply_H,
+                                         qubits.index(qubit),
+                                         n_qubits)
             if term[qubit] == 'Y':
-                return functools.partial(apply_RX, qubit, n_qubits)
+                return functools.partial(apply_RX,
+                                         qubits.index(qubit),
+                                         n_qubits)
             return None
 
     funs = []
@@ -290,15 +302,16 @@ def base_change_fun(ham: PauliSum, n_qubits: int) -> Callable:
     return out
 
 
-def kron_diagonal(ham: PauliSum, n_qubits: int) -> np.array:
+def kron_eigs(ham: PauliSum, qubits: List[int]) -> np.array:
     """
-    Calculate the diagonal of the matrix representation of ``ham`` in its
-    eigenbasis when acting on ``n_qubits`` qubits.
+    Calculate the eigenvalues of `ham` ordered as a tensorproduct
+    on `qubits`. Each qubit should be acted on with the same operator
+    by each term or not at all. 
     """
-    diag = np.zeros((2**n_qubits), dtype=complex)
+    diag = np.zeros((2**len(qubits)), dtype=complex)
     for term in ham:
-        out = term.coefficient
-        for qubit in range(n_qubits):
+        out = term.coefficient.real
+        for qubit in qubits:
             if term[qubit] != 'I':
                 out = np.kron([1, -1], out)
             else:
@@ -308,22 +321,22 @@ def kron_diagonal(ham: PauliSum, n_qubits: int) -> np.array:
     return diag
 
 
-def wavefunction_expectation(hams: List[np.array],
+def wavefunction_expectation(hams_eigs: List[np.array],
                              base_changes: List[Callable],
-                             hams_squared: List[np.array],
+                             hams_squared_eigs: List[np.array],
                              base_changes_squared: List[Callable],
                              wf: np.array) -> Tuple[float, float]:
     """Compute the exp. value and standard dev. of ``hams`` w.r.t ``wf``.
 
     Parameters
     ----------
-    hams:
+    hams_eigs:
         A list of arrays of eigenvalues of the PauliSums in the
         commuting decomposition of the original hamiltonian.
     base_changes:
         A list of functions that apply the neccesary base change
         gates to the wavefunction
-    hams_squared:
+    hams_squared_eigs:
         The same as ``hams``, but for the square of ``ham``.
     base_changes_squared:
         The same as ``base_changes``, but for the square of ``ham``.
@@ -338,15 +351,15 @@ def wavefunction_expectation(hams: List[np.array],
     """
 
     energy = 0
-    for ham, fun in zip(hams, base_changes):
+    for eigs, fun in zip(hams_eigs, base_changes):
         wf_new = fun(wf)
-        probs = wf_new * wf_new.conj()
-        energy += float(probs@ham)
+        probs = np.abs(wf_new)**2
+        energy += probs@eigs
 
     energy2 = 0
-    for ham, fun in zip(hams_squared, base_changes_squared):
+    for eigs, fun in zip(hams_squared_eigs, base_changes_squared):
         wf_new = fun(wf)
-        probs = wf_new * wf_new.conj()
-        energy2 += float(probs@ham)
+        probs = np.abs(wf_new)**2
+        energy2 += probs@eigs
 
     return (energy, energy2)
