@@ -29,7 +29,7 @@ from pyquil.api import WavefunctionSimulator, QuantumComputer, get_qc
 from entropica_qaoa.vqe.measurelib import (append_measure_register,
                                            commuting_decomposition,
                                            sampling_expectation,
-                                           kron_diagonal,
+                                           kron_eigs,
                                            base_change_fun,
                                            wavefunction_expectation)
 
@@ -153,23 +153,26 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             self.prepare_ansatz = prepare_ansatz
             ham = hamiltonian
 
-        n_qubits = len(prepare_ansatz.get_qubits())
-        with warnings.catch_warnings():   # suppress irrelevant warnings
+        qubits = list(self.prepare_ansatz.get_qubits())
+        with warnings.catch_warnings():   # supress commutation warnings
             warnings.simplefilter("ignore")
             ham_squared = ham * ham
+        # decompose the hamiltonian in simultaneously measurable parts
         if not hamiltonian_is_diagonal:
             hams = commuting_decomposition(ham)
             hams_squared = commuting_decomposition(ham_squared)
         else:
             hams = [ham]
             hams_squared = [ham_squared]
-        self.hams = [kron_diagonal(ham, n_qubits) for ham in hams]
-        self.hams_squared = [kron_diagonal(ham, n_qubits)
-                             for ham in hams_squared]
-        self.base_changes = [base_change_fun(ham, n_qubits) for ham in hams]
-        self.base_changes_squared = [base_change_fun(ham, n_qubits)
+        # get eigenvalues of each term in the decompsition and base changes
+        self.hams_eigs = [kron_eigs(ham, qubits) for ham in hams]
+        self.hams_squared_eigs = [kron_eigs(ham, qubits)
+                                  for ham in hams_squared]
+        self.base_changes = [base_change_fun(ham, qubits) for ham in hams]
+        self.base_changes_squared = [base_change_fun(ham, qubits)
                                      for ham in hams_squared]
 
+        # prepare logging if wished
         if enable_logging:
             self.log = []
 
@@ -197,8 +200,8 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         memory_map = self.make_memory_map(params)
         wf = self.sim.wavefunction(self.prepare_ansatz, memory_map)
-        E, E2 = wavefunction_expectation(self.hams, self.base_changes,
-                                         self.hams_squared,
+        E, E2 = wavefunction_expectation(self.hams_eigs, self.base_changes,
+                                         self.hams_squared_eigs,
                                          self.base_changes_squared,
                                          wf.amplitudes)
 
@@ -209,7 +212,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
             sigma_E = 0
 
         E += np.random.randn() * sigma_E
-        out = (float(E), float(sigma_E))  # Todo: Why the float casting?
+        out = (E, sigma_E)  # Todo: Why the float casting?
 
         # Append function value and params to the log.
         # deepcopy is needed, because x may be a mutable type.
@@ -221,7 +224,7 @@ class PrepareAndMeasureOnWFSim(AbstractCostFunction):
 
         # and return the expectation value or (exp_val, std_dev)
         if self.scalar:
-            return E
+            return float(E)
         return out
 
     def get_wavefunction(self,

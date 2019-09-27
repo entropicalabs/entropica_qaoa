@@ -6,12 +6,15 @@ import numpy as np
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import RX, RY, H, CNOT
 from pyquil.quil import Program, QubitPlaceholder, MEASURE
+from pyquil.unitary_tools import lifted_pauli
 
 from entropica_qaoa.vqe.measurelib import (append_measure_register,
                                            sampling_expectation_z_base,
                                            sampling_expectation,
                                            commuting_decomposition,
-                                           base_change_fun)
+                                           base_change_fun,
+                                           kron_eigs,
+                                           wavefunction_expectation)
 
 
 def test_commuting_decomposition():
@@ -63,6 +66,7 @@ def test_sampling_expectation():
 
 
 def test_base_change_fun():
+    # this also tests apply_H and apply_RX
     term1 = PauliTerm("Z", 0) * PauliTerm("Z", 1)
     term2 = PauliTerm("Z", 1) * PauliTerm("Z", 2)
     term3 = PauliTerm("X", 0) * PauliTerm("X", 2)
@@ -73,6 +77,42 @@ def test_base_change_fun():
     wfs.append(np.array([0, 1, 2, 3, 4, 5, 6, 7]))
     hams = commuting_decomposition(ham)
     for w, h in zip(wfs, hams):
-        fun = base_change_fun(h, 3)
+        fun = base_change_fun(h, [0, 1, 2])
         assert np.allclose(fun(wf), w)
 
+
+def test_kron_diagonal():
+    term1 = PauliTerm("Z", 1, .2) * PauliTerm("Z", 3)
+    term2 = PauliTerm("Z", 1, -.4) * PauliTerm("Z", 2)
+    term3 = PauliTerm("Z", 1, 1.4)
+    ham = PauliSum([term1, term2, term3])
+    diag1 = np.diag(lifted_pauli(ham, [1, 3, 2]))
+    diag2 = kron_eigs(ham, [1, 3, 2])
+    assert np.allclose(diag1, diag2)
+
+
+def test_wavefunction_expectation():
+    term1 = PauliTerm("Z", 1, .2) * PauliTerm("Z", 2)
+    term2 = PauliTerm("X", 1, -.4) * PauliTerm("Z", 3)
+    term3 = PauliTerm("Y", 1, 1.4)
+    ham = PauliSum([term1, term2, term3])
+    ham2 = ham * ham
+
+    mat = lifted_pauli(ham, [1, 3, 2])
+    mat2 = lifted_pauli(ham2, [1, 3, 2])
+    wf = np.array([0, 1.0, 2, .3, .5, -.5, .6, -.9])
+
+    hams = commuting_decomposition(ham)
+    hams2 = commuting_decomposition(ham2)
+
+    funs = [base_change_fun(ham, [1, 3, 2]) for ham in hams]
+    funs2 = [base_change_fun(ham, [1, 3, 2]) for ham in hams2]
+
+    hams = [kron_eigs(h, [1, 3, 2]) for h in hams]
+    hams2 = [kron_eigs(h, [1, 3, 2]) for h in hams2]
+
+    e1, s1 = wavefunction_expectation(hams, funs, hams2, funs2, wf)
+    e2, s2 = wf.conj()@mat@wf, wf@mat2@wf
+    print(e1, s1)
+    print(e2, s2)
+    assert np.allclose((e1, s1), (e2, s2))
