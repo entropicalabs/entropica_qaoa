@@ -93,7 +93,8 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul>
@@ -175,12 +176,14 @@
 <div class="genindex-jumpbox">
  <a href="#_"><strong>_</strong></a>
  | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
@@ -189,6 +192,7 @@
  | <a href="#S"><strong>S</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
  | <a href="#X"><strong>X</strong></a>
  | <a href="#Z"><strong>Z</strong></a>
  
@@ -214,9 +218,21 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="parameters.html#qaoa.parameters.AnnealingParams">AnnealingParams (class in qaoa.parameters)</a>
 </li>
+      <li><a href="measurelib.html#vqe.measurelib.append_measure_register">append_measure_register() (in module vqe.measurelib)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="measurelib.html#vqe.measurelib.append_measure_register">append_measure_register() (in module vqe.measurelib)</a>
+      <li><a href="measurelib.html#vqe.measurelib.apply_H">apply_H() (in module vqe.measurelib)</a>
+</li>
+      <li><a href="measurelib.html#vqe.measurelib.apply_RX">apply_RX() (in module vqe.measurelib)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.base_change_fun">base_change_fun() (in module vqe.measurelib)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -338,6 +354,8 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.H_mat">H_mat (in module vqe.measurelib)</a>
+</li>
       <li><a href="utilities.html#utilities.hamiltonian_from_distances">hamiltonian_from_distances() (in module utilities)</a>
 </li>
   </ul></td>
@@ -345,6 +363,14 @@
       <li><a href="utilities.html#utilities.hamiltonian_from_graph">hamiltonian_from_graph() (in module utilities)</a>
 </li>
       <li><a href="utilities.html#utilities.hamiltonian_from_hyperparams">hamiltonian_from_hyperparams() (in module utilities)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.kron_eigs">kron_eigs() (in module vqe.measurelib)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -382,6 +408,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.pauli_matrix">pauli_matrix() (in module utilities)</a>
+</li>
       <li><a href="parameters.html#qaoa.parameters.AnnealingParams.plot">plot() (qaoa.parameters.AnnealingParams method)</a>
 
       <ul>
@@ -472,6 +500,8 @@
       </ul></li>
       <li><a href="utilities.html#utilities.ring_of_disagrees">ring_of_disagrees() (in module utilities)</a>
 </li>
+      <li><a href="measurelib.html#vqe.measurelib.RX_mat">RX_mat (in module vqe.measurelib)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -521,6 +551,14 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="measurelib.html#module-vqe.measurelib">vqe.measurelib (module)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.wavefunction_expectation">wavefunction_expectation() (in module vqe.measurelib)</a>
 </li>
   </ul></td>
 </tr></table>

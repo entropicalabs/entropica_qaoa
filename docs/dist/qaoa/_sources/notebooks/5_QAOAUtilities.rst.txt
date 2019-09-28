@@ -1,4 +1,5 @@
-.. _5-QAOAUtilities:
+.. _5-QAOAUtilities: 
+
 
 Utility functions for QAOA
 ==========================
@@ -413,7 +414,7 @@ the MaxCut problem, the optimal cost function value returned for a given
 
    C(n,p) = \left(\frac{2p + 1}{2p + 2}\right)n
 
-This result assumes the ``StandardParams`` parameterisation, and that
+ This result assumes the ``StandardParams`` parameterisation, and that
 the graph is unweighted (all edge weights equal to 1). Here we verify
 this result using the ``ring_of_disagrees()`` function. Note that
 subsequent to `Ref 2 <#references>`__, this result has been derived

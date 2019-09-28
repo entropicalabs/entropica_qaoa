@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Solve the clustering problem using QAOA" href="6_ClusteringWithQAOA.html" />
+    <link rel="next" title="Solving a simple QUBO with QAOA" href="6_SolvingQUBOwithQAOA.html" />
     <link rel="prev" title="Cost function features and VQE" href="4_CostFunctionsAndVQE.html" /> 
 </head>
 
@@ -120,7 +120,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul>
@@ -513,9 +514,8 @@ made arbitrarily close to 1 by increasing the parameter <span class="math notran
 the MaxCut problem, the optimal cost function value returned for a given
 <span class="math notranslate nohighlight">\(n\)</span> and <span class="math notranslate nohighlight">\(p\)</span> was found to be</p>
 <div class="math notranslate nohighlight">
-\[C(n,p) = \left(\frac{2p + 1}{2p + 2}\right)n\]</div>
-<p>This result assumes the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> parameterisation, and that
-the graph is unweighted (all edge weights equal to 1). Here we verify
+\[ \begin{align}\begin{aligned}  C(n,p) = \left(\frac{2p + 1}{2p + 2}\right)n\\This result assumes the ``StandardParams`` parameterisation, and that\end{aligned}\end{align} \]</div>
+<p>the graph is unweighted (all edge weights equal to 1). Here we verify
 this result using the <code class="docutils literal notranslate"><span class="pre">ring_of_disagrees()</span></code> function. Note that
 subsequent to <a class="reference external" href="#references">Ref 2</a>, this result has been derived
 using analytic methods in <a class="reference external" href="#references">Ref 3</a>.</p>
@@ -661,7 +661,7 @@ MaxCut: A FermionicView</a></p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="6_ClusteringWithQAOA.html" class="btn btn-neutral float-right" title="Solve the clustering problem using QAOA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="6_SolvingQUBOwithQAOA.html" class="btn btn-neutral float-right" title="Solving a simple QUBO with QAOA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="4_CostFunctionsAndVQE.html" class="btn btn-neutral float-left" title="Cost function features and VQE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

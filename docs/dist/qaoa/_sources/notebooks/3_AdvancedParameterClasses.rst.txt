@@ -1,4 +1,5 @@
-.. _3-AdvancedParameterClasses:
+.. _3-AdvancedParameterClasses: 
+
 
 Advanced QAOA parameter classes
 ===============================

@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Solving a simple QUBO with QAOA &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Solve the clustering problem using QAOA" href="7_ClusteringWithQAOA.html" />
+    <link rel="prev" title="Utility functions for QAOA" href="5_QAOAUtilities.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+            
+            <img src="../_static/ELlogo_small.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials_overview.html">Overview of tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Solving a simple QUBO with QAOA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#defining-the-problem">Defining the problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mapping-to-qaoa">Mapping to QAOA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#solution-with-standardparams">Solution with <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+</ul>
+<p class="caption"><span class="caption-text">General Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Solving a simple QUBO with QAOA</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/6_SolvingQUBOwithQAOA.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="solving-a-simple-qubo-with-qaoa">
+<span id="solvingqubowithqaoa"></span><h1>Solving a simple QUBO with QAOA<a class="headerlink" href="#solving-a-simple-qubo-with-qaoa" title="Permalink to this headline">¶</a></h1>
+<p>This section shows how QAOA can be used to solve a simple quadratic
+unconstrained binary optimisation (QUBO) problem. QUBOs have received
+significant interest in recent years as a way of tackling discrete
+combinatorial optimisation tasks, which are widespread in the logistics
+industry, amongst others. They have also attracted attention for their
+apparent amenability to implementation on near-term quantum hardware.
+For a good review of QUBOs and how to formulate them, see <a class="reference external" href="#references">Ref
+1</a>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">pyquil.paulis</span> <span class="kn">import</span> <span class="n">PauliSum</span>
+<span class="kn">from</span> <span class="nn">pyquil.api</span> <span class="kn">import</span> <span class="n">WavefunctionSimulator</span>
+<span class="kn">from</span> <span class="nn">pyquil.unitary_tools</span> <span class="kn">import</span> <span class="n">lifted_pauli</span>
+
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.parameters</span> <span class="kn">import</span> <span class="n">StandardParams</span><span class="p">,</span> <span class="n">ExtendedParams</span><span class="p">,</span> <span class="n">FourierParams</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.cost_function</span> <span class="kn">import</span> <span class="n">QAOACostFunctionOnWFSim</span>
+
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+</pre></div>
+</div>
+<div class="section" id="defining-the-problem">
+<h2>Defining the problem<a class="headerlink" href="#defining-the-problem" title="Permalink to this headline">¶</a></h2>
+<p>Here we will tackle the simple problem given in Section 2 of <a class="reference external" href="#references">Ref
+1</a>. We seek the minimum function value, and
+corresponding configuration of variables, of</p>
+<div class="math notranslate nohighlight">
+\[y = -5x_1 -3x_2 -8x_3 -6x_4 + 4x_1x_2 + 8x_1x_3 + 2x_2x_3 + 10x_3x_4\]</div>
+<p>Here the variables <span class="math notranslate nohighlight">\(x_i\)</span>, <span class="math notranslate nohighlight">\(i = 1,...,4\)</span> are binary.
+i.e. they can take the value 0 or 1. Observe that in the linear part
+(the first 4 terms), all of the variables would ideally be equal to 1 in
+order to minimise the function. However, the quadratic part (the second
+4 terms) encodes penalties for having different pairs of variables equal
+to 1.</p>
+<p>Note that in the linear part, we can simply square all of the variables,
+since <span class="math notranslate nohighlight">\(x_i = x_i^2\)</span> for binary variables. We then transform the
+problem to minimisation of</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y^{\prime} = -5x_1^2 -3x_2^2 -8x_3^2 -6x_4^2 + 4x_1x_2 + 8x_1x_3 + 2x_2x_3 + 10x_3x_4 \\
+= \left(\begin{matrix} x_4 &amp; x_3 &amp; x_2 &amp; x_1\end{matrix}\right)
+\left(\begin{matrix}
+-6 &amp; 5 &amp; 0 &amp; 0 \\
+5 &amp; -8 &amp; 1 &amp; 4 \\
+0 &amp; 1 &amp; -3 &amp; 2 \\
+0 &amp; 4 &amp; 2 &amp; -5
+\end{matrix}
+\right)
+\left(\begin{matrix} x_4\\ x_3 \\ x_2 \\ x_1 \end{matrix}\right)\end{split}\]</div>
+<p>We have ordered the variables in the binary strings such that
+<span class="math notranslate nohighlight">\(x_1\)</span> appears as the least significant bit (i.e. on the right of
+the register), which corresponds to a common convention in the quantum
+computing community, and in particular for Rigetti’s Pyquil: see
+<a class="reference external" href="http://docs.rigetti.com/en/stable/wavefunction_simulator.html#multi-qubit-basis-enumeration">here</a>
+for more information. Let’s plot the function to see what the energy
+landscape looks like.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def func_y(config):
+
+    matr = np.array([[-6, 5, 0, 0], [5, -8, 1, 4], [0, 1, -3, 2], [0, 4, 2, -5]])
+
+    return config @ matr @ config
+
+def num_2_bin(num):
+
+    bin_str = np.binary_repr(num, width=4)
+    bin_arr = np.array([int(x) for x in bin_str])
+
+    return bin_arr
+
+y_vals = [func_y(num_2_bin(i)) for i in range(16)]
+bin_strings = [&#39;{0:04b}&#39;.format(i) for i in range(16)]
+
+plt.plot(y_vals,&#39;o-&#39;)
+plt.xticks(range(16), bin_strings, rotation=70);
+plt.ylabel(&#39;y&#39;)
+plt.show()
+</pre></div>
+</div>
+<img alt="../_images/6_SolvingQUBOwithQAOA_3_0.png" src="../_images/6_SolvingQUBOwithQAOA_3_0.png" />
+<p>The optimal solution is <span class="math notranslate nohighlight">\(x_1 = x_4 = 1\)</span>, <span class="math notranslate nohighlight">\(x_2 = x_3 = 0\)</span>,
+i.e. the bitstring 1001 (the binary representation of the number 9). Its
+corresponding function value is -11.</p>
+</div>
+<div class="section" id="mapping-to-qaoa">
+<h2>Mapping to QAOA<a class="headerlink" href="#mapping-to-qaoa" title="Permalink to this headline">¶</a></h2>
+<p>To solve the problem using QAOA, we might naively associate each
+variable with the <span class="math notranslate nohighlight">\(Z\)</span> value of a spin. However, there are a couple
+of implementation details we need to take into account. Firstly, unlike
+how we took the square of the binary variables <span class="math notranslate nohighlight">\(x_j\)</span> to arrive at
+a QUBO, we can’t use the trick of squaring the qubit <span class="math notranslate nohighlight">\(Z\)</span> operator,
+because this would simply result in the identity operation. We would
+therefore just implement the linear terms in their original form, albeit
+with the following modification:</p>
+<div class="math notranslate nohighlight">
+\[x_i \leftrightarrow \frac{\mathbb{I} - Z_j}{2}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbb{I}\)</span> is the identity operator. This ensures that a
+spin in state <span class="math notranslate nohighlight">\(|0\rangle\)</span> produces zero contributiion to the cost
+function, while a spin in state <span class="math notranslate nohighlight">\(|1\rangle\)</span> adds 1 to the total
+cost function.</p>
+<p>Turning to the polynomial terms, in the original problem above, it is
+sufficient for just one of the variables <span class="math notranslate nohighlight">\(x_i\)</span> or <span class="math notranslate nohighlight">\(x_j\)</span> to
+be 0 for the term <span class="math notranslate nohighlight">\(x_ix_j\)</span> to be zero. This does not carry over to
+measurements of the <span class="math notranslate nohighlight">\(Z\)</span> operator for qubits, since
+<span class="math notranslate nohighlight">\(Z_iZ_j = \pm1\)</span> if <span class="math notranslate nohighlight">\(i=j\)</span> (+) or <span class="math notranslate nohighlight">\(i\neq j\)</span> (-).
+However, if we choose the operator
+<span class="math notranslate nohighlight">\((\mathbb{I} - Z_i)(\mathbb{I} - Z_j)/4 = (\mathbb{I} - Z_i - Z_j + Z_iZ_j)/4\)</span>,
+we are able to implement the desired cost function</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(
+\begin{matrix}
+0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{matrix}
+\right)\end{split}\]</div>
+<p>Our Hamiltonian is then</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}H_y = -\frac{1}{2}\left[5(\mathbb{I} - Z_1) + 3(\mathbb{I} - Z_2) + 8(\mathbb{I} - Z_3) + 6(\mathbb{I} - Z_4)\right] \\
++ \frac{1}{4}\left[4(\mathbb{I} - Z_1)(\mathbb{I} - Z_2) + 8(\mathbb{I} - Z_1)(\mathbb{I} - Z_3) + 2(\mathbb{I} - Z_2)(\mathbb{I} - Z_3) + 10(\mathbb{I} - Z_3)(\mathbb{I} - Z_4)\right]\end{split}\]</div>
+<p>Let’s now set the problem up and proceed to solve it using QAOA.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linear part of the Hamiltonian</span>
+<span class="n">ham_lin</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">PauliSum</span><span class="o">.</span><span class="n">from_compact_str</span><span class="p">(</span><span class="s1">&#39;(-5)*Z1 + (-3)*Z2 + (-8)*Z3 + (-6)*Z4 + 22*I&#39;</span><span class="p">)</span>
+
+<span class="c1"># Quadratic part of the Hamiltonian</span>
+<span class="n">ham_poly</span> <span class="o">=</span> <span class="mf">0.25</span><span class="o">*</span><span class="n">PauliSum</span><span class="o">.</span><span class="n">from_compact_str</span><span class="p">(</span><span class="s1">&#39;4*Z1*Z2 + 4*I + (-4)*Z1 + (-4)*Z2 + 8*Z1*Z3 + 8*I + (-8)*Z1 + (-8)*Z3&#39;</span><span class="p">)</span>
+<span class="n">ham_poly</span> <span class="o">+=</span> <span class="mf">0.25</span><span class="o">*</span><span class="n">PauliSum</span><span class="o">.</span><span class="n">from_compact_str</span><span class="p">(</span><span class="s1">&#39;2*Z2*Z3 + 2*I + (-2)*Z2 + (-2)*Z3 + 10*Z3*Z4 + 10*I + (-10)*Z3 + (-10)*Z4&#39;</span><span class="p">)</span>
+
+<span class="n">ham</span> <span class="o">=</span> <span class="n">ham_lin</span> <span class="o">+</span> <span class="n">ham_poly</span>
+</pre></div>
+</div>
+<p>We can check that the eigenvalues of the Hamiltonian <code class="docutils literal notranslate"><span class="pre">ham</span></code> correspond
+to the function values we plotted above:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ham_matrix</span> <span class="o">=</span> <span class="n">lifted_pauli</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span> <span class="n">ham</span><span class="o">.</span><span class="n">get_qubits</span><span class="p">())</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Eigenvalues: &#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">ham_matrix</span><span class="p">))</span> <span class="c1"># NB: ham is diagonal in the Z basis</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Function values: &#39;</span><span class="p">,</span> <span class="n">y_vals</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Eigenvalues</span><span class="p">:</span>  <span class="p">[</span>  <span class="mf">0.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">5.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">3.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">4.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">8.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">5.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">9.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">2.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>
+  <span class="o">-</span><span class="mf">6.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span> <span class="o">-</span><span class="mf">11.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">9.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span> <span class="o">-</span><span class="mf">10.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">4.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">1.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>  <span class="o">-</span><span class="mf">5.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span>   <span class="mf">2.</span><span class="o">+</span><span class="mf">0.</span><span class="n">j</span><span class="p">]</span>
+
+<span class="n">Function</span> <span class="n">values</span><span class="p">:</span>  <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">9</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="o">-</span><span class="mi">11</span><span class="p">,</span> <span class="o">-</span><span class="mi">9</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-with-standardparams">
+<h2>Solution with <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code><a class="headerlink" href="#solution-with-standardparams" title="Permalink to this headline">¶</a></h2>
+<p>Let’s tackle the problem using the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> parametrisation.
+We’ll see how we do with <span class="math notranslate nohighlight">\(p=3\)</span> timesteps, using Cobyla as our
+optimiser, and the <code class="docutils literal notranslate"><span class="pre">linear_ramp_from_hamiltonian</span></code> function to set up
+our inital parameters.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">standard_params</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+
+<span class="c1"># Set up cost function and run optimisation</span>
+<span class="n">cost_std</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">standard_params</span><span class="p">)</span>
+<span class="n">res_std</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_std</span><span class="p">,</span> <span class="n">standard_params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;Cobyla&#39;</span><span class="p">)</span>
+
+<span class="c1"># Print the output</span>
+<span class="n">res_std</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">fun</span><span class="p">:</span> <span class="o">-</span><span class="mf">9.481743378102294</span>
+  <span class="n">maxcv</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="n">message</span><span class="p">:</span> <span class="s1">&#39;Optimization terminated successfully.&#39;</span>
+   <span class="n">nfev</span><span class="p">:</span> <span class="mi">229</span>
+ <span class="n">status</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">success</span><span class="p">:</span> <span class="kc">True</span>
+      <span class="n">x</span><span class="p">:</span> <span class="n">array</span><span class="p">([</span><span class="mf">0.57705579</span><span class="p">,</span> <span class="mf">0.36725195</span><span class="p">,</span> <span class="mf">0.17168154</span><span class="p">,</span> <span class="mf">0.13192841</span><span class="p">,</span> <span class="mf">0.27705965</span><span class="p">,</span>
+      <span class="mf">0.31679062</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The expectation value of the cost Hamiltonian <code class="docutils literal notranslate"><span class="pre">ham</span></code> is -9.4, however
+we know the true solution to have cost -11. Evidently, our QAOA circuit
+has not returned the correct solution, however we can examine the
+probability distribution of the output quantum state:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">state</span> <span class="o">=</span> <span class="n">cost_std</span><span class="o">.</span><span class="n">get_wavefunction</span><span class="p">(</span><span class="n">res_std</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="n">probs</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;$\left|{0:04b}\right&gt;$&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span><span class="n">probs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span> <span class="n">labels</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">70</span><span class="p">);</span>
+</pre></div>
+</div>
+<img alt="../_images/6_SolvingQUBOwithQAOA_11_0.png" src="../_images/6_SolvingQUBOwithQAOA_11_0.png" />
+<p>Observe that the most probable state is <span class="math notranslate nohighlight">\(|1001\rangle\)</span>, which does
+indeed correspond to the minimum energy configuration of the variables.
+However, if we were to sample from a quantum computer, the above
+distribution would not likely not allow us to conclude with high
+confidence that we have found the solution: there are several other bit
+strings with relatively high probabilities too.</p>
+<p>Let’s try increasing the parameters <span class="math notranslate nohighlight">\(p\)</span> (the circuit depth) to see
+how more likely we are to obtain the optimal solution. To do this, we’ll
+define a simple convenience function.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">state_prob_p</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies the QAOA circuit and returns the probability of measuring the bitstring 1001</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">standard_params</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">cost_std</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">standard_params</span><span class="p">)</span>
+    <span class="n">res_std</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_std</span><span class="p">,</span> <span class="n">standard_params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;Cobyla&#39;</span><span class="p">)</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">cost_std</span><span class="o">.</span><span class="n">get_wavefunction</span><span class="p">(</span><span class="n">res_std</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">probs</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">probs</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="c1"># The bitstring 1001 is the 9th entry of the vector of probabilities</span>
+</pre></div>
+</div>
+<p>We will run the above function for different values of <span class="math notranslate nohighlight">\(p\)</span>, and
+see how the probability of the optimal bistring 1001 increases.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Running this cell should take 2 or 3 minutes.</span>
+<span class="n">p_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">probability_opt_state</span> <span class="o">=</span> <span class="p">[</span><span class="n">state_prob_p</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">p_vals</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the probabilities</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">p_vals</span><span class="p">,</span><span class="n">probability_opt_state</span><span class="p">,</span><span class="s1">&#39;o-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Prob. of &#39;</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;$|1001\rangle$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/6_SolvingQUBOwithQAOA_16_0.png" src="../_images/6_SolvingQUBOwithQAOA_16_0.png" />
+<p>Clearly the optimal bit string probability approaches unity with
+increasing <span class="math notranslate nohighlight">\(p\)</span>.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>F. Glover et al, <a class="reference external" href="https://arxiv.org/pdf/1811.11538.pdf">A Tutorial on Formulating and Using QUBO
+Models</a>.</p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="7_ClusteringWithQAOA.html" class="btn btn-neutral float-right" title="Solve the clustering problem using QAOA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="5_QAOAUtilities.html" class="btn btn-neutral float-left" title="Utility functions for QAOA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -93,7 +93,8 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul>
@@ -179,13 +180,13 @@
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li><p>Multiple built-in parametrisations for QAOA.</p></li>
-<li><p><a class="reference external" href="https://networkx.github.io/">NetworkX</a> integration for the treatment of
-graph theoretic problems, and <a class="reference external" href="https://pandas.pydata.org/">Pandas</a> integration for data importing.</p></li>
+<li><p>Multiple built-in parametrisations for QAOA, which facilitate prototyping and testing of different approaches to solving a problem.</p></li>
+<li><p>A range of utility functions allowing easy problem translation from <a class="reference external" href="https://networkx.github.io/">NetworkX</a> for graph theoretic problems, and
+<a class="reference external" href="https://pandas.pydata.org/">Pandas</a> integration for data science tasks.</p></li>
 <li><p>Convenient optimiser logging tools.</p></li>
 <li><p>Ability to run more general parametric circuits using the VQE library.</p></li>
 <li><p>Full native support for <a class="reference external" href="https://www.rigetti.com/qpu">Rigetti’s QVM and QPUs</a>. Run your experiments on real Quantum Computers!</p></li>
-<li><p>Modular code base that allows the user to customise and modify different components.</p></li>
+<li><p>Modular code base that allows the user to customise and modify different components: use your favourite classical optimisation library, or write your own parameter class.</p></li>
 <li><p>Extensive examples explaining the usage of EntropicaQAOA in detail.</p></li>
 </ul>
 </div></blockquote>
@@ -256,7 +257,8 @@ the documentation.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--all</span></code> runs all of the above tests.</p></li>
 </ul>
 </div></blockquote>
-<p>The documentation can also downloaded as Jupyter notebooks from our <a class="reference external" href="https://github.com/entropicalabs/entropica_qaoa/tree/master/examples">GitHub page</a> .</p>
+<p>Note that the Quil compiler and QVM need to be running for all of the tests to pass successfully.</p>
+<p>The tutorials in this documentation can also downloaded as Jupyter notebooks from our <a class="reference external" href="https://github.com/entropicalabs/entropica_qaoa/tree/master/examples">GitHub page</a> .</p>
 </div>
 <div class="section" id="contributing-and-feedback">
 <h2>Contributing and feedback<a class="headerlink" href="#contributing-and-feedback" title="Permalink to this headline">¶</a></h2>
@@ -352,12 +354,19 @@ the documentation.</p>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/5_QAOAUtilities.html#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#variational-hybrid-algorithms">Variational Hybrid Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#the-maxcut-problem">The Maxcut Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#from-maxcut-to-qubo">From Maxcut to QUBO</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#from-qubo-to-a-hamiltonian">From QUBO to a Hamiltonian</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html#minimize-the-hamiltonian-with-qaoa">Minimize the Hamiltonian with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html#defining-the-problem">Defining the problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html#mapping-to-qaoa">Mapping to QAOA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html#solution-with-standardparams">Solution with <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html#variational-hybrid-algorithms">Variational Hybrid Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html#the-maxcut-problem">The Maxcut Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html#from-maxcut-to-qubo">From Maxcut to QUBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html#from-qubo-to-a-hamiltonian">From QUBO to a Hamiltonian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html#minimize-the-hamiltonian-with-qaoa">Minimize the Hamiltonian with QAOA</a></li>
 </ul>
 </li>
 </ul>
@@ -370,6 +379,10 @@ the documentation.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#v1-1-beta-in-development">v1.1-beta (in development)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#improvements-and-changes">Improvements and changes</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#v1-0-beta">v1.0-beta</a></li>
 </ul>
 </li>
@@ -396,7 +409,10 @@ the documentation.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utilities.html">VQE and QAOA utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="measurelib.html">Measurement utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">Measurement utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="measurelib.html#some-preliminary-explanation">Some preliminary explanation</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="section" id="indices-and-tables">

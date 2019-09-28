@@ -1,4 +1,5 @@
-.. _4-CostFunctionsAndVQE:
+.. _4-CostFunctionsAndVQE: 
+
 
 Cost function features and VQE
 ==============================
@@ -42,7 +43,7 @@ case of VQE where the Ansatz is fixed to be of the form
    \hat{U}(\vec{\beta}, \vec{\gamma})
        = e^{-i \beta_p H_M} e^{-i \gamma_p H_C}
          \cdots
-         e^{-i \beta_0 H_M} e^{-i \gamma_1 H_C}
+         e^{-i \beta_1 H_M} e^{-i \gamma_1 H_C}
 
 with the free parameters :math:`\vec{\beta}, \vec{\gamma}`.
 
@@ -64,9 +65,9 @@ Before we begin, let us first import all neccesary libraries:
     
     # A finally the cost functions
     from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
-                                                  PrepareAndMeasureOnQVM,
-                                                  pauli_matrix)
+                                                  PrepareAndMeasureOnQVM)
     from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
+    from entropica_qaoa.utilities import pauli_matrix
     
     # And one our QAOA parameter classes
     from entropica_qaoa.qaoa.parameters import StandardParams, FourierParams
@@ -267,7 +268,7 @@ section `below <#statistics_details>`__.
 
 [For clarity, note that if we are using the QVM or QPU and corresponding
 cost function ``PrepareAndMeasureOnQVM``, the argument ``nshots`` is
-compulsory, and the noise is not mimicked using the Gaussian
+compulsory, and the measurement noise is not mimicked using the Gaussian
 approximation - it is the true noise obtained by taking the specified
 finite number of samples.]
 
@@ -416,13 +417,13 @@ To create the optimisation log, we set ``enable_logging=True``.
 
 .. parsed-literal::
 
-         fun: -0.995006044657827
+         fun: -1.0077099207193003
        maxcv: 0.0
      message: 'Optimization terminated successfully.'
-        nfev: 22
+        nfev: 21
       status: 1
      success: True
-           x: array([-1.59395])
+           x: array([-1.484475])
 
 
 We can examine the log as follows:
@@ -440,28 +441,27 @@ We can examine the log as follows:
 
 .. parsed-literal::
 
-    array([[ 2.28877527e-03,  1.00000000e-01],
-           [ 7.76303060e-01,  5.40302306e-02],
-           [-8.38799676e-01,  5.40302306e-02],
-           [-8.43648406e-01,  4.16146837e-02],
-           [-7.33479054e-01,  8.01143616e-02],
-           [-9.82648503e-01,  1.78246056e-02],
-           [-9.90595774e-01,  7.07372017e-03],
-           [-9.52429999e-01,  1.94547708e-02],
-           [-1.00017983e+00,  8.29623162e-04],
-           [-9.93486155e-01,  5.41771350e-03],
-           [-1.00214305e+00,  2.29516577e-03],
-           [-1.00105751e+00,  5.41771350e-03],
-           [-9.99635602e-01,  3.85691044e-03],
-           [-9.99537995e-01,  1.51405947e-03],
-           [-1.00011529e+00,  2.68566936e-03],
-           [-1.00042481e+00,  2.09990046e-03],
-           [-9.95741235e-01,  2.39279518e-03],
-           [-1.00024168e+00,  2.24635023e-03],
-           [-9.97431599e-01,  2.31957333e-03],
-           [-1.00111499e+00,  2.28516839e-03],
-           [-1.00284175e+00,  2.30516312e-03],
-           [-9.95006045e-01,  2.31516045e-03]])
+    array([[-2.32444817e-01,  1.00000000e-01],
+           [ 8.63425400e-01,  5.40302306e-02],
+           [-8.76703509e-01,  5.40302306e-02],
+           [-8.40539162e-01,  4.16146837e-02],
+           [-1.00781855e+00,  7.07372017e-03],
+           [-8.87544533e-01,  4.16146837e-02],
+           [-9.73698167e-01,  1.78246056e-02],
+           [-9.97341147e-01,  1.94547708e-02],
+           [-9.99675894e-01,  8.29623162e-04],
+           [-9.87282974e-01,  1.01869310e-02],
+           [-1.00573566e+00,  5.51433419e-03],
+           [-1.00865607e+00,  7.85278933e-03],
+           [-1.01279134e+00,  8.63137919e-03],
+           [-9.83984561e-01,  9.40944224e-03],
+           [-9.96383742e-01,  8.24214714e-03],
+           [-9.94521526e-01,  8.82594620e-03],
+           [-9.96615159e-01,  8.53408329e-03],
+           [-1.00429095e+00,  8.68002406e-03],
+           [-9.89020365e-01,  8.60705599e-03],
+           [-1.00707282e+00,  8.64134183e-03],
+           [-1.00770992e+00,  8.62141647e-03]])
 
 
 
@@ -652,7 +652,7 @@ calculation of the expected energy value.
 .. parsed-literal::
 
     Method:  Nelder-Mead
-    Time taken:  0.16504526138305664
+    Time taken:  0.8190350532531738
     Result:
      final_simplex: (array([[-1.5708125],
            [-1.57075  ]]), array([-1., -1.]))
@@ -666,7 +666,7 @@ calculation of the expected energy value.
     
     
     Method:  SLSQP
-    Time taken:  0.029027700424194336
+    Time taken:  0.16961216926574707
     Result:
          fun: -0.9999999984694352
          jac: array([-5.53205609e-05])
@@ -680,7 +680,7 @@ calculation of the expected energy value.
     
     
     Method:  Cobyla
-    Time taken:  0.06922435760498047
+    Time taken:  0.4087040424346924
     Result:
          fun: -0.9999999954355244
        maxcv: 0.0
@@ -740,42 +740,36 @@ scikit-optimize.**
 .. parsed-literal::
 
     Method:  Bayesian Optimisation
-    Time taken:  0.9499242305755615
+    Time taken:  3.203672409057617
     Result:
-              fun: -0.9999951032029182
-        func_vals: array([ 0.        , -0.10881609,  0.95360189,  0.41721697, -0.98896448,
-           -0.99803173,  0.93563543, -0.97851649, -0.00964807, -0.41018182,
-           -0.72190887, -0.9999951 , -0.99999503, -0.99998915, -0.99999488])
+              fun: -0.999991600695217
+        func_vals: array([ 0.        ,  0.8768013 , -0.6238324 ,  0.99655989, -0.39643009,
+            0.33248555,  0.9932913 ,  0.2975288 , -0.98315755, -0.4315722 ,
+            0.84533808, -0.99477806, -0.99997487, -0.9999573 , -0.9999916 ])
            models: [GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
-                             kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
-                             n_restarts_optimizer=2, noise='gaussian',
-                             normalize_y=True, optimizer='fmin_l_bfgs_b',
-                             random_state=612601979), GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
-                             kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
-                             n_restarts_optimizer=2, noise='gaussian',
-                             normalize_y=True, optimizer='fmin_l_bfgs_b',
-                             random_state=612601979), GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
-                             kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
-                             n_restarts_optimizer=2, noise='gaussian',
-                             normalize_y=True, optimizer='fmin_l_bfgs_b',
-                             random_state=612601979), GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
-                             kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
-                             n_restarts_optimizer=2, noise='gaussian',
-                             normalize_y=True, optimizer='fmin_l_bfgs_b',
-                             random_state=612601979), GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
-                             kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
-                             n_restarts_optimizer=2, noise='gaussian',
-                             normalize_y=True, optimizer='fmin_l_bfgs_b',
-                             random_state=612601979)]
-     random_state: <mtrand.RandomState object at 0x7f95b91531f8>
+                 kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
+                 n_restarts_optimizer=2, noise='gaussian', normalize_y=True,
+                 optimizer='fmin_l_bfgs_b', random_state=758834708), GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
+                 kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
+                 n_restarts_optimizer=2, noise='gaussian', normalize_y=True,
+                 optimizer='fmin_l_bfgs_b', random_state=758834708), GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
+                 kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
+                 n_restarts_optimizer=2, noise='gaussian', normalize_y=True,
+                 optimizer='fmin_l_bfgs_b', random_state=758834708), GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
+                 kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
+                 n_restarts_optimizer=2, noise='gaussian', normalize_y=True,
+                 optimizer='fmin_l_bfgs_b', random_state=758834708), GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
+                 kernel=1**2 * Matern(length_scale=1, nu=2.5) + WhiteKernel(noise_level=1),
+                 n_restarts_optimizer=2, noise='gaussian', normalize_y=True,
+                 optimizer='fmin_l_bfgs_b', random_state=758834708)]
+     random_state: RandomState(MT19937) at 0x7EFDD46975A0
             space: Space([Real(low=0, high=6.283185307179586, prior='uniform', transform='normalize')])
-            specs: {'args': {'func': <entropica_qaoa.vqe.cost_function.PrepareAndMeasureOnWFSim object at 0x7f959d70acc0>, 'dimensions': Space([Real(low=0, high=6.283185307179586, prior='uniform', transform='normalize')]), 'base_estimator': GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
-                             kernel=1**2 * Matern(length_scale=1, nu=2.5),
-                             n_restarts_optimizer=2, noise='gaussian',
-                             normalize_y=True, optimizer='fmin_l_bfgs_b',
-                             random_state=612601979), 'n_calls': 15, 'n_random_starts': 10, 'acq_func': 'gp_hedge', 'acq_optimizer': 'auto', 'x0': [0], 'y0': None, 'random_state': <mtrand.RandomState object at 0x7f95b91531f8>, 'verbose': False, 'callback': None, 'n_points': 10000, 'n_restarts_optimizer': 5, 'xi': 0.01, 'kappa': 1.96, 'n_jobs': 1}, 'function': 'base_minimize'}
-                x: [4.709259507241108]
-          x_iters: [[0], [6.174153314509717], [1.2649813051127539], [2.7112117865462193], [4.563688783161364], [4.775141057759561], [1.210055025140235], [4.920046772171743], [6.273537089495047], [5.860531890630306], [3.9481495422966617], [4.709259507241108], [4.709236727625187], [4.707730206022452], [4.7091883971865585]]
+            specs: {'args': {'func': <entropica_qaoa.vqe.cost_function.PrepareAndMeasureOnWFSim object at 0x7efda5eedc50>, 'dimensions': Space([Real(low=0, high=6.283185307179586, prior='uniform', transform='normalize')]), 'base_estimator': GaussianProcessRegressor(alpha=1e-10, copy_X_train=True,
+                 kernel=1**2 * Matern(length_scale=1, nu=2.5),
+                 n_restarts_optimizer=2, noise='gaussian', normalize_y=True,
+                 optimizer='fmin_l_bfgs_b', random_state=758834708), 'n_calls': 15, 'n_random_starts': 10, 'acq_func': 'gp_hedge', 'acq_optimizer': 'auto', 'x0': [0], 'y0': None, 'random_state': RandomState(MT19937) at 0x7EFDD46975A0, 'verbose': False, 'callback': None, 'n_points': 10000, 'n_restarts_optimizer': 5, 'xi': 0.01, 'kappa': 1.96, 'n_jobs': 1}, 'function': 'base_minimize'}
+                x: [4.708290366828594]
+          x_iters: [[0], [2.07242348685137], [5.6095486036037965], [1.6537672709750455], [3.5492177078893405], [0.33893784178429537], [1.6866947139371509], [2.8394894653558724], [4.528595933473349], [3.5878275735781333], [1.0071976821501234], [4.814628850783941], [4.705298919252173], [4.7031472197413935], [4.708290366828594]]
     
     
 
@@ -889,14 +883,14 @@ subsequently pass these to an optimiser, such as a method from
 .. parsed-literal::
 
     The output of scipy.optimize.minimize:
-          fun: -1.0980860380605737
+          fun: -1.0771291890106551
        maxcv: 0.0
      message: 'Optimization terminated successfully.'
-        nfev: 53
+        nfev: 44
       status: 1
      success: True
-           x: array([ 0.33338502, -0.0362319 , -0.00113797,  0.44507301, -0.11073208,
-           -0.02014963])
+           x: array([ 0.37708678,  0.0304932 ,  0.11447838,  0.40621426, -0.07116865,
+           -0.02260146])
     
      And hamiltonian as a matrix:
      [[-0.7+0.j  0. +0.j  0. +0.j  0. +0.j]
@@ -919,8 +913,8 @@ entry reads:
 
 .. parsed-literal::
 
-    LogEntry(x=array([ 0.57769948, -0.06151086, -0.05447635,  0.29858683, -0.0309951 ,
-           -0.01725329]), fun=(-0.6538453689892179, 0.027969997721439686))
+    LogEntry(x=array([ 0.57650078, -0.06356536, -0.05304437,  0.29571643, -0.03284953,
+           -0.01781406]), fun=(-0.6191671592796331, 0.02776909955792431))
 
 
 

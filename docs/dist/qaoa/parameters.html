@@ -94,7 +94,8 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul>
@@ -654,12 +655,12 @@ operator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>betas</strong> (<em>np.array</em>) – 2D array with the X-rotation angles. 1st index goes over n_steps and
-the 2nd index over the qubits to apply X-rotations on.</p></li>
-<li><p><strong>gammas_pairs</strong> (<em>np.array</em>) – 2D array with the ZZ-rotation angles. 1st index goes over the n_steps
-and the 2nd index over the qubit pairs, to apply ZZ-rotations on.</p></li>
-<li><p><strong>gammas_singles</strong> (<em>np.array</em>) – 2D array with Z-rotation angles. 1st index goes over the n_steps
-and the 2nd index over the qubit pairs, to apply Z-rotations on.</p></li>
+<li><p><strong>betas</strong> (<em>np.array</em>) – 2D array with the gammas from above for each timestep and qubit.
+1st index goes over the timesteps, 2nd over the qubits.</p></li>
+<li><p><strong>gammas_pairs</strong> (<em>np.array</em>) – 2D array with the gammas_pairs from above for each timestep and coupled
+pair. 1st index goes over timesteps, 2nd over pairs.</p></li>
+<li><p><strong>gammas_singles</strong> (<em>np.array</em>) – 2D array with the gammas_singles from above for each timestep and bias
+term. 1st index goes over timesteps, 2nd over bias terms.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Parameters</dt>

@@ -13,7 +13,9 @@ The tutorials in the following sections illustrate the key features of Entropica
 
 :ref:`5-QAOAUtilities` provides a walk-through of some of EntropicaQAOA's convenience methods for setting up QAOA problems directly from objects of popular libraries such as ``NetworkX`` or ``Pandas``.
 
-Finally, :ref:`6-ClusteringWithQAOA` provides a didactic look at the application of QAOA to solving a MaxCut problem on the Pokemon data set. In particular, this tutorial is geared more towards users from a computer science or data science background.
+:ref:`6-SolvingQUBOwithQAOA` illustrates how QAOA can be used to solve a simple quadratic unconstrained binary optimisation task (QUBO). This class of problem has widespread real-world applications, particularly in fields such as logistics.
+
+Finally, :ref:`7-ClusteringWithQAOA` provides a didactic look at the application of QAOA to perform clustering (via MaxCut) on the Pokemon data set. In particular, this tutorial is geared more towards users from a computer science or data science background.
 
  
 

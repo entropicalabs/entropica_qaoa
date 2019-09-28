@@ -94,7 +94,8 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul>
@@ -183,7 +184,7 @@
 <h2>On the Wavefunction Simulator<a class="headerlink" href="#on-the-wavefunction-simulator" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="vqe.cost_function.PrepareAndMeasureOnWFSim">
-<em class="property">class </em><code class="sig-prename descclassname">vqe.cost_function.</code><code class="sig-name descname">PrepareAndMeasureOnWFSim</code><span class="sig-paren">(</span><em class="sig-param">prepare_ansatz</em>, <em class="sig-param">make_memory_map</em>, <em class="sig-param">hamiltonian</em>, <em class="sig-param">sim=None</em>, <em class="sig-param">scalar_cost_function=True</em>, <em class="sig-param">nshots=0</em>, <em class="sig-param">enable_logging=False</em>, <em class="sig-param">qubit_mapping=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnWFSim" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vqe.cost_function.</code><code class="sig-name descname">PrepareAndMeasureOnWFSim</code><span class="sig-paren">(</span><em class="sig-param">prepare_ansatz</em>, <em class="sig-param">make_memory_map</em>, <em class="sig-param">hamiltonian</em>, <em class="sig-param">sim=None</em>, <em class="sig-param">scalar_cost_function=True</em>, <em class="sig-param">nshots=0</em>, <em class="sig-param">enable_logging=False</em>, <em class="sig-param">qubit_mapping=None</em>, <em class="sig-param">hamiltonian_is_diagonal=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnWFSim" title="Permalink to this definition">¶</a></dt>
 <dd><p>A cost function that prepares an ansatz and measures its energy w.r.t
 <code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code> on the qvm</p>
 <dl class="field-list simple">
@@ -191,7 +192,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prepare_ansatz</strong> (<em>param</em>) – A parametric pyquil program for the state preparation</p></li>
 <li><p><strong>make_memory_map</strong> (<em>param</em>) – A function that creates a memory map from the array of parameters</p></li>
-<li><p><strong>hamiltonian</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>, &lt;built-in function array&gt;]) – The hamiltonian with respect to which to measure the energy.</p></li>
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – The hamiltonian with respect to which to measure the energy.</p></li>
 <li><p><strong>sim</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">WavefunctionSimulator</span></code>]) – A WavefunctionSimulator instance to get the wavefunction from.
 Automatically created, if None is passed.</p></li>
 <li><p><strong>scalar_cost_function</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True: __call__ returns only the expectation value
@@ -204,6 +205,8 @@ values at each function call. It is a list of namedtuples of the form
 (“x”, “fun”)</p></li>
 <li><p><strong>qubit_mapping</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">QubitPlaceholder</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Qubit</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]]) – A mapping to fix QubitPlaceholders to physical qubits. E.g.
 pyquil.quil.get_default_qubit_mapping(program) gives you on.</p></li>
+<li><p><strong>hamiltonian_is_diagonal</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Pass true, if the hamiltonian contains only Z terms and products
+thereof. This speeds up __init__ considerably. Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -253,7 +256,7 @@ deviation estimate based on the samples.</p>
 <h2>On the QVM / QPU<a class="headerlink" href="#on-the-qvm-qpu" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="vqe.cost_function.PrepareAndMeasureOnQVM">
-<em class="property">class </em><code class="sig-prename descclassname">vqe.cost_function.</code><code class="sig-name descname">PrepareAndMeasureOnQVM</code><span class="sig-paren">(</span><em class="sig-param">prepare_ansatz</em>, <em class="sig-param">make_memory_map</em>, <em class="sig-param">hamiltonian</em>, <em class="sig-param">qvm</em>, <em class="sig-param">scalar_cost_function=True</em>, <em class="sig-param">nshots=1</em>, <em class="sig-param">base_numshots=100</em>, <em class="sig-param">qubit_mapping=None</em>, <em class="sig-param">enable_logging=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vqe.cost_function.</code><code class="sig-name descname">PrepareAndMeasureOnQVM</code><span class="sig-paren">(</span><em class="sig-param">prepare_ansatz</em>, <em class="sig-param">make_memory_map</em>, <em class="sig-param">hamiltonian</em>, <em class="sig-param">qvm</em>, <em class="sig-param">scalar_cost_function=True</em>, <em class="sig-param">nshots=1</em>, <em class="sig-param">base_numshots=100</em>, <em class="sig-param">qubit_mapping=None</em>, <em class="sig-param">enable_logging=False</em>, <em class="sig-param">hamiltonian_is_diagonal=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM" title="Permalink to this definition">¶</a></dt>
 <dd><p>A cost function that prepares an ansatz and measures its energy w.r.t
 hamiltonian on a quantum computer (or simulator).</p>
 <p>This cost_function makes use of pyquils parametric circuits and thus

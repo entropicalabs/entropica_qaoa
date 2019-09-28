@@ -12,13 +12,13 @@ EntropicaQAOA is a modular package for the quantum approximate optimisation algo
 Features
 --------
 
- - Multiple built-in parametrisations for QAOA.
- - `NetworkX <https://networkx.github.io/>`_ integration for the treatment of
-   graph theoretic problems, and `Pandas <https://pandas.pydata.org/>`_ integration for data importing.
+ - Multiple built-in parametrisations for QAOA, which facilitate prototyping and testing of different approaches to solving a problem. 
+ - A range of utility functions allowing easy problem translation from `NetworkX <https://networkx.github.io/>`_ for graph theoretic problems, and 
+   `Pandas <https://pandas.pydata.org/>`_ integration for data science tasks.
  - Convenient optimiser logging tools.
  - Ability to run more general parametric circuits using the VQE library.
  - Full native support for `Rigetti's QVM and QPUs <https://www.rigetti.com/qpu>`_. Run your experiments on real Quantum Computers!
- - Modular code base that allows the user to customise and modify different components.
+ - Modular code base that allows the user to customise and modify different components: use your favourite classical optimisation library, or write your own parameter class.
  - Extensive examples explaining the usage of EntropicaQAOA in detail.
 
 
@@ -103,7 +103,9 @@ If you installed directly from GitHub, you can also run the full set of software
  - ``pytest --notebooks`` runs the Notebook tests. To achieve this, the notebooks are converted to python scripts, and then executed. Should any errors occur, this means that the line numbers given in the error  messages refer to the lines in `<TheNotebook>.py`, and not in `<TheNotebook>.ipynb`.
  - ``pytest --all`` runs all of the above tests.   
 
-The documentation can also downloaded as Jupyter notebooks from our `GitHub page <https://github.com/entropicalabs/entropica_qaoa/tree/master/examples>`_ .
+Note that the Quil compiler and QVM need to be running for all of the tests to pass successfully.
+
+The tutorials in this documentation can also downloaded as Jupyter notebooks from our `GitHub page <https://github.com/entropicalabs/entropica_qaoa/tree/master/examples>`_ .
 
 
 Contributing and feedback
@@ -132,7 +134,8 @@ Contents
    notebooks/3_AdvancedParameterClasses
    notebooks/4_CostFunctionsAndVQE
    notebooks/5_QAOAUtilities
-   notebooks/6_ClusteringWithQAOA
+   notebooks/6_SolvingQUBOwithQAOA
+   notebooks/7_ClusteringWithQAOA
 
 .. toctree::
    :maxdepth: 3

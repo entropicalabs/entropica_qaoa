@@ -94,12 +94,17 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/6_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details and conventions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-beta-in-development">v1.1-beta (in development)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#improvements-and-changes">Improvements and changes</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#v1-0-beta">v1.0-beta</a></li>
 </ul>
 </li>
@@ -177,6 +182,23 @@
             
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v1-1-beta-in-development">
+<h2><a class="reference external" href="https://gitlab.com/entropica/entropica_qaoa/tree/dev">v1.1-beta</a> (in development)<a class="headerlink" href="#v1-1-beta-in-development" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="improvements-and-changes">
+<h3>Improvements and changes<a class="headerlink" href="#improvements-and-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Variable names in <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.py</span></code> have been updated to
+better reflect their counterparts in <code class="docutils literal notranslate"><span class="pre">qaoa.parameters.py</span></code>. This
+fixed Issue #40 (&#64;jlbosse, !6)</p></li>
+<li><p>Sped up cost function calls and construction for
+<code class="docutils literal notranslate"><span class="pre">PrepareAndMeasureOnWFSim</span></code> and <code class="docutils literal notranslate"><span class="pre">QAOACostFunOnWFSim</span></code>. For very
+small systems and hamiltonians
+<code class="docutils literal notranslate"><span class="pre">WavefunctionSimulator().expectation()</span></code> is still faster, than our
+implementation. This fixed Issue #43 and #44. (&#64;jlbosse, !7 and
+d6df9f73e504c92b06485e1ce8e95676f7a02ccd)</p></li>
+</ul>
+</div>
+</div>
 <div class="section" id="v1-0-beta">
 <h2><a class="reference external" href="https://github.com/entropicalabs/entropica_qaoa/releases/tag/1.0">v1.0-beta</a><a class="headerlink" href="#v1-0-beta" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">

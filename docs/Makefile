@@ -32,7 +32,8 @@ html: source/notebooks/4_CostFunctionsAndVQE.rst\
 	  source/notebooks/3_AdvancedParameterClasses.rst\
  	  source/notebooks/5_QAOAUtilities.rst\
  	  source/notebooks/1_AnExampleWorkflow.rst\
- 	  source/notebooks/6_ClusteringWithQAOA.rst\
+	  source/notebooks/6_SolvingQUBOwithQAOA.rst\
+ 	  source/notebooks/7_ClusteringWithQAOA.rst\
  	  source/changelog.rst
 	sphinx-build -M html source build
 
@@ -71,10 +72,15 @@ source/notebooks/5_QAOAUtilities.rst: ../examples/5_QAOAUtilities.ipynb
 	./link_converter.sh source/notebooks/5_QAOAUtilities.rst \
 	5-QAOAUtilities
 
-source/notebooks/6_ClusteringWithQAOA.rst: ../examples/6_ClusteringWithQAOA.ipynb
-	./notebook_converter.sh ../examples/6_ClusteringWithQAOA.ipynb
-	./link_converter.sh source/notebooks/6_ClusteringWithQAOA.rst \
-	6-ClusteringWithQAOA
+source/notebooks/6_SolvingQUBOwithQAOA.rst: ../examples/6_SolvingQUBOwithQAOA.ipynb
+	./notebook_converter.sh ../examples/6_SolvingQUBOwithQAOA.ipynb
+	./link_converter.sh source/notebooks/6_SolvingQUBOwithQAOA.rst \
+	6-SolvingQUBOwithQAOA
+
+source/notebooks/7_ClusteringWithQAOA.rst: ../examples/7_ClusteringWithQAOA.ipynb
+	./notebook_converter.sh ../examples/7_ClusteringWithQAOA.ipynb
+	./link_converter.sh source/notebooks/7_ClusteringWithQAOA.rst \
+	7-ClusteringWithQAOA
 
 # lastly the clean target. One should probably add "rm source/notebooks/*"
 # and "rm source/changelog.rst"
