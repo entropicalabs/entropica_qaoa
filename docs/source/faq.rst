@@ -1,7 +1,7 @@
 .. _faq:
 
-Implementation details and conventions
-======================================
+Implementation details, conventions, and FAQ
+============================================
 
 Sign of the mixer Hamiltonian
     In the original paper on QAOA (`Ref 1 <#references>`__), Farhi `et al` use :math:`\sum_i \hat{X}_i` as
@@ -31,6 +31,17 @@ Where does the factor ``0.7 * n_steps`` in the ``linear_ramp_from_hamiltonian()`
     experiments that :math:`\Delta t = 0.7 = \frac{\tau}{n_{\textrm{steps}}}` strikes a reasonably good balance
     for many problem classes and instances, at least for the small system sizes one can feasibly simulate.
     For larger systems or smaller energy gaps, it might be neccesary to choose smaller values of :math:`\Delta t`
+
+Computation of cost function expecation values
+    To compute the expectation value of the cost Hamiltonian on the wavefunction simulator, we have attempted to address a trade-off in two different possible methods. One way is to use Forest's native
+    ``sim.expectation(prog,ham)`` method (see `here <http://docs.rigetti.com/en/stable/apidocs/autogen/pyquil.api.WavefunctionSimulator.expectation.html>`__), with ``prog`` being the QAOA circuit and ``ham`` being the cost Hamiltonian (a PauliSum object) of interest. However, this computes the expectation value of each term in the PauliSum individually, and then sums up the results; the runtime can therefore be significant when there are many terms to evaluate. On the other hand, one could instead build the matrix representing the entire cost Hamiltonian, and apply it to the output wavefunction. However, for many qubits this can be very memory intensive, since the Hamiltonian is a :math:`2^n \times 2^n`-dimensional matrix.
+
+    In many problems of interest for QAOA, the cost function is diagonal in the computational basis, and it is therefore sufficient to build only a :math:`2^n`-dimensional vector. If the cost Hamiltonian were to also contain non-commuting terms (e.g. terms proportional to :math:`X`), we could perform a suitable basis change and again measure the expectation with respect to a diagonal matrix (a :math:`2^n` vector) built from the operators in that basis. 
+
+    In EntropicaQAOA, we decompose the cost Hamiltonian (a PauliSum) into sets of operators that commute trivially. Two Pauli products commute trivially if on each qubit both act with the same Pauli Operator, or if either one acts only with the identity. Let's suppose our Hamiltonian contains terms proportional to :math:`Z` and terms proportional to :math:`X`. When working with the wavefunction simulator, we then have two sets of operators, each of which can be represented as a :math:`2^n` vector. Measurement of the terms proportional to :math:`Z` is trivial, and for the terms proportional to :math:`X`, we perform a basis change on the wavefunction and then measure. In order to avoid building a large matrix to execute the basis change, we use the ``einsum`` method in Numpy.
+
+    For computations on the QPU, we again separate the terms into trivially commuting sets, and now the basis change is performed via a suitable rotation on the qubits - e.g. a Hadamard gate, if we wish to measure in the :math:`X` basis.
+    
 
 Discrete sine and cosine transforms for the ``FourierParams`` class
     In converting between the :math:`\beta` and :math:`\gamma` parameters of the ``StandardParams`` class, and the `u` and `v` parameters of the 

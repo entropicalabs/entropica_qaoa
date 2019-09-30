@@ -22,7 +22,7 @@ For a good review of QUBOs and how to formulate them, see `Ref
     from pyquil.api import WavefunctionSimulator
     from pyquil.unitary_tools import lifted_pauli
     
-    from entropica_qaoa.qaoa.parameters import StandardParams, ExtendedParams, FourierParams
+    from entropica_qaoa.qaoa.parameters import StandardParams
     from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
     
     from scipy.optimize import minimize
@@ -104,49 +104,29 @@ corresponding function value is -11.
 Mapping to QAOA
 ---------------
 
-To solve the problem using QAOA, we might naively associate each
-variable with the :math:`Z` value of a spin. However, there are a couple
-of implementation details we need to take into account. Firstly, unlike
-how we took the square of the binary variables :math:`x_j` to arrive at
-a QUBO, we can’t use the trick of squaring the qubit :math:`Z` operator,
-because this would simply result in the identity operation. We would
-therefore just implement the linear terms in their original form, albeit
-with the following modification:
+To solve the problem using QAOA, we can associate the variable
+:math:`x_i` with the :math:`i^{th}` qubit of our quantum register. If
+the variable takes value 0, this corresponds to the qubit state being in
+state :math:`|0\rangle`; likewise, the value 1 corresponds to the qubit
+being in state :math:`|1\rangle`.
 
-.. math::  x_i \leftrightarrow \frac{\mathbb{I} - Z_j}{2} 
+On a quantum computer we measure the state of a qubit in the
+:math:`\{|0\rangle, |1\rangle\}` basis by applying the :math:`Z`
+operator. However, the eigenvalues of this operator are :math:`+1` for
+the state :math:`|0\rangle`, and :math:`-1` for the state
+:math:`|1\rangle`. In order to map this to the 0,1 values of binary
+variables, we need to modify the measurement operator to be
 
-where :math:`\mathbb{I}` is the identity operator. This ensures that a
-spin in state :math:`|0\rangle` produces zero contributiion to the cost
-function, while a spin in state :math:`|1\rangle` adds 1 to the total
-cost function.
+.. math::  x_i \leftrightarrow \frac{\mathbb{I} - Z_i}{2} 
 
-Turning to the polynomial terms, in the original problem above, it is
-sufficient for just one of the variables :math:`x_i` or :math:`x_j` to
-be 0 for the term :math:`x_ix_j` to be zero. This does not carry over to
-measurements of the :math:`Z` operator for qubits, since
-:math:`Z_iZ_j = \pm1` if :math:`i=j` (+) or :math:`i\neq j` (-).
-However, if we choose the operator
-:math:`(\mathbb{I} - Z_i)(\mathbb{I} - Z_j)/4 = (\mathbb{I} - Z_i - Z_j + Z_iZ_j)/4`,
-we are able to implement the desired cost function
+where :math:`\mathbb{I}` is the identity operator. With these
+considerations, the Hamiltonian :math:`H_y` encoding our objective
+function :math:`y` is:
 
 .. math::
 
 
-   \left(
-   \begin{matrix}
-   0 & 0 & 0 & 0 \\
-   0 & 0 & 0 & 0 \\
-   0 & 0 & 0 & 0 \\
-   0 & 0 & 0 & 1 
-   \end{matrix}
-   \right)
-
-Our Hamiltonian is then
-
-.. math::
-
-
-   H_y = -\frac{1}{2}\left[5(\mathbb{I} - Z_1) + 3(\mathbb{I} - Z_2) + 8(\mathbb{I} - Z_3) + 6(\mathbb{I} - Z_4)\right] \\ 
+   H_y = -\frac{1}{4}\left[5(\mathbb{I} - Z_1)^2 + 3(\mathbb{I} - Z_2)^2 + 8(\mathbb{I} - Z_3)^2 + 6(\mathbb{I} - Z_4)^2\right] \\ 
    + \frac{1}{4}\left[4(\mathbb{I} - Z_1)(\mathbb{I} - Z_2) + 8(\mathbb{I} - Z_1)(\mathbb{I} - Z_3) + 2(\mathbb{I} - Z_2)(\mathbb{I} - Z_3) + 10(\mathbb{I} - Z_3)(\mathbb{I} - Z_4)\right]
 
 Let’s now set the problem up and proceed to solve it using QAOA.
@@ -154,6 +134,7 @@ Let’s now set the problem up and proceed to solve it using QAOA.
 .. code:: ipython3
 
     # Linear part of the Hamiltonian
+    # For simplicity here we do not sqaure each term, as this does not affect the outcome
     ham_lin = -0.5*PauliSum.from_compact_str('(-5)*Z1 + (-3)*Z2 + (-8)*Z3 + (-6)*Z4 + 22*I')
     
     # Quadratic part of the Hamiltonian
@@ -217,7 +198,7 @@ our inital parameters.
 
 
 
-The expectation value of the cost Hamiltonian ``ham`` is -9.4, however
+The expectation value of the cost Hamiltonian ``ham`` is -9.48, however
 we know the true solution to have cost -11. Evidently, our QAOA circuit
 has not returned the correct solution, however we can examine the
 probability distribution of the output quantum state:
@@ -238,11 +219,11 @@ probability distribution of the output quantum state:
 Observe that the most probable state is :math:`|1001\rangle`, which does
 indeed correspond to the minimum energy configuration of the variables.
 However, if we were to sample from a quantum computer, the above
-distribution would not likely not allow us to conclude with high
-confidence that we have found the solution: there are several other bit
-strings with relatively high probabilities too.
+distribution would not allow us to conclude with high confidence that we
+have found the solution: there are several other bit strings with
+relatively high probabilities too.
 
-Let’s try increasing the parameters :math:`p` (the circuit depth) to see
+Let’s try increasing the parameter :math:`p` (the circuit depth) to see
 how more likely we are to obtain the optimal solution. To do this, we’ll
 define a simple convenience function.
 

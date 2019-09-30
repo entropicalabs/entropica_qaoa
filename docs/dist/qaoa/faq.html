@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Implementation details and conventions &mdash; Entropica QAOA  documentation</title>
+  <title>Implementation details, conventions, and FAQ &mdash; Entropica QAOA  documentation</title>
   
 
   
@@ -99,7 +99,7 @@
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Implementation details and conventions</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Implementation details, conventions, and FAQ</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
@@ -157,7 +157,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Implementation details and conventions</li>
+      <li>Implementation details, conventions, and FAQ</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -176,8 +176,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="implementation-details-and-conventions">
-<span id="faq"></span><h1>Implementation details and conventions<a class="headerlink" href="#implementation-details-and-conventions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="implementation-details-conventions-and-faq">
+<span id="faq"></span><h1>Implementation details, conventions, and FAQ<a class="headerlink" href="#implementation-details-conventions-and-faq" title="Permalink to this headline">¶</a></h1>
 <dl>
 <dt>Sign of the mixer Hamiltonian</dt><dd><p>In the original paper on QAOA (<a class="reference external" href="#references">Ref 1</a>), Farhi <cite>et al</cite> use <span class="math notranslate nohighlight">\(\sum_i \hat{X}_i\)</span> as
 the mixer Hamiltonian, with the initial state being its maximum eigenstate <span class="math notranslate nohighlight">\(\left|+ \cdots +\right&gt;\)</span>.
@@ -203,6 +203,12 @@ balance between a long annealing time <span class="math notranslate nohighlight"
 experiments that <span class="math notranslate nohighlight">\(\Delta t = 0.7 = \frac{\tau}{n_{\textrm{steps}}}\)</span> strikes a reasonably good balance
 for many problem classes and instances, at least for the small system sizes one can feasibly simulate.
 For larger systems or smaller energy gaps, it might be neccesary to choose smaller values of <span class="math notranslate nohighlight">\(\Delta t\)</span></p>
+</dd>
+<dt>Computation of cost function expecation values</dt><dd><p>To compute the expectation value of the cost Hamiltonian on the wavefunction simulator, we have attempted to address a trade-off in two different possible methods. One way is to use Forest’s native
+<code class="docutils literal notranslate"><span class="pre">sim.expectation(prog,ham)</span></code> method (see <a class="reference external" href="http://docs.rigetti.com/en/stable/apidocs/autogen/pyquil.api.WavefunctionSimulator.expectation.html">here</a>), with <code class="docutils literal notranslate"><span class="pre">prog</span></code> being the QAOA circuit and <code class="docutils literal notranslate"><span class="pre">ham</span></code> being the cost Hamiltonian (a PauliSum object) of interest. However, this computes the expectation value of each term in the PauliSum individually, and then sums up the results; the runtime can therefore be significant when there are many terms to evaluate. On the other hand, one could instead build the matrix representing the entire cost Hamiltonian, and apply it to the output wavefunction. However, for many qubits this can be very memory intensive, since the Hamiltonian is a <span class="math notranslate nohighlight">\(2^n \times 2^n\)</span>-dimensional matrix.</p>
+<p>In many problems of interest for QAOA, the cost function is diagonal in the computational basis, and it is therefore sufficient to build only a <span class="math notranslate nohighlight">\(2^n\)</span>-dimensional vector. If the cost Hamiltonian were to also contain non-commuting terms (e.g. terms proportional to <span class="math notranslate nohighlight">\(X\)</span>), we could perform a suitable basis change and again measure the expectation with respect to a diagonal matrix (a <span class="math notranslate nohighlight">\(2^n\)</span> vector) built from the operators in that basis.</p>
+<p>In EntropicaQAOA, we decompose the cost Hamiltonian (a PauliSum) into sets of operators that commute trivially. Two Pauli products commute trivially if on each qubit both act with the same Pauli Operator, or if either one acts only with the identity. Let’s suppose our Hamiltonian contains terms proportional to <span class="math notranslate nohighlight">\(Z\)</span> and terms proportional to <span class="math notranslate nohighlight">\(X\)</span>. When working with the wavefunction simulator, we then have two sets of operators, each of which can be represented as a <span class="math notranslate nohighlight">\(2^n\)</span> vector. Measurement of the terms proportional to <span class="math notranslate nohighlight">\(Z\)</span> is trivial, and for the terms proportional to <span class="math notranslate nohighlight">\(X\)</span>, we perform a basis change on the wavefunction and then measure. In order to avoid building a large matrix to execute the basis change, we use the <code class="docutils literal notranslate"><span class="pre">einsum</span></code> method in Numpy.</p>
+<p>For computations on the QPU, we again separate the terms into trivially commuting sets, and now the basis change is performed via a suitable rotation on the qubits - e.g. a Hadamard gate, if we wish to measure in the <span class="math notranslate nohighlight">\(X\)</span> basis.</p>
 </dd>
 <dt>Discrete sine and cosine transforms for the <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> class</dt><dd><p>In converting between the <span class="math notranslate nohighlight">\(\beta\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> parameters of the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> class, and the <cite>u</cite> and <cite>v</cite> parameters of the
 <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> class, we use the type II versions of the discrete sine and cosine transformations. These are included in Scipy’s fast Fourier

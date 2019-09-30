@@ -196,7 +196,7 @@ For a good review of QUBOs and how to formulate them, see <a class="reference ex
 <span class="kn">from</span> <span class="nn">pyquil.api</span> <span class="kn">import</span> <span class="n">WavefunctionSimulator</span>
 <span class="kn">from</span> <span class="nn">pyquil.unitary_tools</span> <span class="kn">import</span> <span class="n">lifted_pauli</span>
 
-<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.parameters</span> <span class="kn">import</span> <span class="n">StandardParams</span><span class="p">,</span> <span class="n">ExtendedParams</span><span class="p">,</span> <span class="n">FourierParams</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.parameters</span> <span class="kn">import</span> <span class="n">StandardParams</span>
 <span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.cost_function</span> <span class="kn">import</span> <span class="n">QAOACostFunctionOnWFSim</span>
 
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
@@ -265,43 +265,28 @@ corresponding function value is -11.</p>
 </div>
 <div class="section" id="mapping-to-qaoa">
 <h2>Mapping to QAOA<a class="headerlink" href="#mapping-to-qaoa" title="Permalink to this headline">¶</a></h2>
-<p>To solve the problem using QAOA, we might naively associate each
-variable with the <span class="math notranslate nohighlight">\(Z\)</span> value of a spin. However, there are a couple
-of implementation details we need to take into account. Firstly, unlike
-how we took the square of the binary variables <span class="math notranslate nohighlight">\(x_j\)</span> to arrive at
-a QUBO, we can’t use the trick of squaring the qubit <span class="math notranslate nohighlight">\(Z\)</span> operator,
-because this would simply result in the identity operation. We would
-therefore just implement the linear terms in their original form, albeit
-with the following modification:</p>
+<p>To solve the problem using QAOA, we can associate the variable
+<span class="math notranslate nohighlight">\(x_i\)</span> with the <span class="math notranslate nohighlight">\(i^{th}\)</span> qubit of our quantum register. If
+the variable takes value 0, this corresponds to the qubit state being in
+state <span class="math notranslate nohighlight">\(|0\rangle\)</span>; likewise, the value 1 corresponds to the qubit
+being in state <span class="math notranslate nohighlight">\(|1\rangle\)</span>.</p>
+<p>On a quantum computer we measure the state of a qubit in the
+<span class="math notranslate nohighlight">\(\{|0\rangle, |1\rangle\}\)</span> basis by applying the <span class="math notranslate nohighlight">\(Z\)</span>
+operator. However, the eigenvalues of this operator are <span class="math notranslate nohighlight">\(+1\)</span> for
+the state <span class="math notranslate nohighlight">\(|0\rangle\)</span>, and <span class="math notranslate nohighlight">\(-1\)</span> for the state
+<span class="math notranslate nohighlight">\(|1\rangle\)</span>. In order to map this to the 0,1 values of binary
+variables, we need to modify the measurement operator to be</p>
 <div class="math notranslate nohighlight">
-\[x_i \leftrightarrow \frac{\mathbb{I} - Z_j}{2}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathbb{I}\)</span> is the identity operator. This ensures that a
-spin in state <span class="math notranslate nohighlight">\(|0\rangle\)</span> produces zero contributiion to the cost
-function, while a spin in state <span class="math notranslate nohighlight">\(|1\rangle\)</span> adds 1 to the total
-cost function.</p>
-<p>Turning to the polynomial terms, in the original problem above, it is
-sufficient for just one of the variables <span class="math notranslate nohighlight">\(x_i\)</span> or <span class="math notranslate nohighlight">\(x_j\)</span> to
-be 0 for the term <span class="math notranslate nohighlight">\(x_ix_j\)</span> to be zero. This does not carry over to
-measurements of the <span class="math notranslate nohighlight">\(Z\)</span> operator for qubits, since
-<span class="math notranslate nohighlight">\(Z_iZ_j = \pm1\)</span> if <span class="math notranslate nohighlight">\(i=j\)</span> (+) or <span class="math notranslate nohighlight">\(i\neq j\)</span> (-).
-However, if we choose the operator
-<span class="math notranslate nohighlight">\((\mathbb{I} - Z_i)(\mathbb{I} - Z_j)/4 = (\mathbb{I} - Z_i - Z_j + Z_iZ_j)/4\)</span>,
-we are able to implement the desired cost function</p>
+\[x_i \leftrightarrow \frac{\mathbb{I} - Z_i}{2}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbb{I}\)</span> is the identity operator. With these
+considerations, the Hamiltonian <span class="math notranslate nohighlight">\(H_y\)</span> encoding our objective
+function <span class="math notranslate nohighlight">\(y\)</span> is:</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\left(
-\begin{matrix}
-0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 1
-\end{matrix}
-\right)\end{split}\]</div>
-<p>Our Hamiltonian is then</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}H_y = -\frac{1}{2}\left[5(\mathbb{I} - Z_1) + 3(\mathbb{I} - Z_2) + 8(\mathbb{I} - Z_3) + 6(\mathbb{I} - Z_4)\right] \\
+\[\begin{split}H_y = -\frac{1}{4}\left[5(\mathbb{I} - Z_1)^2 + 3(\mathbb{I} - Z_2)^2 + 8(\mathbb{I} - Z_3)^2 + 6(\mathbb{I} - Z_4)^2\right] \\
 + \frac{1}{4}\left[4(\mathbb{I} - Z_1)(\mathbb{I} - Z_2) + 8(\mathbb{I} - Z_1)(\mathbb{I} - Z_3) + 2(\mathbb{I} - Z_2)(\mathbb{I} - Z_3) + 10(\mathbb{I} - Z_3)(\mathbb{I} - Z_4)\right]\end{split}\]</div>
 <p>Let’s now set the problem up and proceed to solve it using QAOA.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linear part of the Hamiltonian</span>
+<span class="c1"># For simplicity here we do not sqaure each term, as this does not affect the outcome</span>
 <span class="n">ham_lin</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">PauliSum</span><span class="o">.</span><span class="n">from_compact_str</span><span class="p">(</span><span class="s1">&#39;(-5)*Z1 + (-3)*Z2 + (-8)*Z3 + (-6)*Z4 + 22*I&#39;</span><span class="p">)</span>
 
 <span class="c1"># Quadratic part of the Hamiltonian</span>
@@ -353,7 +338,7 @@ our inital parameters.</p>
       <span class="mf">0.31679062</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>The expectation value of the cost Hamiltonian <code class="docutils literal notranslate"><span class="pre">ham</span></code> is -9.4, however
+<p>The expectation value of the cost Hamiltonian <code class="docutils literal notranslate"><span class="pre">ham</span></code> is -9.48, however
 we know the true solution to have cost -11. Evidently, our QAOA circuit
 has not returned the correct solution, however we can examine the
 probability distribution of the output quantum state:</p>
@@ -368,10 +353,10 @@ probability distribution of the output quantum state:</p>
 <p>Observe that the most probable state is <span class="math notranslate nohighlight">\(|1001\rangle\)</span>, which does
 indeed correspond to the minimum energy configuration of the variables.
 However, if we were to sample from a quantum computer, the above
-distribution would not likely not allow us to conclude with high
-confidence that we have found the solution: there are several other bit
-strings with relatively high probabilities too.</p>
-<p>Let’s try increasing the parameters <span class="math notranslate nohighlight">\(p\)</span> (the circuit depth) to see
+distribution would not allow us to conclude with high confidence that we
+have found the solution: there are several other bit strings with
+relatively high probabilities too.</p>
+<p>Let’s try increasing the parameter <span class="math notranslate nohighlight">\(p\)</span> (the circuit depth) to see
 how more likely we are to obtain the optimal solution. To do this, we’ll
 define a simple convenience function.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">state_prob_p</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
