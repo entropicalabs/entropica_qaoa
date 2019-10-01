@@ -16,8 +16,11 @@ from entropica_qaoa.utilities import (random_hamiltonian,
                                       hamiltonian_from_graph,
                                       random_k_regular_graph,
                                       plot_graph,
-                                      hamiltonian_from_distances)
+                                      hamiltonian_from_distances,
+                                      ring_of_disagrees)
 
+from entropica_qaoa.qaoa.parameters import StandardParams
+from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
 
 q1, q2 = QubitPlaceholder(), QubitPlaceholder()
 reg = [0, 1, 3, q1, q2]
@@ -107,3 +110,27 @@ def test_Gaussian_clusters():
     data = gaussian_2Dclusters(n_clusters, n_points, means,
                                cov_matrices)
     print(data)
+
+def test_ring_of_disagrees():
+    
+    """
+    Tests the known analytic solution to p=1 QAOA of the Ring of Disagrees
+    See https://arxiv.org/pdf/1805.03265.pdf (section 5.4.5)
+    """
+    
+    n_qubits = 8
+    hamiltonian = ring_of_disagrees(n_qubits)
+    p = 1
+    
+    # Known optimal angles
+    betas = [np.pi/8]
+    gammas = [np.pi/4]
+    
+    params = (betas,gammas)
+    params_std = StandardParams([hamiltonian, p], params) 
+    
+    cost_fn = QAOACostFunctionOnWFSim(hamiltonian, params=params_std)
+    exp_val = cost_fn(params_std.raw())
+
+    assert np.isclose(exp_val, -6)
+
