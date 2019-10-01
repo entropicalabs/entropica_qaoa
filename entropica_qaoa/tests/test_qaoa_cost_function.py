@@ -4,15 +4,14 @@ Test the QAOA cost functions
 
 import numpy as np
 
-from pyquil.api import local_qvm, WavefunctionSimulator
-from pyquil import get_qc, Program
+from pyquil.api import WavefunctionSimulator
+from pyquil import get_qc
 from pyquil.paulis import PauliSum, PauliTerm
-from pyquil.quil import QubitPlaceholder
 
 from entropica_qaoa.qaoa.cost_function import (QAOACostFunctionOnQVM,
-                                            QAOACostFunctionOnWFSim)
+                                               QAOACostFunctionOnWFSim)
 from entropica_qaoa.qaoa.parameters import (AnnealingParams,
-                                         StandardWithBiasParams)
+                                            StandardWithBiasParams)
 
 # Create a mixed and somehwat more complicated hamiltonian
 # TODO fix the whole Qubit Placeholder Business
@@ -31,15 +30,13 @@ def test_QAOACostFunctionOnWFSim():
     sim = WavefunctionSimulator()
     params = AnnealingParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=4)
 
-    with local_qvm():
-        cost_function = QAOACostFunctionOnWFSim(hamiltonian,
-                                                params=params,
-                                                sim=sim,
-                                                scalar_cost_function=False,
-                                                enable_logging=True)
-        out = cost_function(params.raw(), nshots=100)
-        print("Log:", cost_function.log)
-        print("output of QAOACostFunctionOnWFSim: ", out)
+    cost_function = QAOACostFunctionOnWFSim(hamiltonian,
+                                            params=params,
+                                            sim=sim,
+                                            scalar_cost_function=False,
+                                            enable_logging=True)
+    out = cost_function(params.raw(), nshots=100)
+    print(out)
 
 
 def test_QAOACostFunctionOnWFSim_get_wavefunction():
@@ -51,28 +48,25 @@ def test_QAOACostFunctionOnWFSim_get_wavefunction():
     timesteps = 2
     params = StandardWithBiasParams\
         .linear_ramp_from_hamiltonian(ham, timesteps)
-    with local_qvm():
-        cost_function = QAOACostFunctionOnWFSim(ham,
-                                                params=params,
-                                                sim=sim,
-                                                scalar_cost_function=True,
-                                                nshots=100)
-        wf = cost_function.get_wavefunction(params.raw())
-        print(wf.probabilities())
-        assert np.allclose(wf.probabilities(),
-                           np.array([0.01, 0.308, 0.053, 0.13,
-                            0.13, 0.053, 0.308, 0.01]),
-                           rtol=1e-2, atol=0.005)
+    cost_function = QAOACostFunctionOnWFSim(ham,
+                                            params=params,
+                                            sim=sim,
+                                            scalar_cost_function=True,
+                                            nshots=100)
+    wf = cost_function.get_wavefunction(params.raw())
+    assert np.allclose(wf.probabilities(),
+                       np.array([0.01, 0.308, 0.053, 0.13,
+                                 0.13, 0.053, 0.308, 0.01]),
+                       rtol=1e-2, atol=0.005)
 
 
 def test_QAOACostFunctionOnQVM():
     qvm = get_qc("2q-qvm")
     params = AnnealingParams.linear_ramp_from_hamiltonian(hamiltonian, n_steps=4)
 
-    with local_qvm():
-        cost_function = QAOACostFunctionOnQVM(hamiltonian,
-                                              params=params,
-                                              qvm=qvm,
-                                              scalar_cost_function=False)
-        out = cost_function(params.raw(), nshots=1)
-        print("output of QAOACostFunctionOnQVM: ", out)
+    cost_function = QAOACostFunctionOnQVM(hamiltonian,
+                                          params=params,
+                                          qvm=qvm,
+                                          scalar_cost_function=False)
+    out = cost_function(params.raw(), nshots=1)
+    print(out)

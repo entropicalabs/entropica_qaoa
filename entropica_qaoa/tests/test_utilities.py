@@ -4,8 +4,7 @@ Test some of the functions together
 import numpy as np
 import networkx as nx
 
-from pyquil.paulis import PauliSum, PauliTerm, sZ
-from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
+from pyquil.paulis import PauliSum, sZ
 from pyquil.quil import QubitPlaceholder
 
 from entropica_qaoa.utilities import (random_hamiltonian,
@@ -84,7 +83,7 @@ def test_random_k_regular_graph_and_plot_graph():
 def test_hamiltonian_from_distances():
     dist = np.array([[0, 1, 2], [1, 0, 1], [2, 1, 0]])
     ham1 = hamiltonian_from_distances(
-            dist, biases={i: i+1 for i in range(3)})
+            dist, biases={i: i + 1 for i in range(3)})
     single_terms = 1 * sZ(0), 2 * sZ(1), 3 * sZ(2)
     coupling_terms = 1 * sZ(0) * sZ(1), 1*sZ(1) * sZ(2), 2 * sZ(0) * sZ(2)
     ham2 = PauliSum([*single_terms, *coupling_terms])
@@ -106,5 +105,5 @@ def test_Gaussian_clusters():
                     ]
 
     data = gaussian_2Dclusters(n_clusters, n_points, means,
-                                      cov_matrices)
+                               cov_matrices)
     print(data)

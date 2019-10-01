@@ -1580,14 +1580,20 @@ class FourierExtendedParams(AbstractParams):
 
     @property
     def z_rotation_angles(self):
-        gammas_singles = dst(self.u_singles,
-                             n=self.n_steps, axis=0)
+        if self.u_singles.size > 0:
+            gammas_singles = dst(self.u_singles,
+                                 n=self.n_steps, axis=0)
+        else:
+            gammas_singles = np.empty(shape=(self.n_steps, 0))
         return self.single_qubit_coeffs * gammas_singles
 
     @property
     def zz_rotation_angles(self):
-        gammas_pairs = dst(self.u_pairs,
-                           n=self.n_steps, axis=0)
+        if self.u_pairs.size > 0:
+            gammas_pairs = dst(self.u_pairs,
+                               n=self.n_steps, axis=0)
+        else:
+            gammas_pairs = np.empty(shape=(self.n_steps, 0))
         return self.pair_qubit_coeffs * gammas_pairs
 
     def update_from_raw(self, new_values):

@@ -5,11 +5,11 @@ Test the QAOA cost functions with QubitPlaceholders
 import numpy as np
 import scipy.optimize
 
-from pyquil.paulis import PauliSum, PauliTerm
-from pyquil.api import WavefunctionSimulator, local_qvm, get_qc
+from pyquil.paulis import PauliTerm
+from pyquil.api import WavefunctionSimulator, get_qc
 from pyquil.quil import Program, get_default_qubit_mapping
 from pyquil.gates import RX, CNOT
-from pyquil.quil import QubitPlaceholder, Qubit, address_qubits
+from pyquil.quil import QubitPlaceholder, address_qubits
 
 from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
                                               PrepareAndMeasureOnQVM)
@@ -44,11 +44,10 @@ def test_vqe_on_WFSim_QubitPlaceholders():
                                         scalar_cost_function=True,
                                         qubit_mapping=qubit_mapping)
 
-    with local_qvm():
-        out = scipy.optimize.minimize(cost_fun, p0, tol=1e-3, method="Cobyla")
-        print(out)
-        prog = address_qubits(prepare_ansatz, qubit_mapping=qubit_mapping)
-        wf = sim.wavefunction(prog, {"params": out['x']})
+    out = scipy.optimize.minimize(cost_fun, p0, tol=1e-3, method="Cobyla")
+    print(out)
+    prog = address_qubits(prepare_ansatz, qubit_mapping=qubit_mapping)
+    wf = sim.wavefunction(prog, {"params": out['x']})
     print(wf.probabilities())
     assert np.allclose(np.abs(wf.amplitudes**2), [0, 0, 0, 1], rtol=1.5, atol=0.01)
     assert np.allclose(out['fun'], -4)
@@ -59,18 +58,17 @@ def test_vqe_on_QVM_QubitPlaceholders():
     qubit_mapping = {q0: 0, q1: 1}
     p0 = [3.1, -1.5, 0, 0]  # make it easier when sampling
     qvm = get_qc("2q-qvm")
-    with local_qvm():
-        cost_fun = PrepareAndMeasureOnQVM(prepare_ansatz=prepare_ansatz,
-                                          make_memory_map=lambda p: {"params": p},
-                                          hamiltonian=hamiltonian,
-                                          qvm=qvm,
-                                          scalar_cost_function=True,
-                                          base_numshots=50,
-                                          nshots=4,
-                                          enable_logging=True,
-                                          qubit_mapping=qubit_mapping)
-        out = scipy.optimize.minimize(cost_fun, p0, tol=1e-2, method="Cobyla")
-        print(out)
-        print(cost_fun.log)
+    cost_fun = PrepareAndMeasureOnQVM(prepare_ansatz=prepare_ansatz,
+                                      make_memory_map=lambda p: {"params": p},
+                                      hamiltonian=hamiltonian,
+                                      qvm=qvm,
+                                      scalar_cost_function=True,
+                                      base_numshots=50,
+                                      nshots=4,
+                                      enable_logging=True,
+                                      qubit_mapping=qubit_mapping)
+    out = scipy.optimize.minimize(cost_fun, p0, tol=1e-2, method="Cobyla")
+    print(out)
+    print(cost_fun.log)
     assert np.allclose(out['fun'], -4, rtol=1.1)
     assert out['success']
