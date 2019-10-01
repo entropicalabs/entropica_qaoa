@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="VQE cost functions" href="vqe_cost_function.html" />
-    <link rel="prev" title="Implementation details and conventions" href="faq.html" /> 
+    <link rel="prev" title="Implementation details, conventions, and FAQ" href="faq.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -99,10 +99,11 @@
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details, conventions, and FAQ</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#v1-1-beta-in-development">v1.1-beta (in development)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#improvements-and-changes">Improvements and changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v1-0-beta">v1.0-beta</a></li>
@@ -197,6 +198,16 @@ small systems and hamiltonians
 implementation. This fixed Issue #43 and #44. (&#64;jlbosse, !7 and
 d6df9f73e504c92b06485e1ce8e95676f7a02ccd)</p></li>
 <li><p>Added an example of using QAOA to solve a simple QUBO problem.</p></li>
+<li><p>Sped up tests by removing all <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">local_qvm()</span></code> context managers.
+You have to manually start a qvm in the background for the tests now!
+(&#64;jlbosse, !8)</p></li>
+</ul>
+</div>
+<div class="section" id="bugfixes">
+<h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Can access <code class="docutils literal notranslate"><span class="pre">FourierExtendedParams.z_rotation_angles</span></code> now for
+hamiltonians without bias terms. This fixed Issue #45 (&#64;jlbosse, !8)</p></li>
 </ul>
 </div>
 </div>
@@ -219,7 +230,7 @@ d6df9f73e504c92b06485e1ce8e95676f7a02ccd)</p></li>
         <a href="vqe_cost_function.html" class="btn btn-neutral float-right" title="VQE cost functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="faq.html" class="btn btn-neutral float-left" title="Implementation details and conventions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="faq.html" class="btn btn-neutral float-left" title="Implementation details, conventions, and FAQ" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -17,6 +17,15 @@ Improvements and changes
    implementation. This fixed Issue #43 and #44. (@jlbosse, !7 and
    d6df9f73e504c92b06485e1ce8e95676f7a02ccd)
 -  Added an example of using QAOA to solve a simple QUBO problem.
+-  Sped up tests by removing all ``with local_qvm()`` context managers.
+   You have to manually start a qvm in the background for the tests now!
+   (@jlbosse, !8)
+
+Bugfixes
+~~~~~~~~
+
+-  Can access ``FourierExtendedParams.z_rotation_angles`` now for
+   hamiltonians without bias terms. This fixed Issue #45 (@jlbosse, !8)
 
 `v1.0-beta <https://github.com/entropicalabs/entropica_qaoa/releases/tag/1.0>`__
 --------------------------------------------------------------------------------
