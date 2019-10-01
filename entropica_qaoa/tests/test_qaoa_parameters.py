@@ -33,6 +33,8 @@ next_term = PauliTerm("Z", 0, -2.0)
 next_term *= PauliTerm("Z", q1)
 hamiltonian += next_term
 
+ham_wo_bias = PauliSum.from_compact_str("1*Z0Z1 + 0.5*Z1Z2 + 0.7*Z2Z2")
+
 # TODO test fourier params
 # TODO Test set_hyperparameters and update_variable_parameters
 
@@ -231,6 +233,10 @@ def test_FourierExtendedParams():
     raw = np.random.rand(len(params))
     params.update_from_raw(raw)
     assert np.allclose(raw, params.raw())
+
+    params2 = FourierExtendedParams.linear_ramp_from_hamiltonian(ham_wo_bias,
+                3, 2, 2)
+    assert params2.z_rotation_angles.size == 0
 
 
 def test_FourierParams_are_consistent():

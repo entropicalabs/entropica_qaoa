@@ -26,11 +26,9 @@ def test_qaoa_on_wfsim():
     p0 = params.raw()
     cost_fun = QAOACostFunctionOnWFSim(ham, params,
                                        scalar_cost_function=True)
-    with local_qvm():
-        out = minimize(cost_fun, p0, tol=1e-3, method="Cobyla",
-                       options={"maxiter": 500})
-        wf = cost_fun.get_wavefunction(params.raw())
-    print(wf.probabilities())
+    out = minimize(cost_fun, p0, tol=1e-3, method="Cobyla",
+                   options={"maxiter": 500})
+    wf = cost_fun.get_wavefunction(params.raw())
     assert np.allclose(out["fun"], -1.3, rtol=1.1)
     assert out["success"]
     assert np.allclose(wf.probabilities(), [0, 0, 0, 1], rtol=1.5, atol=0.05)
@@ -47,12 +45,10 @@ def test_qaoa_on_qvm():
                                                         n_steps=10,
                                                         q=2)
     p0 = params.raw()
-    with local_qvm():
-        cost_fun = QAOACostFunctionOnQVM(ham, params, "2q-qvm",
-                                         scalar_cost_function=True, nshots=4,
-                                         base_numshots=50)
-        out = minimize(cost_fun, p0, tol=2e-1, method="Cobyla",
-                       options={"maxiter": 100})
+    cost_fun = QAOACostFunctionOnQVM(ham, params, "2q-qvm",
+                                     scalar_cost_function=True, nshots=4,
+                                     base_numshots=50)
+    out = minimize(cost_fun, p0, tol=2e-1, method="Cobyla",
+                   options={"maxiter": 100})
     assert np.allclose(out["fun"], -1.3, rtol=1.1)
     assert out["success"]
-    print(out)
