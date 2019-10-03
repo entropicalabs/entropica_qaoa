@@ -45,6 +45,7 @@ particular, that they can be measured without the need for ancilla qubits.
 
 from typing import List, Union, Tuple, Callable, Set
 from string import ascii_letters
+import warnings
 
 import numpy as np
 import networkx as nx
@@ -82,6 +83,17 @@ def commuting_decomposition(ham: PauliSum) -> List[PauliSum]:
     commutation_graph = nx.Graph()
     for term in ham:
         commutation_graph.add_node(term)
+
+    # If the hamiltonian wasn't fully simplified, not all terms get added
+    # to the graph. Taking care of this here.
+    if len(commutation_graph.nodes) != len(ham):
+        warnings.warn(f"The hamiltonian {ham} is not fully simplified. "
+                      "Simplifying it now for you.")
+        ham.simplify()
+        commutation_graph = nx.Graph()
+        for term in ham:
+            commutation_graph.add_node(term)
+
 
     for (term1, term2) in itertools.combinations(ham, 2):
         if not _PauliTerms_commute_trivially(term1, term2):
