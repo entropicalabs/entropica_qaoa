@@ -4,8 +4,9 @@ Test some of the functions together
 import numpy as np
 import networkx as nx
 
-from pyquil.paulis import PauliSum, sZ
+from pyquil.paulis import PauliTerm, PauliSum, sZ
 from pyquil.quil import QubitPlaceholder
+from pyquil.api import get_qc
 
 from entropica_qaoa.utilities import (random_hamiltonian,
                                       distances_dataset,
@@ -17,10 +18,11 @@ from entropica_qaoa.utilities import (random_hamiltonian,
                                       random_k_regular_graph,
                                       plot_graph,
                                       hamiltonian_from_distances,
-                                      ring_of_disagrees)
+                                      ring_of_disagrees,
+                                      sample_bitstrings)
 
 from entropica_qaoa.qaoa.parameters import StandardParams
-from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
+from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim, prepare_qaoa_ansatz, _all_plus_state
 
 q1, q2 = QubitPlaceholder(), QubitPlaceholder()
 reg = [0, 1, 3, q1, q2]
@@ -133,4 +135,3 @@ def test_ring_of_disagrees():
     exp_val = cost_fn(params_std.raw())
 
     assert np.isclose(exp_val, -6)
-

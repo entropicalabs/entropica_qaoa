@@ -7,7 +7,7 @@ from pyquil.quil import (QubitPlaceholder,
                          get_default_qubit_mapping)
 from pyquil.api import WavefunctionSimulator
 from pyquil import get_qc, Program
-from pyquil.gates import RX, RY
+from pyquil.gates import RX, RY, X
 from pyquil.paulis import PauliSum, PauliTerm
 
 from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
@@ -141,3 +141,39 @@ def test_PrepareAndMeasureOnQVM_QubitPlaceholders_nondiag_hamiltonian():
     out = cost_fn(params, nshots=10)
     assert np.allclose(out, (0.346, 0.07), rtol=1.1)
 
+def test_sample_bitstrings():
+    
+    """
+    A simple circuit - test that it returns an easy bitstring
+    Add a test like this to the test_qaoa_cost_function file too.
+    """
+    
+    prepare_ansatz = Program()
+    
+    params = [np.pi]*3
+    param_register = prepare_ansatz.declare(
+    "params", memory_type="REAL", memory_size=3)
+    
+    for i in range(3):
+        prepare_ansatz.inst(RX(param_register[i], i))
+    
+    # A simple hamiltonian
+    # Note we need 3 qubits because the PrepareAndMeasureOnQVM adds a memory
+    # bit for each qubit in the cost Hamiltonian. It also automatically applies
+    # any relevant basis changes before measurements (because this is how we get expectation values), 
+    # so here for simplicity we use just Z operators. The corresponding QAOA example is more illustrative.
+    ham = PauliSum([PauliTerm("Z", 0), PauliTerm("Z", 1),PauliTerm("Z", 2)]) 
+    
+    def make_memory_map(params):
+        return {"params": params}
+    
+    qvm = get_qc("3q-qvm")
+    cost_fn = PrepareAndMeasureOnQVM(prepare_ansatz, make_memory_map,
+                                     qvm=qvm,
+                                     hamiltonian=ham,
+                                     base_numshots=1)
+    
+    bitstring = cost_fn.sample_bitstrings(params, nshots=1)
+    expected = np.array([1,1,1])
+    
+    assert np.array_equal(bitstring, expected)
