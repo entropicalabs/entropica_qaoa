@@ -31,6 +31,7 @@ from pyquil.quil import QubitPlaceholder
 from pyquil.paulis import PauliSum, PauliTerm
 from pyquil.gates import X
 from pyquil.unitary_tools import lifted_pauli
+from pyquil.api import QuantumComputer, get_qc
 
 #############################################################################
 # METHODS FOR CREATING HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO
@@ -606,6 +607,33 @@ def plot_probabilities(probabilities: Union[np.array, list],
     ax.grid(linestyle='--')
     ax.legend()
 
+def bitstring_histogram(results: np.array):
+    
+    """
+    Plots a histogram of the output bitstrings obtained by sampling from the QVM or QPU
+    
+    Parameters
+    ----------
+    bitstrings:
+        An array of the measured values of each qubit from all trials: array shape is (nshots x nqubits)
+          
+    """
+    
+    nqubits = np.shape(results)[1]
+    
+    vect = np.array([2**i for i in range(nqubits)])
+    decimals = results @ vect # Get the decimal number corresponding to each outcome
+    
+    bitstring_hist = np.histogram(decimals, bins=range(2**nqubits+1))
+    shots = sum(bitstring_hist[0])
+    probs = [i/shots for i in bitstring_hist[0]]
+    
+    labels = [np.binary_repr(i, nqubits) for i in range(2**nqubits)]
+    plt.bar(labels,probs)
+    plt.xticks(rotation=70)
+    plt.xlabel("Bitstring")
+    plt.ylabel("Probability")
+    plt.show()
 
 def pauli_matrix(pauli_sum: PauliSum, qubit_mapping: Dict ={}) -> np.array:
     """Create the matrix representation of pauli_sum.

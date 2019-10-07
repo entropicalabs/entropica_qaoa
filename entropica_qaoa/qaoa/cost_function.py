@@ -26,7 +26,7 @@ from copy import deepcopy
 from pyquil import Program
 from pyquil.quil import MemoryReference, QubitPlaceholder, Qubit
 from pyquil.wavefunction import Wavefunction
-from pyquil.gates import RX, RZ, CPHASE, H
+from pyquil.gates import RX, RZ, CPHASE, H, MEASURE
 from pyquil.paulis import PauliSum
 from pyquil.api._wavefunction_simulator import WavefunctionSimulator
 from pyquil.api._quantum_computer import QuantumComputer
@@ -367,11 +367,49 @@ class QAOACostFunctionOnQVM(PrepareAndMeasureOnQVM):
     def __call__(self, params, nshots: int = None):
         self.params.update_from_raw(params)
         out = super().__call__(self.params, nshots=nshots)
-        # remove last entry from the log and replace it with something
-        # immutable
+        # Take raw set of parameters from function call and disentangle them to
+        # be in the form of the QAOA parameter class being used, then add to the
+        # log
         try:
             self.log[-1] = LogEntry(x=deepcopy(params),
                                     fun=self.log[-1].fun)
         except AttributeError:
             pass
         return out
+
+    def sample_bitstrings(self, nshots:int=1000, initial_state = None):
+        
+        """
+        Runs the QAOA circuit using self.params, and measures the output bitstrings from nshots runs.
+        
+        Parameters
+        ----------
+        nshots:
+            the number of times to run the circuit and measure
+        
+        intial_state:
+            a program to prepare the initial state (defaults to all |+>)
+                 
+        Returns
+        -------
+        bitstrings:
+            an array of shape (nshots x nqubits) with the measurement outcomes
+        """
+        
+        nqubits = len(self.params.reg)
+        
+        if initial_state is None:
+            initial_state = _all_plus_state(self.params.reg)
+            
+        prog = prepare_qaoa_ansatz(initial_state, self.params)
+       
+        # create a read out register
+        ro = prog.declare('ro', memory_type='BIT', memory_size=nqubits)
+
+        # add measure instructions to the specified qubits
+        for i in range(nqubits):
+            prog += MEASURE(i, ro[i])
+        
+        bitstrings = super().sample_bitstrings(prog, nshots)
+        
+        return bitstrings

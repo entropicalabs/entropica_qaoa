@@ -7,7 +7,7 @@ from pyquil.quil import (QubitPlaceholder,
                          get_default_qubit_mapping)
 from pyquil.api import WavefunctionSimulator
 from pyquil import get_qc, Program
-from pyquil.gates import RX, RY
+from pyquil.gates import RX, RY, X
 from pyquil.paulis import PauliSum, PauliTerm
 
 from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
@@ -140,4 +140,3 @@ def test_PrepareAndMeasureOnQVM_QubitPlaceholders_nondiag_hamiltonian():
                                      qubit_mapping=qubit_mapping)
     out = cost_fn(params, nshots=10)
     assert np.allclose(out, (0.346, 0.07), rtol=1.1)
-

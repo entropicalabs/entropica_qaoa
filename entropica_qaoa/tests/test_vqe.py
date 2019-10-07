@@ -15,7 +15,7 @@ from entropica_qaoa.vqe.cost_function import (PrepareAndMeasureOnWFSim,
                                               PrepareAndMeasureOnQVM)
 
 
-# gonna need this program and hamiltonian for both tests. So define them globally
+# Need this program and hamiltonian for both tests. So define them globally
 # hamiltonian = PauliSum.from_compact_str("(-1.0)*Z0*Z1 + 0.8*Z0 + (-0.5)*Z1")
 term1 = PauliTerm("Z", 0, -1)
 term1 *= PauliTerm("Z", 1)
@@ -64,3 +64,4 @@ def test_vqe_on_QVM():
     out = minimize(cost_fun, p0, tol=1e-2, method="Cobyla")
     assert np.allclose(out['fun'], -1.3, rtol=1.1)
     assert out['success']
+

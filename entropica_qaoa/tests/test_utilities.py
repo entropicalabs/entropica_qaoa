@@ -4,7 +4,7 @@ Test some of the functions together
 import numpy as np
 import networkx as nx
 
-from pyquil.paulis import PauliSum, sZ
+from pyquil.paulis import PauliTerm, PauliSum, sZ
 from pyquil.quil import QubitPlaceholder
 
 from entropica_qaoa.utilities import (random_hamiltonian,
@@ -133,4 +133,3 @@ def test_ring_of_disagrees():
     exp_val = cost_fn(params_std.raw())
 
     assert np.isclose(exp_val, -6)
-

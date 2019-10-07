@@ -11,7 +11,10 @@ from pyquil.paulis import PauliSum, PauliTerm
 from entropica_qaoa.qaoa.cost_function import (QAOACostFunctionOnQVM,
                                                QAOACostFunctionOnWFSim)
 from entropica_qaoa.qaoa.parameters import (AnnealingParams,
+                                            StandardParams,
                                             StandardWithBiasParams)
+
+from entropica_qaoa.utilities import ring_of_disagrees
 
 # Create a mixed and somehwat more complicated hamiltonian
 # TODO fix the whole Qubit Placeholder Business
@@ -70,3 +73,4 @@ def test_QAOACostFunctionOnQVM():
                                           scalar_cost_function=False)
     out = cost_function(params.raw(), nshots=1)
     print(out)
+
