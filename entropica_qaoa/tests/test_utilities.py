@@ -6,7 +6,6 @@ import networkx as nx
 
 from pyquil.paulis import PauliTerm, PauliSum, sZ
 from pyquil.quil import QubitPlaceholder
-from pyquil.api import get_qc
 
 from entropica_qaoa.utilities import (random_hamiltonian,
                                       distances_dataset,
@@ -18,11 +17,10 @@ from entropica_qaoa.utilities import (random_hamiltonian,
                                       random_k_regular_graph,
                                       plot_graph,
                                       hamiltonian_from_distances,
-                                      ring_of_disagrees,
-                                      sample_bitstrings)
+                                      ring_of_disagrees)
 
 from entropica_qaoa.qaoa.parameters import StandardParams
-from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim, prepare_qaoa_ansatz, _all_plus_state
+from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
 
 q1, q2 = QubitPlaceholder(), QubitPlaceholder()
 reg = [0, 1, 3, q1, q2]

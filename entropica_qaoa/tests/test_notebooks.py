@@ -44,15 +44,18 @@ def test_3_AdvancedParameterClasses():
 def test_4_CostFunctionsAndVQE():
     notebook_test_function("../examples/4_CostFunctionsAndVQE.ipynb")
 
-
 @pytest.mark.notebook
 def test_5_QAOAUtilities():
     notebook_test_function("../examples/5_QAOAUtilities.ipynb")
 
+@pytest.mark.notebook
+def test_6_QUBOwithQAOA():
+    notebook_test_function("../examples/6_SolvingQUBOwithQAOA.ipynb")
+
 
 @pytest.mark.notebook
-def test_6_ClusteringWithQAOA():
-    notebook_test_function("../examples/6_ClusteringWithQAOA.ipynb")
+def test_7_ClusteringWithQAOA():
+    notebook_test_function("../examples/7_ClusteringWithQAOA.ipynb")
 
 
 
