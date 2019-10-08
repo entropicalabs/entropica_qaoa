@@ -14,6 +14,7 @@
 - Sped up tests by removing all `with local_qvm()` context managers. You have
   to manually start a qvm in the background for the tests now!
   (@jlbosse, !8)
+- Added `sample_qaoa_bistrings` to `utilities.py`
 
 ### Bugfixes
 - Can access `FourierExtendedParams.z_rotation_angles` now for hamiltonians
