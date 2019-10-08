@@ -58,7 +58,7 @@
 
           
             
-            <img src="_static/ELlogo_small.png" class="logo" alt="Logo"/>
+            <img src="_static/Entropica_logo.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -86,7 +86,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <p class="caption"><span class="caption-text">About Entropica Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about_entropica.html">About Entropica Labs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials_overview.html">Overview of tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
@@ -99,7 +103,7 @@
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details, conventions, and FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Reference</span></p>
@@ -176,6 +180,17 @@
   <div class="section" id="module-utilities">
 <span id="vqe-and-qaoa-utilities"></span><h1>VQE and QAOA utilities<a class="headerlink" href="#module-utilities" title="Permalink to this headline">¶</a></h1>
 <p>Utility and convenience functions for a number of QAOA applications.</p>
+<dl class="function">
+<dt id="utilities.bitstring_histogram">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">bitstring_histogram</code><span class="sig-paren">(</span><em class="sig-param">results</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.bitstring_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots a histogram of the output bitstrings obtained by sampling from the QVM or QPU</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bitstrings</strong> – An array of the measured values of each qubit from all trials: array shape is (nshots x nqubits)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="function">
 <dt id="utilities.cluster_accuracy">
 <code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">cluster_accuracy</code><span class="sig-paren">(</span><em class="sig-param">state</em>, <em class="sig-param">true_labels</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.cluster_accuracy" title="Permalink to this definition">¶</a></dt>

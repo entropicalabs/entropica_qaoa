@@ -58,7 +58,7 @@
 
           
             
-            <img src="_static/ELlogo_small.png" class="logo" alt="Logo"/>
+            <img src="_static/Entropica_logo.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -86,7 +86,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <p class="caption"><span class="caption-text">About Entropica Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about_entropica.html">About Entropica Labs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials_overview.html">Overview of tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
@@ -99,7 +103,7 @@
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details, conventions, and FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Reference</span></p>
@@ -299,6 +303,26 @@ deviation estimate based on the samples.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>float or tuple (cost, cost_stdev)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.cost_function.QAOACostFunctionOnQVM.sample_bitstrings">
+<code class="sig-name descname">sample_bitstrings</code><span class="sig-paren">(</span><em class="sig-param">nshots=1000</em>, <em class="sig-param">initial_state=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.cost_function.QAOACostFunctionOnQVM.sample_bitstrings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the QAOA circuit using self.params, and measures the output bitstrings from nshots runs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nshots</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the number of times to run the circuit and measure</p></li>
+<li><p><strong>intial_state</strong> – a program to prepare the initial state (defaults to all <a href="#id1"><span class="problematic" id="id2">|</span></a>+&gt;)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an array of shape (nshots x nqubits) with the measurement outcomes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bitstrings</p>
 </dd>
 </dl>
 </dd></dl>

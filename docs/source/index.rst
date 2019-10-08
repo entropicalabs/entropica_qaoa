@@ -126,6 +126,12 @@ Contents
 
 .. toctree::
    :maxdepth: 3
+   :caption: About Entropica Labs
+
+   about_entropica
+
+.. toctree::
+   :maxdepth: 3
    :caption: Tutorials
 
    tutorials_overview

@@ -235,9 +235,9 @@ define a simple convenience function.
         Applies the QAOA circuit and returns the probability of measuring the bitstring 1001
         """
         
-        standard_params = StandardParams.linear_ramp_from_hamiltonian(ham,p)
-        cost_std = QAOACostFunctionOnWFSim(ham,standard_params)
-        res_std = minimize(cost_std, standard_params.raw(), method = 'Cobyla')
+        params_std = StandardParams.linear_ramp_from_hamiltonian(ham,p)
+        cost_std = QAOACostFunctionOnWFSim(ham,params_std)
+        res_std = minimize(cost_std, params_std.raw(), method = 'Cobyla')
         state = cost_std.get_wavefunction(res_std.x)
         probs = state.probabilities()
         

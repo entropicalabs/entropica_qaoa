@@ -100,9 +100,9 @@ let’s create two 4-qubit Hamiltonians.
 
 .. parsed-literal::
 
-    h1 = (0.13650437109024494+0j)*Z0 + (0.22241658059374847+0j)*Z1 + (0.9149796300206969+0j)*Z2 + (0.46691524258894435+0j)*Z0*Z2 + (0.3844306559633768+0j)*Z1*Z3
+    h1 = (0.004900348867947435+0j)*Z3 + (0.21901286736897008+0j)*Z0 + (0.15051036418505226+0j)*Z0*Z1 + (0.1676281685151534+0j)*Z0*Z2 + (0.13006962415006895+0j)*Z0*Z3 + (0.5410897163886795+0j)*Z1*Z2 + (0.9327111643297196+0j)*Z2*Z3
     
-    h2 = (0.20012065087708863+0j)*Z0 + (0.8162994841533423+0j)*Z1 + (0.018476841348157302+0j)*Z2 + (0.05253543460053012+0j)*Z0*Z1 + (0.6654504868116766+0j)*Z0*Z2 + (0.4457446633950152+0j)*Z1*Z2 + (0.8060931825021628+0j)*Z1*Z3
+    h2 = (0.34593388397329305+0j)*Z0 + (0.8360959486271519+0j)*Z0*Z2 + (0.11829423825238738+0j)*Z0*Z3
 
 
 Hamiltonians to Graphs
@@ -141,9 +141,9 @@ to its corresponding Hamiltonian, which we called ``h1`` above.
 
 .. parsed-literal::
 
-    From graph: (0.13650437109024494+0j)*Z0 + (0.22241658059374847+0j)*Z1 + (0.9149796300206969+0j)*Z2 + (0.46691524258894435+0j)*Z0*Z2 + (0.3844306559633768+0j)*Z1*Z3
+    From graph: (0.004900348867947435+0j)*Z3 + (0.21901286736897008+0j)*Z0 + (0.13006962415006895+0j)*Z3*Z0 + (0.9327111643297196+0j)*Z3*Z2 + (0.15051036418505226+0j)*Z0*Z1 + (0.1676281685151534+0j)*Z0*Z2 + (0.5410897163886795+0j)*Z1*Z2
     
-    Original: (0.13650437109024494+0j)*Z0 + (0.22241658059374847+0j)*Z1 + (0.9149796300206969+0j)*Z2 + (0.46691524258894435+0j)*Z0*Z2 + (0.3844306559633768+0j)*Z1*Z3
+    Original: (0.004900348867947435+0j)*Z3 + (0.21901286736897008+0j)*Z0 + (0.15051036418505226+0j)*Z0*Z1 + (0.1676281685151534+0j)*Z0*Z2 + (0.13006962415006895+0j)*Z0*Z3 + (0.5410897163886795+0j)*Z1*Z2 + (0.9327111643297196+0j)*Z2*Z3
 
 
 Hyperparameters to Graphs
@@ -239,17 +239,17 @@ function.
 
 .. parsed-literal::
 
-    array([[0.        , 0.48320097, 0.69982418, 3.00078518, 3.62099226,
-            3.27258763],
-           [0.48320097, 0.        , 0.46976064, 2.57034361, 3.22940143,
-            2.89153733],
-           [0.69982418, 0.46976064, 0.        , 2.34122585, 2.93055856,
-            2.5789109 ],
-           [3.00078518, 2.57034361, 2.34122585, 0.        , 0.79714451,
-            0.63051462],
-           [3.62099226, 3.22940143, 2.93055856, 0.79714451, 0.        ,
-            0.36312393],
-           [3.27258763, 2.89153733, 2.5789109 , 0.63051462, 0.36312393,
+    array([[0.        , 0.82897286, 0.25412122, 2.7208397 , 2.4882139 ,
+            2.696585  ],
+           [0.82897286, 0.        , 0.69353841, 2.7068499 , 2.38417206,
+            2.80707853],
+           [0.25412122, 0.69353841, 0.        , 2.50460246, 2.25679993,
+            2.50414529],
+           [2.7208397 , 2.7068499 , 2.50460246, 0.        , 0.39691127,
+            0.41284593],
+           [2.4882139 , 2.38417206, 2.25679993, 0.39691127, 0.        ,
+            0.74243907],
+           [2.696585  , 2.80707853, 2.50414529, 0.41284593, 0.74243907,
             0.        ]])
 
 
@@ -272,7 +272,7 @@ easily with the ``hamiltonian_from_distances()`` method.
 
 .. parsed-literal::
 
-    (0.48320097198881645+0j)*Z0*Z1 + (0.6998241820290145+0j)*Z0*Z2 + (3.0007851843737177+0j)*Z0*Z3 + (3.6209922570115203+0j)*Z0*Z4 + (3.272587634584402+0j)*Z0*Z5 + (0.46976063669612744+0j)*Z1*Z2 + (2.5703436114724334+0j)*Z1*Z3 + (3.229401429327419+0j)*Z1*Z4 + (2.89153732889774+0j)*Z1*Z5 + (2.3412258538356214+0j)*Z2*Z3 + (2.9305585581588205+0j)*Z2*Z4 + (2.578910900367862+0j)*Z2*Z5 + (0.7971445111392582+0j)*Z3*Z4 + (0.6305146166254674+0j)*Z3*Z5 + (0.36312393287417993+0j)*Z4*Z5
+    (0.8289728598343151+0j)*Z0*Z1 + (0.25412121547104277+0j)*Z0*Z2 + (2.7208397046549373+0j)*Z0*Z3 + (2.488213904805076+0j)*Z0*Z4 + (2.696584998506985+0j)*Z0*Z5 + (0.6935384144076524+0j)*Z1*Z2 + (2.7068499027612867+0j)*Z1*Z3 + (2.384172061944766+0j)*Z1*Z4 + (2.807078534694894+0j)*Z1*Z5 + (2.504602455697225+0j)*Z2*Z3 + (2.256799930531896+0j)*Z2*Z4 + (2.504145288140382+0j)*Z2*Z5 + (0.3969112729568394+0j)*Z3*Z4 + (0.412845933315702+0j)*Z3*Z5 + (0.7424390665987094+0j)*Z4*Z5
 
 
 For simplicity here we have omitted terms proportional to the identity
@@ -316,28 +316,25 @@ any single-qubit bias terms.
 
 .. parsed-literal::
 
-         fun: -14.63920149892775
+         fun: -10.810294983486513
        maxcv: 0.0
      message: 'Maximum number of function evaluations has been exceeded.'
         nfev: 200
       status: 2
      success: False
-           x: array([ 1.13868070e+00,  1.72478243e+00,  1.06854661e+00,  4.21877833e-01,
-            1.61569926e+00,  1.40348867e+00,  3.96739012e-01,  1.51684567e-01,
-            6.45682689e-01,  9.94038210e-01,  6.56252645e-01,  8.86488241e-01,
-            1.05222198e-01,  1.85866359e+00,  3.99283571e-01,  1.92676263e+00,
-            1.01348945e+00,  3.27471979e-02,  5.54766173e-01,  3.52475483e-01,
-            1.73169595e+00,  3.12847335e-01,  1.65778372e+00,  2.46951616e-01,
-           -2.40323908e-02,  8.54524304e-01,  2.36484988e-01,  3.02535035e-01,
-            4.87858171e-04,  1.54962737e+00,  4.15865230e-01,  8.30394680e-01,
-            1.32513067e+00,  1.03706948e+00,  2.03901373e-01,  1.71904957e+00,
-            4.98386661e-01,  2.90158363e-01,  4.75328910e-01,  2.70199936e-01,
-            5.10690503e-01,  5.13401186e-01,  2.80360464e-01,  1.93973837e-02,
-            8.90529750e-01,  5.76934306e-01,  3.76630276e-01, -5.26811943e-02,
-            8.80397454e-01,  3.19593945e-01,  6.54614564e-01,  2.11113731e-01,
-            7.12407381e-01,  5.48233201e-01,  8.78021735e-01,  1.59837421e+00,
-            1.01021253e+00,  7.37988310e-01, -2.60123476e-02,  8.69775601e-01,
-            8.46643545e-01,  6.77463330e-01,  4.93664707e-01])
+           x: array([ 0.32837978,  0.97855922,  1.79667302,  1.55509154,  0.66696867,
+            0.87951054,  0.95179681,  0.61356477,  0.9858554 ,  0.44337656,
+            0.37776991,  0.9992281 ,  1.59461262,  0.73024521,  0.73375343,
+            0.34736038,  0.87027853,  0.65597584,  0.89448078,  2.31121969,
+            1.68453049,  0.10603794,  0.93558084,  0.15552382,  1.62178437,
+            0.62497075,  0.1217987 ,  0.77176759,  0.8899081 ,  0.71719219,
+            0.88906001, -0.30232524,  0.42328429,  0.51251464,  0.31569421,
+            0.15417377,  0.82953154,  0.01492303,  1.85023048,  0.75447022,
+            0.3913274 ,  0.76209187,  0.81826248,  1.53127724,  0.63301349,
+            0.92862761,  0.64108281,  0.11464491,  0.22439417,  0.36908476,
+            1.98726247,  0.67616129,  1.55324709,  0.14175055,  0.17962969,
+            0.3617202 ,  1.63780497,  1.47016926,  0.18769132,  0.77039777,
+            0.35670891,  0.18458257,  0.66690106])
 
 
 
@@ -395,12 +392,15 @@ bitstring, i.e. 111000:
 
 
 
-Example 2: Ring of disagrees
-----------------------------
+Example 2: The Ring of Disagrees
+--------------------------------
 
 The *Ring of Diasgrees* is a 2-regular graph on a given number of nodes
-:math:`n`. The ground state has energy :math:`-n` for even :math:`n`,
-and :math:`-n+1` for odd :math:`n`.
+:math:`n`. Its simple structure has allowed a number of extremely useful
+benchmarking results for QAOA to be derived. The ground state has energy
+:math:`-n` for even :math:`n`, and :math:`-n+1` for odd :math:`n`, and
+neighbouring nodes have opposite values (i.e. if a given node has value
+1, its neighbour has value 0).
 
 In the paper that originally introduced the QAOA (`Ref
 2 <#references>`__), it was shown numerically that this graph provides a
@@ -416,9 +416,9 @@ the MaxCut problem, the optimal cost function value returned for a given
 
 This result assumes the ``StandardParams`` parameterisation, and that
 the graph is unweighted (all edge weights equal to 1). Here we verify
-this useful benchmarking result using the ``ring_of_disagrees()``
-function. Note that subsequent to `Ref 2 <#references>`__, this result
-has been derived using analytic methods in `Ref 3 <#references>`__.
+this result using the ``ring_of_disagrees()`` function. Note that
+subsequent to `Ref 2 <#references>`__, this result has been derived
+using analytic methods in `Ref 3 <#references>`__.
 
 .. code:: ipython3
 
@@ -434,26 +434,30 @@ has been derived using analytic methods in `Ref 3 <#references>`__.
 
 .. code:: ipython3
 
-    p_vals = np.arange(1,5) # p range to consider
-    output_val = np.zeros((len(p_vals),))
-    
-    for i in p_vals:
+    def optimise_ring_of_disagrees(pval):
         
         # Initialise angles
-        betas = np.random.rand(i)
-        gammas = np.random.rand(i)
+        betas = np.random.rand(pval)
+        gammas = np.random.rand(pval)
         parameters = (betas, gammas)
-        
+    
         # Set up (hyper)parameters
-        diasagrees_params = StandardParams([h_disagrees,i],parameters)
+        disagrees_params = StandardParams([h_disagrees,pval],parameters)
         
         # Cost function and optimisation
-        cost_function = QAOACostFunctionOnWFSim(h_disagrees, params=diasagrees_params)
+        cost_function = QAOACostFunctionOnWFSim(h_disagrees, params=disagrees_params)
         
-        res = minimize(cost_function, diasagrees_params.raw(),
+        res = minimize(cost_function, disagrees_params.raw(),
                        tol=1e-3, method="BFGS", options={"maxiter": 500})
         
-        output_val[i-1] = res.fun
+        return res.fun, res.x
+        
+    
+    p_vals = np.arange(1,5) # p range to consider
+    output_val = np.zeros((len(p_vals),))
+    for i in p_vals:
+    
+        output_val[i-1] = optimise_ring_of_disagrees(i)[0]
 
 Since we have 8 qubits, according to Farhi’s formula we should find the
 maximum energy to be
@@ -469,23 +473,59 @@ maximum energy to be
 
 .. parsed-literal::
 
-    array([-6.        , -6.66666667, -6.99999998, -7.99999971])
+    array([-6.        , -6.66666666, -7.        , -7.99999998])
 
 
 
-The lowest energy state corresponds to the situation where neighbouring
-qubits have opposite orientations. E.g. for 8 qubits we have:
+For the case :math:`p=1`, the optimal angles can be computed
+analytically, and are given by
+:math:`(\beta_{opt}, \gamma_{opt}) = (\pi/8, \pi/4`) - see `Ref
+4 <#references>`__. We can see that the optimiser does indeed return
+these angles:
 
 .. code:: ipython3
 
-    wf = cost_function.get_wavefunction(res.x)
-    probs = wf.probabilities()
-    print(max_probability_bitstring(probs))
+    opt_angles = optimise_ring_of_disagrees(1)[1]
+    opt_angles
+
+
 
 
 .. parsed-literal::
 
-    [0, 1, 0, 1, 0, 1, 0, 1]
+    array([0.39269965, 0.78539607])
+
+
+
+Let’s finish off by running an example of the Ring of Disagrees on the
+QVM; we would follow a similar method to run the computation on the QPU.
+We’ll use the optimal angles we have just found to check that the
+probability distribution of samples we obtain does indeed return the
+bitstring [0,1,0,1], or its complement [1,0,1,0], with high probability.
+
+Here, we make use of the ``sample_bitstrings`` function, which executes
+the circuit defined by the QAOA instance and samples from output
+multiple times. We can plot the output conveniently using
+``bitstring_histogram``.
+
+.. code:: ipython3
+
+    from pyquil.api import get_qc
+    from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnQVM
+    from entropica_qaoa.utilities import bitstring_histogram
+    
+    qvm = get_qc("4q-qvm")
+    
+    ham_disagrees_4 = ring_of_disagrees(4)
+    params_disagrees_4 = StandardParams([ham_disagrees_4,1], opt_angles)
+    cost_fn_disagrees_4 = QAOACostFunctionOnQVM(ham_disagrees_4, params=params_disagrees_4, qvm=qvm)
+    
+    bitstrings = cost_fn_disagrees_4.sample_bitstrings()
+    bitstring_histogram(bitstrings)
+
+
+
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_41_0.png
 
 
 More miscellaneous utilities
@@ -575,7 +615,7 @@ side-by-side plot of the energies and probabilites using
 
 
 
-.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_48_0.png
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_50_0.png
 
 
 References
@@ -587,3 +627,5 @@ References
    Algorithm <https://arxiv.org/abs/1411.4028>`__
 3. Z. Wang et al, `The Quantum Approximation Optimization Algorithm for
    MaxCut: A FermionicView <https://arxiv.org/pdf/1706.02998.pdf>`__
+4. S. Hadfield, `Quantum Algorithms for Scientific Computing
+   andApproximate Optimization <https://arxiv.org/pdf/1805.03265.pdf>`__

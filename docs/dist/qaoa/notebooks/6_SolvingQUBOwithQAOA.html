@@ -58,7 +58,7 @@
 
           
             
-            <img src="../_static/ELlogo_small.png" class="logo" alt="Logo"/>
+            <img src="../_static/Entropica_logo.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -86,7 +86,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <p class="caption"><span class="caption-text">About Entropica Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about_entropica.html">About Entropica Labs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../tutorials_overview.html">Overview of tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
@@ -105,7 +109,7 @@
 </ul>
 <p class="caption"><span class="caption-text">General Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../faq.html">Implementation details and conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Implementation details, conventions, and FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Reference</span></p>
@@ -365,9 +369,9 @@ define a simple convenience function.</p>
 <span class="sd">    Applies the QAOA circuit and returns the probability of measuring the bitstring 1001</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">standard_params</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
-    <span class="n">cost_std</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">standard_params</span><span class="p">)</span>
-    <span class="n">res_std</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_std</span><span class="p">,</span> <span class="n">standard_params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;Cobyla&#39;</span><span class="p">)</span>
+    <span class="n">params_std</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="o">.</span><span class="n">linear_ramp_from_hamiltonian</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">cost_std</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">ham</span><span class="p">,</span><span class="n">params_std</span><span class="p">)</span>
+    <span class="n">res_std</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_std</span><span class="p">,</span> <span class="n">params_std</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;Cobyla&#39;</span><span class="p">)</span>
     <span class="n">state</span> <span class="o">=</span> <span class="n">cost_std</span><span class="o">.</span><span class="n">get_wavefunction</span><span class="p">(</span><span class="n">res_std</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
     <span class="n">probs</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span>
 

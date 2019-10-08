@@ -62,7 +62,7 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-html_logo = 'ELlogo_small.png'
+html_logo = 'Entropica_logo.png'
 html_favicon ='favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
