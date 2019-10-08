@@ -16,7 +16,7 @@
 Utility and convenience functions for a number of QAOA applications.
 """
 
-from typing import Union, List, Dict, Iterable, Tuple
+from typing import Union, List, Dict, Iterable, Tuple, Callable
 import random
 import itertools
 
@@ -29,9 +29,12 @@ import networkx as nx
 from pyquil import Program
 from pyquil.quil import QubitPlaceholder
 from pyquil.paulis import PauliSum, PauliTerm
-from pyquil.gates import X
+from pyquil.gates import X, MEASURE
 from pyquil.unitary_tools import lifted_pauli
-from pyquil.api import QuantumComputer, get_qc
+from pyquil.api import QuantumComputer
+
+from entropica_qaoa.qaoa.parameters import AbstractParams
+from entropica_qaoa.qaoa.cost_function import _all_plus_state, prepare_qaoa_ansatz, make_qaoa_memory_map
 
 #############################################################################
 # METHODS FOR CREATING HAMILTONIANS AND GRAPHS, AND SWITCHING BETWEEN THE TWO
@@ -606,6 +609,56 @@ def plot_probabilities(probabilities: Union[np.array, list],
     ax.set_xlabel("State")
     ax.grid(linestyle='--')
     ax.legend()
+
+def sample_qaoa_bitstrings(params: AbstractParams,
+                           qvm: Union[QuantumComputer, str],
+                           initial_state = None,
+                           nshots: int = 1000) -> np.array:
+    
+    """
+    Runs the QAOA circuit using the specified parameters ``params``, and measures the output bitstrings from ``nshots`` runs.
+    
+    Parameters
+    ----------
+    params:
+        the QAOA parameters of interest 
+    
+    qvm:
+        the QVM or QPU to run on
+    
+    intial_state:
+        a program to prepare the initial state (defaults to all |+>)
+        
+    nshots:
+        the number of times to run the circuit and measure
+             
+    Returns
+    -------
+    bitstrings:
+        an array of shape (nshots x nqubits) with the measurement outcomes
+    """
+    
+    nqubits = len(params.reg)
+    
+    if initial_state is None:
+        initial_state = _all_plus_state(params.reg)
+    
+    prog = prepare_qaoa_ansatz(initial_state, params)
+    prog.wrap_in_numshots_loop(nshots)
+    
+    memory_map = make_qaoa_memory_map(params)
+   
+    # create a read out register
+    ro = prog.declare('ro', memory_type='BIT', memory_size=nqubits)
+
+    # add measure instructions to the specified qubits
+    for i in range(nqubits):
+        prog += MEASURE(i, ro[i])   
+    
+    exe = qvm.compile(prog)
+    bitstrings = qvm.run(exe, memory_map)
+
+    return bitstrings
 
 def bitstring_histogram(results: np.array):
     

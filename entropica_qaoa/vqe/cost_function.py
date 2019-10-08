@@ -373,39 +373,6 @@ class PrepareAndMeasureOnQVM(AbstractCostFunction):
         else:
             return out
 
-    def sample_bitstrings(self,
-                          prog: Program,
-                          nshots: int = None) -> Union[float, Tuple]:
-        
-        """
-        Samples output bitstrings from the program specified
-        
-        Parameters
-        ----------
-        prog:
-            the Program to run (must include initial state prep, the parametric circuit, and measurements)
-            eg for QAOA, we can call the ``prepare_qaoa_ansatz`` function (see cost_function.py file)
-        
-        nshots:
-            the number of times to run the circuit and measure
-            
-        Returns
-        -------
-        bitstrings:
-            an array of shape (nshots x nqubits) with the measurement outcomes
-        
-        """
-
-        if nshots is None:
-            nshots = self.nshots
-        prog.wrap_in_numshots_loop(nshots)
-        
-        memory_map = self.make_memory_map(self.params)
-        
-        exe = self.qvm.compile(prog)
-        bitstrings = self.qvm.run(exe, memory_map)
-
-        return bitstrings
 
 def address_qubits_hamiltonian(
         hamiltonian: PauliSum,

@@ -22,8 +22,11 @@ solve real problems.
     from entropica_qaoa.qaoa.parameters import ExtendedParams, StandardParams
     
     # Cost functions and all the utilities
-    from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim
+    from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim, QAOACostFunctionOnQVM
     from entropica_qaoa.utilities import *
+    
+    # Pyquil import
+    from pyquil.api import get_qc
     
     # Matplotlib raises errors about NetworkX using outdated methods. Nothing we can change, so we suppress the messages.
     import warnings
@@ -100,9 +103,9 @@ let’s create two 4-qubit Hamiltonians.
 
 .. parsed-literal::
 
-    h1 = (0.004900348867947435+0j)*Z3 + (0.21901286736897008+0j)*Z0 + (0.15051036418505226+0j)*Z0*Z1 + (0.1676281685151534+0j)*Z0*Z2 + (0.13006962415006895+0j)*Z0*Z3 + (0.5410897163886795+0j)*Z1*Z2 + (0.9327111643297196+0j)*Z2*Z3
+    h1 = (0.5801409086051283+0j)*Z0 + (0.12998939263198905+0j)*Z3 + (0.09763731752550098+0j)*Z0*Z2 + (0.47755355462221494+0j)*Z0*Z3 + (0.6193108013744926+0j)*Z1*Z3 + (0.27718860994258887+0j)*Z2*Z3
     
-    h2 = (0.34593388397329305+0j)*Z0 + (0.8360959486271519+0j)*Z0*Z2 + (0.11829423825238738+0j)*Z0*Z3
+    h2 = (0.5391740892779068+0j)*Z3 + (0.9015145138590477+0j)*Z2 + (0.8564448278142885+0j)*Z1 + (0.571647432583012+0j)*Z0*Z3 + (0.9829080628535642+0j)*Z1*Z2 + (0.7686386379802039+0j)*Z2*Z3
 
 
 Hamiltonians to Graphs
@@ -141,9 +144,9 @@ to its corresponding Hamiltonian, which we called ``h1`` above.
 
 .. parsed-literal::
 
-    From graph: (0.004900348867947435+0j)*Z3 + (0.21901286736897008+0j)*Z0 + (0.13006962415006895+0j)*Z3*Z0 + (0.9327111643297196+0j)*Z3*Z2 + (0.15051036418505226+0j)*Z0*Z1 + (0.1676281685151534+0j)*Z0*Z2 + (0.5410897163886795+0j)*Z1*Z2
+    From graph: (0.5801409086051283+0j)*Z0 + (0.12998939263198905+0j)*Z3 + (0.09763731752550098+0j)*Z0*Z2 + (0.47755355462221494+0j)*Z0*Z3 + (0.6193108013744926+0j)*Z3*Z1 + (0.27718860994258887+0j)*Z3*Z2
     
-    Original: (0.004900348867947435+0j)*Z3 + (0.21901286736897008+0j)*Z0 + (0.15051036418505226+0j)*Z0*Z1 + (0.1676281685151534+0j)*Z0*Z2 + (0.13006962415006895+0j)*Z0*Z3 + (0.5410897163886795+0j)*Z1*Z2 + (0.9327111643297196+0j)*Z2*Z3
+    Original: (0.5801409086051283+0j)*Z0 + (0.12998939263198905+0j)*Z3 + (0.09763731752550098+0j)*Z0*Z2 + (0.47755355462221494+0j)*Z0*Z3 + (0.6193108013744926+0j)*Z1*Z3 + (0.27718860994258887+0j)*Z2*Z3
 
 
 Hyperparameters to Graphs
@@ -239,17 +242,17 @@ function.
 
 .. parsed-literal::
 
-    array([[0.        , 0.82897286, 0.25412122, 2.7208397 , 2.4882139 ,
-            2.696585  ],
-           [0.82897286, 0.        , 0.69353841, 2.7068499 , 2.38417206,
-            2.80707853],
-           [0.25412122, 0.69353841, 0.        , 2.50460246, 2.25679993,
-            2.50414529],
-           [2.7208397 , 2.7068499 , 2.50460246, 0.        , 0.39691127,
-            0.41284593],
-           [2.4882139 , 2.38417206, 2.25679993, 0.39691127, 0.        ,
-            0.74243907],
-           [2.696585  , 2.80707853, 2.50414529, 0.41284593, 0.74243907,
+    array([[0.        , 0.38676505, 0.64366626, 1.92081505, 2.43664812,
+            2.39241442],
+           [0.38676505, 0.        , 0.47932244, 2.22959423, 2.76165482,
+            2.72319262],
+           [0.64366626, 0.47932244, 0.        , 2.56038071, 3.06796416,
+            3.02030094],
+           [1.92081505, 2.22959423, 2.56038071, 0.        , 0.55134331,
+            0.5364084 ],
+           [2.43664812, 2.76165482, 3.06796416, 0.55134331, 0.        ,
+            0.08340936],
+           [2.39241442, 2.72319262, 3.02030094, 0.5364084 , 0.08340936,
             0.        ]])
 
 
@@ -272,7 +275,7 @@ easily with the ``hamiltonian_from_distances()`` method.
 
 .. parsed-literal::
 
-    (0.8289728598343151+0j)*Z0*Z1 + (0.25412121547104277+0j)*Z0*Z2 + (2.7208397046549373+0j)*Z0*Z3 + (2.488213904805076+0j)*Z0*Z4 + (2.696584998506985+0j)*Z0*Z5 + (0.6935384144076524+0j)*Z1*Z2 + (2.7068499027612867+0j)*Z1*Z3 + (2.384172061944766+0j)*Z1*Z4 + (2.807078534694894+0j)*Z1*Z5 + (2.504602455697225+0j)*Z2*Z3 + (2.256799930531896+0j)*Z2*Z4 + (2.504145288140382+0j)*Z2*Z5 + (0.3969112729568394+0j)*Z3*Z4 + (0.412845933315702+0j)*Z3*Z5 + (0.7424390665987094+0j)*Z4*Z5
+    (0.38676505234418374+0j)*Z0*Z1 + (0.6436662616746497+0j)*Z0*Z2 + (1.9208150540942497+0j)*Z0*Z3 + (2.4366481238675783+0j)*Z0*Z4 + (2.3924144199072104+0j)*Z0*Z5 + (0.47932243702670124+0j)*Z1*Z2 + (2.2295942303685425+0j)*Z1*Z3 + (2.761654820505215+0j)*Z1*Z4 + (2.723192615685079+0j)*Z1*Z5 + (2.5603807135697023+0j)*Z2*Z3 + (3.0679641555183745+0j)*Z2*Z4 + (3.020300942616175+0j)*Z2*Z5 + (0.5513433090092456+0j)*Z3*Z4 + (0.536408398834585+0j)*Z3*Z5 + (0.08340936369005367+0j)*Z4*Z5
 
 
 For simplicity here we have omitted terms proportional to the identity
@@ -316,25 +319,25 @@ any single-qubit bias terms.
 
 .. parsed-literal::
 
-         fun: -10.810294983486513
+         fun: -10.09955123079244
        maxcv: 0.0
      message: 'Maximum number of function evaluations has been exceeded.'
         nfev: 200
       status: 2
      success: False
-           x: array([ 0.32837978,  0.97855922,  1.79667302,  1.55509154,  0.66696867,
-            0.87951054,  0.95179681,  0.61356477,  0.9858554 ,  0.44337656,
-            0.37776991,  0.9992281 ,  1.59461262,  0.73024521,  0.73375343,
-            0.34736038,  0.87027853,  0.65597584,  0.89448078,  2.31121969,
-            1.68453049,  0.10603794,  0.93558084,  0.15552382,  1.62178437,
-            0.62497075,  0.1217987 ,  0.77176759,  0.8899081 ,  0.71719219,
-            0.88906001, -0.30232524,  0.42328429,  0.51251464,  0.31569421,
-            0.15417377,  0.82953154,  0.01492303,  1.85023048,  0.75447022,
-            0.3913274 ,  0.76209187,  0.81826248,  1.53127724,  0.63301349,
-            0.92862761,  0.64108281,  0.11464491,  0.22439417,  0.36908476,
-            1.98726247,  0.67616129,  1.55324709,  0.14175055,  0.17962969,
-            0.3617202 ,  1.63780497,  1.47016926,  0.18769132,  0.77039777,
-            0.35670891,  0.18458257,  0.66690106])
+           x: array([ 1.12602003,  1.61914548,  0.9399495 ,  0.23614259,  1.18551376,
+            0.29249101,  0.63873523,  0.51051573,  0.93270342,  0.39420024,
+            0.12700218,  1.60896481,  0.10426307,  1.18353012,  0.85151294,
+            0.64787356,  0.6584982 ,  1.33838275,  0.80031341, -0.01301961,
+            0.26776711,  0.3701222 ,  1.37377245,  1.26113146,  0.6715293 ,
+            0.02451597,  1.65640896,  0.0339523 ,  1.64080821,  1.07081115,
+            0.02873057,  0.19467249,  0.68660883,  0.91054952, -0.00912106,
+            0.22138033,  0.43109925,  0.63635338,  0.78070772,  0.09178786,
+            0.34277407,  0.50434972,  0.35728683,  0.72260796,  1.0477094 ,
+            0.33151519,  0.48165346,  1.46878413,  0.43320862,  0.63287338,
+            0.27416803,  0.22954139,  0.22963598,  1.12387447,  0.33189668,
+            0.8146632 ,  0.03601882,  0.21387951,  0.83129131,  0.42479963,
+            0.92415528,  0.38570903,  0.6075952 ])
 
 
 
@@ -473,7 +476,7 @@ maximum energy to be
 
 .. parsed-literal::
 
-    array([-6.        , -6.66666666, -7.        , -7.99999998])
+    array([-6.        , -6.66666667, -6.99999999, -7.99999999])
 
 
 
@@ -493,7 +496,7 @@ these angles:
 
 .. parsed-literal::
 
-    array([0.39269965, 0.78539607])
+    array([0.39271096, 0.78538447])
 
 
 
@@ -503,24 +506,19 @@ We’ll use the optimal angles we have just found to check that the
 probability distribution of samples we obtain does indeed return the
 bitstring [0,1,0,1], or its complement [1,0,1,0], with high probability.
 
-Here, we make use of the ``sample_bitstrings`` function, which executes
-the circuit defined by the QAOA instance and samples from output
-multiple times. We can plot the output conveniently using
+Here, we make use of the ``sample_qaoa_bitstrings`` function, which
+executes the circuit defined by the QAOA instance and samples from
+output multiple times. We can plot the output conveniently using
 ``bitstring_histogram``.
 
 .. code:: ipython3
 
-    from pyquil.api import get_qc
-    from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnQVM
-    from entropica_qaoa.utilities import bitstring_histogram
-    
     qvm = get_qc("4q-qvm")
     
     ham_disagrees_4 = ring_of_disagrees(4)
     params_disagrees_4 = StandardParams([ham_disagrees_4,1], opt_angles)
-    cost_fn_disagrees_4 = QAOACostFunctionOnQVM(ham_disagrees_4, params=params_disagrees_4, qvm=qvm)
     
-    bitstrings = cost_fn_disagrees_4.sample_bitstrings()
+    bitstrings = sample_qaoa_bitstrings(params_disagrees_4, qvm)
     bitstring_histogram(bitstrings)
 
 

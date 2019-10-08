@@ -312,27 +312,6 @@ deviation estimate based on the samples.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="vqe.cost_function.PrepareAndMeasureOnQVM.sample_bitstrings">
-<code class="sig-name descname">sample_bitstrings</code><span class="sig-paren">(</span><em class="sig-param">prog</em>, <em class="sig-param">nshots=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.cost_function.PrepareAndMeasureOnQVM.sample_bitstrings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Samples output bitstrings from the program specified</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>prog</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Program</span></code>) – the Program to run (must include initial state prep, the parametric circuit, and measurements)
-eg for QAOA, we can call the <code class="docutils literal notranslate"><span class="pre">prepare_qaoa_ansatz</span></code> function (see cost_function.py file)</p></li>
-<li><p><strong>nshots</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the number of times to run the circuit and measure</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>an array of shape (nshots x nqubits) with the measurement outcomes</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bitstrings</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </div>
