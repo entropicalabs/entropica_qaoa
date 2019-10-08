@@ -1217,6 +1217,10 @@ class FourierParams(AbstractParams):
                                      q: int = 4,
                                      time: float = None):
         """
+        NOTE: rather than implement an exact linear schedule, 
+        this instead implements the lowest frequency component, 
+        i.e. a sine curve for gammas, and a cosine for betas.
+        
         Parameters
         ----------
         hamiltonian:
@@ -1232,7 +1236,8 @@ class FourierParams(AbstractParams):
         -------
         FourierParams:
             A ``FourierParams`` object with initial parameters
-            corresponding to a linear ramp annealing schedule
+            corresponding to a the 0th order Fourier component 
+            (a sine curve for gammas, cosine for betas)
 
         ToDo
         ----

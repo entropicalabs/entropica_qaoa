@@ -107,8 +107,8 @@ def _qaoa_cost_ham_rotation(zz_rotation_angles_reg: MemoryReference,
     return p
 
 
-def _qaoa_annealing_program(params: Type[AbstractParams]) -> Program:
-    """Create parametric quil code for the QAOA annealing circuit.
+def _qaoa_circuit(params: Type[AbstractParams]) -> Program:
+    """Create parametric quil code for the QAOA circuit (not including initial state preparation).
 
     Parameters
     ----------
@@ -118,7 +118,7 @@ def _qaoa_annealing_program(params: Type[AbstractParams]) -> Program:
     Returns
     -------
     Program
-        Parametric Quil Program with the annealing circuit.
+        Parametric Quil Program with the QAOA parametric circuit.
 
     """
     (reg, qubits_singles, qubits_pairs, n_steps) =\
@@ -188,7 +188,7 @@ def prepare_qaoa_ansatz(initial_state: Program,
 
     """
     p = initial_state
-    p += _qaoa_annealing_program(qaoa_params)
+    p += _qaoa_circuit(qaoa_params)
     return p
 
 
