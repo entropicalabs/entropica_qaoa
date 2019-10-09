@@ -59,6 +59,10 @@ All software tests are located in `entropica_qaoa/tests/`. To run them you will 
     `<TheNotebook>.ipynb`.
  - `pytest --all` runs all of the above tests. 
 
+### QPU access
+
+EntropicaQAOA provides full native support for Rigetti’s QVM and QPUs. For access to the QPUs, sign up online at https://qcs.rigetti.com/, or reach out to support@rigetti.com.
+
 ## Contributing and feedback
 
 If you find any bugs or errors, have feature requests, or code you would like to contribute, feel free to open an issue or send us a pull request on GitHub .

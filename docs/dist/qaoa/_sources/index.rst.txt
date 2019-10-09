@@ -107,6 +107,10 @@ Note that the Quil compiler and QVM need to be running for all of the tests to p
 
 The tutorials in this documentation can also downloaded as Jupyter notebooks from our `GitHub page <https://github.com/entropicalabs/entropica_qaoa/tree/master/examples>`_ .
 
+QPU access
+----------
+
+EntropicaQAOA provides full native support for Rigetti’s QVM and QPUs. For access to the QPUs, sign up online at https://qcs.rigetti.com/, or reach out to support@rigetti.com.
 
 Contributing and feedback
 -------------------------
