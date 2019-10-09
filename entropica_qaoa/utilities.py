@@ -512,7 +512,7 @@ def prepare_classical_state(reg: List[Union[int, QubitPlaceholder]],
 
     Returns
     -------
-    Program
+    Program:
         Quil Program with a circuit in an initial classical state.
     """
 
@@ -583,7 +583,7 @@ def plot_probabilities(probabilities: Union[np.array, list],
     probabilities:
         The probabilites to find the state. Can be calculated via wavefunction.probabilities()
     energies:
-        The energy of that state
+        The energies of the states
     ax: matplotlib axes object
         The canvas to draw on
     """
@@ -605,7 +605,7 @@ def plot_probabilities(probabilities: Union[np.array, list],
 
     ax.bar(y_pos + width, -energies, width, label="-1 x Energy")
     ax.set_xticks(y_pos + width / 2, minor=False)
-    ax.set_xticklabels(labels, minor=False)
+    ax.set_xticklabels(labels, minor=False, rotation=70)
     ax.set_xlabel("State")
     ax.grid(linestyle='--')
     ax.legend()
@@ -616,7 +616,8 @@ def sample_qaoa_bitstrings(params: AbstractParams,
                            nshots: int = 1000) -> np.array:
     
     """
-    Runs the QAOA circuit using the specified parameters ``params``, and measures the output bitstrings from ``nshots`` runs.
+    Runs the QAOA circuit using the specified parameters ``params``, and
+    measures the output bitstrings from ``nshots`` runs.
     
     Parameters
     ----------
@@ -627,14 +628,14 @@ def sample_qaoa_bitstrings(params: AbstractParams,
         the QVM or QPU to run on
     
     intial_state:
-        a program to prepare the initial state (defaults to all |+>)
+        a program to prepare the initial state (defaults to all ``|+>``)
         
     nshots:
         the number of times to run the circuit and measure
              
     Returns
     -------
-    bitstrings:
+    np.array:
         an array of shape (nshots x nqubits) with the measurement outcomes
     """
     
