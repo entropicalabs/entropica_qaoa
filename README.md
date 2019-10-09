@@ -22,7 +22,7 @@ The compiled HTML version of the documentation is then found in
 
 ## Installation
 
-We assume that the user has already installed Rigetti's pyQuil package, as well as the Rigetti QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation [here](http://docs.rigetti.com/en/stable/start.html).
+We assume that the user has already installed Rigetti's pyQuil package, as well as the Rigetti QVM and Quil Compiler. For instructions on how to do so, see Rigetti's documentation [here](http://docs.rigetti.com/en/stable/start.html).
 
 You can install the `EntropicaQAOA` package using [pip](#https://pip.pypa.io/en/stable/quickstart/):
 
