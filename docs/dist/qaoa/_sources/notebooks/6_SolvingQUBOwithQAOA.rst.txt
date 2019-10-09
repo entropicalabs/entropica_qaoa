@@ -99,7 +99,7 @@ landscape looks like.
 
 The optimal solution is :math:`x_1 = x_4 = 1`, :math:`x_2 = x_3 = 0`,
 i.e. the bitstring 1001 (the binary representation of the number 9). Its
-corresponding function value is -11.
+corresponding function value is :math:`y =-11`.
 
 Mapping to QAOA
 ---------------
@@ -134,7 +134,7 @@ Let’s now set the problem up and proceed to solve it using QAOA.
 .. code:: ipython3
 
     # Linear part of the Hamiltonian
-    # For simplicity here we do not sqaure each term, as this does not affect the outcome
+    # For simplicity here we do not square each term, as this does not affect the outcome
     ham_lin = -0.5*PauliSum.from_compact_str('(-5)*Z1 + (-3)*Z2 + (-8)*Z3 + (-6)*Z4 + 22*I')
     
     # Quadratic part of the Hamiltonian

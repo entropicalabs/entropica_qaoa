@@ -1,6 +1,8 @@
 # Entropica QAOA
 
-A modular package providing multiple features and workflow tools for the quantum approximate optimisation algorithm (QAOA), facilitating its use, prototyping, and testing. Includes several different parametrisations, integration with data science and graph analysis libraries such as Pandas and NetworkX, numerous utility functions, and convenient optimiser logging and analysis tools. Documentation contains extensive and didactic examples.
+A modular package providing multiple features and workflow tools for the quantum approximate optimisation algorithm (QAOA), facilitating its use, prototyping, and testing. Includes several different parametrisations, integration with data science and graph analysis libraries such as Pandas and NetworkX, numerous utility functions, and convenient optimiser logging and analysis tools. Documentation contains extensive and didactic examples. 
+
+Read more about EntropicaQAOA on our [blog](https://medium.com/@entropicalabs/entropica-releases-qaoa-package-for-rigettis-quantum-cloud-service-12ea71019436).
 
 ## Documentation
 
@@ -49,7 +51,7 @@ git clone https://github.com/entropicalabs/entropica_qaoa.git
 
 ### Testing
 
-All software tests are located in `entropica_qaoa/tests/`. To run them you will need to install [pytest](https://docs.pytest.org/en/latest/). To speed up the testing, we have tagged tests that require more computational time (~ 5 mins or so)  with `runslow`, and the tests of the notebooks with `notebooks`. This means that a bare
+All software tests are located in `entropica_qaoa/tests/`. To run them you will need to install [pytest](https://docs.pytest.org/en/latest/). To speed up the testing, we have tagged tests that require more computational time (~ 5 mins or so)  with `runslow`, and the tests of the notebooks with `notebooks`. The commands are as follows:
 
  - `pytest` runs the default tests, and skips both the longer tests that need heavier simulations, as well as tests of the Notebooks in the `examples` directory.
  - `pytest --runslow` runs the the tests that require longer time.

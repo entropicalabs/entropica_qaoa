@@ -265,7 +265,7 @@ plt.show()
 <img alt="../_images/6_SolvingQUBOwithQAOA_3_0.png" src="../_images/6_SolvingQUBOwithQAOA_3_0.png" />
 <p>The optimal solution is <span class="math notranslate nohighlight">\(x_1 = x_4 = 1\)</span>, <span class="math notranslate nohighlight">\(x_2 = x_3 = 0\)</span>,
 i.e. the bitstring 1001 (the binary representation of the number 9). Its
-corresponding function value is -11.</p>
+corresponding function value is <span class="math notranslate nohighlight">\(y =-11\)</span>.</p>
 </div>
 <div class="section" id="mapping-to-qaoa">
 <h2>Mapping to QAOA<a class="headerlink" href="#mapping-to-qaoa" title="Permalink to this headline">¶</a></h2>
@@ -290,7 +290,7 @@ function <span class="math notranslate nohighlight">\(y\)</span> is:</p>
 + \frac{1}{4}\left[4(\mathbb{I} - Z_1)(\mathbb{I} - Z_2) + 8(\mathbb{I} - Z_1)(\mathbb{I} - Z_3) + 2(\mathbb{I} - Z_2)(\mathbb{I} - Z_3) + 10(\mathbb{I} - Z_3)(\mathbb{I} - Z_4)\right]\end{split}\]</div>
 <p>Let’s now set the problem up and proceed to solve it using QAOA.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linear part of the Hamiltonian</span>
-<span class="c1"># For simplicity here we do not sqaure each term, as this does not affect the outcome</span>
+<span class="c1"># For simplicity here we do not square each term, as this does not affect the outcome</span>
 <span class="n">ham_lin</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">PauliSum</span><span class="o">.</span><span class="n">from_compact_str</span><span class="p">(</span><span class="s1">&#39;(-5)*Z1 + (-3)*Z2 + (-8)*Z3 + (-6)*Z4 + 22*I&#39;</span><span class="p">)</span>
 
 <span class="c1"># Quadratic part of the Hamiltonian</span>
