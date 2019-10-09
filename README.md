@@ -1,7 +1,6 @@
 # Entropica QAOA
 
-A package implementing the Quantum Approximate Optimisation Algorithm (QAOA), providing a number of different features, parametrisations, and utility functions. 
-
+A modular package providing multiple features and workflow tools for the quantum approximate optimisation algorithm (QAOA), facilitating its use, prototyping, and testing. Includes several different parametrisations, integration with data science and graph analysis libraries such as Pandas and NetworkX, numerous utility functions, and convenient optimiser logging and analysis tools. Documentation contains extensive and didactic examples.
 
 ## Documentation
 
@@ -25,7 +24,7 @@ The compiled HTML version of the documentation is then found in
 
 We assume that the user has already installed Rigetti's pyQuil package, as well as the Rigetti QVM and Quil Compiler. For instructions on how to do so, see the Rigetti documentation [here](http://docs.rigetti.com/en/stable/start.html).
 
-You can install the `entropica_qaoa` package using [pip](#https://pip.pypa.io/en/stable/quickstart/):
+You can install the `EntropicaQAOA` package using [pip](#https://pip.pypa.io/en/stable/quickstart/):
 
 ```bash
 pip install entropica-qaoa

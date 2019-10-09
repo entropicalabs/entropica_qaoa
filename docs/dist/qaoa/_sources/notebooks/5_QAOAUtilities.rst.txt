@@ -624,6 +624,7 @@ References
 2. E. Farhi et al, `A Quantum Approximate Optimization
    Algorithm <https://arxiv.org/abs/1411.4028>`__
 3. Z. Wang et al, `The Quantum Approximation Optimization Algorithm for
-   MaxCut: A FermionicView <https://arxiv.org/pdf/1706.02998.pdf>`__
-4. S. Hadfield, `Quantum Algorithms for Scientific Computing
-   andApproximate Optimization <https://arxiv.org/pdf/1805.03265.pdf>`__
+   MaxCut: A Fermionic View <https://arxiv.org/pdf/1706.02998.pdf>`__
+4. S. Hadfield, `Quantum Algorithms for Scientific Computing and
+   Approximate Optimization <https://arxiv.org/pdf/1805.03265.pdf>`__
+
