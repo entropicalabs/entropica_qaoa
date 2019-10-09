@@ -193,18 +193,15 @@
 <h3>Improvements and changes<a class="headerlink" href="#improvements-and-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Variable names in <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.py</span></code> have been updated to
-better reflect their counterparts in <code class="docutils literal notranslate"><span class="pre">qaoa.parameters.py</span></code>. This
-fixed Issue #40 (&#64;jlbosse, !6)</p></li>
+better reflect their counterparts in <code class="docutils literal notranslate"><span class="pre">qaoa.parameters.py</span></code>.</p></li>
 <li><p>Sped up cost function calls and construction for
 <code class="docutils literal notranslate"><span class="pre">PrepareAndMeasureOnWFSim</span></code> and <code class="docutils literal notranslate"><span class="pre">QAOACostFunOnWFSim</span></code>. For very
 small systems and hamiltonians
 <code class="docutils literal notranslate"><span class="pre">WavefunctionSimulator().expectation()</span></code> is still faster, than our
-implementation. This fixed Issue #43 and #44. (&#64;jlbosse, !7 and
-d6df9f73e504c92b06485e1ce8e95676f7a02ccd)</p></li>
+implementation.</p></li>
 <li><p>Added an example of using QAOA to solve a simple QUBO problem.</p></li>
 <li><p>Sped up tests by removing all <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">local_qvm()</span></code> context managers.
-You have to manually start a qvm in the background for the tests now!
-(&#64;jlbosse, !8)</p></li>
+You have to manually start a qvm in the background for the tests now!</p></li>
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">sample_qaoa_bistrings</span></code> to <code class="docutils literal notranslate"><span class="pre">utilities.py</span></code></p></li>
 </ul>
 </div>
@@ -212,7 +209,7 @@ You have to manually start a qvm in the background for the tests now!
 <h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Can access <code class="docutils literal notranslate"><span class="pre">FourierExtendedParams.z_rotation_angles</span></code> now for
-hamiltonians without bias terms. This fixed Issue #45 (&#64;jlbosse, !8)</p></li>
+hamiltonians without bias terms.</p></li>
 </ul>
 </div>
 </div>
