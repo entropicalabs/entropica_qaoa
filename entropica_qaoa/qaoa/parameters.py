@@ -934,14 +934,14 @@ class StandardParams(AbstractParams):
             time = float(0.7 * n_steps)
         # create evenly spaced timesteps at the centers of n_steps intervals
         dt = time / n_steps
-        times = np.linspace(time * (0.5 / n_steps), time
-                            * (1 - 0.5 / n_steps), n_steps)
-
         # fill betas, gammas_singles and gammas_pairs
-        # Todo (optional): replace by np.linspace for tiny performance gains
-        betas = np.array([dt * (1 - t / time) for t in times])
-        gammas = np.array([dt * t / time for t in times])
-
+        #betas = np.array([dt * (1 - t / time) for t in times])
+        betas = np.linspace((dt / time) * (time * (1 - 0.5 / n_steps)),
+                            (dt / time) * (time * 0.5 / n_steps), n_steps)
+        #gammas = np.array([dt * t / time for t in times])
+        #gammas = np.linspace((dt / time) * (time * 0.5 / n_steps),
+        #                    (dt / time) * (time * (1 - 0.5 / n_steps)), n_steps)
+        gammas = betas[::-1]
         # wrap it all nicely in a qaoa_parameters object
         params = cls((hamiltonian, n_steps),
                      (betas, gammas))
