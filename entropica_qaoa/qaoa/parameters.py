@@ -565,8 +565,6 @@ class ExtendedParams(AbstractParams):
             time = float(0.7 * n_steps)
 
         dt = time / n_steps
-        times = np.linspace(time * (0.5 / n_steps), time
-                            * (1 - 0.5 / n_steps), n_steps)
 
         term_lengths = [len(t) for t in hamiltonian]
         n_sing = term_lengths.count(1)
@@ -578,11 +576,12 @@ class ExtendedParams(AbstractParams):
                 "As of now we can only handle hamiltonians with at most "
                 "two-qubit terms")
 
-        betas = np.array([dt * (1 - t / time) for t in times])
+        betas = np.linspace((dt / time) * (time * (1 - 0.5 / n_steps)),
+                            (dt / time) * (time * 0.5 / n_steps), n_steps)
         betas = betas.repeat(n_betas).reshape(n_steps, n_betas)
-        gammas_singles = np.array([dt * t / time for t in times])
+        gammas_singles = betas[::-1]
+        gammas_pairs = betas[::-1]
         gammas_singles = gammas_singles.repeat(n_sing).reshape(n_steps, n_sing)
-        gammas_pairs = np.array([dt * t / time for t in times])
         gammas_pairs = gammas_pairs.repeat(n_pairs).reshape(n_steps, n_pairs)
 
         # wrap it all nicely in a qaoa_parameters object
@@ -773,12 +772,9 @@ class StandardWithBiasParams(AbstractParams):
             time = float(0.7 * n_steps)
         dt = time / n_steps
         # fill betas, gammas_singles and gammas_pairs
-        #betas = np.array([dt * (1 - t / time) for t in times])
         betas = np.linspace((dt / time) * (time * (1 - 0.5 / n_steps)),
                             (dt / time) * (time * 0.5 / n_steps), n_steps)
         
-        # gammas_singles = np.array([dt * t / time for t in times])
-        # gammas_pairs = np.array([dt * t / time for t in times])
         gammas_singles = betas[::-1]
         gammas_pairs = betas[::-1]
 
@@ -935,12 +931,8 @@ class StandardParams(AbstractParams):
         # create evenly spaced timesteps at the centers of n_steps intervals
         dt = time / n_steps
         # fill betas, gammas_singles and gammas_pairs
-        #betas = np.array([dt * (1 - t / time) for t in times])
         betas = np.linspace((dt / time) * (time * (1 - 0.5 / n_steps)),
                             (dt / time) * (time * 0.5 / n_steps), n_steps)
-        #gammas = np.array([dt * t / time for t in times])
-        #gammas = np.linspace((dt / time) * (time * 0.5 / n_steps),
-        #                    (dt / time) * (time * (1 - 0.5 / n_steps)), n_steps)
         gammas = betas[::-1]
         # wrap it all nicely in a qaoa_parameters object
         params = cls((hamiltonian, n_steps),
