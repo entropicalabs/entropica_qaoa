@@ -578,9 +578,9 @@ class ExtendedParams(AbstractParams):
 
         betas = np.linspace((dt / time) * (time * (1 - 0.5 / n_steps)),
                             (dt / time) * (time * 0.5 / n_steps), n_steps)
-        betas = betas.repeat(n_betas).reshape(n_steps, n_betas)
         gammas_singles = betas[::-1]
         gammas_pairs = betas[::-1]
+        betas = betas.repeat(n_betas).reshape(n_steps, n_betas)
         gammas_singles = gammas_singles.repeat(n_sing).reshape(n_steps, n_sing)
         gammas_pairs = gammas_pairs.repeat(n_pairs).reshape(n_steps, n_pairs)
 
