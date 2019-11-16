@@ -1,6 +1,14 @@
 # Changelog
 
-## [v1.2](https://gitlab.com/entropica/entropica_qaoa/tree/dev) (October 9, 2019)
+## [v1.3](https://gitlab.com/entropica/entropica_qaoa/tree/dev) (in development)
+
+### Improvements and changes
+ - Parameter creation routines in `.linear_ramp_from_hamiltonian()` got all
+   vectorized.
+   (@ysinha1, gh-2)
+
+
+## [v1.2](https://github.com/entropicalabs/entropica_qaoa/releases/tag/v1.2) (October 9, 2019)
 
 ### Improvements and changes
 - Variable names in `qaoa.cost_function.py` have been updated to better reflect
