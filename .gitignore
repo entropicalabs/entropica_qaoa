@@ -1,18 +1,33 @@
-# IPython Notebooks 
+# IPython Notebooks
 ###################
 *.ipynb_checkpoints
 
 #compiled stuff
 ###############
 *.pyc
-*.html
 
 # orig files
 ###########
 *.orig
 
-# everything in the docs, except the files we actually edit
-# #########################################################
+# Distribution / packaging
+##########################
+eggs/
+/build
+/dist
+*.egg-info/
+*.egg
+.eggs/
+
+# editors
+#########
+*.swp
+*.save
+
+# compiled docs
+# #############
+docs/source/notebooks
+docs/source/changelog.rst
 docs/build
 
 # latex stuff
@@ -44,3 +59,9 @@ node_modules/*
 .idea/*
 Package_Scheme.pptx
 examples/*.py
+Untitled.ipynb
+.gitattributes
+entropica_qaoa/tests/converted.py
+
+# Local Netlify folder
+.netlify

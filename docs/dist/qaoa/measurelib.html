@@ -1,0 +1,424 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Measurement utilities &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="VQE and QAOA utilities" href="utilities.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+            
+            <img src="_static/Entropica_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">About Entropica Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about_entropica.html">About Entropica Labs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials_overview.html">Overview of tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+</ul>
+<p class="caption"><span class="caption-text">General Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details, conventions, and FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Measurement utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#some-preliminary-explanation">Some preliminary explanation</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Measurement utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/measurelib.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-vqe.measurelib">
+<span id="measurement-utilities"></span><h1>Measurement utilities<a class="headerlink" href="#module-vqe.measurelib" title="Permalink to this headline">¶</a></h1>
+<p>Various convenience functions for measurements on a quantum computer or
+wavefunction simulator.</p>
+<div class="section" id="some-preliminary-explanation">
+<h2>Some preliminary explanation<a class="headerlink" href="#some-preliminary-explanation" title="Permalink to this headline">¶</a></h2>
+<p>Measuring the expectation value of a hamiltonian like</p>
+<div class="math notranslate nohighlight">
+\[H = a Z_0 Z_1 + b Z_1 Z_2 + c X_0 X_1 + d X_1 + e X_2\]</div>
+<p>requires decomposing the hamiltonian into parts that commute with each other
+and then measuring them succesively. On a real QPU we need to do this,
+because physics don’t allow us to measure non-commuting parts of a
+hamiltonian in one run. On the Wavefunction Simulator we need to do this,
+because translating <span class="math notranslate nohighlight">\(\left&lt; \psi | H | \psi \right&gt;\)</span> naively to
+<code class="docutils literal notranslate"><span class="pre">wf.conj()&#64;ham&#64;wf.conj()</span></code> results in huge and sparse matrices <code class="docutils literal notranslate"><span class="pre">ham</span></code> that
+take longer to generate, than it takes to calculate the wavefunction <code class="docutils literal notranslate"><span class="pre">wf</span></code>.</p>
+<p>Even though <span class="math notranslate nohighlight">\(Z_0 Z_1\)</span> and <span class="math notranslate nohighlight">\(X_0 X_1\)</span> commute (go ahead and check
+it), we will measure them in separate runs, because measuring them
+simultaenously can’t be done by simply measuring the qubits 0 and 1. We only
+attempt to measure Pauli products simultaneously that <em>commute trivially</em>.
+Two Pauli products commute trivially, if on each qubit both act with the same
+Pauli Operator, or if either one acts only with the identity. This implies in
+particular, that they can be measured without the need for ancilla qubits.</p>
+<dl class="data">
+<dt id="vqe.measurelib.H_mat">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">H_mat</code><em class="property"> = array([[ 0.70710678,  0.70710678],        [ 0.70710678, -0.70710678]])</em><a class="headerlink" href="#vqe.measurelib.H_mat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="vqe.measurelib.RX_mat">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">RX_mat</code><em class="property"> = array([[ 0.70710678+0.j        , -0.        -0.70710678j],        [-0.        -0.70710678j,  0.70710678+0.j        ]])</em><a class="headerlink" href="#vqe.measurelib.RX_mat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vqe.measurelib.append_measure_register">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">append_measure_register</code><span class="sig-paren">(</span><em class="sig-param">program</em>, <em class="sig-param">qubits=None</em>, <em class="sig-param">trials=10</em>, <em class="sig-param">ham=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.measurelib.append_measure_register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates readout register, MEASURE instructions for register and wraps
+in <code class="docutils literal notranslate"><span class="pre">trials</span></code> numshots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubits</strong> (<em>param</em>) – List of Qubits to measure. If None, program.get_qubits() is used</p></li>
+<li><p><strong>trials</strong> (<em>param</em>) – The number of trials to run.</p></li>
+<li><p><strong>ham</strong> (<em>param</em>) – Hamiltonian to whose basis we need to switch. All terms in it must
+trivially commute. No base change gates are applied, if <code class="docutils literal notranslate"><span class="pre">None</span></code>
+is passed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>program with the gate change and measure instructions appended</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Program</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vqe.measurelib.apply_H">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">apply_H</code><span class="sig-paren">(</span><em class="sig-param">qubit</em>, <em class="sig-param">n_qubits</em>, <em class="sig-param">wf</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.measurelib.apply_H" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a hadamard gate to wavefunction <cite>wf</cite> on the qubit <cite>qubit</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>&lt;built-in function array&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vqe.measurelib.apply_RX">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">apply_RX</code><span class="sig-paren">(</span><em class="sig-param">qubit</em>, <em class="sig-param">n_qubits</em>, <em class="sig-param">wf</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.measurelib.apply_RX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a RX(pi/2) gate to wavefunction <cite>wf</cite> on the qubit <cite>qubit</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>&lt;built-in function array&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vqe.measurelib.base_change_fun">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">base_change_fun</code><span class="sig-paren">(</span><em class="sig-param">ham</em>, <em class="sig-param">qubits</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.measurelib.base_change_fun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a function that applies the correct base change for <code class="docutils literal notranslate"><span class="pre">ham</span></code>
+on a wavefunction on <code class="docutils literal notranslate"><span class="pre">n_qubits</span></code> qubits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vqe.measurelib.commuting_decomposition">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">commuting_decomposition</code><span class="sig-paren">(</span><em class="sig-param">ham</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.measurelib.commuting_decomposition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decompose ham into a list of PauliSums with mutually commuting terms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vqe.measurelib.kron_eigs">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">kron_eigs</code><span class="sig-paren">(</span><em class="sig-param">ham</em>, <em class="sig-param">qubits</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.measurelib.kron_eigs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the eigenvalues of <cite>ham</cite> ordered as a tensorproduct
+on <cite>qubits</cite>. Each qubit should be acted on with the same operator
+by each term or not at all.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>&lt;built-in function array&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vqe.measurelib.sampling_expectation">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">sampling_expectation</code><span class="sig-paren">(</span><em class="sig-param">hamiltonians</em>, <em class="sig-param">bitstrings</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.measurelib.sampling_expectation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mapped wrapper around <code class="docutils literal notranslate"><span class="pre">sampling_expectation_z_base</span></code>.</p>
+<p>A function that computes expectation values of a list of hamiltonians
+w.r.t a list of bitstrings. Assumes, that each pair in
+<code class="docutils literal notranslate"><span class="pre">zip(hamiltonians,</span> <span class="pre">bitstrings)</span></code> is as needed by
+<code class="docutils literal notranslate"><span class="pre">sampling_expectation_z_base</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonians</strong> (<em>List</em><em>[</em><em>PauliSum</em><em>]</em>) – List of PauliSums. Each PauliSum must only consist of mutually
+commuting terms</p></li>
+<li><p><strong>bitstrings</strong> (<em>List</em><em>[</em><em>np.array</em><em>]</em>) – List of the measured bitstrings. Each bitstring must have dimensions
+corresponding to the coresponding PauliSum</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple (expectation_value, standard_deviation)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vqe.measurelib.sampling_expectation_z_base">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">sampling_expectation_z_base</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">bitstrings</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.measurelib.sampling_expectation_z_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the energy expectation value of <code class="docutils literal notranslate"><span class="pre">bitstrings</span></code> w.r.t <code class="docutils literal notranslate"><span class="pre">ham</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function assumes, that all terms in <code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code> commute trivially
+_and_ that the <code class="docutils literal notranslate"><span class="pre">bitstrings</span></code> were measured in their basis.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<em>param</em>) – The hamiltonian</p></li>
+<li><p><strong>bitstrings</strong> (<em>param</em>) – The measurement outcomes. One column per qubit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple (expectation_value, variance/(n-1))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vqe.measurelib.wavefunction_expectation">
+<code class="sig-prename descclassname">vqe.measurelib.</code><code class="sig-name descname">wavefunction_expectation</code><span class="sig-paren">(</span><em class="sig-param">hams_eigs</em>, <em class="sig-param">base_changes</em>, <em class="sig-param">hams_squared_eigs</em>, <em class="sig-param">base_changes_squared</em>, <em class="sig-param">wf</em><span class="sig-paren">)</span><a class="headerlink" href="#vqe.measurelib.wavefunction_expectation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the exp. value and standard dev. of <code class="docutils literal notranslate"><span class="pre">hams</span></code> w.r.t <code class="docutils literal notranslate"><span class="pre">wf</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hams_eigs</strong> (<em>List</em><em>[</em><em>np.array</em><em>]</em>) – A list of arrays of eigenvalues of the PauliSums in the
+commuting decomposition of the original hamiltonian.</p></li>
+<li><p><strong>base_changes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) – A list of functions that apply the neccesary base change
+gates to the wavefunction</p></li>
+<li><p><strong>hams_squared_eigs</strong> (<em>List</em><em>[</em><em>np.array</em><em>]</em>) – The same as <code class="docutils literal notranslate"><span class="pre">hams</span></code>, but for the square of <code class="docutils literal notranslate"><span class="pre">ham</span></code>.</p></li>
+<li><p><strong>base_changes_squared</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) – The same as <code class="docutils literal notranslate"><span class="pre">base_changes</span></code>, but for the square of <code class="docutils literal notranslate"><span class="pre">ham</span></code>.</p></li>
+<li><p><strong>wf</strong> (<em>&lt;built-in function array&gt;</em>) – The wavefunction whose expectation value we want to know.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple containing the expectation value of <code class="docutils literal notranslate"><span class="pre">ham</span></code> and the expectation
+value of <code class="docutils literal notranslate"><span class="pre">ham**2</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[float, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="utilities.html" class="btn btn-neutral float-left" title="VQE and QAOA utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1856 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>QAOA Parametrisations &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="VQE and QAOA utilities" href="utilities.html" />
+    <link rel="prev" title="QAOA cost functions" href="qaoa_cost_function.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+            
+            <img src="_static/Entropica_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">About Entropica Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about_entropica.html">About Entropica Labs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials_overview.html">Overview of tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+</ul>
+<p class="caption"><span class="caption-text">General Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details, conventions, and FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">QAOA Parametrisations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#standard-parameters">Standard Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fourier-parameters">Fourier Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#annealing-parameters">Annealing Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-iterators">Parameter Iterators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>QAOA Parametrisations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/parameters.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="qaoa-parametrisations">
+<h1>QAOA Parametrisations<a class="headerlink" href="#qaoa-parametrisations" title="Permalink to this headline">¶</a></h1>
+<p>We currently offer 7 different parametrisations for QAOA, which can be found in
+the <code class="docutils literal notranslate"><span class="pre">entropica_qaoa.qaoa.parameters</span></code> module. They fall broadly into three categories: The <code class="docutils literal notranslate"><span class="pre">Standard</span></code> classes are parametrisations that have the
+<span class="math notranslate nohighlight">\(\gamma\)</span> ‘s and <span class="math notranslate nohighlight">\(\beta\)</span> ‘s as free parameters, as defined in the
+seminal paper by Farhi <cite>et al</cite> in
+<a class="reference external" href="https://arxiv.org/abs/1411.4028">A Quantum Approximate Optimization Algorithm</a>.
+The <code class="docutils literal notranslate"><span class="pre">Fourier</span></code> classes have the discrete cosine and sine transforms of the <span class="math notranslate nohighlight">\(\gamma\)</span> ‘s respective <span class="math notranslate nohighlight">\(\beta\)</span>’s as free parameters, as proposed by
+Zhou et al. in <a class="reference external" href="https://arxiv.org/abs/1812.01041">Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices</a>.
+Finally, the <code class="docutils literal notranslate"><span class="pre">Annealing</span></code> class is based on the idea of QAOA being a form of discretised, adiabatic annealing. Here the function values <span class="math notranslate nohighlight">\(s(t_i)\)</span>
+at equally spaced times <span class="math notranslate nohighlight">\(t_i\)</span> are the free parameters.</p>
+<p>Except for the <code class="docutils literal notranslate"><span class="pre">Annealing</span></code> parameters, each class also comes in three levels of detail: <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> and <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> offer the <span class="math notranslate nohighlight">\(\gamma\)</span> ‘s and <span class="math notranslate nohighlight">\(\beta\)</span>’s as proposed in above papers. <code class="docutils literal notranslate"><span class="pre">StandardWithBiasParams</span></code> and <code class="docutils literal notranslate"><span class="pre">FourierWithBiasParams</span></code> allow for extra <span class="math notranslate nohighlight">\(\gamma\)</span>’s for possible single-qubit bias terms, resp. their discrete sine transform. Lastly, <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> and <code class="docutils literal notranslate"><span class="pre">FourierExtendedParams</span></code> offer full control by having a seperate set of rotation angles for each term in the cost and mixer Hamiltonians, respective having a seperate set of Fourier coefficients for each term.</p>
+<p>You can always convert parametrisations with fewer degrees of freedom to ones with more using the <code class="docutils literal notranslate"><span class="pre">.from_other_parameters()</span></code> classmethod. The full type
+tree is shown below, where the arrows mark possible conversions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">ExtendedParams</span>   <span class="o">&lt;---------</span> <span class="n">FourierExtendedParams</span>
+          <span class="o">^</span>                         <span class="o">^</span>
+          <span class="o">|</span>                         <span class="o">|</span>
+<span class="n">StandardWithBiasParams</span> <span class="o">&lt;------</span> <span class="n">FourierWithBiasParams</span>
+          <span class="o">^</span>                         <span class="o">^</span>
+          <span class="o">|</span>                         <span class="o">|</span>
+    <span class="n">StandardParams</span>  <span class="o">&lt;-----------</span> <span class="n">FourierParams</span>
+          <span class="o">^</span>
+          <span class="o">|</span>
+    <span class="n">AnnealingParams</span>
+</pre></div>
+</div>
+<div class="section" id="standard-parameters">
+<h2>Standard Parameters<a class="headerlink" href="#standard-parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="qaoa.parameters.StandardParams">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.parameters.</code><code class="sig-name descname">StandardParams</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>QAOA parameters that implement a state preparation circuit with</p>
+<div class="math notranslate nohighlight">
+\[e^{-i \beta_p H_0}
+e^{-i \gamma_p H_c}
+\cdots
+e^{-i \beta_0 H_0}
+e^{-i \gamma_0 H_c}\]</div>
+<p>This corresponds to the parametrization used by Farhi in his
+original paper [<a class="reference external" href="https://arxiv.org/abs/1411.4028">https://arxiv.org/abs/1411.4028</a>]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>betas</strong> (<em>np.array</em>) – 1D array with the betas from above</p></li>
+<li><p><strong>gammas</strong> (<em>np.array</em>) – 1D array with the gamma from above</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>hyperparameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The hyperparameters containing the hamiltonian and the number of steps
+<code class="docutils literal notranslate"><span class="pre">hyperparameters</span> <span class="pre">=</span> <span class="pre">(hamiltonian,</span> <span class="pre">n_steps)</span></code></p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>) – Tuple containing <code class="docutils literal notranslate"><span class="pre">(betas,</span> <span class="pre">gammas)</span></code> with dimensions
+<code class="docutils literal notranslate"><span class="pre">(n_steps,</span> <span class="pre">n_steps)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.empty">
+<em class="property">classmethod </em><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardParams.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that only takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> and
+fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code> via <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hyperparameters</strong> – Same as the hyperparameters argument for <code class="docutils literal notranslate"><span class="pre">cls.__init__()</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Parameter object with the parameters filled by <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.from_AbstractParameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_AbstractParameters</code><span class="sig-paren">(</span><em class="sig-param">abstract_params</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardParams.from_AbstractParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> from an
+existing <code class="docutils literal notranslate"><span class="pre">AbstractQAOAParameter</span></code> object.</p>
+<p>Create a ConcreteQAOAParameters instance from an
+AbstractQAOAParameters instance with hyperparameters from
+<code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and normal parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abstract_params</strong> (<em>AbstractParams</em>) – An AbstractQAOAParameters instance to which to add the parameters</p></li>
+<li><p><strong>parameter</strong> – A tuple containing the parameters. Must be the same as in
+<code class="docutils literal notranslate"><span class="pre">__init__</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> object with the hyperparameters
+taken from <code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and the normal parameters from
+<code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.StandardParams" title="qaoa.parameters.StandardParams">StandardParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.from_other_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_other_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardParams.from_other_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes parameters with less degrees
+of freedom as the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>Type</em><em>[</em><em>AbstractParams</em><em>]</em>) – The input parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The converted paramters s.t. all the rotation angles of the in
+and output parameters are the same.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If all conversion functions for your parametrization are in
+qaoa._parameter_conversions.py and correctly registered for converter
+you don’t need to override this function in its child classes</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.linear_ramp_from_hamiltonian">
+<em class="property">classmethod </em><code class="sig-name descname">linear_ramp_from_hamiltonian</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">n_steps</em>, <em class="sig-param">time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardParams.linear_ramp_from_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that already fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code>.</p>
+<p>Calculate initial parameters from a hamiltonian corresponding to a
+linear ramp annealing schedule and return a <code class="docutils literal notranslate"><span class="pre">QAOAParams</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – <code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code> for which to calculate the initial QAOA parameters.</p></li>
+<li><p><strong>n_steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of timesteps.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Total annealing time. Defaults to <code class="docutils literal notranslate"><span class="pre">0.7*n_steps</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> object with parameters according
+to a linear ramp schedule for <code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.StandardParams" title="qaoa.parameters.StandardParams">StandardParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">ax=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardParams.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p></li>
+<li><p><strong>kwargs</strong> – All remaining keyword arguments are passed forward to the plot
+function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.raw">
+<code class="sig-name descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardParams.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters in a 1D array.</p>
+<p>This 1D array is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The parameters in a 1D array. Has the same output
+format as the expected input of <code class="docutils literal notranslate"><span class="pre">self.update_from_raw</span></code>. Hence
+corresponds to the flattened <cite>parameters</cite> in <cite>__init__()</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.raw_rotation_angles">
+<code class="sig-name descname">raw_rotation_angles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardParams.raw_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flat array of the rotation angles for the memory map for the
+parametric circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns all single rotation angles in the ordering
+<code class="docutils literal notranslate"><span class="pre">(x_rotation_angles,</span> <span class="pre">gamma_singles,</span> <span class="pre">zz_rotation_angles)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">x_rotation_angles</span> <span class="pre">=</span> <span class="pre">(beta_q0_t0,</span> <span class="pre">beta_q1_t0,</span> <span class="pre">...</span> <span class="pre">,</span> <span class="pre">beta_qn_tp)</span></code>
+and the same for <code class="docutils literal notranslate"><span class="pre">z_rotation_angles</span></code> and <code class="docutils literal notranslate"><span class="pre">zz_rotation_angles</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.update_from_raw">
+<code class="sig-name descname">update_from_raw</code><span class="sig-paren">(</span><em class="sig-param">new_values</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardParams.update_from_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all the parameters from a 1D array.</p>
+<p>The input has the same format as the output of <code class="docutils literal notranslate"><span class="pre">self.raw()</span></code>.
+This is useful for <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_values</strong> – A 1D array with the new parameters. Must have length  <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>
+and the ordering of the flattend <code class="docutils literal notranslate"><span class="pre">parameters</span></code> in <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.x_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">x_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.StandardParams.x_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the X-rotation angles.</p>
+<p>1st index goes over n_steps and the 2nd index over the qubits to
+apply X-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.z_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">z_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.StandardParams.z_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the ZZ-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply ZZ-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardParams.zz_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">zz_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.StandardParams.zz_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with Z-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply Z-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qaoa.parameters.StandardWithBiasParams">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.parameters.</code><code class="sig-name descname">StandardWithBiasParams</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>QAOA parameters that implement a state preparation circuit with</p>
+<div class="math notranslate nohighlight">
+\[e^{-i \beta_p H_0}
+e^{-i \gamma_{\textrm{singles}, p} H_{c, \textrm{singles}}}
+e^{-i \gamma_{\textrm{pairs}, p} H_{c, \textrm{pairs}}}
+\cdots
+e^{-i \beta_0 H_0}
+e^{-i \gamma_{\textrm{singles}, 0} H_{c, \textrm{singles}}}
+e^{-i \gamma_{\textrm{pairs}, 0} H_{c, \textrm{pairs}}}\]</div>
+<p>where the cost hamiltonian is split into <span class="math notranslate nohighlight">\(H_{c, \textrm{singles}}\)</span>
+the bias terms, that act on only one qubit, and
+<span class="math notranslate nohighlight">\(H_{c, \textrm{pairs}}\)</span> the coupling terms, that act on two qubits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>betas</strong> (<em>np.array</em>) – A 1D array containing the betas from above for each timestep</p></li>
+<li><p><strong>gammas_pairs</strong> (<em>np.array</em>) – A 1D array containing the gammas_singles from above for each timestep</p></li>
+<li><p><strong>gammas_singles</strong> (<em>np.array</em>) – A 1D array containing the gammas_pairs from above for each timestep</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>hyperparameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The hyperparameters containing the hamiltonian and the number of steps
+<code class="docutils literal notranslate"><span class="pre">hyperparameters</span> <span class="pre">=</span> <span class="pre">(hamiltonian,</span> <span class="pre">n_steps)</span></code></p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>) – Tuple containing <code class="docutils literal notranslate"><span class="pre">(betas,</span> <span class="pre">gammas_singles,</span> <span class="pre">gammas_pairs)</span></code> with
+dimensions <code class="docutils literal notranslate"><span class="pre">(n_steps,</span> <span class="pre">n_steps,</span> <span class="pre">n_steps)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.empty">
+<em class="property">classmethod </em><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that only takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> and
+fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code> via <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hyperparameters</strong> – Same as the hyperparameters argument for <code class="docutils literal notranslate"><span class="pre">cls.__init__()</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Parameter object with the parameters filled by <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.from_AbstractParameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_AbstractParameters</code><span class="sig-paren">(</span><em class="sig-param">abstract_params</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.from_AbstractParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> from an
+existing <code class="docutils literal notranslate"><span class="pre">AbstractQAOAParameter</span></code> object.</p>
+<p>Create a ConcreteQAOAParameters instance from an
+AbstractQAOAParameters instance with hyperparameters from
+<code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and normal parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abstract_params</strong> (<em>AbstractParams</em>) – An AbstractQAOAParameters instance to which to add the parameters</p></li>
+<li><p><strong>parameter</strong> – A tuple containing the parameters. Must be the same as in
+<code class="docutils literal notranslate"><span class="pre">__init__</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An <code class="docutils literal notranslate"><span class="pre">AlternatatingOperatorsQAOAParameters</span></code> object with the
+hyperparameters taken from <code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and the normal
+parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.StandardWithBiasParams" title="qaoa.parameters.StandardWithBiasParams">StandardWithBiasParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.from_other_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_other_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.from_other_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes parameters with less degrees
+of freedom as the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>Type</em><em>[</em><em>AbstractParams</em><em>]</em>) – The input parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The converted paramters s.t. all the rotation angles of the in
+and output parameters are the same.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If all conversion functions for your parametrization are in
+qaoa._parameter_conversions.py and correctly registered for converter
+you don’t need to override this function in its child classes</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.linear_ramp_from_hamiltonian">
+<em class="property">classmethod </em><code class="sig-name descname">linear_ramp_from_hamiltonian</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">n_steps</em>, <em class="sig-param">time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.linear_ramp_from_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that already fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code>.</p>
+<p>Calculate initial parameters from a hamiltonian corresponding to a
+linear ramp annealing schedule and return a <code class="docutils literal notranslate"><span class="pre">QAOAParams</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – <code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code> for which to calculate the initial QAOA parameters.</p></li>
+<li><p><strong>n_steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of timesteps.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Total annealing time. Defaults to <code class="docutils literal notranslate"><span class="pre">0.7*n_steps</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An <cite>AlternatingOperatorsQAOAParameters</cite> object holding all the
+parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.StandardWithBiasParams" title="qaoa.parameters.StandardWithBiasParams">StandardWithBiasParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">ax=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p></li>
+<li><p><strong>kwargs</strong> – All remaining keyword arguments are passed forward to the plot
+function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.raw">
+<code class="sig-name descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters in a 1D array.</p>
+<p>This 1D array is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The parameters in a 1D array. Has the same output
+format as the expected input of <code class="docutils literal notranslate"><span class="pre">self.update_from_raw</span></code>. Hence
+corresponds to the flattened <cite>parameters</cite> in <cite>__init__()</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.raw_rotation_angles">
+<code class="sig-name descname">raw_rotation_angles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.raw_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flat array of the rotation angles for the memory map for the
+parametric circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns all single rotation angles in the ordering
+<code class="docutils literal notranslate"><span class="pre">(x_rotation_angles,</span> <span class="pre">gamma_singles,</span> <span class="pre">zz_rotation_angles)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">x_rotation_angles</span> <span class="pre">=</span> <span class="pre">(beta_q0_t0,</span> <span class="pre">beta_q1_t0,</span> <span class="pre">...</span> <span class="pre">,</span> <span class="pre">beta_qn_tp)</span></code>
+and the same for <code class="docutils literal notranslate"><span class="pre">z_rotation_angles</span></code> and <code class="docutils literal notranslate"><span class="pre">zz_rotation_angles</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.update_from_raw">
+<code class="sig-name descname">update_from_raw</code><span class="sig-paren">(</span><em class="sig-param">new_values</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.update_from_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all the parameters from a 1D array.</p>
+<p>The input has the same format as the output of <code class="docutils literal notranslate"><span class="pre">self.raw()</span></code>.
+This is useful for <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_values</strong> – A 1D array with the new parameters. Must have length  <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>
+and the ordering of the flattend <code class="docutils literal notranslate"><span class="pre">parameters</span></code> in <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.x_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">x_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.x_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the X-rotation angles.</p>
+<p>1st index goes over n_steps and the 2nd index over the qubits to
+apply X-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.z_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">z_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.z_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the ZZ-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply ZZ-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.StandardWithBiasParams.zz_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">zz_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.StandardWithBiasParams.zz_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with Z-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply Z-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qaoa.parameters.ExtendedParams">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.parameters.</code><code class="sig-name descname">ExtendedParams</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>QAOA parameters in their most general form with different angles for each
+operator.</p>
+<p>This means, that at the i-th timestep the evolution hamiltonian is given by</p>
+<div class="math notranslate nohighlight">
+\[H(t_i) = \sum_{\textrm{qubits } j} \beta_{ij} X_j
+       + \sum_{\textrm{qubits } j} \gamma_{\textrm{single } ij} Z_j
+       + \sum_{\textrm{qubit pairs} (jk)} \gamma_{\textrm{pair } i(jk)} Z_j Z_k\]</div>
+<p>and the complete circuit is then</p>
+<div class="math notranslate nohighlight">
+\[U = e^{-i H(t_p)} \cdots e^{-iH(t_1)}.\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>betas</strong> (<em>np.array</em>) – 2D array with the gammas from above for each timestep and qubit.
+1st index goes over the timesteps, 2nd over the qubits.</p></li>
+<li><p><strong>gammas_pairs</strong> (<em>np.array</em>) – 2D array with the gammas_pairs from above for each timestep and coupled
+pair. 1st index goes over timesteps, 2nd over pairs.</p></li>
+<li><p><strong>gammas_singles</strong> (<em>np.array</em>) – 2D array with the gammas_singles from above for each timestep and bias
+term. 1st index goes over timesteps, 2nd over bias terms.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>hyperparameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The hyperparameters containing the hamiltonian and the number of steps
+<code class="docutils literal notranslate"><span class="pre">hyperparameters</span> <span class="pre">=</span> <span class="pre">(hamiltonian,</span> <span class="pre">n_steps)</span></code></p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>) – Tuple containing <code class="docutils literal notranslate"><span class="pre">(betas,</span> <span class="pre">gammas_singles,</span> <span class="pre">gammas_pairs)</span></code> with dimensions
+<code class="docutils literal notranslate"><span class="pre">((n_steps</span> <span class="pre">x</span> <span class="pre">nqubits),</span> <span class="pre">(n_steps</span> <span class="pre">x</span> <span class="pre">nsingle_terms),</span> <span class="pre">(n_steps</span> <span class="pre">x</span> <span class="pre">npair_terms))</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.empty">
+<em class="property">classmethod </em><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that only takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> and
+fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code> via <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hyperparameters</strong> – Same as the hyperparameters argument for <code class="docutils literal notranslate"><span class="pre">cls.__init__()</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Parameter object with the parameters filled by <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.from_AbstractParameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_AbstractParameters</code><span class="sig-paren">(</span><em class="sig-param">abstract_params</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams.from_AbstractParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> from an
+existing <code class="docutils literal notranslate"><span class="pre">AbstractQAOAParameter</span></code> object.</p>
+<p>Create a ConcreteQAOAParameters instance from an
+AbstractQAOAParameters instance with hyperparameters from
+<code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and normal parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abstract_params</strong> (<em>AbstractParams</em>) – An AbstractQAOAParameters instance to which to add the parameters</p></li>
+<li><p><strong>parameter</strong> – A tuple containing the parameters. Must be the same as in
+<code class="docutils literal notranslate"><span class="pre">__init__</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">GeneralQAOAParameters</span></code> object with the hyperparameters taken from
+<code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and the normal parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.ExtendedParams" title="qaoa.parameters.ExtendedParams">ExtendedParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.from_other_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_other_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams.from_other_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes parameters with less degrees
+of freedom as the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>Type</em><em>[</em><em>AbstractParams</em><em>]</em>) – The input parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The converted paramters s.t. all the rotation angles of the in
+and output parameters are the same.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If all conversion functions for your parametrization are in
+qaoa._parameter_conversions.py and correctly registered for converter
+you don’t need to override this function in its child classes</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constraints on the parameters for constrained parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of tuples (0, upper_boundary) of constraints on the
+parameters s.t. we are exploiting the periodicity of the cost
+function. Useful for constrained optimizers.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[Tuple]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.linear_ramp_from_hamiltonian">
+<em class="property">classmethod </em><code class="sig-name descname">linear_ramp_from_hamiltonian</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">n_steps</em>, <em class="sig-param">time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams.linear_ramp_from_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that already fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code>.</p>
+<p>Calculate initial parameters from a hamiltonian corresponding to a
+linear ramp annealing schedule and return a <code class="docutils literal notranslate"><span class="pre">QAOAParams</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – <code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code> for which to calculate the initial QAOA parameters.</p></li>
+<li><p><strong>n_steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of timesteps.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Total annealing time. Defaults to <code class="docutils literal notranslate"><span class="pre">0.7*n_steps</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The initial parameters according to a linear ramp for
+<code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.ExtendedParams" title="qaoa.parameters.ExtendedParams">ExtendedParams</a></p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Refactor this s.t. it supers from __init__</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">ax=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p></li>
+<li><p><strong>kwargs</strong> – All remaining keyword arguments are passed forward to the plot
+function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.raw">
+<code class="sig-name descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters in a 1D array.</p>
+<p>This 1D array is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The parameters in a 1D array. Has the same output
+format as the expected input of <code class="docutils literal notranslate"><span class="pre">self.update_from_raw</span></code>. Hence
+corresponds to the flattened <cite>parameters</cite> in <cite>__init__()</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.raw_rotation_angles">
+<code class="sig-name descname">raw_rotation_angles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams.raw_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flat array of the rotation angles for the memory map for the
+parametric circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns all single rotation angles in the ordering
+<code class="docutils literal notranslate"><span class="pre">(x_rotation_angles,</span> <span class="pre">gamma_singles,</span> <span class="pre">zz_rotation_angles)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">x_rotation_angles</span> <span class="pre">=</span> <span class="pre">(beta_q0_t0,</span> <span class="pre">beta_q1_t0,</span> <span class="pre">...</span> <span class="pre">,</span> <span class="pre">beta_qn_tp)</span></code>
+and the same for <code class="docutils literal notranslate"><span class="pre">z_rotation_angles</span></code> and <code class="docutils literal notranslate"><span class="pre">zz_rotation_angles</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.update_from_raw">
+<code class="sig-name descname">update_from_raw</code><span class="sig-paren">(</span><em class="sig-param">new_values</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.ExtendedParams.update_from_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all the parameters from a 1D array.</p>
+<p>The input has the same format as the output of <code class="docutils literal notranslate"><span class="pre">self.raw()</span></code>.
+This is useful for <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_values</strong> – A 1D array with the new parameters. Must have length  <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>
+and the ordering of the flattend <code class="docutils literal notranslate"><span class="pre">parameters</span></code> in <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.x_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">x_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.ExtendedParams.x_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the X-rotation angles.</p>
+<p>1st index goes over n_steps and the 2nd index over the qubits to
+apply X-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.z_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">z_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.ExtendedParams.z_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the ZZ-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply ZZ-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.ExtendedParams.zz_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">zz_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.ExtendedParams.zz_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with Z-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply Z-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="fourier-parameters">
+<h2>Fourier Parameters<a class="headerlink" href="#fourier-parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="qaoa.parameters.FourierParams">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.parameters.</code><code class="sig-name descname">FourierParams</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>The QAOA parameters as the sine/cosine transform of the original gammas
+and x_rotation_angles. See “Quantum Approximate Optimization Algorithm:
+Performance, Mechanism, and Implementation on Near-Term Devices”
+[<a class="reference external" href="https://arxiv.org/abs/1812.01041">https://arxiv.org/abs/1812.01041</a>] for a detailed description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q</strong> (<em>int</em>) – The number of coefficients for the discrete sine and cosine transforms
+below</p></li>
+<li><p><strong>u</strong> (<em>np.array</em>) – The discrete sine transform of the <code class="docutils literal notranslate"><span class="pre">gammas</span></code> in
+<code class="docutils literal notranslate"><span class="pre">StandardParams</span></code></p></li>
+<li><p><strong>v</strong> (<em>np.array</em>) – The discrete cosine transform of the <code class="docutils literal notranslate"><span class="pre">betas</span></code> in
+<code class="docutils literal notranslate"><span class="pre">StandardParams</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>hyperparameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The hyperparameters containing the hamiltonian, the number of steps
+and the total annealing time
+<code class="docutils literal notranslate"><span class="pre">hyperparameters</span> <span class="pre">=</span> <span class="pre">(hamiltonian,</span> <span class="pre">n_steps,</span> <span class="pre">q)</span></code>.
+<code class="docutils literal notranslate"><span class="pre">q</span></code> is the number of fourier coefficients. For <code class="docutils literal notranslate"><span class="pre">q</span> <span class="pre">==</span> <span class="pre">n_steps</span></code> we
+have the full expressivity of <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code>.
+More are redundant.</p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>) – Tuple containing <code class="docutils literal notranslate"><span class="pre">(v,</span> <span class="pre">u)</span></code> with dimensions
+<code class="docutils literal notranslate"><span class="pre">(q,</span> <span class="pre">q)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.empty">
+<em class="property">classmethod </em><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierParams.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that only takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> and
+fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code> via <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hyperparameters</strong> – Same as the hyperparameters argument for <code class="docutils literal notranslate"><span class="pre">cls.__init__()</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Parameter object with the parameters filled by <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.from_AbstractParameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_AbstractParameters</code><span class="sig-paren">(</span><em class="sig-param">abstract_params</em>, <em class="sig-param">parameters</em>, <em class="sig-param">q=4</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierParams.from_AbstractParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> from an
+existing <code class="docutils literal notranslate"><span class="pre">AbstractQAOAParameter</span></code> object.</p>
+<p>Create a ConcreteQAOAParameters instance from an
+AbstractQAOAParameters instance with hyperparameters from
+<code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and normal parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abstract_params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractParams</span></code>) – An AbstractQAOAParameters instance to which to add the parameters</p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>) – Same as <code class="docutils literal notranslate"><span class="pre">parameters</span></code> in <code class="docutils literal notranslate"><span class="pre">.__init__()</span></code></p></li>
+<li><p><strong>q</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of fourier coefficients. Defaults to 4</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> object with the hyperparameters taken
+from <code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and the normal parameters from
+<code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.FourierParams" title="qaoa.parameters.FourierParams">FourierParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.from_other_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_other_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierParams.from_other_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes parameters with less degrees
+of freedom as the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>Type</em><em>[</em><em>AbstractParams</em><em>]</em>) – The input parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The converted paramters s.t. all the rotation angles of the in
+and output parameters are the same.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If all conversion functions for your parametrization are in
+qaoa._parameter_conversions.py and correctly registered for converter
+you don’t need to override this function in its child classes</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.linear_ramp_from_hamiltonian">
+<em class="property">classmethod </em><code class="sig-name descname">linear_ramp_from_hamiltonian</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">n_steps</em>, <em class="sig-param">q=4</em>, <em class="sig-param">time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierParams.linear_ramp_from_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOTE: rather than implement an exact linear schedule,
+this instead implements the lowest frequency component,
+i.e. a sine curve for gammas, and a cosine for betas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – The hamiltonian</p></li>
+<li><p><strong>n_steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of timesteps</p></li>
+<li><p><strong>q</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of Fourier coefficients. Defaults to 4</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – total time. Set to <code class="docutils literal notranslate"><span class="pre">0.7*n_steps</span></code> if <code class="docutils literal notranslate"><span class="pre">None</span></code> is passed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">FourierParams</span></code> object with initial parameters
+corresponding to a the 0th order Fourier component
+(a sine curve for gammas, cosine for betas)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.FourierParams" title="qaoa.parameters.FourierParams">FourierParams</a></p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Make a more informed choice of the default value for <code class="docutils literal notranslate"><span class="pre">q</span></code>. Probably
+depending on <code class="docutils literal notranslate"><span class="pre">n_qubits</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">ax=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierParams.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p></li>
+<li><p><strong>kwargs</strong> – All remaining keyword arguments are passed forward to the plot
+function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.raw">
+<code class="sig-name descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierParams.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters in a 1D array.</p>
+<p>This 1D array is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The parameters in a 1D array. Has the same output
+format as the expected input of <code class="docutils literal notranslate"><span class="pre">self.update_from_raw</span></code>. Hence
+corresponds to the flattened <cite>parameters</cite> in <cite>__init__()</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.raw_rotation_angles">
+<code class="sig-name descname">raw_rotation_angles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierParams.raw_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flat array of the rotation angles for the memory map for the
+parametric circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns all single rotation angles in the ordering
+<code class="docutils literal notranslate"><span class="pre">(x_rotation_angles,</span> <span class="pre">gamma_singles,</span> <span class="pre">zz_rotation_angles)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">x_rotation_angles</span> <span class="pre">=</span> <span class="pre">(beta_q0_t0,</span> <span class="pre">beta_q1_t0,</span> <span class="pre">...</span> <span class="pre">,</span> <span class="pre">beta_qn_tp)</span></code>
+and the same for <code class="docutils literal notranslate"><span class="pre">z_rotation_angles</span></code> and <code class="docutils literal notranslate"><span class="pre">zz_rotation_angles</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.update_from_raw">
+<code class="sig-name descname">update_from_raw</code><span class="sig-paren">(</span><em class="sig-param">new_values</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierParams.update_from_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all the parameters from a 1D array.</p>
+<p>The input has the same format as the output of <code class="docutils literal notranslate"><span class="pre">self.raw()</span></code>.
+This is useful for <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_values</strong> – A 1D array with the new parameters. Must have length  <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>
+and the ordering of the flattend <code class="docutils literal notranslate"><span class="pre">parameters</span></code> in <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.x_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">x_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.FourierParams.x_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the X-rotation angles.</p>
+<p>1st index goes over n_steps and the 2nd index over the qubits to
+apply X-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.z_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">z_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.FourierParams.z_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the ZZ-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply ZZ-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierParams.zz_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">zz_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.FourierParams.zz_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with Z-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply Z-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qaoa.parameters.FourierWithBiasParams">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.parameters.</code><code class="sig-name descname">FourierWithBiasParams</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>The QAOA parameters as the sine/cosine transform of the original gammas
+and x_rotation_angles. See “Quantum Approximate Optimization Algorithm:
+Performance, Mechanism, and Implementation on Near-Term Devices”
+[<a class="reference external" href="https://arxiv.org/abs/1812.01041">https://arxiv.org/abs/1812.01041</a>] for a detailed description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q</strong> (<em>int</em>) – The number of coefficients for the discrete sine and cosine transforms
+below</p></li>
+<li><p><strong>u_pairs</strong> (<em>np.array</em>) – The discrete sine transform of the <code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code> in
+<code class="docutils literal notranslate"><span class="pre">StandardWithBiasParams</span></code></p></li>
+<li><p><strong>u_singles</strong> (<em>np.array</em>) – The discrete sine transform of the <code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code> in
+<code class="docutils literal notranslate"><span class="pre">StandardWithBiasParams</span></code></p></li>
+<li><p><strong>v</strong> (<em>np.array</em>) – The discrete cosine transform of the betas in
+<code class="docutils literal notranslate"><span class="pre">StandardWithBiasParams</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>hyperparameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The hyperparameters containing the hamiltonian, the number of steps
+and the total annealing time
+<code class="docutils literal notranslate"><span class="pre">hyperparameters</span> <span class="pre">=</span> <span class="pre">(hamiltonian,</span> <span class="pre">n_steps,</span> <span class="pre">q)</span></code>.
+<code class="docutils literal notranslate"><span class="pre">q</span></code> is the number of fourier coefficients. For <code class="docutils literal notranslate"><span class="pre">q</span> <span class="pre">==</span> <span class="pre">n_steps</span></code> we
+have the full expressivity of <code class="docutils literal notranslate"><span class="pre">StandardWithBiasParams</span></code>.
+More are redundant.</p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>) – Tuple containing <code class="docutils literal notranslate"><span class="pre">(v,</span> <span class="pre">u_singles,</span> <span class="pre">u_pairs)</span></code> with dimensions
+<code class="docutils literal notranslate"><span class="pre">(q,</span> <span class="pre">q,</span> <span class="pre">q)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.empty">
+<em class="property">classmethod </em><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that only takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> and
+fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code> via <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hyperparameters</strong> – Same as the hyperparameters argument for <code class="docutils literal notranslate"><span class="pre">cls.__init__()</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Parameter object with the parameters filled by <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.from_AbstractParameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_AbstractParameters</code><span class="sig-paren">(</span><em class="sig-param">abstract_params</em>, <em class="sig-param">parameters</em>, <em class="sig-param">q=4</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.from_AbstractParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> from an
+existing <code class="docutils literal notranslate"><span class="pre">AbstractQAOAParameter</span></code> object.</p>
+<p>Create a ConcreteQAOAParameters instance from an
+AbstractQAOAParameters instance with hyperparameters from
+<code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and normal parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abstract_params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractParams</span></code>) – An AbstractQAOAParameters instance to which to add the parameters</p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>) – Same as <code class="docutils literal notranslate"><span class="pre">parameters</span></code> in <code class="docutils literal notranslate"><span class="pre">.__init__()</span></code></p></li>
+<li><p><strong>q</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of fourier coefficients. Defaults to 4</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">FourierWithBiasParams</span></code> object with the hyperparameters taken
+from <code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and the normal parameters from
+<code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.FourierWithBiasParams" title="qaoa.parameters.FourierWithBiasParams">FourierWithBiasParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.from_other_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_other_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.from_other_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes parameters with less degrees
+of freedom as the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>Type</em><em>[</em><em>AbstractParams</em><em>]</em>) – The input parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The converted paramters s.t. all the rotation angles of the in
+and output parameters are the same.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If all conversion functions for your parametrization are in
+qaoa._parameter_conversions.py and correctly registered for converter
+you don’t need to override this function in its child classes</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.linear_ramp_from_hamiltonian">
+<em class="property">classmethod </em><code class="sig-name descname">linear_ramp_from_hamiltonian</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">n_steps</em>, <em class="sig-param">q=4</em>, <em class="sig-param">time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.linear_ramp_from_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that already fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code>.</p>
+<p>Calculate initial parameters from a hamiltonian corresponding to a
+linear ramp annealing schedule and return a <code class="docutils literal notranslate"><span class="pre">QAOAParams</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – The hamiltonian</p></li>
+<li><p><strong>n_steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of timesteps</p></li>
+<li><p><strong>q</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of Fourier coefficients. Defaults to 4</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – total time. Set to <code class="docutils literal notranslate"><span class="pre">0.7*n_steps</span></code> if <code class="docutils literal notranslate"><span class="pre">None</span></code> is passed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">FourierWithBiasParams</span></code> object with initial parameters
+corresponding to a linear ramp annealing schedule</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.FourierWithBiasParams" title="qaoa.parameters.FourierWithBiasParams">FourierWithBiasParams</a></p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Make a more informed choice of the default value for <code class="docutils literal notranslate"><span class="pre">q</span></code>. Probably
+depending on <code class="docutils literal notranslate"><span class="pre">n_qubits</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">ax=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p></li>
+<li><p><strong>kwargs</strong> – All remaining keyword arguments are passed forward to the plot
+function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.raw">
+<code class="sig-name descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters in a 1D array.</p>
+<p>This 1D array is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The parameters in a 1D array. Has the same output
+format as the expected input of <code class="docutils literal notranslate"><span class="pre">self.update_from_raw</span></code>. Hence
+corresponds to the flattened <cite>parameters</cite> in <cite>__init__()</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.raw_rotation_angles">
+<code class="sig-name descname">raw_rotation_angles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.raw_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flat array of the rotation angles for the memory map for the
+parametric circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns all single rotation angles in the ordering
+<code class="docutils literal notranslate"><span class="pre">(x_rotation_angles,</span> <span class="pre">gamma_singles,</span> <span class="pre">zz_rotation_angles)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">x_rotation_angles</span> <span class="pre">=</span> <span class="pre">(beta_q0_t0,</span> <span class="pre">beta_q1_t0,</span> <span class="pre">...</span> <span class="pre">,</span> <span class="pre">beta_qn_tp)</span></code>
+and the same for <code class="docutils literal notranslate"><span class="pre">z_rotation_angles</span></code> and <code class="docutils literal notranslate"><span class="pre">zz_rotation_angles</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.update_from_raw">
+<code class="sig-name descname">update_from_raw</code><span class="sig-paren">(</span><em class="sig-param">new_values</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.update_from_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all the parameters from a 1D array.</p>
+<p>The input has the same format as the output of <code class="docutils literal notranslate"><span class="pre">self.raw()</span></code>.
+This is useful for <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_values</strong> – A 1D array with the new parameters. Must have length  <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>
+and the ordering of the flattend <code class="docutils literal notranslate"><span class="pre">parameters</span></code> in <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.x_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">x_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.x_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the X-rotation angles.</p>
+<p>1st index goes over n_steps and the 2nd index over the qubits to
+apply X-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.z_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">z_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.z_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the ZZ-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply ZZ-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierWithBiasParams.zz_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">zz_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.FourierWithBiasParams.zz_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with Z-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply Z-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qaoa.parameters.FourierExtendedParams">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.parameters.</code><code class="sig-name descname">FourierExtendedParams</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Fourier pendant to ExtendedParams.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q</strong> (<em>int</em>) – The number of coefficients for the discrete sine and cosine transforms
+below</p></li>
+<li><p><strong>v</strong> (<em>np.array</em>) – The discrete cosine transform of the <code class="docutils literal notranslate"><span class="pre">betas</span></code> in <code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code></p></li>
+<li><p><strong>u_singles</strong> (<em>np.array</em>) – The discrete sine transform of the <code class="docutils literal notranslate"><span class="pre">gammas_singles</span></code> in
+<code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code></p></li>
+<li><p><strong>u_pairs</strong> (<em>np.array</em>) – The discrete sine transform of the <code class="docutils literal notranslate"><span class="pre">gammas_pairs</span></code> in
+<code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>hyperparameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The hyperparameters containing the hamiltonian and the number of steps
+and the number of fourier coefficients
+<code class="docutils literal notranslate"><span class="pre">hyperparameters</span> <span class="pre">=</span> <span class="pre">(hamiltonian,</span> <span class="pre">n_steps,</span> <span class="pre">q)</span></code></p></li>
+<li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>) – Tuple containing <code class="docutils literal notranslate"><span class="pre">(v,</span> <span class="pre">u_singles,</span> <span class="pre">u_pairs)</span></code> with dimensions
+<code class="docutils literal notranslate"><span class="pre">((q</span> <span class="pre">x</span> <span class="pre">nqubits),</span> <span class="pre">(q</span> <span class="pre">x</span> <span class="pre">nsingle_terms),</span> <span class="pre">(q</span> <span class="pre">x</span> <span class="pre">npair_terms))</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.empty">
+<em class="property">classmethod </em><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that only takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> and
+fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code> via <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hyperparameters</strong> – Same as the hyperparameters argument for <code class="docutils literal notranslate"><span class="pre">cls.__init__()</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Parameter object with the parameters filled by <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.from_AbstractParameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_AbstractParameters</code><span class="sig-paren">(</span><em class="sig-param">abstract_params</em>, <em class="sig-param">parameters</em>, <em class="sig-param">q=4</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.from_AbstractParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> from an
+existing <code class="docutils literal notranslate"><span class="pre">AbstractQAOAParameter</span></code> object.</p>
+<p>Create a ConcreteQAOAParameters instance from an
+AbstractQAOAParameters instance with hyperparameters from
+<code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and normal parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abstract_params</strong> (<em>AbstractParams</em>) – An AbstractQAOAParameters instance to which to add the parameters</p></li>
+<li><p><strong>parameter</strong> – A tuple containing the parameters. Must be the same as in
+<code class="docutils literal notranslate"><span class="pre">__init__</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">FourierExtendedParams</span></code> object with the hyperparameters taken
+from <code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and the normal parameters from
+<code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.FourierExtendedParams" title="qaoa.parameters.FourierExtendedParams">FourierExtendedParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.from_other_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_other_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.from_other_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes parameters with less degrees
+of freedom as the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>Type</em><em>[</em><em>AbstractParams</em><em>]</em>) – The input parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The converted paramters s.t. all the rotation angles of the in
+and output parameters are the same.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If all conversion functions for your parametrization are in
+qaoa._parameter_conversions.py and correctly registered for converter
+you don’t need to override this function in its child classes</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.linear_ramp_from_hamiltonian">
+<em class="property">classmethod </em><code class="sig-name descname">linear_ramp_from_hamiltonian</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">n_steps</em>, <em class="sig-param">q=4</em>, <em class="sig-param">time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.linear_ramp_from_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that already fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code>.</p>
+<p>Calculate initial parameters from a hamiltonian corresponding to a
+linear ramp annealing schedule and return a <code class="docutils literal notranslate"><span class="pre">QAOAParams</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – <code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code> for which to calculate the initial QAOA parameters.</p></li>
+<li><p><strong>n_steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of timesteps.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Total annealing time. Defaults to <code class="docutils literal notranslate"><span class="pre">0.7*n_steps</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The initial parameters according to a linear ramp for
+<code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.FourierExtendedParams" title="qaoa.parameters.FourierExtendedParams">FourierExtendedParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">ax=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p></li>
+<li><p><strong>kwargs</strong> – All remaining keyword arguments are passed forward to the plot
+function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.raw">
+<code class="sig-name descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters in a 1D array.</p>
+<p>This 1D array is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The parameters in a 1D array. Has the same output
+format as the expected input of <code class="docutils literal notranslate"><span class="pre">self.update_from_raw</span></code>. Hence
+corresponds to the flattened <cite>parameters</cite> in <cite>__init__()</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.raw_rotation_angles">
+<code class="sig-name descname">raw_rotation_angles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.raw_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flat array of the rotation angles for the memory map for the
+parametric circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns all single rotation angles in the ordering
+<code class="docutils literal notranslate"><span class="pre">(x_rotation_angles,</span> <span class="pre">gamma_singles,</span> <span class="pre">zz_rotation_angles)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">x_rotation_angles</span> <span class="pre">=</span> <span class="pre">(beta_q0_t0,</span> <span class="pre">beta_q1_t0,</span> <span class="pre">...</span> <span class="pre">,</span> <span class="pre">beta_qn_tp)</span></code>
+and the same for <code class="docutils literal notranslate"><span class="pre">z_rotation_angles</span></code> and <code class="docutils literal notranslate"><span class="pre">zz_rotation_angles</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.update_from_raw">
+<code class="sig-name descname">update_from_raw</code><span class="sig-paren">(</span><em class="sig-param">new_values</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.update_from_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all the parameters from a 1D array.</p>
+<p>The input has the same format as the output of <code class="docutils literal notranslate"><span class="pre">self.raw()</span></code>.
+This is useful for <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_values</strong> – A 1D array with the new parameters. Must have length  <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>
+and the ordering of the flattend <code class="docutils literal notranslate"><span class="pre">parameters</span></code> in <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.x_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">x_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.x_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the X-rotation angles.</p>
+<p>1st index goes over n_steps and the 2nd index over the qubits to
+apply X-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.z_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">z_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.z_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the ZZ-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply ZZ-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.FourierExtendedParams.zz_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">zz_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.FourierExtendedParams.zz_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with Z-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply Z-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="annealing-parameters">
+<h2>Annealing Parameters<a class="headerlink" href="#annealing-parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="qaoa.parameters.AnnealingParams">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.parameters.</code><code class="sig-name descname">AnnealingParams</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AnnealingParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>QAOA parameters that implement a state preparation circuit of the form</p>
+<div class="math notranslate nohighlight">
+\[U = e^{-i (1-s(t_p)) H_M \Delta t} e^{-i s(t_p) H_C \Delta t} \cdots e^{-i(1-s(t_1)H_M \Delta t} e^{-i s(t_1) H_C \Delta t}\]</div>
+<p>where the <span class="math notranslate nohighlight">\(s(t_i) =: s_i\)</span> are the variable parameters and
+<span class="math notranslate nohighlight">\(\Delta t= \frac{T}{N}\)</span>.
+So the schedule is specified by specifying s(t) at evenly spaced timesteps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><p><strong>schedule</strong> (<em>np.array</em>) – An 1D array holding the values of the schedule function at each timestep.</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>hyperparameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The hyperparameters containing the hamiltonian, the number of steps
+and the total annealing time <code class="docutils literal notranslate"><span class="pre">hyperparameters</span> <span class="pre">=</span> <span class="pre">(hamiltonian,</span>
+<span class="pre">n_steps,</span> <span class="pre">time)</span></code></p></li>
+<li><p><strong>parameters</strong> (<em>Tuple</em>) – Tuple containing <code class="docutils literal notranslate"><span class="pre">(schedule</span> <span class="pre">values)</span></code> of length <code class="docutils literal notranslate"><span class="pre">n_steps</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.empty">
+<em class="property">classmethod </em><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AnnealingParams.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that only takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> and
+fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code> via <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hyperparameters</strong> – Same as the hyperparameters argument for <code class="docutils literal notranslate"><span class="pre">cls.__init__()</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Parameter object with the parameters filled by <code class="docutils literal notranslate"><span class="pre">np.empty</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.from_AbstractParameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_AbstractParameters</code><span class="sig-paren">(</span><em class="sig-param">abstract_params</em>, <em class="sig-param">parameters</em>, <em class="sig-param">time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AnnealingParams.from_AbstractParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes <code class="docutils literal notranslate"><span class="pre">hyperparameters</span></code> from an
+existing <code class="docutils literal notranslate"><span class="pre">AbstractQAOAParameter</span></code> object.</p>
+<p>Create a ConcreteQAOAParameters instance from an
+AbstractQAOAParameters instance with hyperparameters from
+<code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and normal parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abstract_params</strong> (<em>AbstractParams</em>) – An AbstractQAOAParameters instance to which to add the parameters</p></li>
+<li><p><strong>parameter</strong> – A tuple containing the parameters. Must be the same as in
+<code class="docutils literal notranslate"><span class="pre">__init__</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An <code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code> object with the hyperparameters taken from
+<code class="docutils literal notranslate"><span class="pre">abstract_params</span></code> and the normal parameters from <code class="docutils literal notranslate"><span class="pre">parameters</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.AnnealingParams" title="qaoa.parameters.AnnealingParams">AnnealingParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.from_other_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">from_other_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AnnealingParams.from_other_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that takes parameters with less degrees
+of freedom as the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>Type</em><em>[</em><em>AbstractParams</em><em>]</em>) – The input parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The converted paramters s.t. all the rotation angles of the in
+and output parameters are the same.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Type[AbstractParams]</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If all conversion functions for your parametrization are in
+qaoa._parameter_conversions.py and correctly registered for converter
+you don’t need to override this function in its child classes</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.linear_ramp_from_hamiltonian">
+<em class="property">classmethod </em><code class="sig-name descname">linear_ramp_from_hamiltonian</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em>, <em class="sig-param">n_steps</em>, <em class="sig-param">time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AnnealingParams.linear_ramp_from_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative to <code class="docutils literal notranslate"><span class="pre">__init__</span></code> that already fills <code class="docutils literal notranslate"><span class="pre">parameters</span></code>.</p>
+<p>Calculate initial parameters from a hamiltonian corresponding to a
+linear ramp annealing schedule and return a <code class="docutils literal notranslate"><span class="pre">QAOAParams</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – <code class="docutils literal notranslate"><span class="pre">hamiltonian</span></code> for which to calculate the initial QAOA parameters.</p></li>
+<li><p><strong>n_steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of timesteps.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Total annealing time. Defaults to <code class="docutils literal notranslate"><span class="pre">0.7*n_steps</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An <code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code> object corresponding to
+a linear ramp schedule.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qaoa.parameters.AnnealingParams" title="qaoa.parameters.AnnealingParams">AnnealingParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">ax=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AnnealingParams.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots <code class="docutils literal notranslate"><span class="pre">self</span></code> in a sensible way to the canvas <code class="docutils literal notranslate"><span class="pre">ax</span></code>, if provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes._subplots.AxesSubplot</em>) – The canvas to plot itself on</p></li>
+<li><p><strong>kwargs</strong> – All remaining keyword arguments are passed forward to the plot
+function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.raw">
+<code class="sig-name descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AnnealingParams.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters in a 1D array.</p>
+<p>This 1D array is needed by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The parameters in a 1D array. Has the same output
+format as the expected input of <code class="docutils literal notranslate"><span class="pre">self.update_from_raw</span></code>. Hence
+corresponds to the flattened <cite>parameters</cite> in <cite>__init__()</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.raw_rotation_angles">
+<code class="sig-name descname">raw_rotation_angles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AnnealingParams.raw_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flat array of the rotation angles for the memory map for the
+parametric circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns all single rotation angles in the ordering
+<code class="docutils literal notranslate"><span class="pre">(x_rotation_angles,</span> <span class="pre">gamma_singles,</span> <span class="pre">zz_rotation_angles)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">x_rotation_angles</span> <span class="pre">=</span> <span class="pre">(beta_q0_t0,</span> <span class="pre">beta_q1_t0,</span> <span class="pre">...</span> <span class="pre">,</span> <span class="pre">beta_qn_tp)</span></code>
+and the same for <code class="docutils literal notranslate"><span class="pre">z_rotation_angles</span></code> and <code class="docutils literal notranslate"><span class="pre">zz_rotation_angles</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.update_from_raw">
+<code class="sig-name descname">update_from_raw</code><span class="sig-paren">(</span><em class="sig-param">new_values</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.AnnealingParams.update_from_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all the parameters from a 1D array.</p>
+<p>The input has the same format as the output of <code class="docutils literal notranslate"><span class="pre">self.raw()</span></code>.
+This is useful for <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> which expects
+the parameters that need to be optimized to be a 1D array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_values</strong> – A 1D array with the new parameters. Must have length  <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>
+and the ordering of the flattend <code class="docutils literal notranslate"><span class="pre">parameters</span></code> in <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.x_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">x_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.AnnealingParams.x_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the X-rotation angles.</p>
+<p>1st index goes over n_steps and the 2nd index over the qubits to
+apply X-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.z_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">z_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.AnnealingParams.z_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with the ZZ-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply ZZ-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qaoa.parameters.AnnealingParams.zz_rotation_angles">
+<em class="property">property </em><code class="sig-name descname">zz_rotation_angles</code><a class="headerlink" href="#qaoa.parameters.AnnealingParams.zz_rotation_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D array with Z-rotation angles.</p>
+<p>1st index goes over the n_steps and the 2nd index over the qubit
+pairs, to apply Z-rotations on. These are needed by <code class="docutils literal notranslate"><span class="pre">qaoa.cost_function.make_qaoa_memory_map</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="parameter-iterators">
+<h2>Parameter Iterators<a class="headerlink" href="#parameter-iterators" title="Permalink to this headline">¶</a></h2>
+<p>To facilitate iterating one or more of the free parameters over a given range
+(e.g. for landscape plots) we also provide a way to build Iterables that leave
+all parameters except one fixed. The one is iterated over a range specified by the user.</p>
+<dl class="class">
+<dt id="qaoa.parameters.QAOAParameterIterator">
+<em class="property">class </em><code class="sig-prename descclassname">qaoa.parameters.</code><code class="sig-name descname">QAOAParameterIterator</code><span class="sig-paren">(</span><em class="sig-param">qaoa_params</em>, <em class="sig-param">the_parameter</em>, <em class="sig-param">the_range</em><span class="sig-paren">)</span><a class="headerlink" href="#qaoa.parameters.QAOAParameterIterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>An iterator to sweep one parameter over a range in a QAOAParameter object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qaoa_params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractParams</span></code>]) – The initial QAOA parameters, where one of them is swept over</p></li>
+<li><p><strong>the_parameter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – A string specifying, which parameter should be varied. It has to be
+of the form <code class="docutils literal notranslate"><span class="pre">&lt;attr_name&gt;[i]</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;attr_name&gt;</span></code> is the name
+of the _internal_ list and <code class="docutils literal notranslate"><span class="pre">i</span></code> the index, at which it sits. E.g.
+if <code class="docutils literal notranslate"><span class="pre">qaoa_params</span></code> is of type <code class="docutils literal notranslate"><span class="pre">AnnealingParams</span></code>
+and  we want to vary over the second timestep, it is
+<code class="docutils literal notranslate"><span class="pre">the_parameter</span> <span class="pre">=</span> <span class="pre">&quot;times[1]&quot;</span></code>.</p></li>
+<li><p><strong>the_range</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The range, that <code class="docutils literal notranslate"><span class="pre">the_parameter</span></code> should be varied over</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Add checks, that the number of indices in <code class="docutils literal notranslate"><span class="pre">the_parameter</span></code> matches
+the dimensions of <code class="docutils literal notranslate"><span class="pre">the_parameter</span></code></p></li>
+<li><p>Add checks, that the index is not too large</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<p>Assume qaoa_params is of type <code class="docutils literal notranslate"><span class="pre">StandardWithBiasParams</span></code> and
+has <cite>n_steps &gt;= 2</cite>. Then the following code produces a loop that
+sweeps <code class="docutils literal notranslate"><span class="pre">gammas_singles[1]</span></code> over the range <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code> in 4 steps:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">the_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span>
+<span class="n">the_parameter</span> <span class="o">=</span> <span class="s2">&quot;gammas_singles[1]&quot;</span>
+<span class="n">param_iterator</span> <span class="o">=</span> <span class="n">QAOAParameterIterator</span><span class="p">(</span><span class="n">qaoa_params</span><span class="p">,</span> <span class="n">the_parameter</span><span class="p">,</span> <span class="n">the_range</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">param_iterator</span><span class="p">:</span>
+    <span class="c1"># do what ever needs to be done.</span>
+    <span class="c1"># we have type(params) == type(qaoa_params)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="utilities.html" class="btn btn-neutral float-right" title="VQE and QAOA utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="qaoa_cost_function.html" class="btn btn-neutral float-left" title="QAOA cost functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

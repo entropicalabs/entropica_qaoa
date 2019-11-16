@@ -1,0 +1,630 @@
+.. _5-QAOAUtilities: 
+
+
+Utility functions for QAOA
+==========================
+
+This section walks through some of the key features provided in
+EntropicaQAOA, all of which are contained in the ``utilities.py`` file.
+In particular, it illustrates the integration of functionalities from
+common graph and data analysis packages such as NetworkX and Pandas. We
+also provide two examples that bring together the functionalities to
+solve real problems.
+
+.. code:: ipython3
+
+    # The usual combination of imports from numpy, scipy and matplotlib
+    from scipy.optimize import minimize
+    import numpy as np
+    import matplotlib.pyplot as plt
+    
+    # import QAOA Parameter classes 
+    from entropica_qaoa.qaoa.parameters import ExtendedParams, StandardParams
+    
+    # Cost functions and all the utilities
+    from entropica_qaoa.qaoa.cost_function import QAOACostFunctionOnWFSim, QAOACostFunctionOnQVM
+    from entropica_qaoa.utilities import *
+    
+    # Pyquil import
+    from pyquil.api import get_qc
+    
+    # Matplotlib raises errors about NetworkX using outdated methods. Nothing we can change, so we suppress the messages.
+    import warnings
+    warnings.filterwarnings('ignore')
+
+Hamiltonians and graphs
+-----------------------
+
+In QAOA, a problem instance is defined by its corresponding
+*hyperparameters*, which refers to a specification of the total number
+of qubits ``nqubits``, and one or both of the following:
+
+1. The single qubits that have a bias term (denoted ``singles``) and the
+   corresponding bias coefficients (denoted ``biases``).
+2. The pairs of qubits that are coupled (denoted ``pairs``), and the
+   corresponding coupling coefficients (denoted ``couplings``).
+
+Equivalently, when viewed as a network graph problem, a QAOA instance is
+defined by specifying the total number of vertices or nodes in the
+graph, and one or both of the following:
+
+1. The vertices that have a bias term, and the corresponding bias
+   coefficients.
+2. The pairs of vertices that are connected by an edge, and the
+   corresponding edge weight.
+
+The following sections explain how EntropicaQAOA’s utility functions
+allow for the simple creation of, and conversion between, Hamiltonians
+and graphs.
+
+Hyperparameters to Hamiltonian
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If we have a known set of problem hyperparameters, the
+``hamiltonian_from_hyperparams()`` method allows us to easily create the
+corresponding Hamiltonian.
+
+.. code:: ipython3
+
+    # Specify some hyperparameters
+    nqubits = 3
+    singles = [1]
+    biases = [0.3]
+    pairs = [[0,1], [1,2]]
+    couplings = [0.4, 0.6]
+    
+    # Create the Hamiltonian
+    h0 = hamiltonian_from_hyperparams(nqubits,singles,biases,pairs,couplings)
+    print(h0)
+
+
+.. parsed-literal::
+
+    (0.4+0j)*Z0*Z1 + (0.6+0j)*Z1*Z2 + (0.3+0j)*Z1
+
+
+Random Hamiltonian
+^^^^^^^^^^^^^^^^^^
+
+The ``.random_hamiltonian()`` method allows us to generate a random
+Hamiltonian (problem instance) for a specified number of qubits. It
+randomly selects a number of biases and number of couplings, then
+assigns each of them a random value between zero and one. For instance,
+let’s create two 4-qubit Hamiltonians.
+
+.. code:: ipython3
+
+    h1 = random_hamiltonian(range(4))
+    h2 = random_hamiltonian(range(4))
+    print("h1 =",h1)
+    print()
+    print("h2 =",h2)
+
+
+.. parsed-literal::
+
+    h1 = (0.22426675667765372+0j)*Z3 + (0.1501986539217275+0j)*Z0*Z1 + (0.9707501010061365+0j)*Z2*Z3
+    
+    h2 = (0.33295405269057887+0j)*Z0 + (0.9418311774355997+0j)*Z3 + (0.24919377260659348+0j)*Z0*Z2 + (0.298367175101687+0j)*Z0*Z3 + (0.2604542179761158+0j)*Z1*Z3
+
+
+Hamiltonians to Graphs
+^^^^^^^^^^^^^^^^^^^^^^
+
+We can create a ``NetworkX`` graph corresponding to the qubit couplings
+in ``h1`` using the ``graph_from_hamiltonian`` method and then plot it
+using ``plot_graph()``:
+
+.. code:: ipython3
+
+    g1 = graph_from_hamiltonian(h1)
+    plot_graph(g1)
+
+
+
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_9_0.png
+
+
+Graphs to Hamiltonians
+^^^^^^^^^^^^^^^^^^^^^^
+
+Alternatively, we can work backwards, creating a graph first, then the
+corresponding Hamiltonian using the ``hamiltonian_from_graph()`` method.
+
+Let’s take the graph we have just produced (``g1``) and convert it back
+to its corresponding Hamiltonian, which we called ``h1`` above.
+
+.. code:: ipython3
+
+    H1 = hamiltonian_from_graph(g1)
+    print('From graph:', H1)
+    print('')
+    print('Original:', h1)
+
+
+.. parsed-literal::
+
+    From graph: (0.22426675667765372+0j)*Z3 + (0.9707501010061365+0j)*Z3*Z2 + (0.1501986539217275+0j)*Z0*Z1
+    
+    Original: (0.22426675667765372+0j)*Z3 + (0.1501986539217275+0j)*Z0*Z1 + (0.9707501010061365+0j)*Z2*Z3
+
+
+Hyperparameters to Graphs
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We can also create a graph directly from hyperparameters, using the
+``graph_from_hyperparams()`` method. Here we use the Hamiltonian created
+`above <#hyperparams_to_ham>`__.
+
+.. code:: ipython3
+
+    g0 = graph_from_hyperparams(nqubits, singles, biases, pairs, couplings)
+    plot_graph(g0)
+
+
+
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_13_0.png
+
+
+Random, regular Graphs
+^^^^^^^^^^^^^^^^^^^^^^
+
+In recent research on QAOA, there has been interest in the performance
+of the algorithm on :math:`k`-regular graphs, i.e. graphs where every
+node is connected to exactly :math:`k` other nodes. We can generate such
+graphs easily using the ``random_k_regular_graph()`` function. For
+instance, let’s create a 3-regular graph with 8 nodes:
+
+.. code:: ipython3
+
+    G_3_reg = random_k_regular_graph(3, range(8), weighted=True)
+    plot_graph(G_3_reg)
+
+
+
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_15_0.png
+
+
+Hamiltonians and data
+---------------------
+
+One prominent application of QAOA is to solve the weighted MaxCut
+problem, which may be used as a clustering technique - see, for example,
+`Ref 1 <#references>`__. Here, the pairwise distance between a given
+pair of data points in a dataset is used as the weight on the
+corresponding graph, and enters the Hamiltonian as the corresponding
+coupling coefficient between the corresponding qubits.
+
+In the following, we demo some steps of a workflow to use QAOA to solve
+such a MaxCut problem for clustering. We use simple toy data generated
+by the ``gaussian_2Dclusters()`` function.
+
+Cluster generation and distance calculations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Let’s create a data set of two clusters, where the points in each
+cluster follow Gaussian statistics.
+
+.. code:: ipython3
+
+    n_clusters = 2 # Number of clusters we want 
+    n_points = [3,3] # Number of data points in each cluster
+    means = [[0,0], [2,2]] # Cluster means (the [x,y] coordinates of each cluster centre)
+    
+    # Covariance matrix: we will use the same one for each of the two clusters here,
+    # but more generally they could be different
+    cov_matrix = [[0.1, 0], [0, 0.1]] 
+    cov_matrices = [cov_matrix,cov_matrix]
+    
+    cluster_data = gaussian_2Dclusters(n_clusters,n_points,means,cov_matrices)
+    plot_cluster_data(cluster_data)
+
+
+
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_18_0.png
+
+
+The next step in setting up the MaxCut problem is to compute the
+pairwise distances of the points in the dataset, which we can do using
+the ``distances_dataset()`` function. Here we will use the Euclidean
+distance, but more generally we can ask for any distance metric included
+in Scipy’s
+`cdist <https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html>`__
+function.
+
+.. code:: ipython3
+
+    dists = distances_dataset(cluster_data, metric='euclidean')
+    dists
+
+
+
+
+.. parsed-literal::
+
+    array([[0.        , 0.89208695, 0.62137939, 2.64589877, 3.57135197,
+            3.24471024],
+           [0.89208695, 0.        , 1.47286307, 1.93879133, 2.78453118,
+            2.46558506],
+           [0.62137939, 1.47286307, 0.        , 3.01943759, 3.98733177,
+            3.65947555],
+           [2.64589877, 1.93879133, 3.01943759, 0.        , 0.992259  ,
+            0.67660191],
+           [3.57135197, 2.78453118, 3.98733177, 0.992259  , 0.        ,
+            0.32805982],
+           [3.24471024, 2.46558506, 3.65947555, 0.67660191, 0.32805982,
+            0.        ]])
+
+
+
+Note that ``distances_dataset()`` can also take and return data in the
+Pandas dataframe format.
+
+Distance datasets to Hamiltonians
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now that we have the distances between all points in the dataset, we
+want to generate the corresponding MaxCut Hamiltonian. We can do this
+easily with the ``hamiltonian_from_distances()`` method.
+
+.. code:: ipython3
+
+    hData = hamiltonian_from_distances(dists)
+    print(hData)
+
+
+.. parsed-literal::
+
+    (0.8920869530576089+0j)*Z0*Z1 + (0.6213793918993751+0j)*Z0*Z2 + (2.6458987711536555+0j)*Z0*Z3 + (3.5713519713338515+0j)*Z0*Z4 + (3.244710235054523+0j)*Z0*Z5 + (1.4728630670136837+0j)*Z1*Z2 + (1.938791326007791+0j)*Z1*Z3 + (2.784531176657113+0j)*Z1*Z4 + (2.4655850590944866+0j)*Z1*Z5 + (3.019437590479767+0j)*Z2*Z3 + (3.987331765143783+0j)*Z2*Z4 + (3.6594755517875734+0j)*Z2*Z5 + (0.9922590043101441+0j)*Z3*Z4 + (0.6766019064351919+0j)*Z3*Z5 + (0.3280598229772459+0j)*Z4*Z5
+
+
+For simplicity here we have omitted terms proportional to the identity
+matrix, which are commonly included in the definition of the MaxCut cost
+function. Since such terms only introduce a global energy shift, they do
+not affect the optimal configuration that we find as a solution.
+
+Example 1: Using QAOA to solve MaxCut for the clustering problem
+----------------------------------------------------------------
+
+Now that we have the Hamiltonian, we can go ahead and run the QAOA to
+check that the points are clustered correctly. We will use the
+``ExtendedParams`` class, and three timesteps (p=3). We don’t include
+any single-qubit bias terms.
+
+.. code:: ipython3
+
+    n_qubits = 6
+    p = 3
+    
+    # Specify some angles
+    betas = np.random.rand(n_qubits,p)
+    gammas_singles = []
+    gammas_pairs = np.random.rand(len(hData),p)
+    parameters = (betas,gammas_singles,gammas_pairs)
+    
+    extended_params = ExtendedParams([hData,p],parameters)
+    
+    # NOTE - the optimiser will reach its maximum number of iterations, but for the parameters being used here,
+    # the choice maxiter=200 seems to be more than sufficient to get to the optimum with high probability.
+    cost_function = QAOACostFunctionOnWFSim(hData,
+                                            params=extended_params,
+                                            scalar_cost_function=False)
+    
+    res = minimize(cost_function, extended_params.raw(),
+                   tol=1e-3, method="Cobyla", options={"maxiter": 200})
+    res
+
+
+
+
+.. parsed-literal::
+
+         fun: -8.177921421095586
+       maxcv: 0.0
+     message: 'Maximum number of function evaluations has been exceeded.'
+        nfev: 200
+      status: 2
+     success: False
+           x: array([ 1.2968615 ,  1.13140341,  0.45590417,  0.27218615,  0.22005776,
+            1.21903021,  0.68586607,  0.92049553,  1.5634729 ,  1.54949027,
+            0.05019311,  1.53142017,  0.99585679, -0.17861998,  0.92000842,
+            0.73999305,  0.19711567,  0.21175899,  0.05057582,  0.39652405,
+            1.46430515,  0.84138333,  0.87310902,  1.27336059,  0.47683663,
+            1.86760206,  0.90165824,  0.97404713,  1.60452064,  0.42105087,
+            0.72587103,  0.94921258,  0.32042373,  0.92838485,  0.80194516,
+            1.37924246,  0.7273695 ,  0.31844058,  0.17526702,  0.37083024,
+            0.48814381,  1.41541468,  1.43040292,  0.5900947 ,  0.11542496,
+            0.01334736,  0.18902991,  1.72525423,  0.92682988,  0.12635149,
+            0.07501775,  0.16643011,  0.57625313,  0.05711509,  0.58498862,
+            0.23702585,  0.71313912,  0.31977506,  0.41922587,  0.71878501,
+            0.75606292, -0.24765194,  0.4416072 ])
+
+
+
+Let us plot the probabilities of the different bitstrings. Since the
+energies are invariant under a bit flip on all qubits, each bitstring
+and its complement have identical outcome probabilities.
+
+.. code:: ipython3
+
+    opt_wfn = cost_function.get_wavefunction(res.x)
+    probs = opt_wfn.probabilities()
+    plt.bar(range(len(probs)), probs)
+    plt.show()
+
+
+
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_28_0.png
+
+
+Now we want to find the string corresponding to the optimal solution.
+Numpy’s ``argmax`` function will return the first of the two degenerate
+solutions. As expected, we find that the first three qubits are in one
+class, and the second three qubits in another (this is the way the data
+was constructed above, in two distinct clusters).
+
+.. code:: ipython3
+
+    optimal_string = np.argmax(probs)
+    "{0:06b}".format(optimal_string)
+
+
+
+
+.. parsed-literal::
+
+    '000111'
+
+
+
+We can check that the other optimal solution found is the complement
+bitstring, i.e. 111000:
+
+.. code:: ipython3
+
+    probs[optimal_string] = 0 # Sets the solution 000111 to have zero probability
+    optimal_string_complement = np.argmax(probs)
+    "{0:06b}".format(optimal_string_complement)
+
+
+
+
+.. parsed-literal::
+
+    '111000'
+
+
+
+Example 2: The Ring of Disagrees
+--------------------------------
+
+The *Ring of Diasgrees* is a 2-regular graph on a given number of nodes
+:math:`n`. Its simple structure has allowed a number of extremely useful
+benchmarking results for QAOA to be derived. The ground state has energy
+:math:`-n` for even :math:`n`, and :math:`-n+1` for odd :math:`n`, and
+neighbouring nodes have opposite values (i.e. if a given node has value
+1, its neighbour has value 0).
+
+In the paper that originally introduced the QAOA (`Ref
+2 <#references>`__), it was shown numerically that this graph provides a
+simple example of how the approximation ratio returned by QAOA can be
+made arbitrarily close to 1 by increasing the parameter :math:`p`. For
+the MaxCut problem, the optimal cost function value returned for a given
+:math:`n` and :math:`p` was found to be
+
+.. math::
+
+
+   C(n,p) = \left(\frac{2p + 1}{2p + 2}\right)n
+
+This result assumes the ``StandardParams`` parameterisation, and that
+the graph is unweighted (all edge weights equal to 1). Here we verify
+this result using the ``ring_of_disagrees()`` function. Note that
+subsequent to `Ref 2 <#references>`__, this result has been derived
+using analytic methods in `Ref 3 <#references>`__.
+
+.. code:: ipython3
+
+    n_nodes = 8
+    h_disagrees = ring_of_disagrees(n_nodes)
+    g_disagrees = graph_from_hamiltonian(h_disagrees)
+    plot_graph(g_disagrees)
+
+
+
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_34_0.png
+
+
+.. code:: ipython3
+
+    def optimise_ring_of_disagrees(pval):
+        
+        # Initialise angles
+        betas = np.random.rand(pval)
+        gammas = np.random.rand(pval)
+        parameters = (betas, gammas)
+    
+        # Set up (hyper)parameters
+        disagrees_params = StandardParams([h_disagrees,pval],parameters)
+        
+        # Cost function and optimisation
+        cost_function = QAOACostFunctionOnWFSim(h_disagrees, params=disagrees_params)
+        
+        res = minimize(cost_function, disagrees_params.raw(),
+                       tol=1e-3, method="BFGS", options={"maxiter": 500})
+        
+        return res.fun, res.x
+        
+    
+    p_vals = np.arange(1,5) # p range to consider
+    output_val = np.zeros((len(p_vals),))
+    for i in p_vals:
+    
+        output_val[i-1] = optimise_ring_of_disagrees(i)[0]
+
+Since we have 8 qubits, according to Farhi’s formula we should find the
+maximum energy to be
+:math:`-8 \cdot (3/4,5/6,7/8,9/10) = -(6, 6.67, 7, 7.2)` for
+:math:`p = (1,2,3,4)`:
+
+.. code:: ipython3
+
+    output_val
+
+
+
+
+.. parsed-literal::
+
+    array([-5.99999999, -6.66666667, -6.99999999, -7.99999999])
+
+
+
+For the case :math:`p=1`, the optimal angles can be computed
+analytically, and are given by
+:math:`(\beta_{opt}, \gamma_{opt}) = (\pi/8, \pi/4`) - see `Ref
+4 <#references>`__. We can see that the optimiser does indeed return
+these angles:
+
+.. code:: ipython3
+
+    opt_angles = optimise_ring_of_disagrees(1)[1]
+    opt_angles
+
+
+
+
+.. parsed-literal::
+
+    array([0.39269308, 0.78538503])
+
+
+
+Let’s finish off by running an example of the Ring of Disagrees on the
+QVM; we would follow a similar method to run the computation on the QPU.
+We’ll use the optimal angles we have just found to check that the
+probability distribution of samples we obtain does indeed return the
+bitstring [0,1,0,1], or its complement [1,0,1,0], with high probability.
+
+Here, we make use of the ``sample_qaoa_bitstrings`` function, which
+executes the circuit defined by the QAOA instance and samples from
+output multiple times. We can plot the output conveniently using
+``bitstring_histogram``.
+
+.. code:: ipython3
+
+    qvm = get_qc("4q-qvm")
+    
+    ham_disagrees_4 = ring_of_disagrees(4)
+    params_disagrees_4 = StandardParams([ham_disagrees_4,1], opt_angles)
+    
+    bitstrings = sample_qaoa_bitstrings(params_disagrees_4, qvm)
+    bitstring_histogram(bitstrings)
+
+
+
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_41_0.png
+
+
+More miscellaneous utilities
+----------------------------
+
+Here we demonstrate the functionality of some additional methods that
+may be useful in certain contexts.
+
+Different initial states for QAOA
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We can easily use an initial state different from
+:math:`\left|+ \cdots +\right>` for QAOA, by passing a state preparation
+program for the ``initial_state`` argument of the QAOA cost functions.
+For purely classical states (i.e. not a quantum superposition state)
+such as :math:`\left|10 \cdots 10\right>`, these programs cane be
+created via ``prepare_classical_state``.
+
+.. code:: ipython3
+
+    register = [0, 1, 2, 3, 4, 5]  # the register to create the state on
+    state = [1, 0, 1, 0, 1, 0]     # the |42> state (encodes the decimal number 42)
+    
+    prepare42_circuit = prepare_classical_state(register, state)
+    print(prepare42_circuit)
+
+
+.. parsed-literal::
+
+    X 0
+    X 2
+    X 4
+    
+
+
+Get the bitstring corresponding to the maximum probability state
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``max_probability_bitstring()`` method returns the bitstring
+corresponding to the maximum probability state of a wavefunction.
+
+.. code:: ipython3
+
+    probs = np.exp(-np.linspace(-5, 10, 16)**2) # just an array of length 16 (corresponds to a 4-qubit system)
+    probs = probs/probs.sum() # normalise to represent a proper probability distribution
+    max_prob_state = max_probability_bitstring(probs)
+    print(max_prob_state)
+
+
+.. parsed-literal::
+
+    [0, 1, 0, 1]
+
+
+Accuracy scores for QAOA
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+``cluster_accuracy()`` gives accuary scores for a QAOA result, if the
+true solution is known. The accuracy here is defined as the percentage
+of bits that are correct compared to the known solution.
+
+.. code:: ipython3
+
+    cluster_accuracy(max_prob_state, true_labels=[1, 1, 0, 0])
+
+
+.. parsed-literal::
+
+    True Labels of samples: [1, 1, 0, 0]
+    Lowest QAOA State: [0, 1, 0, 1]
+    Accuracy of Original State: 50.0 %
+    Accuracy of Complement State: 50.0 %
+
+
+Get nice plots of probabilties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the true energies of all states are known, we can also obtain a nice
+side-by-side plot of the energies and probabilites using
+``plot_probabilities()``.
+
+.. code:: ipython3
+
+    energies = np.sin(np.linspace(0, 10, 16))
+    fig, ax = plt.subplots(figsize=(10,5))
+    plot_probabilities(probs, energies, ax=ax)
+
+
+
+.. image:: 5_QAOAUtilities_files/5_QAOAUtilities_50_0.png
+
+
+References
+----------
+
+1. J. S. Otterbach et al, `Unsupervised Machine Learning on a Hybrid
+   Quantum Computer <https://arxiv.org/abs/1712.05771>`__
+2. E. Farhi et al, `A Quantum Approximate Optimization
+   Algorithm <https://arxiv.org/abs/1411.4028>`__
+3. Z. Wang et al, `The Quantum Approximation Optimization Algorithm for
+   MaxCut: A Fermionic View <https://arxiv.org/pdf/1706.02998.pdf>`__
+4. S. Hadfield, `Quantum Algorithms for Scientific Computing and
+   Approximate Optimization <https://arxiv.org/pdf/1805.03265.pdf>`__
+

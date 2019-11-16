@@ -1,0 +1,679 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Index &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+            
+            <img src="_static/Entropica_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">About Entropica Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about_entropica.html">About Entropica Labs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials_overview.html">Overview of tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+</ul>
+<p class="caption"><span class="caption-text">General Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details, conventions, and FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Index</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#X"><strong>X</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnQVM.__call__">__call__() (qaoa.cost_function.QAOACostFunctionOnQVM method)</a>
+
+      <ul>
+        <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnWFSim.__call__">(qaoa.cost_function.QAOACostFunctionOnWFSim method)</a>
+</li>
+        <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnQVM.__call__">(vqe.cost_function.PrepareAndMeasureOnQVM method)</a>
+</li>
+        <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnWFSim.__call__">(vqe.cost_function.PrepareAndMeasureOnWFSim method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams">AnnealingParams (class in qaoa.parameters)</a>
+</li>
+      <li><a href="measurelib.html#vqe.measurelib.append_measure_register">append_measure_register() (in module vqe.measurelib)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.apply_H">apply_H() (in module vqe.measurelib)</a>
+</li>
+      <li><a href="measurelib.html#vqe.measurelib.apply_RX">apply_RX() (in module vqe.measurelib)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.base_change_fun">base_change_fun() (in module vqe.measurelib)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.bitstring_histogram">bitstring_histogram() (in module utilities)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.cluster_accuracy">cluster_accuracy() (in module utilities)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.commuting_decomposition">commuting_decomposition() (in module vqe.measurelib)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.distances_dataset">distances_dataset() (in module utilities)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.empty">empty() (qaoa.parameters.AnnealingParams class method)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.empty">(qaoa.parameters.ExtendedParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.empty">(qaoa.parameters.FourierExtendedParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.empty">(qaoa.parameters.FourierParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.empty">(qaoa.parameters.FourierWithBiasParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.empty">(qaoa.parameters.StandardParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.empty">(qaoa.parameters.StandardWithBiasParams class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.ExtendedParams">ExtendedParams (class in qaoa.parameters)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams">FourierExtendedParams (class in qaoa.parameters)</a>
+</li>
+      <li><a href="parameters.html#qaoa.parameters.FourierParams">FourierParams (class in qaoa.parameters)</a>
+</li>
+      <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams">FourierWithBiasParams (class in qaoa.parameters)</a>
+</li>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.from_AbstractParameters">from_AbstractParameters() (qaoa.parameters.AnnealingParams class method)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.from_AbstractParameters">(qaoa.parameters.ExtendedParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.from_AbstractParameters">(qaoa.parameters.FourierExtendedParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.from_AbstractParameters">(qaoa.parameters.FourierParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.from_AbstractParameters">(qaoa.parameters.FourierWithBiasParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.from_AbstractParameters">(qaoa.parameters.StandardParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.from_AbstractParameters">(qaoa.parameters.StandardWithBiasParams class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.from_other_parameters">from_other_parameters() (qaoa.parameters.AnnealingParams class method)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.from_other_parameters">(qaoa.parameters.ExtendedParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.from_other_parameters">(qaoa.parameters.FourierExtendedParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.from_other_parameters">(qaoa.parameters.FourierParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.from_other_parameters">(qaoa.parameters.FourierWithBiasParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.from_other_parameters">(qaoa.parameters.StandardParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.from_other_parameters">(qaoa.parameters.StandardWithBiasParams class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.gaussian_2Dclusters">gaussian_2Dclusters() (in module utilities)</a>
+</li>
+      <li><a href="parameters.html#qaoa.parameters.ExtendedParams.get_constraints">get_constraints() (qaoa.parameters.ExtendedParams method)</a>
+</li>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnWFSim.get_wavefunction">get_wavefunction() (qaoa.cost_function.QAOACostFunctionOnWFSim method)</a>
+
+      <ul>
+        <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnWFSim.get_wavefunction">(vqe.cost_function.PrepareAndMeasureOnWFSim method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.graph_from_hamiltonian">graph_from_hamiltonian() (in module utilities)</a>
+</li>
+      <li><a href="utilities.html#utilities.graph_from_hyperparams">graph_from_hyperparams() (in module utilities)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.H_mat">H_mat (in module vqe.measurelib)</a>
+</li>
+      <li><a href="utilities.html#utilities.hamiltonian_from_distances">hamiltonian_from_distances() (in module utilities)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.hamiltonian_from_graph">hamiltonian_from_graph() (in module utilities)</a>
+</li>
+      <li><a href="utilities.html#utilities.hamiltonian_from_hyperparams">hamiltonian_from_hyperparams() (in module utilities)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.kron_eigs">kron_eigs() (in module vqe.measurelib)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.linear_ramp_from_hamiltonian">linear_ramp_from_hamiltonian() (qaoa.parameters.AnnealingParams class method)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.linear_ramp_from_hamiltonian">(qaoa.parameters.ExtendedParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.linear_ramp_from_hamiltonian">(qaoa.parameters.FourierExtendedParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.linear_ramp_from_hamiltonian">(qaoa.parameters.FourierParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.linear_ramp_from_hamiltonian">(qaoa.parameters.FourierWithBiasParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.linear_ramp_from_hamiltonian">(qaoa.parameters.StandardParams class method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.linear_ramp_from_hamiltonian">(qaoa.parameters.StandardWithBiasParams class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.max_probability_bitstring">max_probability_bitstring() (in module utilities)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.pauli_matrix">pauli_matrix() (in module utilities)</a>
+</li>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.plot">plot() (qaoa.parameters.AnnealingParams method)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.plot">(qaoa.parameters.ExtendedParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.plot">(qaoa.parameters.FourierExtendedParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.plot">(qaoa.parameters.FourierParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.plot">(qaoa.parameters.FourierWithBiasParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.plot">(qaoa.parameters.StandardParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.plot">(qaoa.parameters.StandardWithBiasParams method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.plot_cluster_data">plot_cluster_data() (in module utilities)</a>
+</li>
+      <li><a href="utilities.html#utilities.plot_graph">plot_graph() (in module utilities)</a>
+</li>
+      <li><a href="utilities.html#utilities.plot_probabilities">plot_probabilities() (in module utilities)</a>
+</li>
+      <li><a href="utilities.html#utilities.prepare_classical_state">prepare_classical_state() (in module utilities)</a>
+</li>
+      <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnQVM">PrepareAndMeasureOnQVM (class in vqe.cost_function)</a>
+</li>
+      <li><a href="vqe_cost_function.html#vqe.cost_function.PrepareAndMeasureOnWFSim">PrepareAndMeasureOnWFSim (class in vqe.cost_function)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnQVM">QAOACostFunctionOnQVM (class in qaoa.cost_function)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qaoa_cost_function.html#qaoa.cost_function.QAOACostFunctionOnWFSim">QAOACostFunctionOnWFSim (class in qaoa.cost_function)</a>
+</li>
+      <li><a href="parameters.html#qaoa.parameters.QAOAParameterIterator">QAOAParameterIterator (class in qaoa.parameters)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.random_hamiltonian">random_hamiltonian() (in module utilities)</a>
+</li>
+      <li><a href="utilities.html#utilities.random_k_regular_graph">random_k_regular_graph() (in module utilities)</a>
+</li>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.raw">raw() (qaoa.parameters.AnnealingParams method)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.raw">(qaoa.parameters.ExtendedParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.raw">(qaoa.parameters.FourierExtendedParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.raw">(qaoa.parameters.FourierParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.raw">(qaoa.parameters.FourierWithBiasParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.raw">(qaoa.parameters.StandardParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.raw">(qaoa.parameters.StandardWithBiasParams method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.raw_rotation_angles">raw_rotation_angles() (qaoa.parameters.AnnealingParams method)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.raw_rotation_angles">(qaoa.parameters.ExtendedParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.raw_rotation_angles">(qaoa.parameters.FourierExtendedParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.raw_rotation_angles">(qaoa.parameters.FourierParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.raw_rotation_angles">(qaoa.parameters.FourierWithBiasParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.raw_rotation_angles">(qaoa.parameters.StandardParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.raw_rotation_angles">(qaoa.parameters.StandardWithBiasParams method)</a>
+</li>
+      </ul></li>
+      <li><a href="utilities.html#utilities.ring_of_disagrees">ring_of_disagrees() (in module utilities)</a>
+</li>
+      <li><a href="measurelib.html#vqe.measurelib.RX_mat">RX_mat (in module vqe.measurelib)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#utilities.sample_qaoa_bitstrings">sample_qaoa_bitstrings() (in module utilities)</a>
+</li>
+      <li><a href="measurelib.html#vqe.measurelib.sampling_expectation">sampling_expectation() (in module vqe.measurelib)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.sampling_expectation_z_base">sampling_expectation_z_base() (in module vqe.measurelib)</a>
+</li>
+      <li><a href="parameters.html#qaoa.parameters.StandardParams">StandardParams (class in qaoa.parameters)</a>
+</li>
+      <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams">StandardWithBiasParams (class in qaoa.parameters)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.update_from_raw">update_from_raw() (qaoa.parameters.AnnealingParams method)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.update_from_raw">(qaoa.parameters.ExtendedParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.update_from_raw">(qaoa.parameters.FourierExtendedParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.update_from_raw">(qaoa.parameters.FourierParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.update_from_raw">(qaoa.parameters.FourierWithBiasParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.update_from_raw">(qaoa.parameters.StandardParams method)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.update_from_raw">(qaoa.parameters.StandardWithBiasParams method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utilities.html#module-utilities">utilities (module)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#module-vqe.measurelib">vqe.measurelib (module)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="measurelib.html#vqe.measurelib.wavefunction_expectation">wavefunction_expectation() (in module vqe.measurelib)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.x_rotation_angles">x_rotation_angles() (qaoa.parameters.AnnealingParams property)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.x_rotation_angles">(qaoa.parameters.ExtendedParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.x_rotation_angles">(qaoa.parameters.FourierExtendedParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.x_rotation_angles">(qaoa.parameters.FourierParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.x_rotation_angles">(qaoa.parameters.FourierWithBiasParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.x_rotation_angles">(qaoa.parameters.StandardParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.x_rotation_angles">(qaoa.parameters.StandardWithBiasParams property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.z_rotation_angles">z_rotation_angles() (qaoa.parameters.AnnealingParams property)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.z_rotation_angles">(qaoa.parameters.ExtendedParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.z_rotation_angles">(qaoa.parameters.FourierExtendedParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.z_rotation_angles">(qaoa.parameters.FourierParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.z_rotation_angles">(qaoa.parameters.FourierWithBiasParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.z_rotation_angles">(qaoa.parameters.StandardParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.z_rotation_angles">(qaoa.parameters.StandardWithBiasParams property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="parameters.html#qaoa.parameters.AnnealingParams.zz_rotation_angles">zz_rotation_angles() (qaoa.parameters.AnnealingParams property)</a>
+
+      <ul>
+        <li><a href="parameters.html#qaoa.parameters.ExtendedParams.zz_rotation_angles">(qaoa.parameters.ExtendedParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierExtendedParams.zz_rotation_angles">(qaoa.parameters.FourierExtendedParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierParams.zz_rotation_angles">(qaoa.parameters.FourierParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.FourierWithBiasParams.zz_rotation_angles">(qaoa.parameters.FourierWithBiasParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardParams.zz_rotation_angles">(qaoa.parameters.StandardParams property)</a>
+</li>
+        <li><a href="parameters.html#qaoa.parameters.StandardWithBiasParams.zz_rotation_angles">(qaoa.parameters.StandardWithBiasParams property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

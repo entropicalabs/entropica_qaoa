@@ -1,0 +1,736 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Utility functions for QAOA &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Solving a simple QUBO with QAOA" href="6_SolvingQUBOwithQAOA.html" />
+    <link rel="prev" title="Cost function features and VQE" href="4_CostFunctionsAndVQE.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+            
+            <img src="../_static/Entropica_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">About Entropica Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about_entropica.html">About Entropica Labs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials_overview.html">Overview of tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utility functions for QAOA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hamiltonians-and-graphs">Hamiltonians and graphs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hyperparameters-to-hamiltonian">Hyperparameters to Hamiltonian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#random-hamiltonian">Random Hamiltonian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hamiltonians-to-graphs">Hamiltonians to Graphs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#graphs-to-hamiltonians">Graphs to Hamiltonians</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hyperparameters-to-graphs">Hyperparameters to Graphs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#random-regular-graphs">Random, regular Graphs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hamiltonians-and-data">Hamiltonians and data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cluster-generation-and-distance-calculations">Cluster generation and distance calculations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#distance-datasets-to-hamiltonians">Distance datasets to Hamiltonians</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-1-using-qaoa-to-solve-maxcut-for-the-clustering-problem">Example 1: Using QAOA to solve MaxCut for the clustering problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-2-the-ring-of-disagrees">Example 2: The Ring of Disagrees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more-miscellaneous-utilities">More miscellaneous utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#different-initial-states-for-qaoa">Different initial states for QAOA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-the-bitstring-corresponding-to-the-maximum-probability-state">Get the bitstring corresponding to the maximum probability state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accuracy-scores-for-qaoa">Accuracy scores for QAOA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-nice-plots-of-probabilties">Get nice plots of probabilties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+</ul>
+<p class="caption"><span class="caption-text">General Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Implementation details, conventions, and FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Utility functions for QAOA</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/5_QAOAUtilities.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="utility-functions-for-qaoa">
+<span id="qaoautilities"></span><h1>Utility functions for QAOA<a class="headerlink" href="#utility-functions-for-qaoa" title="Permalink to this headline">¶</a></h1>
+<p>This section walks through some of the key features provided in
+EntropicaQAOA, all of which are contained in the <code class="docutils literal notranslate"><span class="pre">utilities.py</span></code> file.
+In particular, it illustrates the integration of functionalities from
+common graph and data analysis packages such as NetworkX and Pandas. We
+also provide two examples that bring together the functionalities to
+solve real problems.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The usual combination of imports from numpy, scipy and matplotlib</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="c1"># import QAOA Parameter classes</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.parameters</span> <span class="kn">import</span> <span class="n">ExtendedParams</span><span class="p">,</span> <span class="n">StandardParams</span>
+
+<span class="c1"># Cost functions and all the utilities</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.cost_function</span> <span class="kn">import</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">,</span> <span class="n">QAOACostFunctionOnQVM</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.utilities</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># Pyquil import</span>
+<span class="kn">from</span> <span class="nn">pyquil.api</span> <span class="kn">import</span> <span class="n">get_qc</span>
+
+<span class="c1"># Matplotlib raises errors about NetworkX using outdated methods. Nothing we can change, so we suppress the messages.</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="hamiltonians-and-graphs">
+<h2>Hamiltonians and graphs<a class="headerlink" href="#hamiltonians-and-graphs" title="Permalink to this headline">¶</a></h2>
+<p>In QAOA, a problem instance is defined by its corresponding
+<em>hyperparameters</em>, which refers to a specification of the total number
+of qubits <code class="docutils literal notranslate"><span class="pre">nqubits</span></code>, and one or both of the following:</p>
+<ol class="arabic simple">
+<li><p>The single qubits that have a bias term (denoted <code class="docutils literal notranslate"><span class="pre">singles</span></code>) and the
+corresponding bias coefficients (denoted <code class="docutils literal notranslate"><span class="pre">biases</span></code>).</p></li>
+<li><p>The pairs of qubits that are coupled (denoted <code class="docutils literal notranslate"><span class="pre">pairs</span></code>), and the
+corresponding coupling coefficients (denoted <code class="docutils literal notranslate"><span class="pre">couplings</span></code>).</p></li>
+</ol>
+<p>Equivalently, when viewed as a network graph problem, a QAOA instance is
+defined by specifying the total number of vertices or nodes in the
+graph, and one or both of the following:</p>
+<ol class="arabic simple">
+<li><p>The vertices that have a bias term, and the corresponding bias
+coefficients.</p></li>
+<li><p>The pairs of vertices that are connected by an edge, and the
+corresponding edge weight.</p></li>
+</ol>
+<p>The following sections explain how EntropicaQAOA’s utility functions
+allow for the simple creation of, and conversion between, Hamiltonians
+and graphs.</p>
+<div class="section" id="hyperparameters-to-hamiltonian">
+<h3>Hyperparameters to Hamiltonian<a class="headerlink" href="#hyperparameters-to-hamiltonian" title="Permalink to this headline">¶</a></h3>
+<p>If we have a known set of problem hyperparameters, the
+<code class="docutils literal notranslate"><span class="pre">hamiltonian_from_hyperparams()</span></code> method allows us to easily create the
+corresponding Hamiltonian.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify some hyperparameters</span>
+<span class="n">nqubits</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">singles</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">biases</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">]</span>
+<span class="n">pairs</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span>
+<span class="n">couplings</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+
+<span class="c1"># Create the Hamiltonian</span>
+<span class="n">h0</span> <span class="o">=</span> <span class="n">hamiltonian_from_hyperparams</span><span class="p">(</span><span class="n">nqubits</span><span class="p">,</span><span class="n">singles</span><span class="p">,</span><span class="n">biases</span><span class="p">,</span><span class="n">pairs</span><span class="p">,</span><span class="n">couplings</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">h0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mf">0.4</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.6</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.3</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="random-hamiltonian">
+<h3>Random Hamiltonian<a class="headerlink" href="#random-hamiltonian" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">.random_hamiltonian()</span></code> method allows us to generate a random
+Hamiltonian (problem instance) for a specified number of qubits. It
+randomly selects a number of biases and number of couplings, then
+assigns each of them a random value between zero and one. For instance,
+let’s create two 4-qubit Hamiltonians.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h1</span> <span class="o">=</span> <span class="n">random_hamiltonian</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">h2</span> <span class="o">=</span> <span class="n">random_hamiltonian</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;h1 =&quot;</span><span class="p">,</span><span class="n">h1</span><span class="p">)</span>
+<span class="k">print</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;h2 =&quot;</span><span class="p">,</span><span class="n">h2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">h1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.22426675667765372</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.1501986539217275</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.9707501010061365</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z3</span>
+
+<span class="n">h2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.33295405269057887</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.9418311774355997</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.24919377260659348</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.298367175101687</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.2604542179761158</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hamiltonians-to-graphs">
+<h3>Hamiltonians to Graphs<a class="headerlink" href="#hamiltonians-to-graphs" title="Permalink to this headline">¶</a></h3>
+<p>We can create a <code class="docutils literal notranslate"><span class="pre">NetworkX</span></code> graph corresponding to the qubit couplings
+in <code class="docutils literal notranslate"><span class="pre">h1</span></code> using the <code class="docutils literal notranslate"><span class="pre">graph_from_hamiltonian</span></code> method and then plot it
+using <code class="docutils literal notranslate"><span class="pre">plot_graph()</span></code>:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g1</span> <span class="o">=</span> <span class="n">graph_from_hamiltonian</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span>
+<span class="n">plot_graph</span><span class="p">(</span><span class="n">g1</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/5_QAOAUtilities_9_0.png" src="../_images/5_QAOAUtilities_9_0.png" />
+</div>
+<div class="section" id="graphs-to-hamiltonians">
+<h3>Graphs to Hamiltonians<a class="headerlink" href="#graphs-to-hamiltonians" title="Permalink to this headline">¶</a></h3>
+<p>Alternatively, we can work backwards, creating a graph first, then the
+corresponding Hamiltonian using the <code class="docutils literal notranslate"><span class="pre">hamiltonian_from_graph()</span></code> method.</p>
+<p>Let’s take the graph we have just produced (<code class="docutils literal notranslate"><span class="pre">g1</span></code>) and convert it back
+to its corresponding Hamiltonian, which we called <code class="docutils literal notranslate"><span class="pre">h1</span></code> above.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">H1</span> <span class="o">=</span> <span class="n">hamiltonian_from_graph</span><span class="p">(</span><span class="n">g1</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;From graph:&#39;</span><span class="p">,</span> <span class="n">H1</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Original:&#39;</span><span class="p">,</span> <span class="n">h1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">From</span> <span class="n">graph</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.22426675667765372</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.9707501010061365</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.1501986539217275</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span>
+
+<span class="n">Original</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.22426675667765372</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.1501986539217275</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.9707501010061365</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hyperparameters-to-graphs">
+<h3>Hyperparameters to Graphs<a class="headerlink" href="#hyperparameters-to-graphs" title="Permalink to this headline">¶</a></h3>
+<p>We can also create a graph directly from hyperparameters, using the
+<code class="docutils literal notranslate"><span class="pre">graph_from_hyperparams()</span></code> method. Here we use the Hamiltonian created
+<a class="reference external" href="#hyperparams_to_ham">above</a>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g0</span> <span class="o">=</span> <span class="n">graph_from_hyperparams</span><span class="p">(</span><span class="n">nqubits</span><span class="p">,</span> <span class="n">singles</span><span class="p">,</span> <span class="n">biases</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">couplings</span><span class="p">)</span>
+<span class="n">plot_graph</span><span class="p">(</span><span class="n">g0</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/5_QAOAUtilities_13_0.png" src="../_images/5_QAOAUtilities_13_0.png" />
+</div>
+<div class="section" id="random-regular-graphs">
+<h3>Random, regular Graphs<a class="headerlink" href="#random-regular-graphs" title="Permalink to this headline">¶</a></h3>
+<p>In recent research on QAOA, there has been interest in the performance
+of the algorithm on <span class="math notranslate nohighlight">\(k\)</span>-regular graphs, i.e. graphs where every
+node is connected to exactly <span class="math notranslate nohighlight">\(k\)</span> other nodes. We can generate such
+graphs easily using the <code class="docutils literal notranslate"><span class="pre">random_k_regular_graph()</span></code> function. For
+instance, let’s create a 3-regular graph with 8 nodes:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_3_reg</span> <span class="o">=</span> <span class="n">random_k_regular_graph</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="n">weighted</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">plot_graph</span><span class="p">(</span><span class="n">G_3_reg</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/5_QAOAUtilities_15_0.png" src="../_images/5_QAOAUtilities_15_0.png" />
+</div>
+</div>
+<div class="section" id="hamiltonians-and-data">
+<h2>Hamiltonians and data<a class="headerlink" href="#hamiltonians-and-data" title="Permalink to this headline">¶</a></h2>
+<p>One prominent application of QAOA is to solve the weighted MaxCut
+problem, which may be used as a clustering technique - see, for example,
+<a class="reference external" href="#references">Ref 1</a>. Here, the pairwise distance between a given
+pair of data points in a dataset is used as the weight on the
+corresponding graph, and enters the Hamiltonian as the corresponding
+coupling coefficient between the corresponding qubits.</p>
+<p>In the following, we demo some steps of a workflow to use QAOA to solve
+such a MaxCut problem for clustering. We use simple toy data generated
+by the <code class="docutils literal notranslate"><span class="pre">gaussian_2Dclusters()</span></code> function.</p>
+<div class="section" id="cluster-generation-and-distance-calculations">
+<h3>Cluster generation and distance calculations<a class="headerlink" href="#cluster-generation-and-distance-calculations" title="Permalink to this headline">¶</a></h3>
+<p>Let’s create a data set of two clusters, where the points in each
+cluster follow Gaussian statistics.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_clusters</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># Number of clusters we want</span>
+<span class="n">n_points</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="c1"># Number of data points in each cluster</span>
+<span class="n">means</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span> <span class="c1"># Cluster means (the [x,y] coordinates of each cluster centre)</span>
+
+<span class="c1"># Covariance matrix: we will use the same one for each of the two clusters here,</span>
+<span class="c1"># but more generally they could be different</span>
+<span class="n">cov_matrix</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]]</span>
+<span class="n">cov_matrices</span> <span class="o">=</span> <span class="p">[</span><span class="n">cov_matrix</span><span class="p">,</span><span class="n">cov_matrix</span><span class="p">]</span>
+
+<span class="n">cluster_data</span> <span class="o">=</span> <span class="n">gaussian_2Dclusters</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">,</span><span class="n">n_points</span><span class="p">,</span><span class="n">means</span><span class="p">,</span><span class="n">cov_matrices</span><span class="p">)</span>
+<span class="n">plot_cluster_data</span><span class="p">(</span><span class="n">cluster_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/5_QAOAUtilities_18_0.png" src="../_images/5_QAOAUtilities_18_0.png" />
+<p>The next step in setting up the MaxCut problem is to compute the
+pairwise distances of the points in the dataset, which we can do using
+the <code class="docutils literal notranslate"><span class="pre">distances_dataset()</span></code> function. Here we will use the Euclidean
+distance, but more generally we can ask for any distance metric included
+in Scipy’s
+<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html">cdist</a>
+function.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dists</span> <span class="o">=</span> <span class="n">distances_dataset</span><span class="p">(</span><span class="n">cluster_data</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">)</span>
+<span class="n">dists</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([[</span><span class="mf">0.</span>        <span class="p">,</span> <span class="mf">0.89208695</span><span class="p">,</span> <span class="mf">0.62137939</span><span class="p">,</span> <span class="mf">2.64589877</span><span class="p">,</span> <span class="mf">3.57135197</span><span class="p">,</span>
+        <span class="mf">3.24471024</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">0.89208695</span><span class="p">,</span> <span class="mf">0.</span>        <span class="p">,</span> <span class="mf">1.47286307</span><span class="p">,</span> <span class="mf">1.93879133</span><span class="p">,</span> <span class="mf">2.78453118</span><span class="p">,</span>
+        <span class="mf">2.46558506</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">0.62137939</span><span class="p">,</span> <span class="mf">1.47286307</span><span class="p">,</span> <span class="mf">0.</span>        <span class="p">,</span> <span class="mf">3.01943759</span><span class="p">,</span> <span class="mf">3.98733177</span><span class="p">,</span>
+        <span class="mf">3.65947555</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">2.64589877</span><span class="p">,</span> <span class="mf">1.93879133</span><span class="p">,</span> <span class="mf">3.01943759</span><span class="p">,</span> <span class="mf">0.</span>        <span class="p">,</span> <span class="mf">0.992259</span>  <span class="p">,</span>
+        <span class="mf">0.67660191</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">3.57135197</span><span class="p">,</span> <span class="mf">2.78453118</span><span class="p">,</span> <span class="mf">3.98733177</span><span class="p">,</span> <span class="mf">0.992259</span>  <span class="p">,</span> <span class="mf">0.</span>        <span class="p">,</span>
+        <span class="mf">0.32805982</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">3.24471024</span><span class="p">,</span> <span class="mf">2.46558506</span><span class="p">,</span> <span class="mf">3.65947555</span><span class="p">,</span> <span class="mf">0.67660191</span><span class="p">,</span> <span class="mf">0.32805982</span><span class="p">,</span>
+        <span class="mf">0.</span>        <span class="p">]])</span>
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">distances_dataset()</span></code> can also take and return data in the
+Pandas dataframe format.</p>
+</div>
+<div class="section" id="distance-datasets-to-hamiltonians">
+<h3>Distance datasets to Hamiltonians<a class="headerlink" href="#distance-datasets-to-hamiltonians" title="Permalink to this headline">¶</a></h3>
+<p>Now that we have the distances between all points in the dataset, we
+want to generate the corresponding MaxCut Hamiltonian. We can do this
+easily with the <code class="docutils literal notranslate"><span class="pre">hamiltonian_from_distances()</span></code> method.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hData</span> <span class="o">=</span> <span class="n">hamiltonian_from_distances</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">hData</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mf">0.8920869530576089</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.6213793918993751</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="mf">2.6458987711536555</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">3.5713519713338515</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z4</span> <span class="o">+</span> <span class="p">(</span><span class="mf">3.244710235054523</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z5</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.4728630670136837</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.938791326007791</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">2.784531176657113</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z4</span> <span class="o">+</span> <span class="p">(</span><span class="mf">2.4655850590944866</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z5</span> <span class="o">+</span> <span class="p">(</span><span class="mf">3.019437590479767</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">3.987331765143783</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z4</span> <span class="o">+</span> <span class="p">(</span><span class="mf">3.6594755517875734</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z5</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.9922590043101441</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z4</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.6766019064351919</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z5</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.3280598229772459</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z4</span><span class="o">*</span><span class="n">Z5</span>
+</pre></div>
+</div>
+<p>For simplicity here we have omitted terms proportional to the identity
+matrix, which are commonly included in the definition of the MaxCut cost
+function. Since such terms only introduce a global energy shift, they do
+not affect the optimal configuration that we find as a solution.</p>
+</div>
+</div>
+<div class="section" id="example-1-using-qaoa-to-solve-maxcut-for-the-clustering-problem">
+<h2>Example 1: Using QAOA to solve MaxCut for the clustering problem<a class="headerlink" href="#example-1-using-qaoa-to-solve-maxcut-for-the-clustering-problem" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have the Hamiltonian, we can go ahead and run the QAOA to
+check that the points are clustered correctly. We will use the
+<code class="docutils literal notranslate"><span class="pre">ExtendedParams</span></code> class, and three timesteps (p=3). We don’t include
+any single-qubit bias terms.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_qubits</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">p</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># Specify some angles</span>
+<span class="n">betas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+<span class="n">gammas_singles</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">gammas_pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hData</span><span class="p">),</span><span class="n">p</span><span class="p">)</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">betas</span><span class="p">,</span><span class="n">gammas_singles</span><span class="p">,</span><span class="n">gammas_pairs</span><span class="p">)</span>
+
+<span class="n">extended_params</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="p">([</span><span class="n">hData</span><span class="p">,</span><span class="n">p</span><span class="p">],</span><span class="n">parameters</span><span class="p">)</span>
+
+<span class="c1"># NOTE - the optimiser will reach its maximum number of iterations, but for the parameters being used here,</span>
+<span class="c1"># the choice maxiter=200 seems to be more than sufficient to get to the optimum with high probability.</span>
+<span class="n">cost_function</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hData</span><span class="p">,</span>
+                                        <span class="n">params</span><span class="o">=</span><span class="n">extended_params</span><span class="p">,</span>
+                                        <span class="n">scalar_cost_function</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="n">extended_params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span>
+               <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Cobyla&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">})</span>
+<span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">fun</span><span class="p">:</span> <span class="o">-</span><span class="mf">8.177921421095586</span>
+  <span class="n">maxcv</span><span class="p">:</span> <span class="mf">0.0</span>
+<span class="n">message</span><span class="p">:</span> <span class="s1">&#39;Maximum number of function evaluations has been exceeded.&#39;</span>
+   <span class="n">nfev</span><span class="p">:</span> <span class="mi">200</span>
+ <span class="n">status</span><span class="p">:</span> <span class="mi">2</span>
+<span class="n">success</span><span class="p">:</span> <span class="kc">False</span>
+      <span class="n">x</span><span class="p">:</span> <span class="n">array</span><span class="p">([</span> <span class="mf">1.2968615</span> <span class="p">,</span>  <span class="mf">1.13140341</span><span class="p">,</span>  <span class="mf">0.45590417</span><span class="p">,</span>  <span class="mf">0.27218615</span><span class="p">,</span>  <span class="mf">0.22005776</span><span class="p">,</span>
+       <span class="mf">1.21903021</span><span class="p">,</span>  <span class="mf">0.68586607</span><span class="p">,</span>  <span class="mf">0.92049553</span><span class="p">,</span>  <span class="mf">1.5634729</span> <span class="p">,</span>  <span class="mf">1.54949027</span><span class="p">,</span>
+       <span class="mf">0.05019311</span><span class="p">,</span>  <span class="mf">1.53142017</span><span class="p">,</span>  <span class="mf">0.99585679</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.17861998</span><span class="p">,</span>  <span class="mf">0.92000842</span><span class="p">,</span>
+       <span class="mf">0.73999305</span><span class="p">,</span>  <span class="mf">0.19711567</span><span class="p">,</span>  <span class="mf">0.21175899</span><span class="p">,</span>  <span class="mf">0.05057582</span><span class="p">,</span>  <span class="mf">0.39652405</span><span class="p">,</span>
+       <span class="mf">1.46430515</span><span class="p">,</span>  <span class="mf">0.84138333</span><span class="p">,</span>  <span class="mf">0.87310902</span><span class="p">,</span>  <span class="mf">1.27336059</span><span class="p">,</span>  <span class="mf">0.47683663</span><span class="p">,</span>
+       <span class="mf">1.86760206</span><span class="p">,</span>  <span class="mf">0.90165824</span><span class="p">,</span>  <span class="mf">0.97404713</span><span class="p">,</span>  <span class="mf">1.60452064</span><span class="p">,</span>  <span class="mf">0.42105087</span><span class="p">,</span>
+       <span class="mf">0.72587103</span><span class="p">,</span>  <span class="mf">0.94921258</span><span class="p">,</span>  <span class="mf">0.32042373</span><span class="p">,</span>  <span class="mf">0.92838485</span><span class="p">,</span>  <span class="mf">0.80194516</span><span class="p">,</span>
+       <span class="mf">1.37924246</span><span class="p">,</span>  <span class="mf">0.7273695</span> <span class="p">,</span>  <span class="mf">0.31844058</span><span class="p">,</span>  <span class="mf">0.17526702</span><span class="p">,</span>  <span class="mf">0.37083024</span><span class="p">,</span>
+       <span class="mf">0.48814381</span><span class="p">,</span>  <span class="mf">1.41541468</span><span class="p">,</span>  <span class="mf">1.43040292</span><span class="p">,</span>  <span class="mf">0.5900947</span> <span class="p">,</span>  <span class="mf">0.11542496</span><span class="p">,</span>
+       <span class="mf">0.01334736</span><span class="p">,</span>  <span class="mf">0.18902991</span><span class="p">,</span>  <span class="mf">1.72525423</span><span class="p">,</span>  <span class="mf">0.92682988</span><span class="p">,</span>  <span class="mf">0.12635149</span><span class="p">,</span>
+       <span class="mf">0.07501775</span><span class="p">,</span>  <span class="mf">0.16643011</span><span class="p">,</span>  <span class="mf">0.57625313</span><span class="p">,</span>  <span class="mf">0.05711509</span><span class="p">,</span>  <span class="mf">0.58498862</span><span class="p">,</span>
+       <span class="mf">0.23702585</span><span class="p">,</span>  <span class="mf">0.71313912</span><span class="p">,</span>  <span class="mf">0.31977506</span><span class="p">,</span>  <span class="mf">0.41922587</span><span class="p">,</span>  <span class="mf">0.71878501</span><span class="p">,</span>
+       <span class="mf">0.75606292</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.24765194</span><span class="p">,</span>  <span class="mf">0.4416072</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>Let us plot the probabilities of the different bitstrings. Since the
+energies are invariant under a bit flip on all qubits, each bitstring
+and its complement have identical outcome probabilities.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">opt_wfn</span> <span class="o">=</span> <span class="n">cost_function</span><span class="o">.</span><span class="n">get_wavefunction</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="n">probs</span> <span class="o">=</span> <span class="n">opt_wfn</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">probs</span><span class="p">)),</span> <span class="n">probs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/5_QAOAUtilities_28_0.png" src="../_images/5_QAOAUtilities_28_0.png" />
+<p>Now we want to find the string corresponding to the optimal solution.
+Numpy’s <code class="docutils literal notranslate"><span class="pre">argmax</span></code> function will return the first of the two degenerate
+solutions. As expected, we find that the first three qubits are in one
+class, and the second three qubits in another (this is the way the data
+was constructed above, in two distinct clusters).</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">optimal_string</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
+<span class="s2">&quot;{0:06b}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">optimal_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;000111&#39;</span>
+</pre></div>
+</div>
+<p>We can check that the other optimal solution found is the complement
+bitstring, i.e. 111000:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">probs</span><span class="p">[</span><span class="n">optimal_string</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># Sets the solution 000111 to have zero probability</span>
+<span class="n">optimal_string_complement</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
+<span class="s2">&quot;{0:06b}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">optimal_string_complement</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;111000&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-2-the-ring-of-disagrees">
+<h2>Example 2: The Ring of Disagrees<a class="headerlink" href="#example-2-the-ring-of-disagrees" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Ring of Diasgrees</em> is a 2-regular graph on a given number of nodes
+<span class="math notranslate nohighlight">\(n\)</span>. Its simple structure has allowed a number of extremely useful
+benchmarking results for QAOA to be derived. The ground state has energy
+<span class="math notranslate nohighlight">\(-n\)</span> for even <span class="math notranslate nohighlight">\(n\)</span>, and <span class="math notranslate nohighlight">\(-n+1\)</span> for odd <span class="math notranslate nohighlight">\(n\)</span>, and
+neighbouring nodes have opposite values (i.e. if a given node has value
+1, its neighbour has value 0).</p>
+<p>In the paper that originally introduced the QAOA (<a class="reference external" href="#references">Ref
+2</a>), it was shown numerically that this graph provides a
+simple example of how the approximation ratio returned by QAOA can be
+made arbitrarily close to 1 by increasing the parameter <span class="math notranslate nohighlight">\(p\)</span>. For
+the MaxCut problem, the optimal cost function value returned for a given
+<span class="math notranslate nohighlight">\(n\)</span> and <span class="math notranslate nohighlight">\(p\)</span> was found to be</p>
+<div class="math notranslate nohighlight">
+\[C(n,p) = \left(\frac{2p + 1}{2p + 2}\right)n\]</div>
+<p>This result assumes the <code class="docutils literal notranslate"><span class="pre">StandardParams</span></code> parameterisation, and that
+the graph is unweighted (all edge weights equal to 1). Here we verify
+this result using the <code class="docutils literal notranslate"><span class="pre">ring_of_disagrees()</span></code> function. Note that
+subsequent to <a class="reference external" href="#references">Ref 2</a>, this result has been derived
+using analytic methods in <a class="reference external" href="#references">Ref 3</a>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_nodes</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">h_disagrees</span> <span class="o">=</span> <span class="n">ring_of_disagrees</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)</span>
+<span class="n">g_disagrees</span> <span class="o">=</span> <span class="n">graph_from_hamiltonian</span><span class="p">(</span><span class="n">h_disagrees</span><span class="p">)</span>
+<span class="n">plot_graph</span><span class="p">(</span><span class="n">g_disagrees</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/5_QAOAUtilities_34_0.png" src="../_images/5_QAOAUtilities_34_0.png" />
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">optimise_ring_of_disagrees</span><span class="p">(</span><span class="n">pval</span><span class="p">):</span>
+
+    <span class="c1"># Initialise angles</span>
+    <span class="n">betas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span>
+    <span class="n">gammas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">gammas</span><span class="p">)</span>
+
+    <span class="c1"># Set up (hyper)parameters</span>
+    <span class="n">disagrees_params</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="p">([</span><span class="n">h_disagrees</span><span class="p">,</span><span class="n">pval</span><span class="p">],</span><span class="n">parameters</span><span class="p">)</span>
+
+    <span class="c1"># Cost function and optimisation</span>
+    <span class="n">cost_function</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">h_disagrees</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">disagrees_params</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="n">disagrees_params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span>
+                   <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BFGS&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">fun</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
+
+
+<span class="n">p_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># p range to consider</span>
+<span class="n">output_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">p_vals</span><span class="p">),))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">p_vals</span><span class="p">:</span>
+
+    <span class="n">output_val</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">optimise_ring_of_disagrees</span><span class="p">(</span><span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Since we have 8 qubits, according to Farhi’s formula we should find the
+maximum energy to be
+<span class="math notranslate nohighlight">\(-8 \cdot (3/4,5/6,7/8,9/10) = -(6, 6.67, 7, 7.2)\)</span> for
+<span class="math notranslate nohighlight">\(p = (1,2,3,4)\)</span>:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output_val</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">5.99999999</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.66666667</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.99999999</span><span class="p">,</span> <span class="o">-</span><span class="mf">7.99999999</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>For the case <span class="math notranslate nohighlight">\(p=1\)</span>, the optimal angles can be computed
+analytically, and are given by
+<span class="math notranslate nohighlight">\((\beta_{opt}, \gamma_{opt}) = (\pi/8, \pi/4\)</span>) - see <a class="reference external" href="#references">Ref
+4</a>. We can see that the optimiser does indeed return
+these angles:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">opt_angles</span> <span class="o">=</span> <span class="n">optimise_ring_of_disagrees</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">opt_angles</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([</span><span class="mf">0.39269308</span><span class="p">,</span> <span class="mf">0.78538503</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Let’s finish off by running an example of the Ring of Disagrees on the
+QVM; we would follow a similar method to run the computation on the QPU.
+We’ll use the optimal angles we have just found to check that the
+probability distribution of samples we obtain does indeed return the
+bitstring [0,1,0,1], or its complement [1,0,1,0], with high probability.</p>
+<p>Here, we make use of the <code class="docutils literal notranslate"><span class="pre">sample_qaoa_bitstrings</span></code> function, which
+executes the circuit defined by the QAOA instance and samples from
+output multiple times. We can plot the output conveniently using
+<code class="docutils literal notranslate"><span class="pre">bitstring_histogram</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qvm</span> <span class="o">=</span> <span class="n">get_qc</span><span class="p">(</span><span class="s2">&quot;4q-qvm&quot;</span><span class="p">)</span>
+
+<span class="n">ham_disagrees_4</span> <span class="o">=</span> <span class="n">ring_of_disagrees</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">params_disagrees_4</span> <span class="o">=</span> <span class="n">StandardParams</span><span class="p">([</span><span class="n">ham_disagrees_4</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">opt_angles</span><span class="p">)</span>
+
+<span class="n">bitstrings</span> <span class="o">=</span> <span class="n">sample_qaoa_bitstrings</span><span class="p">(</span><span class="n">params_disagrees_4</span><span class="p">,</span> <span class="n">qvm</span><span class="p">)</span>
+<span class="n">bitstring_histogram</span><span class="p">(</span><span class="n">bitstrings</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/5_QAOAUtilities_41_0.png" src="../_images/5_QAOAUtilities_41_0.png" />
+</div>
+<div class="section" id="more-miscellaneous-utilities">
+<h2>More miscellaneous utilities<a class="headerlink" href="#more-miscellaneous-utilities" title="Permalink to this headline">¶</a></h2>
+<p>Here we demonstrate the functionality of some additional methods that
+may be useful in certain contexts.</p>
+<div class="section" id="different-initial-states-for-qaoa">
+<h3>Different initial states for QAOA<a class="headerlink" href="#different-initial-states-for-qaoa" title="Permalink to this headline">¶</a></h3>
+<p>We can easily use an initial state different from
+<span class="math notranslate nohighlight">\(\left|+ \cdots +\right&gt;\)</span> for QAOA, by passing a state preparation
+program for the <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> argument of the QAOA cost functions.
+For purely classical states (i.e. not a quantum superposition state)
+such as <span class="math notranslate nohighlight">\(\left|10 \cdots 10\right&gt;\)</span>, these programs cane be
+created via <code class="docutils literal notranslate"><span class="pre">prepare_classical_state</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">register</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="c1"># the register to create the state on</span>
+<span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>     <span class="c1"># the |42&gt; state (encodes the decimal number 42)</span>
+
+<span class="n">prepare42_circuit</span> <span class="o">=</span> <span class="n">prepare_classical_state</span><span class="p">(</span><span class="n">register</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">prepare42_circuit</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="mi">0</span>
+<span class="n">X</span> <span class="mi">2</span>
+<span class="n">X</span> <span class="mi">4</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-the-bitstring-corresponding-to-the-maximum-probability-state">
+<h3>Get the bitstring corresponding to the maximum probability state<a class="headerlink" href="#get-the-bitstring-corresponding-to-the-maximum-probability-state" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">max_probability_bitstring()</span></code> method returns the bitstring
+corresponding to the maximum probability state of a wavefunction.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># just an array of length 16 (corresponds to a 4-qubit system)</span>
+<span class="n">probs</span> <span class="o">=</span> <span class="n">probs</span><span class="o">/</span><span class="n">probs</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="c1"># normalise to represent a proper probability distribution</span>
+<span class="n">max_prob_state</span> <span class="o">=</span> <span class="n">max_probability_bitstring</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">max_prob_state</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="accuracy-scores-for-qaoa">
+<h3>Accuracy scores for QAOA<a class="headerlink" href="#accuracy-scores-for-qaoa" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">cluster_accuracy()</span></code> gives accuary scores for a QAOA result, if the
+true solution is known. The accuracy here is defined as the percentage
+of bits that are correct compared to the known solution.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cluster_accuracy</span><span class="p">(</span><span class="n">max_prob_state</span><span class="p">,</span> <span class="n">true_labels</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">True</span> <span class="n">Labels</span> <span class="n">of</span> <span class="n">samples</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">Lowest</span> <span class="n">QAOA</span> <span class="n">State</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">Accuracy</span> <span class="n">of</span> <span class="n">Original</span> <span class="n">State</span><span class="p">:</span> <span class="mf">50.0</span> <span class="o">%</span>
+<span class="n">Accuracy</span> <span class="n">of</span> <span class="n">Complement</span> <span class="n">State</span><span class="p">:</span> <span class="mf">50.0</span> <span class="o">%</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-nice-plots-of-probabilties">
+<h3>Get nice plots of probabilties<a class="headerlink" href="#get-nice-plots-of-probabilties" title="Permalink to this headline">¶</a></h3>
+<p>If the true energies of all states are known, we can also obtain a nice
+side-by-side plot of the energies and probabilites using
+<code class="docutils literal notranslate"><span class="pre">plot_probabilities()</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plot_probabilities</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/5_QAOAUtilities_50_0.png" src="../_images/5_QAOAUtilities_50_0.png" />
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>J. S. Otterbach et al, <a class="reference external" href="https://arxiv.org/abs/1712.05771">Unsupervised Machine Learning on a Hybrid
+Quantum Computer</a></p></li>
+<li><p>E. Farhi et al, <a class="reference external" href="https://arxiv.org/abs/1411.4028">A Quantum Approximate Optimization
+Algorithm</a></p></li>
+<li><p>Z. Wang et al, <a class="reference external" href="https://arxiv.org/pdf/1706.02998.pdf">The Quantum Approximation Optimization Algorithm for
+MaxCut: A Fermionic View</a></p></li>
+<li><p>S. Hadfield, <a class="reference external" href="https://arxiv.org/pdf/1805.03265.pdf">Quantum Algorithms for Scientific Computing and
+Approximate Optimization</a></p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="6_SolvingQUBOwithQAOA.html" class="btn btn-neutral float-right" title="Solving a simple QUBO with QAOA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="4_CostFunctionsAndVQE.html" class="btn btn-neutral float-left" title="Cost function features and VQE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

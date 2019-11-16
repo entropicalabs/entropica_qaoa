@@ -1,0 +1,34 @@
+Changelog
+=========
+
+`v1.2 <https://gitlab.com/entropica/entropica_qaoa/tree/dev>`__ (October 9, 2019)
+---------------------------------------------------------------------------------
+
+Improvements and changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Variable names in ``qaoa.cost_function.py`` have been updated to
+   better reflect their counterparts in ``qaoa.parameters.py``. This
+   fixed Issue #40 (@jlbosse, !6)
+-  Sped up cost function calls and construction for
+   ``PrepareAndMeasureOnWFSim`` and ``QAOACostFunOnWFSim``. For very
+   small systems and hamiltonians
+   ``WavefunctionSimulator().expectation()`` is still faster, than our
+   implementation. This fixed Issue #43 and #44. (@jlbosse, !7 and
+   d6df9f73e504c92b06485e1ce8e95676f7a02ccd)
+-  Added an example of using QAOA to solve a simple QUBO problem.
+-  Sped up tests by removing all ``with local_qvm()`` context managers.
+   You have to manually start a qvm in the background for the tests now!
+   (@jlbosse, !8)
+-  Added ``sample_qaoa_bistrings`` to ``utilities.py``
+
+Bugfixes
+~~~~~~~~
+
+-  Can access ``FourierExtendedParams.z_rotation_angles`` now for
+   hamiltonians without bias terms. This fixed Issue #45 (@jlbosse, !8)
+
+`v1.0-beta <https://github.com/entropicalabs/entropica_qaoa/releases/tag/1.0>`__ (September 12, 2019)
+-----------------------------------------------------------------------------------------------------
+
+-  Initial beta release

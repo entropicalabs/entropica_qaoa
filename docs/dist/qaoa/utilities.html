@@ -1,0 +1,617 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>VQE and QAOA utilities &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Measurement utilities" href="measurelib.html" />
+    <link rel="prev" title="QAOA Parametrisations" href="parameters.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+            
+            <img src="_static/Entropica_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">About Entropica Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about_entropica.html">About Entropica Labs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials_overview.html">Overview of tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/7_ClusteringWithQAOA.html">Solve the clustering problem using QAOA</a></li>
+</ul>
+<p class="caption"><span class="caption-text">General Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Implementation details, conventions, and FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>VQE and QAOA utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/utilities.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-utilities">
+<span id="vqe-and-qaoa-utilities"></span><h1>VQE and QAOA utilities<a class="headerlink" href="#module-utilities" title="Permalink to this headline">¶</a></h1>
+<p>Utility and convenience functions for a number of QAOA applications.</p>
+<dl class="function">
+<dt id="utilities.bitstring_histogram">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">bitstring_histogram</code><span class="sig-paren">(</span><em class="sig-param">results</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.bitstring_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots a histogram of the output bitstrings obtained by sampling from the QVM or QPU</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bitstrings</strong> – An array of the measured values of each qubit from all trials: array shape is (nshots x nqubits)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.cluster_accuracy">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">cluster_accuracy</code><span class="sig-paren">(</span><em class="sig-param">state</em>, <em class="sig-param">true_labels</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.cluster_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints informative statements comparing QAOA’s returned bit string for MaxCut to the
+true (known) cluster labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> – A little-endian list of binary integers representing the lowest energy
+state of the wavefunction</p></li>
+<li><p><strong>true_labels</strong> – A little-endian list of binary integers representing the true solution
+to the MAXCUT clustering problem.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.distances_dataset">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">distances_dataset</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">metric='euclidean'</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.distances_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the distance between data points in a specified dataset,
+according to the specified metric (default is Euclidean).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[&lt;built-in function array&gt;, <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[~KT, ~VT]]) – The user’s dataset, either as an array, dictionary, or a Pandas
+DataFrame</p></li>
+<li><p><strong>metric</strong> – Type of metric to calculate the distances used in
+<code class="docutils literal notranslate"><span class="pre">scipy.spatial.distance</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If input is a dictionary or numpy array, output is a numpy array of
+dimension NxN, where N is the number of data points.
+If input is a Pandas DataFrame, the distances are returned in this format.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[np.array, pd.Dataframe]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.gaussian_2Dclusters">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">gaussian_2Dclusters</code><span class="sig-paren">(</span><em class="sig-param">n_clusters</em>, <em class="sig-param">n_points</em>, <em class="sig-param">means</em>, <em class="sig-param">cov_matrices</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.gaussian_2Dclusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a set of clustered data points, where the distribution within each
+cluster is Gaussian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_clusters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The number of clusters</p></li>
+<li><p><strong>n_points</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – A list of the number of points in each cluster</p></li>
+<li><p><strong>means</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – A list of the means [x,y] coordinates of each cluster in the plane
+i.e. their centre)</p></li>
+<li><p><strong>cov_matrices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – A list of the covariance matrices of the clusters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>data</em> – A dict whose keys are the cluster labels, and values are a matrix of
+the with the x and y coordinates as its rows.</p></li>
+<li><p><em>TODO</em> – Output data as Pandas DataFrame?</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.graph_from_hamiltonian">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">graph_from_hamiltonian</code><span class="sig-paren">(</span><em class="sig-param">hamiltonian</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.graph_from_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a networkx graph corresponding to a specified problem Hamiltonian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hamiltonian</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">PauliSum</span></code>) – The Hamiltonian of interest. Must be specified as a PauliSum object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>G</em> – The corresponding networkx graph with the edge weights being the
+two-qubit coupling coefficients,
+and the node weights being the single-qubit bias terms.</p></li>
+<li><p><em>TODO</em> – Allow ndarrays to be input as hamiltonian too.
+Provide support for qubit placeholders.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.graph_from_hyperparams">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">graph_from_hyperparams</code><span class="sig-paren">(</span><em class="sig-param">reg</em>, <em class="sig-param">singles</em>, <em class="sig-param">biases</em>, <em class="sig-param">pairs</em>, <em class="sig-param">couplings</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.graph_from_hyperparams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a networkx graph from the specified QAOA hyperparameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nqubits</strong> – The number of qubits (graph nodes)</p></li>
+<li><p><strong>singles</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The qubits that have a bias term (node weight)</p></li>
+<li><p><strong>biases</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The values of the single-qubit biases (i.e. the node weight values)</p></li>
+<li><p><strong>pairs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The qubit pairs that are coupled (i.e. the nodes conected by an edge)</p></li>
+<li><p><strong>couplings</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The strength of the coupling between the qubit pairs (i.e. the edge weights)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Networkx graph with the specified properties</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>nx.Graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.hamiltonian_from_distances">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">hamiltonian_from_distances</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">biases=None</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.hamiltonian_from_distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a Hamiltonian from a distance matrix and a numpy array of single
+qubit bias terms where the i’th indexed value of in biases is applied to
+the i’th qubit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist</strong> – A 2-dimensional square matrix or Pandas DataFrame, where entries in row i, column j
+represent the distance between node i and node j. Assumed to be
+symmetric</p></li>
+<li><p><strong>biases</strong> – A dictionary of floats, with keys indicating the qubits with bias
+terms, and corresponding values being the bias coefficients.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A PauliSum object modelling the Hamiltonian of the system</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>PauliSum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.hamiltonian_from_graph">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">hamiltonian_from_graph</code><span class="sig-paren">(</span><em class="sig-param">G</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.hamiltonian_from_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a cost Hamiltonian as a PauliSum from a specified networkx graph,
+extracting any node biases and edge weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>G</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code>) – The networkx graph of interest.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The PauliSum representation of the networkx graph.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>PauliSum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.hamiltonian_from_hyperparams">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">hamiltonian_from_hyperparams</code><span class="sig-paren">(</span><em class="sig-param">reg</em>, <em class="sig-param">singles</em>, <em class="sig-param">biases</em>, <em class="sig-param">pairs</em>, <em class="sig-param">couplings</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.hamiltonian_from_hyperparams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a cost Hamiltonian as a PauliSum from a specified set of problem hyperparameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reg</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">QubitPlaceholder</span></code>]]) – The register to apply the beta rotations on.</p></li>
+<li><p><strong>singles</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The register indices of the qubits that have a bias term</p></li>
+<li><p><strong>biases</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Values of the biases on the qubits specified in singles.</p></li>
+<li><p><strong>pairs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">QubitPlaceholder</span></code>]]) – The qubit pairs that have a non-zero coupling coefficient.</p></li>
+<li><p><strong>couplings</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The value of the couplings for each pair of qubits in pairs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The PauliSum built from these hyperams.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Hamiltonian</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.max_probability_bitstring">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">max_probability_bitstring</code><span class="sig-paren">(</span><em class="sig-param">probs</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.max_probability_bitstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the lowest energy state of a QAOA run from the list of
+probabilities returned by pyQuil’s Wavefunction.probabilities()method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>probs</strong> – A numpy array of length 2^n, returned by Wavefunction.probabilities()</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A little endian list of binary integers indicating the lowest energy
+state of the wavefunction.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.pauli_matrix">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">pauli_matrix</code><span class="sig-paren">(</span><em class="sig-param">pauli_sum</em>, <em class="sig-param">qubit_mapping={}</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.pauli_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the matrix representation of pauli_sum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>qubit_mapping</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[~KT, ~VT]) – A dictionary-like object that maps from :py:class`QubitPlaceholder` to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A matrix representing the PauliSum</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.plot_cluster_data">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">plot_cluster_data</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.plot_cluster_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a scatterplot of the input data specified</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.plot_graph">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">plot_graph</code><span class="sig-paren">(</span><em class="sig-param">G</em>, <em class="sig-param">ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.plot_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots a networkx graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> – The networkx graph of interest.</p></li>
+<li><p><strong>ax</strong> (<em>Matplotlib axes object</em>) – Defaults to None. Matplotlib axes to plot on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.plot_probabilities">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">plot_probabilities</code><span class="sig-paren">(</span><em class="sig-param">probabilities</em>, <em class="sig-param">energies</em>, <em class="sig-param">ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.plot_probabilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a nice plot of the probabilities for each state and its energy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>probabilities</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[&lt;built-in function array&gt;, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – The probabilites to find the state. Can be calculated via wavefunction.probabilities()</p></li>
+<li><p><strong>energies</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[&lt;built-in function array&gt;, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – The energies of the states</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib axes object</em>) – The canvas to draw on</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.prepare_classical_state">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">prepare_classical_state</code><span class="sig-paren">(</span><em class="sig-param">reg</em>, <em class="sig-param">state</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.prepare_classical_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare a custom classical state for all qubits in the specified register reg.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reg</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">QubitPlaceholder</span></code>]]) – Register to apply the state preparation circuit on. E.g. a list of
+qubits</p></li>
+<li><p><strong>state</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – A list of 0s and 1s which represent the starting state of the register, bit-wise.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Quil Program with a circuit in an initial classical state.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Program</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.random_hamiltonian">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">random_hamiltonian</code><span class="sig-paren">(</span><em class="sig-param">reg</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.random_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a random cost hamiltonian, diagonal in the computational basis:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Randomly selects which qubits that will have a bias term, then assigns
+them a bias coefficient.</p></li>
+<li><p>Randomly selects which qubit pairs will have a coupling term, then
+assigns them a coupling coefficient.</p></li>
+</ul>
+<p>In both cases, the random coefficient is drawn from the uniform
+distribution on the interval [0,1).</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reg</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">QubitPlaceholder</span></code>]]) – register to build the hamiltonian on.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A hamiltonian with random couplings and biases, as a PauliSum object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>PauliSum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.random_k_regular_graph">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">random_k_regular_graph</code><span class="sig-paren">(</span><em class="sig-param">degree</em>, <em class="sig-param">nodes</em>, <em class="sig-param">seed=None</em>, <em class="sig-param">weighted=False</em>, <em class="sig-param">biases=False</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.random_k_regular_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces a random graph with specified number of nodes, each having degree k.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>degree</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Desired degree for the nodes</p></li>
+<li><p><strong>nodes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">QubitPlaceholder</span></code>]]) – The node set of the graph. Can be anything that works as a qubit for
+PauliSums.</p></li>
+<li><p><strong>seed</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – A seed for the random number generator</p></li>
+<li><p><strong>weighted</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Whether the edge weights should be uniform or different. If false, all weights are set to 1.
+If true, the weight is set to a random number drawn from the uniform distribution in the interval 0 to 1.
+If true, the weight is set to a random number drawn from the uniform
+distribution in the interval 0 to 1.</p></li>
+<li><p><strong>biases</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not the graph nodes should be assigned a weight.
+If true, the weight is set to a random number drawn from the uniform
+distribution in the interval 0 to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A graph with the properties as specified.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>nx.Graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.ring_of_disagrees">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">ring_of_disagrees</code><span class="sig-paren">(</span><em class="sig-param">n</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.ring_of_disagrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the cost Hamiltonian for the “Ring of Disagrees” described in the
+original QAOA paper (<a class="reference external" href="https://arxiv.org/abs/1411.4028">https://arxiv.org/abs/1411.4028</a>),
+for the specified number of vertices n.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of vertices in the ring</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The cost Hamiltonian representing the ring, as a PauliSum object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>PauliSum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.sample_qaoa_bitstrings">
+<code class="sig-prename descclassname">utilities.</code><code class="sig-name descname">sample_qaoa_bitstrings</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">qvm</em>, <em class="sig-param">initial_state=None</em>, <em class="sig-param">nshots=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.sample_qaoa_bitstrings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the QAOA circuit using the specified parameters <code class="docutils literal notranslate"><span class="pre">params</span></code>, and
+measures the output bitstrings from <code class="docutils literal notranslate"><span class="pre">nshots</span></code> runs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractParams</span></code>) – the QAOA parameters of interest</p></li>
+<li><p><strong>qvm</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">QuantumComputer</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the QVM or QPU to run on</p></li>
+<li><p><strong>intial_state</strong> – a program to prepare the initial state (defaults to all <code class="docutils literal notranslate"><span class="pre">|+&gt;</span></code>)</p></li>
+<li><p><strong>nshots</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the number of times to run the circuit and measure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an array of shape (nshots x nqubits) with the measurement outcomes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="measurelib.html" class="btn btn-neutral float-right" title="Measurement utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="parameters.html" class="btn btn-neutral float-left" title="QAOA Parametrisations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

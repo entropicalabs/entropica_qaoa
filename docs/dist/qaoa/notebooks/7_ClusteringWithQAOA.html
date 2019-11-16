@@ -1,0 +1,1202 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Solve the clustering problem using QAOA &mdash; Entropica QAOA  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Implementation details, conventions, and FAQ" href="../faq.html" />
+    <link rel="prev" title="Solving a simple QUBO with QAOA" href="6_SolvingQUBOwithQAOA.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Entropica QAOA
+          
+
+          
+            
+            <img src="../_static/Entropica_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">About Entropica Labs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about_entropica.html">About Entropica Labs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials_overview.html">Overview of tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="1_AnExampleWorkflow.html">First steps: An example workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_ParameterClasses.html">Working with the Parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_AdvancedParameterClasses.html">Advanced QAOA parameter classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_CostFunctionsAndVQE.html">Cost function features and VQE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_QAOAUtilities.html">Utility functions for QAOA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_SolvingQUBOwithQAOA.html">Solving a simple QUBO with QAOA</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Solve the clustering problem using QAOA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#variational-hybrid-algorithms">Variational Hybrid Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-maxcut-problem">The Maxcut Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#from-maxcut-to-qubo">From Maxcut to QUBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#from-qubo-to-a-hamiltonian">From QUBO to a Hamiltonian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minimize-the-hamiltonian-with-qaoa">Minimize the Hamiltonian with QAOA</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">General Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Implementation details, conventions, and FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../vqe_cost_function.html">VQE cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../qaoa_cost_function.html">QAOA cost functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters.html">QAOA Parametrisations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities.html">VQE and QAOA utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../measurelib.html">Measurement utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Entropica QAOA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Solve the clustering problem using QAOA</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notebooks/7_ClusteringWithQAOA.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="solve-the-clustering-problem-using-qaoa">
+<span id="clusteringwithqaoa"></span><h1>Solve the clustering problem using QAOA<a class="headerlink" href="#solve-the-clustering-problem-using-qaoa" title="Permalink to this headline">¶</a></h1>
+<p><strong>Author: Cooper Midroni</strong> <a class="reference external" href="mailto:cooper&#37;&#52;&#48;entropicalabs&#46;com">cooper<span>&#64;</span>entropicalabs<span>&#46;</span>com</a></p>
+<p>In this notebook we demonstrate a start-to-finish project workflow for
+using Quantum Approximate Optimization Algorithm to cluster a simple
+dataset. Along the way, we will explain the major concepts of QAOA and
+build intuition as to how QAOA can be used to solve clustering problems.
+This notebook will steer away from heavy mathematical explanations in
+favor of a higher level view of the algorithm’s core components. It is
+mainly geared towards users that don’t have physics background but come
+from computer science.</p>
+<div class="section" id="variational-hybrid-algorithms">
+<h2>Variational Hybrid Algorithms<a class="headerlink" href="#variational-hybrid-algorithms" title="Permalink to this headline">¶</a></h2>
+<p>We often take for granted the many decades of progress that lead to
+today’s widespread use of classical computers. As memory and compute
+power become ever cheapened by Moore’s Law, the pressure to find optimal
+resource allocations for algorithms shrinks away. However, with quantum
+computers in their early stages, they still feel this daunting
+requirement. In response to this, a family of algorithms known as
+<em>variational hybrid quantum-classical algorithms</em> was created, with the
+notion that quantum resources can be made more useful when partnered
+with classical routines. The Quantum Approximate Optimization Algorithm
+(QAOA), belongs to the family of variatonal hybrid algorithms.</p>
+<p>We can infer a lot from merely unpacking this name. The presence of
+‘<em>variational</em>’ tells us these algorithms will follow an iterative
+approach, while ‘<em>hybrid</em>’ tells us they will leverage the use of both
+quantum and classical computers. In fact, this describes the main flow
+of the algorithm, with all that needs be answered is <em>when</em> does this
+iteration stop and <em>what</em> information is passed between devices.</p>
+<p><img alt="A visual representation of a generic variational hybrid quantum-classical algorithm." src="../_images/general_variational.png" /> <em>A visual representation of a generic
+variational hybrid quantum-classical algorithm.</em></p>
+<p>To answer the question of <em>what</em>, we note that the main goal of QAOA is
+optimize a set of <strong>parameters</strong>, which we denote as
+<span class="math notranslate nohighlight">\(\vec{\gamma}\)</span> and <span class="math notranslate nohighlight">\(\vec{\beta}\)</span>. You’ll notice that these
+symbols are vectors, as such they are <span class="math notranslate nohighlight">\(n-\)</span>length. We discuss
+later what aspects of our problem decide the value of <span class="math notranslate nohighlight">\(n\)</span> in the
+second notebook.</p>
+<p><span class="math notranslate nohighlight">\(\vec{\gamma}\)</span> and <span class="math notranslate nohighlight">\(\vec{\beta}\)</span> parameterize a <strong>cost
+function</strong> which is evaluated with our <strong>Quantum Circuit</strong> to produce a
+cost value. This output value is input to the optimizer, and is used to
+determine whether the nudging of our parameters is in a direction of
+lower cost. We will sometimes call the cost value an <strong>expectation
+value</strong>, represented by <span class="math notranslate nohighlight">\(\langle\psi|Cost|\psi\rangle\)</span>, which is
+the expected value of the cost function <span class="math notranslate nohighlight">\(Cost\)</span> over the <strong>wave
+function</strong> <span class="math notranslate nohighlight">\(\psi\)</span>. If you were caught off guard by the term ‘wave
+function’, then it is equally as effective to think of
+<span class="math notranslate nohighlight">\(\langle\psi|Cost|\psi\rangle\)</span> as the notion of cost as in the
+more traditional machine learning sense. The <strong>Classical Optimizer</strong>
+will return updated parameters to the quantum circuit for re-evaluation,
+and the cycle repeats.</p>
+<p><em>When</em> does this algorithm stop? Well, once a stopping criterion is met
+of course. This criterion is often a pre-defined maximum number of
+iterations, or occurs after a repeat number of evaluations land within
+the same threshold of convergence (a tolerance for the cost value in
+which we consider numbers within an <span class="math notranslate nohighlight">\(\epsilon-\)</span>window the same).
+Once this criterion is met, the <strong>optimized parameters</strong> are returned
+and used to define the solution.</p>
+<p><img alt="A visual representation of QAOA in the format of a variational hybrid algorithm." src="../_images/variational.png" /> <em>A visual representation of QAOA in the format of a
+variational hybrid algorithm.</em></p>
+<p>The above description should leave you with many questions. - How does
+the above process solve a clustering problem? - How exactly do
+<span class="math notranslate nohighlight">\(\vec{\gamma}\)</span> and <span class="math notranslate nohighlight">\(\vec{\beta}\)</span> define the solution? - How
+do we define a meaningful cost function for our problem? - What in the
+world is a wave function?</p>
+<p>We hope to answer these and more. For now, if you feel comfortable with
+the critical vocabulary of QAOA (the bolded words), then you’ll be well
+prepared for the explanations below. *** ### Data Preparation Now
+let’s get to the fun part! We will import our data and define the
+problem setting as a highly manicured example for this clustering demo.</p>
+<p>The dataset we will be using is the <strong>Pokemon dataset</strong>, which can be
+found on
+<a class="reference external" href="https://gist.github.com/armgilles/194bcff35001e7eb53a2a8b441e8b2c6">Github</a>.
+In our journey to Catch ’Em All, we will attempt to cluster Pokemon into
+Legendary and non-Legendary classes.</p>
+<p><strong>Import Libraries</strong></p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<p><strong>Import Data</strong></p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./data/pokemon.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="c1">#index pokemon by their ID number</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="s1">&#39;ID&#39;</span><span class="p">)</span> <span class="c1">#rename axis to &#39;ID&#39; instead of &#39;#&#39;</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">duplicated</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="s1">&#39;first&#39;</span><span class="p">)]</span> <span class="c1">#drop duplicates</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>Type 1</th>
+      <th>Type 2</th>
+      <th>Total</th>
+      <th>HP</th>
+      <th>Attack</th>
+      <th>Defense</th>
+      <th>Sp. Atk</th>
+      <th>Sp. Def</th>
+      <th>Speed</th>
+      <th>Generation</th>
+      <th>Legendary</th>
+    </tr>
+    <tr>
+      <th>ID</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>Bulbasaur</td>
+      <td>Grass</td>
+      <td>Poison</td>
+      <td>318</td>
+      <td>45</td>
+      <td>49</td>
+      <td>49</td>
+      <td>65</td>
+      <td>65</td>
+      <td>45</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Ivysaur</td>
+      <td>Grass</td>
+      <td>Poison</td>
+      <td>405</td>
+      <td>60</td>
+      <td>62</td>
+      <td>63</td>
+      <td>80</td>
+      <td>80</td>
+      <td>60</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Venusaur</td>
+      <td>Grass</td>
+      <td>Poison</td>
+      <td>525</td>
+      <td>80</td>
+      <td>82</td>
+      <td>83</td>
+      <td>100</td>
+      <td>100</td>
+      <td>80</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Charmander</td>
+      <td>Fire</td>
+      <td>NaN</td>
+      <td>309</td>
+      <td>39</td>
+      <td>52</td>
+      <td>43</td>
+      <td>60</td>
+      <td>50</td>
+      <td>65</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Charmeleon</td>
+      <td>Fire</td>
+      <td>NaN</td>
+      <td>405</td>
+      <td>58</td>
+      <td>64</td>
+      <td>58</td>
+      <td>80</td>
+      <td>65</td>
+      <td>80</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>To avoid the many bells and whistles of later iterations of Pokemon
+games, we’ll stick to our roots and only consider Pokemon from the first
+three generations.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Generation&#39;</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span> <span class="c1">#sample the whole dataset (frac=1) to shuffle the arrangement</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>Type 1</th>
+      <th>Type 2</th>
+      <th>Total</th>
+      <th>HP</th>
+      <th>Attack</th>
+      <th>Defense</th>
+      <th>Sp. Atk</th>
+      <th>Sp. Def</th>
+      <th>Speed</th>
+      <th>Generation</th>
+      <th>Legendary</th>
+    </tr>
+    <tr>
+      <th>ID</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>266</th>
+      <td>Silcoon</td>
+      <td>Bug</td>
+      <td>NaN</td>
+      <td>205</td>
+      <td>50</td>
+      <td>35</td>
+      <td>55</td>
+      <td>25</td>
+      <td>25</td>
+      <td>15</td>
+      <td>3</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>185</th>
+      <td>Sudowoodo</td>
+      <td>Rock</td>
+      <td>NaN</td>
+      <td>410</td>
+      <td>70</td>
+      <td>100</td>
+      <td>115</td>
+      <td>30</td>
+      <td>65</td>
+      <td>30</td>
+      <td>2</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Charmeleon</td>
+      <td>Fire</td>
+      <td>NaN</td>
+      <td>405</td>
+      <td>58</td>
+      <td>64</td>
+      <td>58</td>
+      <td>80</td>
+      <td>65</td>
+      <td>80</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>380</th>
+      <td>Latias</td>
+      <td>Dragon</td>
+      <td>Psychic</td>
+      <td>600</td>
+      <td>80</td>
+      <td>80</td>
+      <td>90</td>
+      <td>110</td>
+      <td>130</td>
+      <td>110</td>
+      <td>3</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>56</th>
+      <td>Mankey</td>
+      <td>Fighting</td>
+      <td>NaN</td>
+      <td>305</td>
+      <td>40</td>
+      <td>80</td>
+      <td>35</td>
+      <td>35</td>
+      <td>45</td>
+      <td>70</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Percent of Non-Legendary Pokemon: </span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">((</span><span class="n">df</span><span class="o">.</span><span class="n">Legendary</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">-</span><span class="n">df</span><span class="o">.</span><span class="n">Legendary</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">/</span><span class="n">df</span><span class="o">.</span><span class="n">Legendary</span><span class="o">.</span><span class="n">count</span><span class="p">()))</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Percent of Legendary Pokemon: </span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">((</span><span class="n">df</span><span class="o">.</span><span class="n">Legendary</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">/</span><span class="n">df</span><span class="o">.</span><span class="n">Legendary</span><span class="o">.</span><span class="n">count</span><span class="p">()))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Percent</span> <span class="n">of</span> <span class="n">Non</span><span class="o">-</span><span class="n">Legendary</span> <span class="n">Pokemon</span><span class="p">:</span> <span class="mf">0.95</span>
+<span class="n">Percent</span> <span class="n">of</span> <span class="n">Legendary</span> <span class="n">Pokemon</span><span class="p">:</span> <span class="mf">0.05</span>
+</pre></div>
+</div>
+<p>We can see that the classes are quite unevenly distributed. To remedy
+this, we will randomly select 5 Legendary and 5 Non-Legendary Pokemon to
+act as our samples to be clustered.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">legendary</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Legendary&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">non_legendary</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Legendary&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">False</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">pokemon</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">legendary</span><span class="p">,</span><span class="n">non_legendary</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>To further simplify the problem, and not worry about the encoding of
+categorical data, we will only consider numerical values in our
+clustering of the data.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">numerical_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Total&#39;</span><span class="p">,</span><span class="s1">&#39;HP&#39;</span><span class="p">,</span><span class="s1">&#39;Attack&#39;</span><span class="p">,</span><span class="s1">&#39;Defense&#39;</span><span class="p">,</span><span class="s1">&#39;Sp. Atk&#39;</span><span class="p">,</span><span class="s1">&#39;Sp. Def&#39;</span><span class="p">,</span><span class="s1">&#39;Speed&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="n">pokemon</span><span class="p">[</span><span class="s1">&#39;Legendary&#39;</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pokemon</span><span class="p">[</span><span class="n">numerical_columns</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Total</th>
+      <th>HP</th>
+      <th>Attack</th>
+      <th>Defense</th>
+      <th>Sp. Atk</th>
+      <th>Sp. Def</th>
+      <th>Speed</th>
+    </tr>
+    <tr>
+      <th>ID</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>379</th>
+      <td>580</td>
+      <td>80</td>
+      <td>75</td>
+      <td>150</td>
+      <td>75</td>
+      <td>150</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <th>386</th>
+      <td>600</td>
+      <td>50</td>
+      <td>150</td>
+      <td>50</td>
+      <td>150</td>
+      <td>50</td>
+      <td>150</td>
+    </tr>
+    <tr>
+      <th>243</th>
+      <td>580</td>
+      <td>90</td>
+      <td>85</td>
+      <td>75</td>
+      <td>115</td>
+      <td>100</td>
+      <td>115</td>
+    </tr>
+    <tr>
+      <th>381</th>
+      <td>600</td>
+      <td>80</td>
+      <td>90</td>
+      <td>80</td>
+      <td>130</td>
+      <td>110</td>
+      <td>110</td>
+    </tr>
+    <tr>
+      <th>378</th>
+      <td>580</td>
+      <td>80</td>
+      <td>50</td>
+      <td>100</td>
+      <td>100</td>
+      <td>200</td>
+      <td>50</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>We now have a dataset which is ready to be processed, but we may not be
+exactly clear on what to do with it. For that we must further understand
+how the QAOA process detailed above is actually used to solve a
+clustering problem.</p>
+</div>
+<div class="section" id="the-maxcut-problem">
+<h2>The Maxcut Problem<a class="headerlink" href="#the-maxcut-problem" title="Permalink to this headline">¶</a></h2>
+<p>As laid out by <a class="reference external" href="https://arxiv.org/pdf/1712.05771.pdf">Rigetti’s paper on
+QAOA</a>, there are a number of
+important steps that we must follow to map the problem of clustering
+into a format which QAOA can process. Broadly speaking, QAOA solves the
+<strong>MAXCUT</strong> problem, in which a graph of <span class="math notranslate nohighlight">\(n\)</span> vertices is separated
+into two complementary subsets, <span class="math notranslate nohighlight">\(S\)</span> and <span class="math notranslate nohighlight">\(S^{c}\)</span>, such that
+the number of edges between <span class="math notranslate nohighlight">\(S\)</span> and <span class="math notranslate nohighlight">\(S^{c}\)</span> is as large as
+possible.</p>
+<div class="figure align-default" id="id1">
+<img alt="Title" src="../_images/maxcut.png" />
+<p class="caption"><span class="caption-text">A depiction of the maxcut problem, displaying a cut which separates
+white and black vertices.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p><em>A depiction of the maxcut problem, displaying a cut which separates
+white and black vertices. Image
+credit:</em><a class="reference external" href="https://en.wikipedia.org/wiki/Maximum_cut#/media/File:Max-cut.svg">Wikipedia</a></p>
+<p>This problem can be made more sophisticated by adding numerical values
+as weights to the edges, such that the best solution maximizes the sum
+of weights which separate <span class="math notranslate nohighlight">\(S\)</span> and <span class="math notranslate nohighlight">\(S^{c}\)</span>. This is precisely
+the approach we take in using MAXCUT to cluster our data.</p>
+<p>We allow the weights associated to each edge to be some notion of
+distance between points. In this way, the sets dictated by our optimal
+cut, <span class="math notranslate nohighlight">\(S\)</span> and <span class="math notranslate nohighlight">\(S^{c}\)</span>, separate the data into binary clusters
+which are maximally distant (and hence, maximally dissimilar) from one
+another.</p>
+<p>From our current understanding, we can already begin to formulate some
+first steps in preparing our data to fit this frameowrk.</p>
+<p>We can use the <code class="docutils literal notranslate"><span class="pre">distances_dataset</span></code> function from
+<code class="docutils literal notranslate"><span class="pre">entropica_qaoa.utilities</span></code> to easily turn this set of points into the
+desired matrix of pairwise distances.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">entropica_qaoa.utilities</span> <span class="kn">import</span> <span class="n">distances_dataset</span>
+
+<span class="n">dist</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">distances_dataset</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+                       <span class="n">index</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">dist</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ID</th>
+      <th>379</th>
+      <th>386</th>
+      <th>243</th>
+      <th>381</th>
+      <th>378</th>
+    </tr>
+    <tr>
+      <th>ID</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>379</th>
+      <td>0.000000</td>
+      <td>206.276513</td>
+      <td>118.953773</td>
+      <td>117.260394</td>
+      <td>79.056942</td>
+    </tr>
+    <tr>
+      <th>386</th>
+      <td>206.276513</td>
+      <td>0.000000</td>
+      <td>108.627805</td>
+      <td>104.880885</td>
+      <td>220.907220</td>
+    </tr>
+    <tr>
+      <th>243</th>
+      <td>118.953773</td>
+      <td>108.627805</td>
+      <td>0.000000</td>
+      <td>30.000000</td>
+      <td>128.062485</td>
+    </tr>
+    <tr>
+      <th>381</th>
+      <td>117.260394</td>
+      <td>104.880885</td>
+      <td>30.000000</td>
+      <td>0.000000</td>
+      <td>122.474487</td>
+    </tr>
+    <tr>
+      <th>378</th>
+      <td>79.056942</td>
+      <td>220.907220</td>
+      <td>128.062485</td>
+      <td>122.474487</td>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dist</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>Type 1</th>
+      <th>Type 2</th>
+      <th>Total</th>
+      <th>HP</th>
+      <th>Attack</th>
+      <th>Defense</th>
+      <th>Sp. Atk</th>
+      <th>Sp. Def</th>
+      <th>Speed</th>
+      <th>Generation</th>
+      <th>Legendary</th>
+    </tr>
+    <tr>
+      <th>ID</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>379</th>
+      <td>Registeel</td>
+      <td>Steel</td>
+      <td>NaN</td>
+      <td>580</td>
+      <td>80</td>
+      <td>75</td>
+      <td>150</td>
+      <td>75</td>
+      <td>150</td>
+      <td>50</td>
+      <td>3</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>386</th>
+      <td>DeoxysNormal Forme</td>
+      <td>Psychic</td>
+      <td>NaN</td>
+      <td>600</td>
+      <td>50</td>
+      <td>150</td>
+      <td>50</td>
+      <td>150</td>
+      <td>50</td>
+      <td>150</td>
+      <td>3</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>243</th>
+      <td>Raikou</td>
+      <td>Electric</td>
+      <td>NaN</td>
+      <td>580</td>
+      <td>90</td>
+      <td>85</td>
+      <td>75</td>
+      <td>115</td>
+      <td>100</td>
+      <td>115</td>
+      <td>2</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>381</th>
+      <td>Latios</td>
+      <td>Dragon</td>
+      <td>Psychic</td>
+      <td>600</td>
+      <td>80</td>
+      <td>90</td>
+      <td>80</td>
+      <td>130</td>
+      <td>110</td>
+      <td>110</td>
+      <td>3</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>378</th>
+      <td>Regice</td>
+      <td>Ice</td>
+      <td>NaN</td>
+      <td>580</td>
+      <td>80</td>
+      <td>50</td>
+      <td>100</td>
+      <td>100</td>
+      <td>200</td>
+      <td>50</td>
+      <td>3</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div class="section" id="from-maxcut-to-qubo">
+<h2>From Maxcut to QUBO<a class="headerlink" href="#from-maxcut-to-qubo" title="Permalink to this headline">¶</a></h2>
+<p>With an understanding of the Maxcut structure which produces our
+clustered output, we ask ourselves how we can turn what is effectively a
+graph problem into the setting of an optimization problem. The answer is
+to map our Maxcut interpretation into a <strong>Quadratic Unconstrainted
+Binary Optimization</strong>
+(<a class="reference external" href="https://en.wikipedia.org/wiki/Quadratic_unconstrained_binary_optimization">QUBO</a>)
+problem. QUBO problems attempt to minimize a quadratic polynomial with
+binary variables. Luckily, MAXCUT already has a well-known QUBO cost
+function. This cost function is sophisticated enough to allow for our
+pairwise distanes to be meaningfully included, as well as to allow for
+the inclusion of bias terms on individual samples.</p>
+<div class="math notranslate nohighlight">
+\[Cost=-\sum_{\langle i j\rangle} J_{i j} \sigma_{i} \sigma_{j}-\mu \sum_{j} h_{j} \sigma_{j}\]</div>
+<p>To explain the notation: - <span class="math notranslate nohighlight">\(\sigma_{i}\)</span> is the cluster class (-1
+or 1) of sample <span class="math notranslate nohighlight">\(i\)</span> - <span class="math notranslate nohighlight">\(J_{i j}\)</span> is the distance between
+sample <span class="math notranslate nohighlight">\(i\)</span> and sample <span class="math notranslate nohighlight">\(j\)</span> - <span class="math notranslate nohighlight">\(h_{j}\)</span> is a bias term on
+sample <span class="math notranslate nohighlight">\(j\)</span> - <span class="math notranslate nohighlight">\(\mu\)</span> is a universal weight applied to all bias
+terms</p>
+<p>By convention, a negative sign is applied to the cost function, as
+above. In quantum mechanics we would denote thie function as
+<span class="math notranslate nohighlight">\(H(\sigma)\)</span>. The symbol <span class="math notranslate nohighlight">\(H\)</span> stands for <em>Hamiltonian</em>, which
+is an operator which acts as a sum of the energies of the system. For
+the scope of this notebook, thinking of <span class="math notranslate nohighlight">\(Cost\)</span> as any traditional
+cost function which we want to minimize will serve us equally as
+valuable.</p>
+</div>
+<div class="section" id="from-qubo-to-a-hamiltonian">
+<h2>From QUBO to a Hamiltonian<a class="headerlink" href="#from-qubo-to-a-hamiltonian" title="Permalink to this headline">¶</a></h2>
+<p>Now we must use our data to create the cost function defined above. To
+make a Hamiltonian that is recognizable by pyQuil, we must use the
+pyQuil <code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> object.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyquil.api</span> <span class="kn">import</span> <span class="n">WavefunctionSimulator</span>
+<span class="kn">from</span> <span class="nn">pyquil.paulis</span> <span class="kn">import</span> <span class="n">PauliSum</span><span class="p">,</span> <span class="n">PauliTerm</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> object can be quadratic or of order one. In the case of
+it being quadratic, it represents the relationship between any two
+samples of data. An order one <code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> would be an implementation
+of a bias term - a cost constraint which only affects one variable.
+Below we show some basic functionality of the <code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> object.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Constructing a quadratic PauliTerm</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">j</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Distance between samples </span><span class="si">%d</span><span class="s1"> and </span><span class="si">%d</span><span class="s1">: </span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">dist</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Distance</span> <span class="n">between</span> <span class="n">samples</span> <span class="mi">3</span> <span class="ow">and</span> <span class="mi">6</span><span class="p">:</span> <span class="mf">433.417</span>
+</pre></div>
+</div>
+<p>To create the quadratic term we multiply two Paulis together. Each
+<code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> has an accompanying coefficient which is also multiplied.
+For simplicity’s sake, we include the pairwise distance as a coefficient
+of one factor, and make the other ‘1.0’.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">term1</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">dist</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+<span class="n">term2</span> <span class="o">=</span> <span class="n">PauliTerm</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">term</span> <span class="o">=</span> <span class="n">term1</span><span class="o">*</span><span class="n">term2</span>
+<span class="k">print</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mf">433.4166586553867</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z6</span>
+</pre></div>
+</div>
+<p>Feel free to play with the coefficient number of <code class="docutils literal notranslate"><span class="pre">term2</span></code> to see how it
+affects the output of the cell.</p>
+<p>For those new to quantum computing, you’re likely wondering what the
+purpose of the letter ‘Z’ is. It indicates that this <code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> is a
+Z operator.</p>
+<p>You may also note that our sample numbers, <span class="math notranslate nohighlight">\(i=3\)</span> and <span class="math notranslate nohighlight">\(j=6\)</span>,
+have found their way into the printed output. Including <span class="math notranslate nohighlight">\(i\)</span> and
+<span class="math notranslate nohighlight">\(j\)</span> in each <code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> tells pyQuil which samples or <strong>qubits</strong>
+the operation is applied to. That’s right, in the QAOA setup we consider
+each datapoint to be mapped to a qubit. Thus, the above printed
+statement actually means <em>“apply a penalty of :math:`Q` should sample 3
+and sample 6 be in the same class”</em>, where <span class="math notranslate nohighlight">\(Q\)</span> is the coefficient
+of the operator product Z3*Z6. Said in a more quantum-intuitive sense:
+<em>“Apply a penalty of :math:`Q` should qubit 3 and qubit 6 both be found
+in the same spin state (spin up or spin down)”</em>.</p>
+<p>Thus, as QAOA tries to minimize the cost function, sample 3 and 6 will
+only appear in the same class if this configuration is optimal. The
+choice of our weights as the distances between the samples implies, that
+in a “good” configuration samples that lie far apart will end up in
+different classes.</p>
+<p>We can see now that to make the Hamiltonian for our system we must
+iterate over each distance in our distance matrix, and assign it within
+a <code class="docutils literal notranslate"><span class="pre">PauliTerm</span></code> as the interaction strength between the appropriate
+qubits. We can readily achieve this using the utility function
+<code class="docutils literal notranslate"><span class="pre">hamiltonian_from_distances</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">entropica_qaoa.utilities</span> <span class="kn">import</span> <span class="n">hamiltonian_from_distances</span>
+
+<span class="n">hamiltonian</span> <span class="o">=</span> <span class="n">hamiltonian_from_distances</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mf">206.27651344736267</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">118.95377253370319</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="mf">117.26039399558574</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">79.05694150420949</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z4</span> <span class="o">+</span> <span class="p">(</span><span class="mf">429.1270208225066</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z5</span> <span class="o">+</span> <span class="p">(</span><span class="mf">414.1255848169731</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z6</span> <span class="o">+</span> <span class="p">(</span><span class="mf">329.6209944769902</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z7</span> <span class="o">+</span> <span class="p">(</span><span class="mf">365.8551625985343</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z8</span> <span class="o">+</span> <span class="p">(</span><span class="mf">95.06839643120105</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z0</span><span class="o">*</span><span class="n">Z9</span> <span class="o">+</span> <span class="p">(</span><span class="mf">108.62780491200216</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z2</span> <span class="o">+</span> <span class="p">(</span><span class="mf">104.88088481701516</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">220.90722034374522</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z4</span> <span class="o">+</span> <span class="p">(</span><span class="mf">467.9743582719036</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z5</span> <span class="o">+</span> <span class="p">(</span><span class="mf">451.3867521316947</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z6</span> <span class="o">+</span> <span class="p">(</span><span class="mf">364.0741682679506</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z7</span> <span class="o">+</span> <span class="p">(</span><span class="mf">415.45156155681974</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z8</span> <span class="o">+</span> <span class="p">(</span><span class="mf">159.80613254815975</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z1</span><span class="o">*</span><span class="n">Z9</span> <span class="o">+</span> <span class="p">(</span><span class="mi">30</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z3</span> <span class="o">+</span> <span class="p">(</span><span class="mf">128.06248474865697</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z4</span> <span class="o">+</span> <span class="p">(</span><span class="mf">425.20583250938597</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z5</span> <span class="o">+</span> <span class="p">(</span><span class="mf">410.91361622608713</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z6</span> <span class="o">+</span> <span class="p">(</span><span class="mf">325.1153641401772</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z7</span> <span class="o">+</span> <span class="p">(</span><span class="mf">368.0353243915589</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z8</span> <span class="o">+</span> <span class="p">(</span><span class="mf">77.5112895003044</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z2</span><span class="o">*</span><span class="n">Z9</span> <span class="o">+</span> <span class="p">(</span><span class="mf">122.47448713915891</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z4</span> <span class="o">+</span> <span class="p">(</span><span class="mf">447.88391353117385</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z5</span> <span class="o">+</span> <span class="p">(</span><span class="mf">433.4166586553867</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z6</span> <span class="o">+</span> <span class="p">(</span><span class="mf">346.04912945996557</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z7</span> <span class="o">+</span> <span class="p">(</span><span class="mf">389.1015291668744</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z8</span> <span class="o">+</span> <span class="p">(</span><span class="mf">96.42613753542138</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z3</span><span class="o">*</span><span class="n">Z9</span> <span class="o">+</span> <span class="p">(</span><span class="mf">436.3484845854286</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z4</span><span class="o">*</span><span class="n">Z5</span> <span class="o">+</span> <span class="p">(</span><span class="mf">425.73465914816</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z4</span><span class="o">*</span><span class="n">Z6</span> <span class="o">+</span> <span class="p">(</span><span class="mf">340.80786375903944</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z4</span><span class="o">*</span><span class="n">Z7</span> <span class="o">+</span> <span class="p">(</span><span class="mf">372.96112397943034</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z4</span><span class="o">*</span><span class="n">Z8</span> <span class="o">+</span> <span class="p">(</span><span class="mf">123.44229421069588</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z4</span><span class="o">*</span><span class="n">Z9</span> <span class="o">+</span> <span class="p">(</span><span class="mf">30.822070014844883</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z5</span><span class="o">*</span><span class="n">Z6</span> <span class="o">+</span> <span class="p">(</span><span class="mf">113.35784048754634</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z5</span><span class="o">*</span><span class="n">Z7</span> <span class="o">+</span> <span class="p">(</span><span class="mi">70</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z5</span><span class="o">*</span><span class="n">Z8</span> <span class="o">+</span> <span class="p">(</span><span class="mf">362.9572977638003</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z5</span><span class="o">*</span><span class="n">Z9</span> <span class="o">+</span> <span class="p">(</span><span class="mf">96.17692030835673</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z6</span><span class="o">*</span><span class="n">Z7</span> <span class="o">+</span> <span class="p">(</span><span class="mf">63.245553203367585</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z6</span><span class="o">*</span><span class="n">Z8</span> <span class="o">+</span> <span class="p">(</span><span class="mf">347.4881292936494</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z6</span><span class="o">*</span><span class="n">Z9</span> <span class="o">+</span> <span class="p">(</span><span class="mf">65.95452979136459</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z7</span><span class="o">*</span><span class="n">Z8</span> <span class="o">+</span> <span class="p">(</span><span class="mf">261.3197275369772</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z7</span><span class="o">*</span><span class="n">Z9</span> <span class="o">+</span> <span class="p">(</span><span class="mf">303.59183124715327</span><span class="o">+</span><span class="mi">0</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">Z8</span><span class="o">*</span><span class="n">Z9</span>
+</pre></div>
+</div>
+<p>The above exercise brings up an important limitation to our present QAOA
+approach. The number of datapoints we are able to use is limited by the
+number of qubits we have available.</p>
+</div>
+<div class="section" id="minimize-the-hamiltonian-with-qaoa">
+<h2>Minimize the Hamiltonian with QAOA<a class="headerlink" href="#minimize-the-hamiltonian-with-qaoa" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have mapped the clustering problem to a Hamiltonian it is
+time to find the spin class assignments/spin configuration that
+minimizes our cost function. We do this using the QAOA algorithm. First
+we need to import the neccesary bits and pieces:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import the neccesary pyquil modules</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.cost_function</span> <span class="kn">import</span> <span class="n">QAOACostFunctionOnQVM</span><span class="p">,</span> <span class="n">QAOACostFunctionOnWFSim</span>
+
+<span class="c1"># import QAOAParameters</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.qaoa.parameters</span> <span class="kn">import</span> <span class="n">ExtendedParams</span>
+
+<span class="c1"># import an optimizer</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+
+<span class="c1">#Some utilities for time tracking and measuring our outcomes.</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">entropica_qaoa.utilities</span> <span class="kn">import</span> <span class="n">cluster_accuracy</span><span class="p">,</span> <span class="n">max_probability_bitstring</span>
+</pre></div>
+</div>
+<p>Now we can set up the <em>hyperparameters</em> (problem parameters that remain
+fixed for this problem instance):</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">timesteps</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># The QAOA p parameter</span>
+<span class="n">iters</span> <span class="o">=</span> <span class="mi">500</span> <span class="c1"># Number of classical optimiser iterations</span>
+<span class="n">n_qubits</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1">#this number might be defined before your dataset - should equal the number of data points</span>
+<span class="c1">#The hamiltonian is also a hyperparameter</span>
+</pre></div>
+</div>
+<p>And of course also the parameters need to be chosen. In this QAOA run,
+we will use <code class="docutils literal notranslate"><span class="pre">ExtendedParameters</span></code>. This parameter class provides the
+most degrees of freedom for our optimizer to explore the energy
+landscape. Conversely, it also has the most parameters to optimize and
+thus will take longer to converge.</p>
+<p>To instantiate this parameter class, we need to pass in three separate
+lists of angles. - <span class="math notranslate nohighlight">\(\vec{\beta}\)</span>: every timestep requires
+<span class="math notranslate nohighlight">\(n_{qubits}\)</span> beta rotations. Thus there are
+<span class="math notranslate nohighlight">\(n_{qubits}\times timesteps\)</span> beta values. -
+<span class="math notranslate nohighlight">\(\vec{\gamma}_{pairs}\)</span>: there is a gamma rotation for every
+two-qubit interaction. A simple way to come up with this number is to
+measure the length of your Hamiltonian, subtracted by the number of
+single qubit bias terms in place. - <span class="math notranslate nohighlight">\(\vec{\gamma}_{singles}\)</span>:
+there is a gamma single rotation for each bias term included in the
+hamiltonian.</p>
+<p>We randomly generate these lists as their initial starting states are
+somewhat redunant. They will be optimized over 100s of iterations!</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">betas</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">timesteps</span><span class="o">*</span><span class="n">n_qubits</span><span class="p">)]</span>
+<span class="n">gammas_singles</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span> <span class="c1">#we don&#39;t want any bias terms</span>
+<span class="n">gammas_pairs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">timesteps</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">))]</span>
+
+<span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">gammas_singles</span><span class="p">,</span> <span class="n">gammas_pairs</span><span class="p">)</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="n">ExtendedParams</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Before starting the simulator, make sure you are running Rigetti’s QVM
+and Quil Compiler by running <code class="docutils literal notranslate"><span class="pre">qvm</span> <span class="pre">-S</span></code> and <code class="docutils literal notranslate"><span class="pre">quilc</span> <span class="pre">-S</span></code> in two open and
+disposable terminals</p>
+<p>Let’s begin by running QAOA with <span class="math notranslate nohighlight">\(p=3\)</span> timesteps, and a maximum of
+500 optimiser Iterations.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up the WavefunctionSimulator from pyQuil</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">WavefunctionSimulator</span><span class="p">()</span>
+<span class="n">cost_function</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span>
+                                        <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                                        <span class="n">sim</span><span class="o">=</span><span class="n">sim</span><span class="p">,</span>
+                                        <span class="n">enable_logging</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Cobyla&#39;</span><span class="p">,</span>
+               <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="n">iters</span><span class="p">})</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Run complete!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;Runtime:&#39;</span><span class="p">,</span><span class="s1">&#39;{:.3f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Run complete!
+ Runtime: 56.446
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">wave_func</span> <span class="o">=</span> <span class="n">cost_function</span><span class="o">.</span><span class="n">get_wavefunction</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">raw</span><span class="p">())</span>
+<span class="n">lowest</span> <span class="o">=</span> <span class="n">max_probability_bitstring</span><span class="p">(</span><span class="n">wave_func</span><span class="o">.</span><span class="n">probabilities</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">true_clusters</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="n">val</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+<span class="n">acc</span> <span class="o">=</span> <span class="n">cluster_accuracy</span><span class="p">(</span><span class="n">lowest</span><span class="p">,</span><span class="n">true_clusters</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">True</span> <span class="n">Labels</span> <span class="n">of</span> <span class="n">samples</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">Lowest</span> <span class="n">QAOA</span> <span class="n">State</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">Accuracy</span> <span class="n">of</span> <span class="n">Original</span> <span class="n">State</span><span class="p">:</span> <span class="mf">60.0</span> <span class="o">%</span>
+<span class="n">Accuracy</span> <span class="n">of</span> <span class="n">Complement</span> <span class="n">State</span><span class="p">:</span> <span class="mf">40.0</span> <span class="o">%</span>
+</pre></div>
+</div>
+<p>We can analyze the optimizer to see whether or not our QAOA run
+converged. For the full message, run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Cost Function Value:&#39;</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Converged?:&#39;</span><span class="p">,</span><span class="n">res</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Cost Function Value: -446.28427408573975
+Converged?: Maximum number of function evaluations has been exceeded.
+</pre></div>
+</div>
+<p>We can see we did not converge. Let’s tighten up our operations by
+wrapping our QAOA runs in a function and increase the QAOA parameter
+<span class="math notranslate nohighlight">\(p\)</span>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run_qaoa</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">,</span> <span class="n">max_iters</span><span class="p">,</span> <span class="n">init_state</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">cost_function</span> <span class="o">=</span> <span class="n">QAOACostFunctionOnWFSim</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span>
+                                            <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                                            <span class="n">initial_state</span><span class="o">=</span><span class="n">init_state</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">raw</span><span class="p">(),</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Cobyla&#39;</span><span class="p">,</span>
+                          <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;maxiter&quot;</span> <span class="p">:</span> <span class="n">max_iters</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">cost_function</span><span class="o">.</span><span class="n">get_wavefunction</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">raw</span><span class="p">()),</span> <span class="n">res</span>
+</pre></div>
+</div>
+<p>The cell below will take around 2 to 3 minutes to run:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">wave_func</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">run_qaoa</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">1500</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Run complete</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;Runtime:&#39;</span><span class="p">,</span><span class="s1">&#39;{:.3f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Run</span> <span class="n">complete</span>
+ <span class="n">Runtime</span><span class="p">:</span> <span class="mf">159.021</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lowest</span> <span class="o">=</span> <span class="n">max_probability_bitstring</span><span class="p">(</span><span class="n">wave_func</span><span class="o">.</span><span class="n">probabilities</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">true_clusters</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="n">val</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+<span class="n">acc</span> <span class="o">=</span> <span class="n">cluster_accuracy</span><span class="p">(</span><span class="n">lowest</span><span class="p">,</span><span class="n">true_clusters</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Cost Function Value:&#39;</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Converged?:&#39;</span><span class="p">,</span><span class="n">res</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>True Labels of samples: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+Lowest QAOA State: [1, 0, 1, 0, 0, 0, 1, 1, 1, 1]
+Accuracy of Original State: 30.0 %
+Accuracy of Complement State: 70.0 %
+Cost Function Value: -860.5133756234061
+Converged?: Optimization terminated successfully.
+</pre></div>
+</div>
+<p>You should typically find that increasing the number of allowed
+iterations gives a more accurate answer. The precise numbers will depend
+on which Pokemons are randomly selected at the beginning.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../faq.html" class="btn btn-neutral float-right" title="Implementation details, conventions, and FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="6_SolvingQUBOwithQAOA.html" class="btn btn-neutral float-left" title="Solving a simple QUBO with QAOA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, EntropicaLabs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,4 +1,0 @@
-numpy>=1.7
-scipy>=0.9
-scikit-learn>=0.16
-numexpr>=2.5
