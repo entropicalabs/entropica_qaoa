@@ -653,8 +653,8 @@ def sample_qaoa_bitstrings(params: AbstractParams,
     ro = prog.declare('ro', memory_type='BIT', memory_size=nqubits)
 
     # add measure instructions to the specified qubits
-    for i in range(nqubits):
-        prog += MEASURE(i, ro[i])   
+    for i, qb in enumerate(params.reg):
+        prog += MEASURE(qb, ro[i])   
     
     exe = qvm.compile(prog)
     bitstrings = qvm.run(exe, memory_map)
