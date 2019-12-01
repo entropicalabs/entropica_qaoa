@@ -23,6 +23,8 @@ eggs/
 #########
 *.swp
 *.save
+*~
+.vscode/
 
 # compiled docs
 # #############
