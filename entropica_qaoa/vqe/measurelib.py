@@ -43,7 +43,7 @@ Pauli Operator, or if either one acts only with the identity. This implies in
 particular, that they can be measured without the need for ancilla qubits.
 """
 
-from typing import List, Union, Tuple, Callable, Set
+from typing import List, Union, Tuple, Callable
 from string import ascii_letters
 import warnings
 
