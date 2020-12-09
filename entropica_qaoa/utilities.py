@@ -296,7 +296,7 @@ def random_k_regular_graph(degree: int,
 
     if biases:
         for node in G.nodes():
-            G.node[node]['weight'] = np.random.rand()
+            G.nodes[node]['weight'] = np.random.rand()
 
     return G
 
