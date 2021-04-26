@@ -784,7 +784,7 @@ investigating. A good primer can be found
 Towards QAOA
 ------------
 
-A more detailled explanation of our QAOA library can be found in the
+A more detailed explanation of our QAOA library can be found in the
 Notebooks :ref:`1-AnExampleWorkflow`, :ref:`2-ParameterClasses`,
 and :ref:`3-AdvancedParameterClasses`. Here we simply explain how it
 can be regarded as a special case of VQE.
