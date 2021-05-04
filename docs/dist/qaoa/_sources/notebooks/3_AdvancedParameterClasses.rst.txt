@@ -213,7 +213,7 @@ The ``Fourier`` parameter class
 
 This parameter class originated from attempts to find heuristic ways of
 reducing the number of parameters required to perform QAOA. Based on
-empirical observations in patterns of the optimal QAOA angles, Zhuo et
+empirical observations in patterns of the optimal QAOA angles, Zhou et
 al (see `Ref 1 <#references>`__) proposed considering the discrete
 Fourier transforms of ``betas`` and ``gammas`` as an alternative, more
 economical parametrisation.
