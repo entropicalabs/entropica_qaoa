@@ -15,7 +15,7 @@ typing ``qvm -S`` and ``quilc -S`` in two open and disposable terminal
 windows. Assuming you have previously installed the Forest SDK, the
 Quantum Virtual Machine will then open in the background. More
 information on installing and running the QVM can be found in Rigetti’s
-`Forest documentation <http://docs.rigetti.com/en/stable/start.html>`__.
+`Forest documentation <https://pyquil-docs.rigetti.com/en/stable/start.html>`__.
 
 To begin, we import all the neccesary bits and pieces:
 
